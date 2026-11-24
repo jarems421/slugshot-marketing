@@ -108,9 +108,10 @@ Current prospective coding lives in `config/research/codebooks/slugshot-creative
   - A second session of the same model is a repeat check, not independent human verification.
 - **Pilot:** collection, coding, joining and structural validation are complete.
   - Playback coding is Gemini-reported, single-coder and unblinded. An independent spot-check and the three missing codes are outstanding.
+  - *Status update (24 Nov, later):* Gemini's v1.1 recode with all ten codes is integrated. It's a same-model repeat check, since Gemini had access to its earlier annotations. Stage 4.5.5 is closed as operationally validated, and the independent human spot-check is deferred until a production decision depends on the coding. See `docs/stage-4.5.4-report.md`.
   - Rule-world plus genuine PvP is a creative hypothesis, not a performance finding. The fictional one-slug-for-life premise must be labelled, and any real duel captured from the current build.
   - Use the pilot for hypotheses, not population or causal claims.
-- **Bundles:** use only the corrected 2210Z export, not the superseded 2138Z archive.
+- **Bundles:** use only corrected exports (2210Z or the newest later bundle), never the superseded 2138Z archive (quarantined locally).
   - Inspect manifests and expiry first.
   - Never keep restricted YouTube statistics or derived artefacts past expiry. Never aggregate YouTube outcomes across channels. Never export Twitch data under the current gate.
   - The owner manages deletion of uploaded chat copies. Keep durable qualitative lessons and verified literature instead of raw bundles.

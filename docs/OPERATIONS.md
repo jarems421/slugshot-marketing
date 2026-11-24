@@ -150,7 +150,7 @@ Remaining milestones (methodology: [chatgpt-research-skills-v1.1.md](chatgpt-res
 3. **Centralised minimum viable dashboard.** Research, experiments, content and player outcomes, built from existing tools.
 
 Open items:
-- The pilot's independent spot-check and its recode under v1.1 (packets in `data/local/research/analysis/coding_packet_*`).
+- Deferred until a production decision depends on it: the pilot's independent human spot-check (packet `data/local/research/analysis/coding_packet_BRIEF-20261124-RULE-WORLD-PILOT.spotcheck.md`). Stage 4.5.5 is closed; the v1.1 recode is integrated.
 - Optional: approve the `makemyclip` MCP server when Claude Code asks.
 - Before sharing Twitch exports: check Twitch's onward-transfer terms, then set `twitch.share_exports` to true.
 
