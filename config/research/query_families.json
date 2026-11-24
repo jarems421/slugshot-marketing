@@ -1,28 +1,1228 @@
 {
- "_note": "Stage 4.5.4 structure. A family = one construct (etic core, shared across languages) + native branches per market (emic; written natively, NOT translated) + negative controls. STARTER EXAMPLE ONLY: ChatGPT writes the real families. Compile into YouTube saved sets with `ss research families --compile`.",
- "version": "families-0.1",
+ "_note": "Stage 4.5.4 seed hypotheses; native phrasing not validated prevalence. Compile individual families; do not run all in one day. Huss is a temporary research lead, not a permanent trend.",
+ "version": "families-1.0",
  "families": [
   {
    "id": "underdog-comedy",
-   "construct": "Underdog / status-reversal comedy in gaming and Roblox content",
-   "etic_core": ["underdog wins", "weak character beats strong"],
-   "layers": ["core", "alias", "slang", "format_phrase", "need_language", "community_vocabulary", "negative", "adjacent_culture"],
+   "construct": "Underdog and status reversal",
+   "etic_core": [
+    "weak beats strong",
+    "unexpected win"
+   ],
+   "layers": [
+    "core",
+    "alias",
+    "slang",
+    "format_phrase",
+    "need_language",
+    "community_vocabulary",
+    "negative",
+    "adjacent_culture"
+   ],
    "branches": {
-    "en": {"markets": ["GB", "US"], "lang": "en", "queries": [
-     {"q": "roblox underdog", "layer": "core"},
-     {"q": "noob vs pro roblox", "layer": "community_vocabulary"}]},
-    "es-MX": {"markets": ["MX"], "lang": "es", "queries": [
-     {"q": "noob vs pro roblox", "layer": "community_vocabulary"},
-     {"q": "el más débil gana roblox", "layer": "core"}]},
-    "es-ES": {"markets": ["ES"], "lang": "es", "queries": [
-     {"q": "noob contra pro roblox", "layer": "community_vocabulary"}]},
-    "es-LATAM": {"markets": ["AR", "CO", "CL"], "lang": "es", "queries": [
-     {"q": "noob vs pro roblox", "layer": "community_vocabulary"}]}
+    "en": {
+     "markets": [
+      "GB",
+      "US"
+     ],
+     "lang": "en",
+     "queries": [
+      {
+       "q": "roblox noob beats pro",
+       "layer": "core"
+      },
+      {
+       "q": "bro underestimated me gaming",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-MX": {
+     "markets": [
+      "MX"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "el noob le ganó al pro roblox",
+       "layer": "core"
+      },
+      {
+       "q": "se burló de mí y perdió roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-ES": {
+     "markets": [
+      "ES"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "noob contra pro roblox",
+       "layer": "core"
+      },
+      {
+       "q": "iba de sobrado y perdió roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-LATAM": {
+     "markets": [
+      "AR",
+      "CO",
+      "CL"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "el más débil gana roblox",
+       "layer": "core"
+      },
+      {
+       "q": "se confió y perdió roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    }
    },
    "negative_controls": [
-    {"q": "roblox tutorial how to", "lang": "en", "markets": ["US"], "why": "semantically near but not comedy; should NOT support the construct"}
+    {
+     "q": "roblox combat tutorial",
+     "lang": "en",
+     "markets": [
+      "US"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    },
+    {
+     "q": "tutorial de combate roblox",
+     "lang": "es",
+     "markets": [
+      "MX"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    }
    ],
-   "collection": {"days": 7, "order": "date", "duration": "short", "max": 25}
+   "collection": {
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  },
+  {
+   "id": "rule-world",
+   "construct": "Fictional rule-world setup and narrative stakes",
+   "etic_core": [
+    "everyone gets one item",
+    "fictional rule changes stakes"
+   ],
+   "layers": [
+    "core",
+    "alias",
+    "slang",
+    "format_phrase",
+    "need_language",
+    "community_vocabulary",
+    "negative",
+    "adjacent_culture"
+   ],
+   "branches": {
+    "en": {
+     "markets": [
+      "GB",
+      "US"
+     ],
+     "lang": "en",
+     "queries": [
+      {
+       "q": "in my world roblox story",
+       "layer": "core"
+      },
+      {
+       "q": "everyone gets one power roblox story",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-MX": {
+     "markets": [
+      "MX"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "en mi mundo roblox historia",
+       "layer": "core"
+      },
+      {
+       "q": "a todos les toca un poder roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-ES": {
+     "markets": [
+      "ES"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "en este mundo roblox historia",
+       "layer": "core"
+      },
+      {
+       "q": "cada uno tiene un poder roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-LATAM": {
+     "markets": [
+      "AR",
+      "CO",
+      "CL"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "en mi mundo cada uno tiene un poder",
+       "layer": "core"
+      },
+      {
+       "q": "historias de roblox con reglas",
+       "layer": "format_phrase"
+      }
+     ]
+    }
+   },
+   "negative_controls": [
+    {
+     "q": "roblox world building tutorial",
+     "lang": "en",
+     "markets": [
+      "US"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    },
+    {
+     "q": "cómo crear un mapa en roblox",
+     "lang": "es",
+     "markets": [
+      "MX"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    }
+   ],
+   "collection": {
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  },
+  {
+   "id": "combat-proof",
+   "construct": "Readable combat skill and gameplay payoff",
+   "etic_core": [
+    "duel",
+    "clutch",
+    "counterplay"
+   ],
+   "layers": [
+    "core",
+    "alias",
+    "slang",
+    "format_phrase",
+    "need_language",
+    "community_vocabulary",
+    "negative",
+    "adjacent_culture"
+   ],
+   "branches": {
+    "en": {
+     "markets": [
+      "GB",
+      "US"
+     ],
+     "lang": "en",
+     "queries": [
+      {
+       "q": "roblox pvp clutch",
+       "layer": "core"
+      },
+      {
+       "q": "roblox fighting game combo comeback",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-MX": {
+     "markets": [
+      "MX"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "remontada en roblox pvp",
+       "layer": "core"
+      },
+      {
+       "q": "me quedé a un golpe roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-ES": {
+     "markets": [
+      "ES"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "roblox pvp remontada",
+       "layer": "core"
+      },
+      {
+       "q": "le esquivé todo roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-LATAM": {
+     "markets": [
+      "AR",
+      "CO",
+      "CL"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "duelo roblox final épico",
+       "layer": "core"
+      },
+      {
+       "q": "gané con poca vida roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    }
+   },
+   "negative_controls": [
+    {
+     "q": "roblox pvp settings guide",
+     "lang": "en",
+     "markets": [
+      "US"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    },
+    {
+     "q": "configuración pvp roblox",
+     "lang": "es",
+     "markets": [
+      "MX"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    }
+   ],
+   "collection": {
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  },
+  {
+   "id": "creature-companion",
+   "construct": "Creature personality, collection and companion mechanics",
+   "etic_core": [
+    "creature bond",
+    "companion power"
+   ],
+   "layers": [
+    "core",
+    "alias",
+    "slang",
+    "format_phrase",
+    "need_language",
+    "community_vocabulary",
+    "negative",
+    "adjacent_culture"
+   ],
+   "branches": {
+    "en": {
+     "markets": [
+      "GB",
+      "US"
+     ],
+     "lang": "en",
+     "queries": [
+      {
+       "q": "gaming pet companion funny moments",
+       "layer": "core"
+      },
+      {
+       "q": "roblox creature battles",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-MX": {
+     "markets": [
+      "MX"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "mi mascota me salvó juego",
+       "layer": "core"
+      },
+      {
+       "q": "batalla de criaturas roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-ES": {
+     "markets": [
+      "ES"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "mi compañero me salva videojuego",
+       "layer": "core"
+      },
+      {
+       "q": "juegos de criaturas roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-LATAM": {
+     "markets": [
+      "AR",
+      "CO",
+      "CL"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "mi mascota me salvó roblox",
+       "layer": "core"
+      },
+      {
+       "q": "peleas de monstruos juego",
+       "layer": "format_phrase"
+      }
+     ]
+    }
+   },
+   "negative_controls": [
+    {
+     "q": "roblox pet trading values",
+     "lang": "en",
+     "markets": [
+      "US"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    },
+    {
+     "q": "valores de mascotas roblox",
+     "lang": "es",
+     "markets": [
+      "MX"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    }
+   ],
+   "collection": {
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  },
+  {
+   "id": "choice-stakes",
+   "construct": "Viewer choice with visible alternatives and consequences",
+   "etic_core": [
+    "choose one",
+    "tradeoff"
+   ],
+   "layers": [
+    "core",
+    "alias",
+    "slang",
+    "format_phrase",
+    "need_language",
+    "community_vocabulary",
+    "negative",
+    "adjacent_culture"
+   ],
+   "branches": {
+    "en": {
+     "markets": [
+      "GB",
+      "US"
+     ],
+     "lang": "en",
+     "queries": [
+      {
+       "q": "which power would you choose gaming",
+       "layer": "core"
+      },
+      {
+       "q": "choose your starter roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-MX": {
+     "markets": [
+      "MX"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "qué poder elegirías roblox",
+       "layer": "core"
+      },
+      {
+       "q": "elige tu compañero videojuego",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-ES": {
+     "markets": [
+      "ES"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "con qué poder te quedarías roblox",
+       "layer": "core"
+      },
+      {
+       "q": "qué personaje escogerías",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-LATAM": {
+     "markets": [
+      "AR",
+      "CO",
+      "CL"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "qué criatura escogerías juego",
+       "layer": "core"
+      },
+      {
+       "q": "elige un poder roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    }
+   },
+   "negative_controls": [
+    {
+     "q": "roblox tier list guide",
+     "lang": "en",
+     "markets": [
+      "US"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    },
+    {
+     "q": "lista de mejores armas roblox",
+     "lang": "es",
+     "markets": [
+      "MX"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    }
+   ],
+   "collection": {
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  },
+  {
+   "id": "friend-rival",
+   "construct": "Friend and rival dynamics, betrayal and teamwork",
+   "etic_core": [
+    "friend conflict",
+    "rival payoff"
+   ],
+   "layers": [
+    "core",
+    "alias",
+    "slang",
+    "format_phrase",
+    "need_language",
+    "community_vocabulary",
+    "negative",
+    "adjacent_culture"
+   ],
+   "branches": {
+    "en": {
+     "markets": [
+      "GB",
+      "US"
+     ],
+     "lang": "en",
+     "queries": [
+      {
+       "q": "when your duo sells gaming",
+       "layer": "core"
+      },
+      {
+       "q": "roblox best friend betrayal",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-MX": {
+     "markets": [
+      "MX"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "cuando tu compa te vende roblox",
+       "layer": "core"
+      },
+      {
+       "q": "mi amigo me traicionó en roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-ES": {
+     "markets": [
+      "ES"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "cuando tu colega la lía roblox",
+       "layer": "core"
+      },
+      {
+       "q": "mi dúo me deja tirado",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-LATAM": {
+     "markets": [
+      "AR",
+      "CO",
+      "CL"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "cuando tu amigo te trolea roblox",
+       "layer": "core"
+      },
+      {
+       "q": "mi compañero me dejó solo",
+       "layer": "format_phrase"
+      }
+     ]
+    }
+   },
+   "negative_controls": [
+    {
+     "q": "roblox how to add friends",
+     "lang": "en",
+     "markets": [
+      "US"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    },
+    {
+     "q": "cómo añadir amigos en roblox",
+     "lang": "es",
+     "markets": [
+      "MX"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    }
+   ],
+   "collection": {
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  },
+  {
+   "id": "streamer-reactions",
+   "construct": "Streamer reactions, catchphrases and comedic timing",
+   "etic_core": [
+    "reaction payoff",
+    "exaggeration"
+   ],
+   "layers": [
+    "core",
+    "alias",
+    "slang",
+    "format_phrase",
+    "need_language",
+    "community_vocabulary",
+    "negative",
+    "adjacent_culture"
+   ],
+   "branches": {
+    "en": {
+     "markets": [
+      "GB",
+      "US"
+     ],
+     "lang": "en",
+     "queries": [
+      {
+       "q": "gaming streamer funny rage reaction",
+       "layer": "core"
+      },
+      {
+       "q": "streamer karaoke funny moments",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-MX": {
+     "markets": [
+      "MX"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "streamer se enoja jugando",
+       "layer": "core"
+      },
+      {
+       "q": "clips de streamers mexicanos graciosos",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-ES": {
+     "markets": [
+      "ES"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "streamer se pica jugando",
+       "layer": "core"
+      },
+      {
+       "q": "mejores momentos graciosos streamers",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-LATAM": {
+     "markets": [
+      "AR",
+      "CO",
+      "CL"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "streamer se tiltea jugando",
+       "layer": "core"
+      },
+      {
+       "q": "clips graciosos de streamers latinos",
+       "layer": "format_phrase"
+      }
+     ]
+    }
+   },
+   "negative_controls": [
+    {
+     "q": "streaming microphone tutorial",
+     "lang": "en",
+     "markets": [
+      "US"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    },
+    {
+     "q": "cómo configurar obs para stream",
+     "lang": "es",
+     "markets": [
+      "MX"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    }
+   ],
+   "collection": {
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  },
+  {
+   "id": "anime-story",
+   "construct": "Anime and manga visual beats, dramatic contrast",
+   "etic_core": [
+    "dramatic entrance",
+    "power reveal"
+   ],
+   "layers": [
+    "core",
+    "alias",
+    "slang",
+    "format_phrase",
+    "need_language",
+    "community_vocabulary",
+    "negative",
+    "adjacent_culture"
+   ],
+   "branches": {
+    "en": {
+     "markets": [
+      "GB",
+      "US"
+     ],
+     "lang": "en",
+     "queries": [
+      {
+       "q": "anime power reveal parody",
+       "layer": "core"
+      },
+      {
+       "q": "anime aura farming meme gaming",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-MX": {
+     "markets": [
+      "MX"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "entrada épica anime meme",
+       "layer": "core"
+      },
+      {
+       "q": "cuando se cree protagonista anime",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-ES": {
+     "markets": [
+      "ES"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "momento épico anime parodia",
+       "layer": "core"
+      },
+      {
+       "q": "se cree el protagonista meme",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-LATAM": {
+     "markets": [
+      "AR",
+      "CO",
+      "CL"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "despertar de poder anime meme",
+       "layer": "core"
+      },
+      {
+       "q": "cuando el personaje se pone serio",
+       "layer": "format_phrase"
+      }
+     ]
+    }
+   },
+   "negative_controls": [
+    {
+     "q": "anime episode review",
+     "lang": "en",
+     "markets": [
+      "US"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    },
+    {
+     "q": "reseña de manga",
+     "lang": "es",
+     "markets": [
+      "MX"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    }
+   ],
+   "collection": {
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  },
+  {
+   "id": "slugterra-fandom",
+   "construct": "Slugterra and Bajoterra nostalgia and creature-combat fandom",
+   "etic_core": [
+    "franchise recall",
+    "fandom interest"
+   ],
+   "layers": [
+    "core",
+    "alias",
+    "slang",
+    "format_phrase",
+    "need_language",
+    "community_vocabulary",
+    "negative",
+    "adjacent_culture"
+   ],
+   "branches": {
+    "en": {
+     "markets": [
+      "GB",
+      "US"
+     ],
+     "lang": "en",
+     "queries": [
+      {
+       "q": "slugterra nostalgia",
+       "layer": "core"
+      },
+      {
+       "q": "slugterra slug battles fan discussion",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-MX": {
+     "markets": [
+      "MX"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "bajoterra recuerdos de infancia",
+       "layer": "core"
+      },
+      {
+       "q": "babosas de bajoterra favoritas",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-ES": {
+     "markets": [
+      "ES"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "slugterra nostalgia",
+       "layer": "core"
+      },
+      {
+       "q": "babosas slugterra mejores momentos",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-LATAM": {
+     "markets": [
+      "AR",
+      "CO",
+      "CL"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "bajoterra de mi infancia",
+       "layer": "core"
+      },
+      {
+       "q": "babosas favoritas bajoterra",
+       "layer": "format_phrase"
+      }
+     ]
+    }
+   },
+   "negative_controls": [
+    {
+     "q": "roblox generic nostalgia",
+     "lang": "en",
+     "markets": [
+      "US"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    },
+    {
+     "q": "dibujos animados nostalgia",
+     "lang": "es",
+     "markets": [
+      "MX"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    }
+   ],
+   "collection": {
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  },
+  {
+   "id": "meme-audio",
+   "construct": "Reusable meme and audio timing mechanisms",
+   "etic_core": [
+    "sound cue",
+    "format reuse"
+   ],
+   "layers": [
+    "core",
+    "alias",
+    "slang",
+    "format_phrase",
+    "need_language",
+    "community_vocabulary",
+    "negative",
+    "adjacent_culture"
+   ],
+   "branches": {
+    "en": {
+     "markets": [
+      "GB",
+      "US"
+     ],
+     "lang": "en",
+     "queries": [
+      {
+       "q": "roblox meme sound reaction",
+       "layer": "core"
+      },
+      {
+       "q": "gaming meme sound timing",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-MX": {
+     "markets": [
+      "MX"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "meme roblox audio gracioso",
+       "layer": "core"
+      },
+      {
+       "q": "sonidos virales memes videojuegos",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-ES": {
+     "markets": [
+      "ES"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "memes de roblox con audio",
+       "layer": "core"
+      },
+      {
+       "q": "audio meme de videojuegos",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-LATAM": {
+     "markets": [
+      "AR",
+      "CO",
+      "CL"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "audio de meme roblox",
+       "layer": "core"
+      },
+      {
+       "q": "memes gamer con sonido",
+       "layer": "format_phrase"
+      }
+     ]
+    }
+   },
+   "negative_controls": [
+    {
+     "q": "roblox sound settings",
+     "lang": "en",
+     "markets": [
+      "US"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    },
+    {
+     "q": "cómo cambiar volumen roblox",
+     "lang": "es",
+     "markets": [
+      "MX"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    }
+   ],
+   "collection": {
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  },
+  {
+   "id": "huss-in-this-town",
+   "construct": "Temporary Huss joke and In This Town format discovery; distinct entities",
+   "etic_core": [
+    "Huss joke",
+    "In This Town story"
+   ],
+   "layers": [
+    "core",
+    "alias",
+    "slang",
+    "format_phrase",
+    "need_language",
+    "community_vocabulary",
+    "negative",
+    "adjacent_culture"
+   ],
+   "branches": {
+    "en": {
+     "markets": [
+      "GB",
+      "US"
+     ],
+     "lang": "en",
+     "queries": [
+      {
+       "q": "huss roblox meme",
+       "layer": "core"
+      },
+      {
+       "q": "in this town roblox story",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-MX": {
+     "markets": [
+      "MX"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "huss meme roblox español",
+       "layer": "core"
+      },
+      {
+       "q": "in this town historia roblox",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-ES": {
+     "markets": [
+      "ES"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "huss roblox meme español",
+       "layer": "core"
+      },
+      {
+       "q": "in this town roblox animación",
+       "layer": "format_phrase"
+      }
+     ]
+    },
+    "es-LATAM": {
+     "markets": [
+      "AR",
+      "CO",
+      "CL"
+     ],
+     "lang": "es",
+     "queries": [
+      {
+       "q": "huss meme en roblox",
+       "layer": "core"
+      },
+      {
+       "q": "in this town historia en español",
+       "layer": "format_phrase"
+      }
+     ]
+    }
+   },
+   "negative_controls": [
+    {
+     "q": "roblox town building tutorial",
+     "lang": "en",
+     "markets": [
+      "US"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    },
+    {
+     "q": "tutorial de ciudad roblox",
+     "lang": "es",
+     "markets": [
+      "MX"
+     ],
+     "why": "Adjacent topic without target mechanism; screen content before labeling."
+    }
+   ],
+   "collection": {
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
   }
  ]
 }

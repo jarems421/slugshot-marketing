@@ -1,0 +1,13 @@
+{
+ "_note": "Deterministic sample for BRIEF-20261124-RULE-WORLD-PILOT: newest-first, one clip per channel, short-form only for branch clips. Not a random sample of any population.",
+ "groups": [
+  {"name": "en", "sample_role": "retrieved", "n": 3, "max_duration_s": 180, "collections": ["discover:rule-world:en", "discover:underdog-comedy:en"]},
+  {"name": "es-MX", "sample_role": "retrieved", "n": 3, "max_duration_s": 180, "collections": ["discover:rule-world:es-MX", "discover:underdog-comedy:es-MX"]},
+  {"name": "es-ES", "sample_role": "retrieved", "n": 3, "max_duration_s": 180, "collections": ["discover:rule-world:es-ES", "discover:underdog-comedy:es-ES"]},
+  {"name": "es-LATAM", "sample_role": "retrieved", "n": 3, "max_duration_s": 180, "collections": ["discover:rule-world:es-LATAM", "discover:underdog-comedy:es-LATAM"]},
+  {"name": "ordinary-en", "sample_role": "ordinary", "n": 2, "collections": ["creators"], "watchlist_language": "en"},
+  {"name": "ordinary-es", "sample_role": "ordinary", "n": 2, "collections": ["creators"], "watchlist_language": "es"},
+  {"name": "adjacent-en", "sample_role": "counterexample", "n": 2, "collections": ["discover:rule-world:negative:US", "discover:underdog-comedy:negative:US"]},
+  {"name": "adjacent-es", "sample_role": "counterexample", "n": 2, "collections": ["discover:rule-world:negative:MX", "discover:underdog-comedy:negative:MX"]}
+ ]
+}

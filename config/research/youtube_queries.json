@@ -2,8 +2,3662 @@
  "_note": "Saved YouTube search sets. SMALL TEST SET for infrastructure validation only; ChatGPT replaces these with the real bilingual research queries. lang = relevanceLanguage (a ranking hint, not a language filter); region = regionCode (viewable in that country, not creator location or audience).",
  "sets": {
   "test": [
-   {"id": "en-gb-roblox-pvp", "query": "roblox pvp", "lang": "en", "region": "GB", "days": 7, "order": "date", "duration": "short", "max": 25},
-   {"id": "es-mx-roblox-pvp", "query": "roblox pvp", "lang": "es", "region": "MX", "days": 7, "order": "date", "duration": "short", "max": 25}
+   {
+    "id": "en-gb-roblox-pvp",
+    "query": "roblox pvp",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 25
+   },
+   {
+    "id": "es-mx-roblox-pvp",
+    "query": "roblox pvp",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 25
+   }
+  ],
+  "daily": [
+   {
+    "id": "daily-underdog-comedy-GB",
+    "query": "roblox noob beats pro",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "daily-underdog-comedy-US",
+    "query": "roblox noob beats pro",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "daily-rule-world-GB",
+    "query": "in my world roblox story",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "daily-rule-world-US",
+    "query": "in my world roblox story",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "daily-combat-proof-GB",
+    "query": "roblox pvp clutch",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "daily-combat-proof-US",
+    "query": "roblox pvp clutch",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "daily-creature-companion-GB",
+    "query": "gaming pet companion funny moments",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "daily-creature-companion-US",
+    "query": "gaming pet companion funny moments",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "spanish": [
+   {
+    "id": "spanish-underdog-comedy-MX",
+    "query": "el noob le ganó al pro roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "spanish-underdog-comedy-ES",
+    "query": "noob contra pro roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "spanish-underdog-comedy-AR",
+    "query": "el más débil gana roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "spanish-rule-world-MX",
+    "query": "en mi mundo roblox historia",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "spanish-rule-world-ES",
+    "query": "en este mundo roblox historia",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "spanish-rule-world-AR",
+    "query": "en mi mundo cada uno tiene un poder",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "spanish-combat-proof-MX",
+    "query": "remontada en roblox pvp",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "spanish-combat-proof-ES",
+    "query": "roblox pvp remontada",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "spanish-combat-proof-AR",
+    "query": "duelo roblox final épico",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "spanish-creature-companion-MX",
+    "query": "mi mascota me salvó juego",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "spanish-creature-companion-ES",
+    "query": "mi compañero me salva videojuego",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "spanish-creature-companion-AR",
+    "query": "mi mascota me salvó roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-underdog-comedy": [
+   {
+    "id": "underdog-comedy:en:GB:core",
+    "query": "roblox noob beats pro",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:en:US:core",
+    "query": "roblox noob beats pro",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:en:GB:format_phrase",
+    "query": "bro underestimated me gaming",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:en:US:format_phrase",
+    "query": "bro underestimated me gaming",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-MX:MX:core",
+    "query": "el noob le ganó al pro roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-MX:MX:format_phrase",
+    "query": "se burló de mí y perdió roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-ES:ES:core",
+    "query": "noob contra pro roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-ES:ES:format_phrase",
+    "query": "iba de sobrado y perdió roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-LATAM:AR:core",
+    "query": "el más débil gana roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-LATAM:CO:core",
+    "query": "el más débil gana roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-LATAM:CL:core",
+    "query": "el más débil gana roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-LATAM:AR:format_phrase",
+    "query": "se confió y perdió roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-LATAM:CO:format_phrase",
+    "query": "se confió y perdió roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-LATAM:CL:format_phrase",
+    "query": "se confió y perdió roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-underdog-comedy-en": [
+   {
+    "id": "underdog-comedy:en:GB:core",
+    "query": "roblox noob beats pro",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:en:US:core",
+    "query": "roblox noob beats pro",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:en:GB:format_phrase",
+    "query": "bro underestimated me gaming",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:en:US:format_phrase",
+    "query": "bro underestimated me gaming",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-underdog-comedy-es-MX": [
+   {
+    "id": "underdog-comedy:es-MX:MX:core",
+    "query": "el noob le ganó al pro roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-MX:MX:format_phrase",
+    "query": "se burló de mí y perdió roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-underdog-comedy-es-ES": [
+   {
+    "id": "underdog-comedy:es-ES:ES:core",
+    "query": "noob contra pro roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-ES:ES:format_phrase",
+    "query": "iba de sobrado y perdió roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-underdog-comedy-es-LATAM": [
+   {
+    "id": "underdog-comedy:es-LATAM:AR:core",
+    "query": "el más débil gana roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-LATAM:CO:core",
+    "query": "el más débil gana roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-LATAM:CL:core",
+    "query": "el más débil gana roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-LATAM:AR:format_phrase",
+    "query": "se confió y perdió roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-LATAM:CO:format_phrase",
+    "query": "se confió y perdió roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:es-LATAM:CL:format_phrase",
+    "query": "se confió y perdió roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-underdog-comedy-negative": [
+   {
+    "id": "underdog-comedy:negative:US",
+    "query": "roblox combat tutorial",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "underdog-comedy:negative:MX",
+    "query": "tutorial de combate roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-rule-world": [
+   {
+    "id": "rule-world:en:GB:core",
+    "query": "in my world roblox story",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:en:US:core",
+    "query": "in my world roblox story",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:en:GB:format_phrase",
+    "query": "everyone gets one power roblox story",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:en:US:format_phrase",
+    "query": "everyone gets one power roblox story",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-MX:MX:core",
+    "query": "en mi mundo roblox historia",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-MX:MX:format_phrase",
+    "query": "a todos les toca un poder roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-ES:ES:core",
+    "query": "en este mundo roblox historia",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-ES:ES:format_phrase",
+    "query": "cada uno tiene un poder roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-LATAM:AR:core",
+    "query": "en mi mundo cada uno tiene un poder",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-LATAM:CO:core",
+    "query": "en mi mundo cada uno tiene un poder",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-LATAM:CL:core",
+    "query": "en mi mundo cada uno tiene un poder",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-LATAM:AR:format_phrase",
+    "query": "historias de roblox con reglas",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-LATAM:CO:format_phrase",
+    "query": "historias de roblox con reglas",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-LATAM:CL:format_phrase",
+    "query": "historias de roblox con reglas",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-rule-world-en": [
+   {
+    "id": "rule-world:en:GB:core",
+    "query": "in my world roblox story",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:en:US:core",
+    "query": "in my world roblox story",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:en:GB:format_phrase",
+    "query": "everyone gets one power roblox story",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:en:US:format_phrase",
+    "query": "everyone gets one power roblox story",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-rule-world-es-MX": [
+   {
+    "id": "rule-world:es-MX:MX:core",
+    "query": "en mi mundo roblox historia",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-MX:MX:format_phrase",
+    "query": "a todos les toca un poder roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-rule-world-es-ES": [
+   {
+    "id": "rule-world:es-ES:ES:core",
+    "query": "en este mundo roblox historia",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-ES:ES:format_phrase",
+    "query": "cada uno tiene un poder roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-rule-world-es-LATAM": [
+   {
+    "id": "rule-world:es-LATAM:AR:core",
+    "query": "en mi mundo cada uno tiene un poder",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-LATAM:CO:core",
+    "query": "en mi mundo cada uno tiene un poder",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-LATAM:CL:core",
+    "query": "en mi mundo cada uno tiene un poder",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-LATAM:AR:format_phrase",
+    "query": "historias de roblox con reglas",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-LATAM:CO:format_phrase",
+    "query": "historias de roblox con reglas",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:es-LATAM:CL:format_phrase",
+    "query": "historias de roblox con reglas",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-rule-world-negative": [
+   {
+    "id": "rule-world:negative:US",
+    "query": "roblox world building tutorial",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "rule-world:negative:MX",
+    "query": "cómo crear un mapa en roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-combat-proof": [
+   {
+    "id": "combat-proof:en:GB:core",
+    "query": "roblox pvp clutch",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:en:US:core",
+    "query": "roblox pvp clutch",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:en:GB:format_phrase",
+    "query": "roblox fighting game combo comeback",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:en:US:format_phrase",
+    "query": "roblox fighting game combo comeback",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-MX:MX:core",
+    "query": "remontada en roblox pvp",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-MX:MX:format_phrase",
+    "query": "me quedé a un golpe roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-ES:ES:core",
+    "query": "roblox pvp remontada",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-ES:ES:format_phrase",
+    "query": "le esquivé todo roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-LATAM:AR:core",
+    "query": "duelo roblox final épico",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-LATAM:CO:core",
+    "query": "duelo roblox final épico",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-LATAM:CL:core",
+    "query": "duelo roblox final épico",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-LATAM:AR:format_phrase",
+    "query": "gané con poca vida roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-LATAM:CO:format_phrase",
+    "query": "gané con poca vida roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-LATAM:CL:format_phrase",
+    "query": "gané con poca vida roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-combat-proof-en": [
+   {
+    "id": "combat-proof:en:GB:core",
+    "query": "roblox pvp clutch",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:en:US:core",
+    "query": "roblox pvp clutch",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:en:GB:format_phrase",
+    "query": "roblox fighting game combo comeback",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:en:US:format_phrase",
+    "query": "roblox fighting game combo comeback",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-combat-proof-es-MX": [
+   {
+    "id": "combat-proof:es-MX:MX:core",
+    "query": "remontada en roblox pvp",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-MX:MX:format_phrase",
+    "query": "me quedé a un golpe roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-combat-proof-es-ES": [
+   {
+    "id": "combat-proof:es-ES:ES:core",
+    "query": "roblox pvp remontada",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-ES:ES:format_phrase",
+    "query": "le esquivé todo roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-combat-proof-es-LATAM": [
+   {
+    "id": "combat-proof:es-LATAM:AR:core",
+    "query": "duelo roblox final épico",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-LATAM:CO:core",
+    "query": "duelo roblox final épico",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-LATAM:CL:core",
+    "query": "duelo roblox final épico",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-LATAM:AR:format_phrase",
+    "query": "gané con poca vida roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-LATAM:CO:format_phrase",
+    "query": "gané con poca vida roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:es-LATAM:CL:format_phrase",
+    "query": "gané con poca vida roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-combat-proof-negative": [
+   {
+    "id": "combat-proof:negative:US",
+    "query": "roblox pvp settings guide",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "combat-proof:negative:MX",
+    "query": "configuración pvp roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-creature-companion": [
+   {
+    "id": "creature-companion:en:GB:core",
+    "query": "gaming pet companion funny moments",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:en:US:core",
+    "query": "gaming pet companion funny moments",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:en:GB:format_phrase",
+    "query": "roblox creature battles",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:en:US:format_phrase",
+    "query": "roblox creature battles",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-MX:MX:core",
+    "query": "mi mascota me salvó juego",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-MX:MX:format_phrase",
+    "query": "batalla de criaturas roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-ES:ES:core",
+    "query": "mi compañero me salva videojuego",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-ES:ES:format_phrase",
+    "query": "juegos de criaturas roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-LATAM:AR:core",
+    "query": "mi mascota me salvó roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-LATAM:CO:core",
+    "query": "mi mascota me salvó roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-LATAM:CL:core",
+    "query": "mi mascota me salvó roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-LATAM:AR:format_phrase",
+    "query": "peleas de monstruos juego",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-LATAM:CO:format_phrase",
+    "query": "peleas de monstruos juego",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-LATAM:CL:format_phrase",
+    "query": "peleas de monstruos juego",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-creature-companion-en": [
+   {
+    "id": "creature-companion:en:GB:core",
+    "query": "gaming pet companion funny moments",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:en:US:core",
+    "query": "gaming pet companion funny moments",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:en:GB:format_phrase",
+    "query": "roblox creature battles",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:en:US:format_phrase",
+    "query": "roblox creature battles",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-creature-companion-es-MX": [
+   {
+    "id": "creature-companion:es-MX:MX:core",
+    "query": "mi mascota me salvó juego",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-MX:MX:format_phrase",
+    "query": "batalla de criaturas roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-creature-companion-es-ES": [
+   {
+    "id": "creature-companion:es-ES:ES:core",
+    "query": "mi compañero me salva videojuego",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-ES:ES:format_phrase",
+    "query": "juegos de criaturas roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-creature-companion-es-LATAM": [
+   {
+    "id": "creature-companion:es-LATAM:AR:core",
+    "query": "mi mascota me salvó roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-LATAM:CO:core",
+    "query": "mi mascota me salvó roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-LATAM:CL:core",
+    "query": "mi mascota me salvó roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-LATAM:AR:format_phrase",
+    "query": "peleas de monstruos juego",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-LATAM:CO:format_phrase",
+    "query": "peleas de monstruos juego",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:es-LATAM:CL:format_phrase",
+    "query": "peleas de monstruos juego",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-creature-companion-negative": [
+   {
+    "id": "creature-companion:negative:US",
+    "query": "roblox pet trading values",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "creature-companion:negative:MX",
+    "query": "valores de mascotas roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-choice-stakes": [
+   {
+    "id": "choice-stakes:en:GB:core",
+    "query": "which power would you choose gaming",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:en:US:core",
+    "query": "which power would you choose gaming",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:en:GB:format_phrase",
+    "query": "choose your starter roblox",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:en:US:format_phrase",
+    "query": "choose your starter roblox",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-MX:MX:core",
+    "query": "qué poder elegirías roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-MX:MX:format_phrase",
+    "query": "elige tu compañero videojuego",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-ES:ES:core",
+    "query": "con qué poder te quedarías roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-ES:ES:format_phrase",
+    "query": "qué personaje escogerías",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-LATAM:AR:core",
+    "query": "qué criatura escogerías juego",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-LATAM:CO:core",
+    "query": "qué criatura escogerías juego",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-LATAM:CL:core",
+    "query": "qué criatura escogerías juego",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-LATAM:AR:format_phrase",
+    "query": "elige un poder roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-LATAM:CO:format_phrase",
+    "query": "elige un poder roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-LATAM:CL:format_phrase",
+    "query": "elige un poder roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-choice-stakes-en": [
+   {
+    "id": "choice-stakes:en:GB:core",
+    "query": "which power would you choose gaming",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:en:US:core",
+    "query": "which power would you choose gaming",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:en:GB:format_phrase",
+    "query": "choose your starter roblox",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:en:US:format_phrase",
+    "query": "choose your starter roblox",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-choice-stakes-es-MX": [
+   {
+    "id": "choice-stakes:es-MX:MX:core",
+    "query": "qué poder elegirías roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-MX:MX:format_phrase",
+    "query": "elige tu compañero videojuego",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-choice-stakes-es-ES": [
+   {
+    "id": "choice-stakes:es-ES:ES:core",
+    "query": "con qué poder te quedarías roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-ES:ES:format_phrase",
+    "query": "qué personaje escogerías",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-choice-stakes-es-LATAM": [
+   {
+    "id": "choice-stakes:es-LATAM:AR:core",
+    "query": "qué criatura escogerías juego",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-LATAM:CO:core",
+    "query": "qué criatura escogerías juego",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-LATAM:CL:core",
+    "query": "qué criatura escogerías juego",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-LATAM:AR:format_phrase",
+    "query": "elige un poder roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-LATAM:CO:format_phrase",
+    "query": "elige un poder roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:es-LATAM:CL:format_phrase",
+    "query": "elige un poder roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-choice-stakes-negative": [
+   {
+    "id": "choice-stakes:negative:US",
+    "query": "roblox tier list guide",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "choice-stakes:negative:MX",
+    "query": "lista de mejores armas roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-friend-rival": [
+   {
+    "id": "friend-rival:en:GB:core",
+    "query": "when your duo sells gaming",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:en:US:core",
+    "query": "when your duo sells gaming",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:en:GB:format_phrase",
+    "query": "roblox best friend betrayal",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:en:US:format_phrase",
+    "query": "roblox best friend betrayal",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-MX:MX:core",
+    "query": "cuando tu compa te vende roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-MX:MX:format_phrase",
+    "query": "mi amigo me traicionó en roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-ES:ES:core",
+    "query": "cuando tu colega la lía roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-ES:ES:format_phrase",
+    "query": "mi dúo me deja tirado",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-LATAM:AR:core",
+    "query": "cuando tu amigo te trolea roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-LATAM:CO:core",
+    "query": "cuando tu amigo te trolea roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-LATAM:CL:core",
+    "query": "cuando tu amigo te trolea roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-LATAM:AR:format_phrase",
+    "query": "mi compañero me dejó solo",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-LATAM:CO:format_phrase",
+    "query": "mi compañero me dejó solo",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-LATAM:CL:format_phrase",
+    "query": "mi compañero me dejó solo",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-friend-rival-en": [
+   {
+    "id": "friend-rival:en:GB:core",
+    "query": "when your duo sells gaming",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:en:US:core",
+    "query": "when your duo sells gaming",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:en:GB:format_phrase",
+    "query": "roblox best friend betrayal",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:en:US:format_phrase",
+    "query": "roblox best friend betrayal",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-friend-rival-es-MX": [
+   {
+    "id": "friend-rival:es-MX:MX:core",
+    "query": "cuando tu compa te vende roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-MX:MX:format_phrase",
+    "query": "mi amigo me traicionó en roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-friend-rival-es-ES": [
+   {
+    "id": "friend-rival:es-ES:ES:core",
+    "query": "cuando tu colega la lía roblox",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-ES:ES:format_phrase",
+    "query": "mi dúo me deja tirado",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-friend-rival-es-LATAM": [
+   {
+    "id": "friend-rival:es-LATAM:AR:core",
+    "query": "cuando tu amigo te trolea roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-LATAM:CO:core",
+    "query": "cuando tu amigo te trolea roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-LATAM:CL:core",
+    "query": "cuando tu amigo te trolea roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-LATAM:AR:format_phrase",
+    "query": "mi compañero me dejó solo",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-LATAM:CO:format_phrase",
+    "query": "mi compañero me dejó solo",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:es-LATAM:CL:format_phrase",
+    "query": "mi compañero me dejó solo",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-friend-rival-negative": [
+   {
+    "id": "friend-rival:negative:US",
+    "query": "roblox how to add friends",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "friend-rival:negative:MX",
+    "query": "cómo añadir amigos en roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-streamer-reactions": [
+   {
+    "id": "streamer-reactions:en:GB:core",
+    "query": "gaming streamer funny rage reaction",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:en:US:core",
+    "query": "gaming streamer funny rage reaction",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:en:GB:format_phrase",
+    "query": "streamer karaoke funny moments",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:en:US:format_phrase",
+    "query": "streamer karaoke funny moments",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-MX:MX:core",
+    "query": "streamer se enoja jugando",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-MX:MX:format_phrase",
+    "query": "clips de streamers mexicanos graciosos",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-ES:ES:core",
+    "query": "streamer se pica jugando",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-ES:ES:format_phrase",
+    "query": "mejores momentos graciosos streamers",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-LATAM:AR:core",
+    "query": "streamer se tiltea jugando",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-LATAM:CO:core",
+    "query": "streamer se tiltea jugando",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-LATAM:CL:core",
+    "query": "streamer se tiltea jugando",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-LATAM:AR:format_phrase",
+    "query": "clips graciosos de streamers latinos",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-LATAM:CO:format_phrase",
+    "query": "clips graciosos de streamers latinos",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-LATAM:CL:format_phrase",
+    "query": "clips graciosos de streamers latinos",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-streamer-reactions-en": [
+   {
+    "id": "streamer-reactions:en:GB:core",
+    "query": "gaming streamer funny rage reaction",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:en:US:core",
+    "query": "gaming streamer funny rage reaction",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:en:GB:format_phrase",
+    "query": "streamer karaoke funny moments",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:en:US:format_phrase",
+    "query": "streamer karaoke funny moments",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-streamer-reactions-es-MX": [
+   {
+    "id": "streamer-reactions:es-MX:MX:core",
+    "query": "streamer se enoja jugando",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-MX:MX:format_phrase",
+    "query": "clips de streamers mexicanos graciosos",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-streamer-reactions-es-ES": [
+   {
+    "id": "streamer-reactions:es-ES:ES:core",
+    "query": "streamer se pica jugando",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-ES:ES:format_phrase",
+    "query": "mejores momentos graciosos streamers",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-streamer-reactions-es-LATAM": [
+   {
+    "id": "streamer-reactions:es-LATAM:AR:core",
+    "query": "streamer se tiltea jugando",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-LATAM:CO:core",
+    "query": "streamer se tiltea jugando",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-LATAM:CL:core",
+    "query": "streamer se tiltea jugando",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-LATAM:AR:format_phrase",
+    "query": "clips graciosos de streamers latinos",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-LATAM:CO:format_phrase",
+    "query": "clips graciosos de streamers latinos",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:es-LATAM:CL:format_phrase",
+    "query": "clips graciosos de streamers latinos",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-streamer-reactions-negative": [
+   {
+    "id": "streamer-reactions:negative:US",
+    "query": "streaming microphone tutorial",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "streamer-reactions:negative:MX",
+    "query": "cómo configurar obs para stream",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-anime-story": [
+   {
+    "id": "anime-story:en:GB:core",
+    "query": "anime power reveal parody",
+    "lang": "en",
+    "region": "GB",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:en:US:core",
+    "query": "anime power reveal parody",
+    "lang": "en",
+    "region": "US",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:en:GB:format_phrase",
+    "query": "anime aura farming meme gaming",
+    "lang": "en",
+    "region": "GB",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:en:US:format_phrase",
+    "query": "anime aura farming meme gaming",
+    "lang": "en",
+    "region": "US",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-MX:MX:core",
+    "query": "entrada épica anime meme",
+    "lang": "es",
+    "region": "MX",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-MX:MX:format_phrase",
+    "query": "cuando se cree protagonista anime",
+    "lang": "es",
+    "region": "MX",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-ES:ES:core",
+    "query": "momento épico anime parodia",
+    "lang": "es",
+    "region": "ES",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-ES:ES:format_phrase",
+    "query": "se cree el protagonista meme",
+    "lang": "es",
+    "region": "ES",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-LATAM:AR:core",
+    "query": "despertar de poder anime meme",
+    "lang": "es",
+    "region": "AR",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-LATAM:CO:core",
+    "query": "despertar de poder anime meme",
+    "lang": "es",
+    "region": "CO",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-LATAM:CL:core",
+    "query": "despertar de poder anime meme",
+    "lang": "es",
+    "region": "CL",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-LATAM:AR:format_phrase",
+    "query": "cuando el personaje se pone serio",
+    "lang": "es",
+    "region": "AR",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-LATAM:CO:format_phrase",
+    "query": "cuando el personaje se pone serio",
+    "lang": "es",
+    "region": "CO",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-LATAM:CL:format_phrase",
+    "query": "cuando el personaje se pone serio",
+    "lang": "es",
+    "region": "CL",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-anime-story-en": [
+   {
+    "id": "anime-story:en:GB:core",
+    "query": "anime power reveal parody",
+    "lang": "en",
+    "region": "GB",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:en:US:core",
+    "query": "anime power reveal parody",
+    "lang": "en",
+    "region": "US",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:en:GB:format_phrase",
+    "query": "anime aura farming meme gaming",
+    "lang": "en",
+    "region": "GB",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:en:US:format_phrase",
+    "query": "anime aura farming meme gaming",
+    "lang": "en",
+    "region": "US",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-anime-story-es-MX": [
+   {
+    "id": "anime-story:es-MX:MX:core",
+    "query": "entrada épica anime meme",
+    "lang": "es",
+    "region": "MX",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-MX:MX:format_phrase",
+    "query": "cuando se cree protagonista anime",
+    "lang": "es",
+    "region": "MX",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-anime-story-es-ES": [
+   {
+    "id": "anime-story:es-ES:ES:core",
+    "query": "momento épico anime parodia",
+    "lang": "es",
+    "region": "ES",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-ES:ES:format_phrase",
+    "query": "se cree el protagonista meme",
+    "lang": "es",
+    "region": "ES",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-anime-story-es-LATAM": [
+   {
+    "id": "anime-story:es-LATAM:AR:core",
+    "query": "despertar de poder anime meme",
+    "lang": "es",
+    "region": "AR",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-LATAM:CO:core",
+    "query": "despertar de poder anime meme",
+    "lang": "es",
+    "region": "CO",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-LATAM:CL:core",
+    "query": "despertar de poder anime meme",
+    "lang": "es",
+    "region": "CL",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-LATAM:AR:format_phrase",
+    "query": "cuando el personaje se pone serio",
+    "lang": "es",
+    "region": "AR",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-LATAM:CO:format_phrase",
+    "query": "cuando el personaje se pone serio",
+    "lang": "es",
+    "region": "CO",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:es-LATAM:CL:format_phrase",
+    "query": "cuando el personaje se pone serio",
+    "lang": "es",
+    "region": "CL",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-anime-story-negative": [
+   {
+    "id": "anime-story:negative:US",
+    "query": "anime episode review",
+    "lang": "en",
+    "region": "US",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "anime-story:negative:MX",
+    "query": "reseña de manga",
+    "lang": "es",
+    "region": "MX",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-slugterra-fandom": [
+   {
+    "id": "slugterra-fandom:en:GB:core",
+    "query": "slugterra nostalgia",
+    "lang": "en",
+    "region": "GB",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:en:US:core",
+    "query": "slugterra nostalgia",
+    "lang": "en",
+    "region": "US",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:en:GB:format_phrase",
+    "query": "slugterra slug battles fan discussion",
+    "lang": "en",
+    "region": "GB",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:en:US:format_phrase",
+    "query": "slugterra slug battles fan discussion",
+    "lang": "en",
+    "region": "US",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-MX:MX:core",
+    "query": "bajoterra recuerdos de infancia",
+    "lang": "es",
+    "region": "MX",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-MX:MX:format_phrase",
+    "query": "babosas de bajoterra favoritas",
+    "lang": "es",
+    "region": "MX",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-ES:ES:core",
+    "query": "slugterra nostalgia",
+    "lang": "es",
+    "region": "ES",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-ES:ES:format_phrase",
+    "query": "babosas slugterra mejores momentos",
+    "lang": "es",
+    "region": "ES",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-LATAM:AR:core",
+    "query": "bajoterra de mi infancia",
+    "lang": "es",
+    "region": "AR",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-LATAM:CO:core",
+    "query": "bajoterra de mi infancia",
+    "lang": "es",
+    "region": "CO",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-LATAM:CL:core",
+    "query": "bajoterra de mi infancia",
+    "lang": "es",
+    "region": "CL",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-LATAM:AR:format_phrase",
+    "query": "babosas favoritas bajoterra",
+    "lang": "es",
+    "region": "AR",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-LATAM:CO:format_phrase",
+    "query": "babosas favoritas bajoterra",
+    "lang": "es",
+    "region": "CO",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-LATAM:CL:format_phrase",
+    "query": "babosas favoritas bajoterra",
+    "lang": "es",
+    "region": "CL",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-slugterra-fandom-en": [
+   {
+    "id": "slugterra-fandom:en:GB:core",
+    "query": "slugterra nostalgia",
+    "lang": "en",
+    "region": "GB",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:en:US:core",
+    "query": "slugterra nostalgia",
+    "lang": "en",
+    "region": "US",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:en:GB:format_phrase",
+    "query": "slugterra slug battles fan discussion",
+    "lang": "en",
+    "region": "GB",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:en:US:format_phrase",
+    "query": "slugterra slug battles fan discussion",
+    "lang": "en",
+    "region": "US",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-slugterra-fandom-es-MX": [
+   {
+    "id": "slugterra-fandom:es-MX:MX:core",
+    "query": "bajoterra recuerdos de infancia",
+    "lang": "es",
+    "region": "MX",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-MX:MX:format_phrase",
+    "query": "babosas de bajoterra favoritas",
+    "lang": "es",
+    "region": "MX",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-slugterra-fandom-es-ES": [
+   {
+    "id": "slugterra-fandom:es-ES:ES:core",
+    "query": "slugterra nostalgia",
+    "lang": "es",
+    "region": "ES",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-ES:ES:format_phrase",
+    "query": "babosas slugterra mejores momentos",
+    "lang": "es",
+    "region": "ES",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-slugterra-fandom-es-LATAM": [
+   {
+    "id": "slugterra-fandom:es-LATAM:AR:core",
+    "query": "bajoterra de mi infancia",
+    "lang": "es",
+    "region": "AR",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-LATAM:CO:core",
+    "query": "bajoterra de mi infancia",
+    "lang": "es",
+    "region": "CO",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-LATAM:CL:core",
+    "query": "bajoterra de mi infancia",
+    "lang": "es",
+    "region": "CL",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-LATAM:AR:format_phrase",
+    "query": "babosas favoritas bajoterra",
+    "lang": "es",
+    "region": "AR",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-LATAM:CO:format_phrase",
+    "query": "babosas favoritas bajoterra",
+    "lang": "es",
+    "region": "CO",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:es-LATAM:CL:format_phrase",
+    "query": "babosas favoritas bajoterra",
+    "lang": "es",
+    "region": "CL",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-slugterra-fandom-negative": [
+   {
+    "id": "slugterra-fandom:negative:US",
+    "query": "roblox generic nostalgia",
+    "lang": "en",
+    "region": "US",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   },
+   {
+    "id": "slugterra-fandom:negative:MX",
+    "query": "dibujos animados nostalgia",
+    "lang": "es",
+    "region": "MX",
+    "days": 30,
+    "order": "date",
+    "duration": "any",
+    "max": 15
+   }
+  ],
+  "fam-meme-audio": [
+   {
+    "id": "meme-audio:en:GB:core",
+    "query": "roblox meme sound reaction",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:en:US:core",
+    "query": "roblox meme sound reaction",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:en:GB:format_phrase",
+    "query": "gaming meme sound timing",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:en:US:format_phrase",
+    "query": "gaming meme sound timing",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-MX:MX:core",
+    "query": "meme roblox audio gracioso",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-MX:MX:format_phrase",
+    "query": "sonidos virales memes videojuegos",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-ES:ES:core",
+    "query": "memes de roblox con audio",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-ES:ES:format_phrase",
+    "query": "audio meme de videojuegos",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-LATAM:AR:core",
+    "query": "audio de meme roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-LATAM:CO:core",
+    "query": "audio de meme roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-LATAM:CL:core",
+    "query": "audio de meme roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-LATAM:AR:format_phrase",
+    "query": "memes gamer con sonido",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-LATAM:CO:format_phrase",
+    "query": "memes gamer con sonido",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-LATAM:CL:format_phrase",
+    "query": "memes gamer con sonido",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-meme-audio-en": [
+   {
+    "id": "meme-audio:en:GB:core",
+    "query": "roblox meme sound reaction",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:en:US:core",
+    "query": "roblox meme sound reaction",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:en:GB:format_phrase",
+    "query": "gaming meme sound timing",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:en:US:format_phrase",
+    "query": "gaming meme sound timing",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-meme-audio-es-MX": [
+   {
+    "id": "meme-audio:es-MX:MX:core",
+    "query": "meme roblox audio gracioso",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-MX:MX:format_phrase",
+    "query": "sonidos virales memes videojuegos",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-meme-audio-es-ES": [
+   {
+    "id": "meme-audio:es-ES:ES:core",
+    "query": "memes de roblox con audio",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-ES:ES:format_phrase",
+    "query": "audio meme de videojuegos",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-meme-audio-es-LATAM": [
+   {
+    "id": "meme-audio:es-LATAM:AR:core",
+    "query": "audio de meme roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-LATAM:CO:core",
+    "query": "audio de meme roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-LATAM:CL:core",
+    "query": "audio de meme roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-LATAM:AR:format_phrase",
+    "query": "memes gamer con sonido",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-LATAM:CO:format_phrase",
+    "query": "memes gamer con sonido",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:es-LATAM:CL:format_phrase",
+    "query": "memes gamer con sonido",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-meme-audio-negative": [
+   {
+    "id": "meme-audio:negative:US",
+    "query": "roblox sound settings",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "meme-audio:negative:MX",
+    "query": "cómo cambiar volumen roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-huss-in-this-town": [
+   {
+    "id": "huss-in-this-town:en:GB:core",
+    "query": "huss roblox meme",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:en:US:core",
+    "query": "huss roblox meme",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:en:GB:format_phrase",
+    "query": "in this town roblox story",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:en:US:format_phrase",
+    "query": "in this town roblox story",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-MX:MX:core",
+    "query": "huss meme roblox español",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-MX:MX:format_phrase",
+    "query": "in this town historia roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-ES:ES:core",
+    "query": "huss roblox meme español",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-ES:ES:format_phrase",
+    "query": "in this town roblox animación",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-LATAM:AR:core",
+    "query": "huss meme en roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-LATAM:CO:core",
+    "query": "huss meme en roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-LATAM:CL:core",
+    "query": "huss meme en roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-LATAM:AR:format_phrase",
+    "query": "in this town historia en español",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-LATAM:CO:format_phrase",
+    "query": "in this town historia en español",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-LATAM:CL:format_phrase",
+    "query": "in this town historia en español",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-huss-in-this-town-en": [
+   {
+    "id": "huss-in-this-town:en:GB:core",
+    "query": "huss roblox meme",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:en:US:core",
+    "query": "huss roblox meme",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:en:GB:format_phrase",
+    "query": "in this town roblox story",
+    "lang": "en",
+    "region": "GB",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:en:US:format_phrase",
+    "query": "in this town roblox story",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-huss-in-this-town-es-MX": [
+   {
+    "id": "huss-in-this-town:es-MX:MX:core",
+    "query": "huss meme roblox español",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-MX:MX:format_phrase",
+    "query": "in this town historia roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-huss-in-this-town-es-ES": [
+   {
+    "id": "huss-in-this-town:es-ES:ES:core",
+    "query": "huss roblox meme español",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-ES:ES:format_phrase",
+    "query": "in this town roblox animación",
+    "lang": "es",
+    "region": "ES",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-huss-in-this-town-es-LATAM": [
+   {
+    "id": "huss-in-this-town:es-LATAM:AR:core",
+    "query": "huss meme en roblox",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-LATAM:CO:core",
+    "query": "huss meme en roblox",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-LATAM:CL:core",
+    "query": "huss meme en roblox",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-LATAM:AR:format_phrase",
+    "query": "in this town historia en español",
+    "lang": "es",
+    "region": "AR",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-LATAM:CO:format_phrase",
+    "query": "in this town historia en español",
+    "lang": "es",
+    "region": "CO",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:es-LATAM:CL:format_phrase",
+    "query": "in this town historia en español",
+    "lang": "es",
+    "region": "CL",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
+  ],
+  "fam-huss-in-this-town-negative": [
+   {
+    "id": "huss-in-this-town:negative:US",
+    "query": "roblox town building tutorial",
+    "lang": "en",
+    "region": "US",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   },
+   {
+    "id": "huss-in-this-town:negative:MX",
+    "query": "tutorial de ciudad roblox",
+    "lang": "es",
+    "region": "MX",
+    "days": 7,
+    "order": "date",
+    "duration": "short",
+    "max": 15
+   }
   ]
  }
 }

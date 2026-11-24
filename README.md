@@ -156,6 +156,7 @@ Not in git: `.env`, `media/`, `exports/`, `data/local/`, `models/`, `out/`, `ven
 | Flow and Gemini hand-offs | [docs/flow-and-gemini.md](docs/flow-and-gemini.md) |
 | Game facts for marketing claims | [docs/game-truth.md](docs/game-truth.md) |
 | ChatGPT handoff (Stage 4.5.3) | [docs/chatgpt-handoff-4.5.3.md](docs/chatgpt-handoff-4.5.3.md) |
+| Stage 4.5.4 configuration and first pilot | [docs/stage-4.5.4-report.md](docs/stage-4.5.4-report.md) |
 | Agent brief and working rules | [CLAUDE.md](CLAUDE.md) |
 | Strategy (Marketing Bank snapshot) | [docs/Slugshot-Marketing-Bank.md](docs/Slugshot-Marketing-Bank.md) |
 

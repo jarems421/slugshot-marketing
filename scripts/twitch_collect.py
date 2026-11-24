@@ -293,6 +293,7 @@ def cmd_report(a, t):
 
 
 def main():
+    sys.stdout.reconfigure(errors="replace")  # titles contain emoji the Windows console can't encode
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--data-dir", help=argparse.SUPPRESS)

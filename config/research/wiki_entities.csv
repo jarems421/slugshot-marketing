@@ -1,5 +1,24 @@
 entity_id,project,title,kind,notes
 slugterra,en.wikipedia,Slugterra,fandom,test entry
-slugterra,es.wikipedia,Bajoterra,fandom,"redirect title; resolves to the canonical es article"
+slugterra,es.wikipedia,Bajoterra,fandom,redirect title; resolves to the canonical es article
 roblox,en.wikipedia,Roblox,game,test entry
 roblox,es.wikipedia,Roblox,game,test entry
+slugterra,es.wikipedia,Slugterra,fandom,Resolve canonical title/redirect before collecting; edition not geography
+pokemon,en.wikipedia,Pokémon,creature-fandom,Resolve canonical title/redirect before collecting; edition not geography
+pokemon,es.wikipedia,Pokémon,creature-fandom,Resolve canonical title/redirect before collecting; edition not geography
+digimon,en.wikipedia,Digimon,creature-fandom,Resolve canonical title/redirect before collecting; edition not geography
+digimon,es.wikipedia,Digimon,creature-fandom,Resolve canonical title/redirect before collecting; edition not geography
+bakugan,en.wikipedia,Bakugan Battle Brawlers,creature-fandom,Resolve canonical title/redirect before collecting; edition not geography
+bakugan,es.wikipedia,Bakugan Battle Brawlers,creature-fandom,Resolve canonical title/redirect before collecting; edition not geography
+beyblade,en.wikipedia,Beyblade,combat-fandom,Resolve canonical title/redirect before collecting; edition not geography
+beyblade,es.wikipedia,Beyblade,combat-fandom,Resolve canonical title/redirect before collecting; edition not geography
+palworld,en.wikipedia,Palworld,creature-game,Resolve canonical title/redirect before collecting; edition not geography
+palworld,es.wikipedia,Palworld,creature-game,Resolve canonical title/redirect before collecting; edition not geography
+minecraft,en.wikipedia,Minecraft,game-comparator,Resolve canonical title/redirect before collecting; edition not geography
+minecraft,es.wikipedia,Minecraft,game-comparator,Resolve canonical title/redirect before collecting; edition not geography
+fortnite,en.wikipedia,Fortnite,game-comparator,Resolve canonical title/redirect before collecting; edition not geography
+fortnite,es.wikipedia,Fortnite,game-comparator,Resolve canonical title/redirect before collecting; edition not geography
+anime,en.wikipedia,Anime,broad-context,Resolve canonical title/redirect before collecting; edition not geography
+anime,es.wikipedia,Anime,broad-context,Resolve canonical title/redirect before collecting; edition not geography
+manga,en.wikipedia,Manga,broad-context,Resolve canonical title/redirect before collecting; edition not geography
+manga,es.wikipedia,Manga,broad-context,Resolve canonical title/redirect before collecting; edition not geography

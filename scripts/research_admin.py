@@ -14,6 +14,7 @@ import json
 import re
 import subprocess
 import sys
+from collections import Counter
 
 import research_common as rc
 
@@ -201,8 +202,12 @@ def cmd_bundle(a, steps=None):
         # Evidence ledgers (+ cards) and analysis outputs travel with the data they cite.
         for p in sorted((rc.DATA / "evidence").glob("*.json")) + sorted((rc.DATA / "evidence").glob("*.md")):
             z.write(p, f"evidence/{p.name}")
-        for p in sorted((rc.DATA / "analysis").glob("trend_*.json")):
-            z.write(p, f"analysis/{p.name}")
+        for pattern in ("trend_*.json", "sample_*.csv", "blind_packet_*.jsonl", "annotations_*.jsonl", "association_*.json",
+                        "branch_overlap_*.txt", "yields_*.txt", "gemini_packet_*.md", "changepoints_*.json"):
+            for p in sorted((rc.DATA / "analysis").glob(pattern)):
+                z.write(p, f"analysis/{p.name}")
+        for p in sorted((rc.ROOT / "research" / "pilots").glob("*.json")):
+            z.write(p, f"pilots/{p.name}")
     # Intake QC of the finished bundle, added to it so ChatGPT reads it first.
     r = subprocess.run([PY, str(rc.ROOT / "scripts" / "research_analysis.py"), "intake", str(zpath)], capture_output=True, text=True,
                        encoding="utf-8", errors="replace")
@@ -213,6 +218,186 @@ def cmd_bundle(a, steps=None):
             z.write(intake.with_suffix(".json"), "INTAKE.json")
     print((r.stdout or r.stderr).strip().splitlines()[0] if (r.stdout or r.stderr) else "intake: no output")
     print(f"\nBundle -> {zpath} ({len(newest)} datasets, {zpath.stat().st_size // 1024} KB)\nSummary -> {summary}")
+
+
+def size_band(subs):
+    """Coarse provisional band used only to check the configured band; the number itself is never stored."""
+    if subs is None:
+        return "unknown"
+    return "small" if subs < 100_000 else "medium" if subs < 1_000_000 else "large"
+
+
+def cmd_verify(a):
+    """Verify watchlist identities with official APIs; fill blank fields only from declared metadata; report conflicts."""
+    import csv as _csv
+    from collections import Counter
+    from datetime import timedelta
+    sys.path.insert(0, str(rc.ROOT / "scripts"))
+    import twitch_collect as tc
+    import yt_collect as yc
+    stamp = f"{rc.now():%Y%m%d}"
+    lines = [f"# Watchlist verification {rc.iso(rc.now())}", "",
+             "Local only (contains YouTube API facts, delete within 30 days). Subscriber figures were used only to check "
+             "the configured size band; they are not stored in config.", ""]
+    # ---- YouTube creators
+    path = rc.CONFIG / "youtube_creators.csv"
+    with path.open(newline="", encoding="utf-8-sig") as f:
+        r = _csv.DictReader(f)
+        rows, fields = list(r), r.fieldnames
+    ids = [x["channel_id"].strip() for x in rows if x.get("channel_id", "").strip()]
+    store = yc.Store(False)
+    run = rc.Run("youtube", "verify-watchlists", {"channels": len(ids)}, False)
+    api = yc.Api(store, run, False)
+    info = {}
+    for i in range(0, len(ids), 50):
+        for c in api.get("channels", {"part": "snippet,contentDetails,statistics", "id": ",".join(ids[i:i + 50])}).get("items", []):
+            info[c["id"]] = c
+    lines += ["## YouTube creators", "", "| channel | label | status | declared country | recent uploads' declared audio language | "
+              "configured language | size band configured / observed | notes |", "|---|---|---|---|---|---|---|---|"]
+    after = rc.now() - timedelta(days=a.days)
+    for x in rows:
+        cid = x["channel_id"].strip()
+        c = info.get(cid)
+        if not c:
+            lines.append(f"| {cid} | {x.get('label')} | NOT FOUND | | | {x.get('language_stream')} | | check the ID |")
+            x["notes"] = (x.get("notes", "") + " | VERIFY: channel not found 2026-11-24").strip(" |")
+            continue
+        sn, st = c["snippet"], c.get("statistics", {})
+        uploads = c["contentDetails"]["relatedPlaylists"]["uploads"]
+        vids = yc.playlist_ids(api, uploads, after, 10, None) or []
+        langs = Counter()
+        if vids:
+            for v in api.get("videos", {"part": "snippet", "id": ",".join(vids)}).get("items", []):
+                langs[(v["snippet"].get("defaultAudioLanguage") or "undeclared").split("-")[0]] += 1
+        status = "active" if vids else f"no uploads in {a.days} days"
+        observed = size_band(None if st.get("hiddenSubscriberCount") else int(st.get("subscriberCount", 0) or 0))
+        notes = []
+        declared = [l for l in langs if l != "undeclared"]
+        top = langs.most_common(1)[0][0] if declared else ""
+        conf = x.get("language_stream", "")
+        if declared and conf in ("", "unknown"):
+            if len(set(declared)) == 1:
+                x["language_stream"] = top
+                notes.append(f"language_stream set from declared audio language ({top})")
+        elif declared and conf and conf != "unknown" and top != conf and top != "undeclared":
+            notes.append(f"CONFLICT: configured {conf}, recent uploads declare {dict(langs)}")
+        if not x.get("market") and sn.get("country"):
+            x["market"] = sn["country"]
+            notes.append(f"market set from declared channel country {sn['country']} (creator context, not audience)")
+        if x.get("size_band") and x["size_band"] not in ("unknown", observed):
+            notes.append(f"size band configured {x['size_band']}, observed {observed}")
+        if x.get("size_band") in ("", "unknown"):
+            x["size_band"] = observed
+            notes.append("size_band filled (coarse band only)")
+        if x.get("label") != sn.get("title"):
+            notes.append(f"API title: {sn.get('title')}")
+        lines.append(f"| {cid} | {x.get('label')} | {status} | {sn.get('country', '')} | {dict(langs) or 'none'} | "
+                     f"{x.get('language_stream')} | {x.get('size_band')} / {observed} | {'; '.join(notes)} |")
+    with path.open("w", newline="", encoding="utf-8") as f:
+        w = _csv.DictWriter(f, fields)
+        w.writeheader()
+        w.writerows(rows)
+    run.finish("ok" if not run.failed else "partial")
+    # ---- Twitch broadcasters
+    tpath = rc.CONFIG / "twitch_broadcasters.csv"
+    with tpath.open(newline="", encoding="utf-8-sig") as f:
+        r = _csv.DictReader(f)
+        trows, tfields = list(r), r.fieldnames
+    lines += ["", "## Twitch broadcasters (local only)", "", "| login | status | broadcaster language setting | configured | notes |",
+              "|---|---|---|---|---|"]
+    try:
+        ns = argparse.Namespace(dry_run=False, data_dir=None)
+        t = tc.Twitch(ns)
+        t.ready()
+        t.run = rc.Run("twitch", "verify-watchlists", {"logins": len(trows)}, False)
+        users = {u["login"]: u for u in t.get("users", {"login": [x["login"].strip().lower() for x in trows]}).get("data", [])}
+        chans = {c["broadcaster_id"]: c for c in t.get("channels", {"broadcaster_id": [u["id"] for u in users.values()]}).get("data", [])} if users else {}
+        for x in trows:
+            u = users.get(x["login"].strip().lower())
+            if not u:
+                lines.append(f"| {x['login']} | NOT FOUND | | {x.get('language_stream')} | check the login |")
+                continue
+            lang = chans.get(u["id"], {}).get("broadcaster_language", "")
+            note = ""
+            if x.get("language_stream") and lang and lang != x["language_stream"]:
+                note = f"CONFLICT: setting is {lang}"
+            lines.append(f"| {x['login']} | found ({u.get('display_name')}) | {lang} | {x.get('language_stream')} | {note} |")
+        t.run.finish()
+    except SystemExit as e:
+        lines.append(f"| all | BLOCKED | | | {e} |")
+    # ---- Wikipedia
+    r2 = subprocess.run([PY, str(rc.ROOT / "scripts" / "wiki_collect.py"), "resolve"], capture_output=True, text=True,
+                        encoding="utf-8", errors="replace")
+    lines += ["", "## Wikipedia titles", "", "```", r2.stdout.strip(), "```"]
+    dest = rc.DATA / f"watchlist_verification_{stamp}.md"
+    dest.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print("\n".join(lines))
+    print(f"\n-> {dest}")
+
+
+def cmd_discover_creators(a):
+    """Systematic watchlist expansion: first eligible distinct channels, newest first, from already-collected search
+    results (no extra searches). Eligible = not on the watchlist, band within --bands, and the video's declared audio
+    language or the channel's declared language matches --lang. Reach never orders the selection."""
+    import csv as _csv
+    sys.path.insert(0, str(rc.ROOT / "scripts"))
+    import yt_collect as yc
+    rows = [r for r in rc.read_rows(rc.DATA / "youtube" / "youtube_snapshots.csv")
+            if any(r.get("collection", "").startswith("discover:" + p) for p in a.from_collection)]
+    rows.sort(key=lambda r: (r.get("published_at", ""), r["video_id"]), reverse=True)
+    path = rc.CONFIG / "youtube_creators.csv"
+    with path.open(newline="", encoding="utf-8-sig") as f:
+        r = _csv.DictReader(f)
+        current, fields = list(r), r.fieldnames
+    have = {x["channel_id"] for x in current}
+    order, first_video = [], {}
+    for r in rows:
+        if r["channel_id"] not in have and r["channel_id"] not in first_video:
+            first_video[r["channel_id"]] = r
+            order.append(r["channel_id"])
+    store = yc.Store(False)
+    run = rc.Run("youtube", "discover-creators", vars(a) | {"candidates": len(order)}, False)
+    api = yc.Api(store, run, False)
+    info = {}
+    for i in range(0, min(len(order), a.scan), 50):
+        for c in api.get("channels", {"part": "snippet,statistics", "id": ",".join(order[i:i + 50])}).get("items", []):
+            info[c["id"]] = c
+    picked, skipped = [], Counter()
+    for cid in order[: a.scan]:
+        c = info.get(cid)
+        if not c:
+            skipped["not found"] += 1
+            continue
+        st, sn = c.get("statistics", {}), c["snippet"]
+        band = size_band(None if st.get("hiddenSubscriberCount") else int(st.get("subscriberCount", 0) or 0))
+        vlang = (first_video[cid].get("default_audio_language") or "").split("-")[0]
+        clang = (sn.get("defaultLanguage") or "").split("-")[0]
+        if band not in a.bands:
+            skipped[f"band {band}"] += 1
+            continue
+        if a.lang not in (vlang, clang):
+            skipped["language not declared as " + a.lang] += 1
+            continue
+        picked.append({"channel_id": cid, "label": sn.get("title", ""), "language_stream": a.lang,
+                       "market": sn.get("country", ""), "stratum": a.stratum, "size_band": band,
+                       "selection_reason": f"systematic {rc.now():%Y-%m-%d}: first eligible distinct channel (newest first) "
+                                           f"in {first_video[cid]['collection'][9:]}",
+                       "notes": f"seed video {first_video[cid]['video_id']}; language from "
+                                f"{'video declaration' if vlang == a.lang else 'channel declaration'}; market = declared "
+                                "channel country (creator context, not audience)"})
+        if len(picked) >= a.n:
+            break
+    run.finish()
+    print(f"{len(order)} unlisted channels in the results; scanned {min(len(order), a.scan)}; picked {len(picked)}; "
+          f"skipped {dict(skipped)}")
+    for p in picked:
+        print(f"  + {p['channel_id']} {p['label']} [{p['size_band']}, {p['market'] or 'no country'}] {p['selection_reason']}")
+    if picked and not a.dry:
+        with path.open("w", newline="", encoding="utf-8") as f:
+            w = _csv.DictWriter(f, fields)
+            w.writeheader()
+            w.writerows(current + picked)
+        print(f"-> appended to {path}")
 
 
 def cmd_families(a):
@@ -263,6 +448,7 @@ def cmd_runs(a):
 
 
 def main():
+    sys.stdout.reconfigure(errors="replace")  # titles contain emoji the Windows console can't encode
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("status")
@@ -277,9 +463,20 @@ def main():
     b.add_argument("--since", help="list runs since this UTC time (default: today 00:00 UTC)")
     f = sub.add_parser("families", help="validate query families; --compile writes YouTube saved sets")
     f.add_argument("--compile", action="store_true")
+    v = sub.add_parser("verify-watchlists", help="check creator/broadcaster/wiki identities with official APIs")
+    v.add_argument("--days", type=int, default=30, help="window for 'recent uploads' (default 30)")
+    d = sub.add_parser("discover-creators", help="add first eligible small/medium channels from collected search results")
+    d.add_argument("--from-collection", nargs="+", required=True, help="saved-query id prefixes, e.g. rule-world:es-MX")
+    d.add_argument("--stratum", required=True)
+    d.add_argument("--lang", required=True, help="en or es (declared audio or channel language must match)")
+    d.add_argument("--n", type=int, default=2)
+    d.add_argument("--bands", nargs="+", default=["small", "medium"])
+    d.add_argument("--scan", type=int, default=50, help="max channels to look up (1 unit per 50)")
+    d.add_argument("--dry", action="store_true", help="show picks without writing the watchlist")
     a = ap.parse_args()
     {"status": cmd_status, "prune": cmd_prune, "runs": cmd_runs, "collect": cmd_collect, "bundle": cmd_bundle,
-     "families": cmd_families}[a.cmd](a)
+     "families": cmd_families, "verify-watchlists": cmd_verify,
+     "discover-creators": cmd_discover_creators}[a.cmd](a)
 
 
 if __name__ == "__main__":

@@ -477,6 +477,62 @@ def blind_key(r):
     return ""
 
 
+def cmd_sample(a):
+    """Deterministic, outcome-blind sample selection from collected YouTube snapshots, driven by a spec:
+    {"groups": [{"name", "sample_role", "n", "collections": [prefixes], "max_duration_s", "watchlist_language"}]}.
+    Order: newest first (published_at desc, then video_id); one item per channel across the whole sample.
+    Never reads or prints outcome columns while selecting."""
+    import csv as _csv
+    spec = json.loads(Path(a.spec).read_text(encoding="utf-8"))
+    snaps = rc.read_rows(rc.DATA / "youtube" / "youtube_snapshots.csv")
+    latest, member = {}, defaultdict(set)
+    for r in snaps:
+        member[r["video_id"]].add(r.get("collection", ""))
+        if r["video_id"] not in latest or r["observed_at_utc"] > latest[r["video_id"]]["observed_at_utc"]:
+            latest[r["video_id"]] = r
+    wl = {}
+    wpath = rc.CONFIG / "youtube_creators.csv"
+    if wpath.exists():
+        with wpath.open(newline="", encoding="utf-8-sig") as f:
+            wl = {x["channel_id"]: x for x in _csv.DictReader(f)}
+    used_channels, chosen, report = set(), [], []
+    for g in spec["groups"]:
+        pool = [v for vid, v in latest.items()
+                if any(c.startswith(p) for c in member[vid] for p in g["collections"])
+                and (not g.get("max_duration_s") or (fnum(v.get("duration_s")) or 10**9) <= g["max_duration_s"])
+                and (not g.get("watchlist_language") or wl.get(v["channel_id"], {}).get("language_stream") == g["watchlist_language"])]
+        pool.sort(key=lambda v: (v.get("published_at", ""), v["video_id"]), reverse=True)
+        got = []
+        for v in pool:
+            if v["channel_id"] in used_channels:
+                continue
+            used_channels.add(v["channel_id"])
+            got.append(v)
+            if len(got) >= g["n"]:
+                break
+        for rank, v in enumerate(got, 1):
+            chosen.append({**v, "sample_group": g["name"], "sample_role": g["sample_role"], "selection_rank": rank,
+                           "selection_rule": f"newest-first distinct channel in {'|'.join(g['collections'])}"
+                                             + (f", <= {g['max_duration_s']} s" if g.get("max_duration_s") else "")
+                                             + (f", watchlist language {g['watchlist_language']}" if g.get("watchlist_language") else ""),
+                           "retrieval_contexts": "|".join(sorted(c for c in member[v["video_id"]] if c))})
+        report.append(f"{g['name']}: {len(got)}/{g['n']} selected from {len(pool)} eligible")
+    name = Path(a.spec).stem
+    dest = OUT / f"sample_{name}.csv"
+    fields = list(chosen[0].keys()) if chosen else []
+    rc.write_rows(dest, fields, chosen)
+    # Outcome-blind packet straight away, so the coder never needs to open the full sample file.
+    pkt = OUT / f"blind_packet_sample_{name}.jsonl"
+    with pkt.open("w", encoding="utf-8") as f:
+        for v in chosen:
+            item = {"key": v["video_id"], "platform": "youtube", "url": v["url"], "title": v.get("title", ""),
+                    "tags": v.get("tags", ""), "duration_s": v.get("duration_s", ""), "published_at": v.get("published_at", ""),
+                    "language_hint": v.get("default_audio_language", "")}
+            f.write(json.dumps(item, ensure_ascii=False) + "\n")
+    print("\n".join(report))
+    print(f"{len(chosen)} items -> {dest} (contains outcomes: don't open before coding)\nblind packet -> {pkt}")
+
+
 def cmd_blind_packet(a):
     rows = load_csv(a.file)
     seen, packet = set(), []
@@ -631,6 +687,7 @@ def cmd_context(a):
 
 
 def main():
+    sys.stdout.reconfigure(errors="replace")  # titles contain emoji the Windows console can't encode
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--data-dir", help="read stores from this folder instead of data/local/research (tests)")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -657,6 +714,8 @@ def main():
     c.add_argument("--entity")
     c.add_argument("--penalty", type=float, default=5.0)
     c.add_argument("--min-days", type=int, default=28)
+    sp = sub.add_parser("sample", help="deterministic outcome-blind sample from YouTube snapshots (spec JSON)")
+    sp.add_argument("spec")
     b = sub.add_parser("blind-packet")
     b.add_argument("file")
     b.add_argument("--out")
@@ -677,7 +736,7 @@ def main():
         rc.DATA = Path(a.data_dir)
         OUT = rc.DATA / "analysis"
     {"intake": cmd_intake, "describe": cmd_describe, "repeat": cmd_repeat, "sensitivity": cmd_sensitivity,
-     "trend": cmd_trend, "changepoints": cmd_changepoints, "blind-packet": cmd_blind_packet, "join-annotations": cmd_join,
+     "trend": cmd_trend, "changepoints": cmd_changepoints, "sample": cmd_sample, "blind-packet": cmd_blind_packet, "join-annotations": cmd_join,
      "context": cmd_context}[a.cmd](a)
 
 

@@ -452,6 +452,7 @@ def cmd_export_eg(a):
 
 
 def main():
+    sys.stdout.reconfigure(errors="replace")  # titles contain emoji the Windows console can't encode
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     n = sub.add_parser("new")

@@ -125,7 +125,9 @@ class Store:
         self.channels = self.dir / "youtube_channels.csv"
         self.comments = self.dir / "youtube_comments.csv"
         self.watchlist = self.dir / "youtube_watchlist.txt"
-        self.quota = self.dir / "quota_log.csv"
+        # Google counts every call against one key, so live runs share one quota log even with --data-dir.
+        self.quota = self.dir / "quota_log.csv" if dry_run else rc.DATA / "youtube" / "quota_log.csv"
+        self.quota.parent.mkdir(parents=True, exist_ok=True)
 
     def read(self):
         return rc.read_rows(self.snapshots)
@@ -659,6 +661,7 @@ def vars_of(a):
 
 
 def main():
+    sys.stdout.reconfigure(errors="replace")  # titles contain emoji the Windows console can't encode
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry-run", action="store_true", help="use tests/fixtures, write to data/local/research/dryrun")
     ap.add_argument("--data-dir", help=argparse.SUPPRESS)  # smoke test writes elsewhere

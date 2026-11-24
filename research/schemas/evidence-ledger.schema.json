@@ -42,7 +42,7 @@
     "series_points": {"type": "integer", "description": "number of dated points when one item of evidence is a time series"},
     "scope": {"type": "object", "description": "region, period, category, query, region_param, relevance_language_param, language_edition, search_geo, source_filter"},
     "metric_definition": {"enum": ["verified", "approximate", "unknown"]},
-    "sample_role": {"enum": ["featured", "ordinary", "failed", "counterexample", "unknown"]},
+    "sample_role": {"enum": ["featured", "retrieved", "ordinary", "failed", "counterexample", "unknown"], "description": "retrieved = search-retrieved by date, not chosen for success"},
     "expires_at": {"type": "string", "description": "provider retention for the cited data (YouTube 30 days, Twitch 24 h)"},
     "locator": {"type": "object", "description": "file + where{col: val} + column + value (bundle row), or source_path + quote (exact passage), or url, or note",
                 "properties": {"file": {"type": "string"}, "where": {"type": "object"}, "column": {"type": "string"},
