@@ -14,7 +14,7 @@ Reference: `docs/research-data.md` (sources, schemas, sharing rules), `docs/COMM
 | Owner says | Run |
 |---|---|
 | "Collect today's research" | `.\ss research collect --profile daily` |
-| "Research Spanish Roblox content" | `.\ss research collect --profile spanish` (MX, ES, AR, CO, CL; uses the saved YouTube set `spanish` if it exists, otherwise a default `roblox` search per market, labelled as such) |
+| "Research Spanish Roblox content" | `.\ss research collect --profile spanish` (MX, ES, AR, CO, CL; uses ChatGPT's saved YouTube set `spanish`, merged in Stage 4.5.4) |
 | "Refresh our watchlists" | `.\ss research collect --profile refresh` (re-snapshots stored YouTube videos and Twitch clips, creator and broadcaster lists, Wikipedia, Roblox) |
 | "Research Creative Center" | the Creative Center procedure below |
 | "Execute this research brief" | the brief procedure below |
@@ -29,7 +29,8 @@ Anything that asks what the data *means* goes to the `slugshot-research-analysis
 
 - Every `ss research bundle` automatically adds an `INTAKE.md`/`INTAKE.json` QC report and any ledgers (`evidence/`) and trend outputs (`analysis/`).
 - For a brief, finish with a ledger and decision memo, not only a data dump.
-- Query families (Stage 4.5.4): ChatGPT edits `config/research/query_families.json`. Run `ss research families --compile` to turn them into YouTube saved sets named `fam-<id>[-<branch>]`.
+- Query families (families-1.1): ChatGPT edits `config/research/query_families.json`. Run `ss research families --compile` to turn them into YouTube saved sets named `fam-<id>[-<branch>]`. `market_mode: rotate` gives each query one retrieval country, rotating each ISO week, so recompile at the start of a week. Spanish branches may set their own `days`. When comparing yields, change wording or window, not both at once.
+- Coding for a brief: build the packet with `ss analyze coding-packet` (all ten codes; see the analysis skill). Gemini gets it through the owner; a person's spot-check uses `--keys` and `--coder owner`.
 
 ## Executing a ChatGPT research brief
 
@@ -69,7 +70,9 @@ There's no permitted automated access: TikTok's commercial terms bar automated s
 - material caveats (e.g. default query used, a parser that isn't confirmed yet);
 - the bundle path.
 
-The owner uploads the zip to ChatGPT. Don't claim any automatic sync exists. Google Drive is connected to Claude, but uploading research data there is a Stage 5 shared-workflow decision, and YouTube/Twitch copies would have to be deleted by their expiry, so don't upload without the owner asking.
+The owner uploads the zip to ChatGPT. Don't claim any automatic sync exists. Google Drive is connected to Claude (claude.ai connector). Composio is set up read-only but has no accounts authorised (`docs/composio.md`). Uploading research data to Drive is a shared-workflow decision, and YouTube/Twitch copies would have to be deleted by their expiry, so don't upload without the owner asking. Reuse native connectors first, and check Composio before building any new OAuth integration.
+
+Only send the newest corrected bundle. Superseded bundles stay out of `exports/share/` (see `docs/stage-4.5.4-report.md`), and the owner manages deletion of copies uploaded to chats.
 
 ## Pre-approved vs ask first
 

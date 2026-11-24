@@ -20,7 +20,7 @@ Slugshot marketing commands. Run from this folder as `.\ss <command> ...` (ss.cm
   yt <args>                                  YouTube collector (scripts\yt_collect.py -h)
   wiki|trends|twitch|rbx|observe <args>      research collectors (docs\research-data.md)
   research status|prune|runs|collect|bundle|families   collection runs, bundles, query families
-  analyze <intake|describe|repeat|sensitivity|trend|changepoints|blind-packet|join-annotations|context>
+  analyze <intake|describe|repeat|sensitivity|trend|changepoints|sample|blind-packet|coding-packet|join-annotations|context>
   evidence <new|validate|card|export-evidenceguard>   evidence ledger (docs\research-evidence.md)
   composio status|test|audit                 Composio read-only checks (docs\composio.md)
   export                                     check platform metrics and write shareable CSVs to exports\share\

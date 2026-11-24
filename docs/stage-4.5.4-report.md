@@ -98,11 +98,11 @@ Other families keep their original queries; they're unvalidated until their own 
 
 ## 5. Remaining blockers and next steps
 
-1. **Spot-check:** a person or a second independent model session should check at least 4 items against playback: fZvg6KA5mxg (the coder disagreement), 5HMhXQP_W5A, 8fTU72rRJmY and tLY7uB6Gnas. Claude can't play YouTube videos.
-2. **Missing codes:** code CHOICE, CHARACTER_GAG and REACTION, which weren't in Gemini's packet, and recode under codebook 1.1 in the same pass.
+1. **Spot-check:** a person should check at least 4 items against playback: fZvg6KA5mxg (the coder disagreement), 5HMhXQP_W5A, 8fTU72rRJmY and tLY7uB6Gnas. A second Gemini or Claude session would only be a repeat check, not independent verification. Claude can't play YouTube videos. The packet is `analysis/coding_packet_BRIEF-20261124-RULE-WORLD-PILOT.spotcheck.md`.
+2. **Missing codes:** code CHOICE, CHARACTER_GAG and REACTION, which weren't in Gemini's packet, and recode under codebook 1.1 in the same pass. The packet is `analysis/coding_packet_BRIEF-20261124-RULE-WORLD-PILOT.recode-1.1.md`, with all ten codes; it's a repeat check by the same model.
 3. **Capture:** film a real two-player 1v1 round before producing the prototype.
 4. **Separate wording from window:** re-run the revised Spanish branches on a 7-day window, and replace "se creía pro roblox".
-5. **Next sample:** set `declared_audio_language: "es"` on the Spanish groups.
+5. **Next sample:** set `declared_audio_language: ["es", "unknown"]` on the Spanish groups. Declared language is a screening proxy, so keep the unknown-language path.
 6. **Still unvalidated:** a real TikTok Creative Center paste and a real Google Trends CSV.
 
 ## 6. Commands added in Stage 4.5.4

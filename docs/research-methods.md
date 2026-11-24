@@ -1,6 +1,6 @@
-# Research methods (Stage 4.5.3)
+# Research methods (synced with ChatGPT research skills v1.1, 24 Nov 2026)
 
-These are the working rules that sit between collection (`slugshot-research-operations`) and decisions (`slugshot-research-analysis`, ChatGPT's research skills). They are condensed from ChatGPT's Stage 4.5.1–4.5.3 reports and ChatGPT's Research Evidence, Content & Culture and Literature skills, and they match those skills. The aim is to prevent false certainty, not to slow down cheap experiments.
+These are the working rules that sit between collection (`slugshot-research-operations`) and decisions (`slugshot-research-analysis`, ChatGPT's research skills). They are condensed from ChatGPT's Research Evidence v1.1, Content & Culture Intelligence and Literature & Source Verification skills (local copy: [chatgpt-research-skills-v1.1.md](chatgpt-research-skills-v1.1.md)), and they match those skills. Where they differ, the stricter rule wins. The aim is to prevent false certainty, not to slow down cheap experiments.
 
 ## 1. Start from the decision
 
@@ -98,12 +98,14 @@ Lifecycle labels:
 
 ## 7. Qualitative coding
 
-- Use the codebook in `config/research/codebooks/slugshot-creative.json` (ChatGPT v1.0): multi-label, with states present / absent / uncertain / unreviewed.
-- Pilot the codebook, then freeze its version.
+- Use the codebook in `config/research/codebooks/slugshot-creative.json` (v1.1, ten codes): multi-label, with states present / absent / uncertain / unreviewed. v1.0 is archived in `codebooks/archive/`, and only for annotations coded under it.
+- RULE_WORLD (v1.1) needs a rule that governs the story world and sets stakes for a character. A series label without a stated rule or stake is uncertain. A one-off warning without a world-wide rule, or a game tutorial, is absent.
+- Pilot the codebook, then freeze its version. When the version changes, recode explicitly; never relabel old annotations.
 - Code outcome-blind where practical (`ss analyze blind-packet` hides metrics, ranks, sample role and creator).
+- Packets for Gemini or a person come from `ss analyze coding-packet`. They carry all ten codes, all five beats (opening, complication, attempt, reversal, payoff) and the access vocabulary.
 - Record the access level actually used: full_playback, excerpt, caption_only, provider_description or inaccessible. "Absent" needs real playback.
-- Join outcomes only after freezing, and compare how common each code is in featured vs ordinary items (`ss analyze join-annotations`).
-- One model coding twice is not two independent coders. Send ambiguous or culturally loaded items to a person.
+- Join outcomes only after freezing, and compare how common each code is in featured vs ordinary items (`ss analyze join-annotations`). Codes left out count as unreviewed.
+- One model coding twice, or a second session of the same model, is a repeat check, not two independent coders. Independent verification means a person coding before seeing the first coder's notes. Send ambiguous or culturally loaded items to a person.
 
 This method is adapted from Social Research Agent Kit (MIT), as described in `research/upstream/PROVENANCE.md`.
 
@@ -119,6 +121,8 @@ This method is adapted from Social Research Agent Kit (MIT), as described in `re
   - creator location;
   - search geography;
   - audience geography (only our own analytics, after launch).
+- Creator-declared audio language is a screening proxy, not proof of speech. When a sample filters on it, keep an unknown-language path, and confirm with playback where possible.
+- Retrieval country (`region_param`) barely changed results in the 24 Nov pilot. Families-1.1 run each query in one rotating country, and vary wording instead.
 - Never infer ethnicity or nationality from language.
 
 ## 9. Literature and source verification

@@ -203,7 +203,7 @@ def cmd_bundle(a, steps=None):
         for p in sorted((rc.DATA / "evidence").glob("*.json")) + sorted((rc.DATA / "evidence").glob("*.md")):
             z.write(p, f"evidence/{p.name}")
         for pattern in ("trend_*.json", "sample_*.csv", "blind_packet_*.jsonl", "annotations_*.jsonl", "association_*.json",
-                        "branch_overlap_*.txt", "yields_*.txt", "playback_findings_*.txt", "gemini_packet_*.md", "changepoints_*.json"):
+                        "branch_overlap_*.txt", "yields_*.txt", "playback_findings_*.txt", "gemini_packet_*.md", "coding_packet_*.md", "changepoints_*.json"):
             for p in sorted((rc.DATA / "analysis").glob(pattern)):
                 z.write(p, f"analysis/{p.name}")
         for p in sorted((rc.ROOT / "research" / "pilots").glob("*.json")):

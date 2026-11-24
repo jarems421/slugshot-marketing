@@ -1,6 +1,6 @@
 {
  "version": "slugshot-codebook-1.1",
- "source": "ChatGPT Slugshot Content & Culture Intelligence, Codebook v1.0 (24 Nov 2026). Pilot before freezing; bump the version on every change and recode the pilot.",
+ "source": "ChatGPT Slugshot Research Skills v1.1 (24 Nov 2026), Codebook v1.1: current prospective coding; v1.0 archived for the first pilot. Bump the version on every change and recode explicitly.",
  "unit_of_analysis": "one accessible post or clip; record timestamp window, language evidence and playback access",
  "multi_label": true,
  "states": {
@@ -32,9 +32,9 @@
   },
   {
    "code": "RULE_WORLD",
-   "criterion": "an explicit fictional or general rule that governs the world (stated or shown) and sets stakes for a character",
+   "criterion": "explicit fictional or general rule governing the story world (stated or shown) and setting stakes for a character",
    "anchor": "everyone receives one creature",
-   "negative": "normal game rule tutorial",
+   "negative": "series label without a stated rule or stake: uncertain; one-off warning without a world-wide rule, or a normal game tutorial: absent",
    "notes": [
     "A series label ('In my world...') with no stated rule or stake: uncertain until playback shows one.",
     "A one-off prohibition or warning for a single situation ('don't open the door at 3 AM') with no world-wide rule: absent; consider CURIOSITY_DELAY or SOCIAL_CONFLICT.",
@@ -96,5 +96,31 @@
    "date": "2026-11-24",
    "change": "RULE_WORLD criterion clarified after the BRIEF-20261124-RULE-WORLD-PILOT pilot: series labels and one-off prohibitions. Other codes unchanged. 1.0 kept in codebooks/archive/ for validating annotations coded under it."
   }
+ ],
+ "beats": [
+  "opening",
+  "complication",
+  "attempt",
+  "reversal",
+  "payoff"
+ ],
+ "access_definitions": {
+  "full_playback": "watched the whole item with sound",
+  "excerpt": "watched part; say which window",
+  "caption_only": "title, caption, tags or transcript text only",
+  "provider_description": "the platform's or creator's description only",
+  "inaccessible": "could not open the item; every code unreviewed"
+ },
+ "annotation_fields": [
+  "key",
+  "codebook_version",
+  "access",
+  "blinded",
+  "coder",
+  "codes (all codes)",
+  "evidence_note",
+  "evidence [{quote}] (optional exact quotes)",
+  "beats (all five; 'none' if absent)",
+  "spoken_language_heard (BCP-47 code, 'none' or 'unreviewed')"
  ]
 }

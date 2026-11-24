@@ -142,9 +142,16 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 
 ## Next actions
 
-Infrastructure is complete, including the Stage 4.4 research collectors ([research-data.md](research-data.md)). Remaining setup items:
-1. Optional: approve the `makemyclip` MCP server when Claude Code asks.
-2. Before sharing Twitch exports: check Twitch's onward-transfer terms, then set `twitch.share_exports` to true in `config/research/settings.json`.
-3. ChatGPT: replace the small test query sets and watchlists in `config/research/` with the real bilingual ones.
+Infrastructure is complete (24 Nov 2026), and the project has moved on to active research and marketing. Don't build more infrastructure unless a specific decision needs it. The bilingual query families (families-1.1), watchlists and codebook v1.1 are in place, and the first pilot is validated ([stage-4.5.4-report.md](stage-4.5.4-report.md)).
+
+Remaining milestones (methodology: [chatgpt-research-skills-v1.1.md](chatgpt-research-skills-v1.1.md)):
+1. **Foundational marketing research and initial knowledge banks.** Bounded literature reviews and creative hypotheses, starting with short-form attention, curiosity, narrative comprehension and payoff.
+2. **Commercial funnel.** Definitions and an implementation plan for acquisition, attribution, activation, retention and monetisation.
+3. **Centralised minimum viable dashboard.** Research, experiments, content and player outcomes, built from existing tools.
+
+Open items:
+- The pilot's independent spot-check and its recode under v1.1 (packets in `data/local/research/analysis/coding_packet_*`).
+- Optional: approve the `makemyclip` MCP server when Claude Code asks.
+- Before sharing Twitch exports: check Twitch's onward-transfer terms, then set `twitch.share_exports` to true.
 
 Production work (gameplay capture, voice choice, music, SFX, brand fonts, real-world tests) is in the [deferred production checklist](production-checklist.md).

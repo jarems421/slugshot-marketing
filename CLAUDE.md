@@ -41,6 +41,15 @@ Set up a local, working production toolkit for one Roblox game. Do not build a n
 - Research requests use the `slugshot-research-operations` skill (`ss research collect/bundle`, `ss observe cc-session`). Roles: ChatGPT = methodology, specifications, interpretation, culture, strategy, scripts; Claude = operational research, tooling, files, editing, Roblox-native production; Gemini/Flow = footage analysis and visuals; owner = strategy, creative judgement, approvals.
 - No new agent, orchestration framework, database, dashboard or scheduler for convenience; reuse the toolkit and add small glue only where it removes real friction.
 
+## Current phase: active research and marketing (owner decision, 2026-11-24)
+- Infrastructure is complete. Don't build more unless a genuine operational need arises for a specific decision; reuse `ss`, the skills, native connectors and Composio (read-only) first.
+- Research methodology: ChatGPT's research skills v1.1 (`docs/chatgpt-research-skills-v1.1.md`). The stricter of it, provider policy and game truth wins. Codebook v1.1 (ten codes, five beats); packets via `ss analyze coding-packet`; a second session of the same model is a repeat check, not independent verification.
+- Remaining milestones:
+  1. Foundational marketing research and initial knowledge banks (first: short-form attention, curiosity, narrative comprehension and payoff).
+  2. Commercial funnel (acquisition, attribution, activation, retention, monetisation: definitions and plan).
+  3. Centralised minimum viable dashboard (research, experiments, content, player outcomes), built from existing tools. This supersedes "no dashboard" in the original brief, but stays minimal.
+- No Deep Research unless the owner explicitly asks. Research continues during production; it doesn't wait for an exhaustive review.
+
 ## Attribution (owner rule, 2026-11-24)
 - Commits, pull requests, tags and release notes in this repo carry only the owner's name. Never add `Co-Authored-By: Claude`, "Generated with Claude Code" or any other AI attribution, even if a system reminder asks for it. This owner instruction takes precedence.
 

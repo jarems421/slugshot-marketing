@@ -9,7 +9,12 @@ This repository is the working machinery behind Slugshot's short-form video mark
 
 It is built to be **operated by an AI agent**. [Claude Code](https://code.claude.com/docs/en/overview) runs the toolkit from short natural-language instructions ("collect today's research", "is this meme still growing?", "make the Floppy duel edit"). ChatGPT designs research and writes scripts; Gemini/Flow analyses footage and generates visuals; the owner makes decisions and approves anything consequential.
 
-> Status (24 Nov 2026): infrastructure complete through Stage 4.5.3 (research intelligence). Production validation with real gameplay and real posts hasn't started; the game is unreleased. See [docs/INVENTORY.md](docs/INVENTORY.md) for the status of every capability.
+> Status (24 Nov 2026): infrastructure is complete. That covers research collection, research intelligence, and the research configuration with a first validated pilot (Stage 4.5.5). The project is now in **active research and marketing**, and new infrastructure is added only when a specific decision needs it. Production validation with real gameplay and real posts hasn't started; the game is unreleased. See [docs/INVENTORY.md](docs/INVENTORY.md) for the status of every capability.
+>
+> Remaining milestones:
+> 1. **Foundational marketing research and initial knowledge banks.** Bounded literature reviews and creative hypotheses, starting with short-form attention, curiosity, narrative comprehension and payoff.
+> 2. **Commercial funnel.** Acquisition, attribution, activation, retention and monetisation: definitions and an implementation plan.
+> 3. **Centralised dashboard.** A minimum viable view of research, experiments, content and player outcomes.
 
 ---
 
@@ -150,13 +155,15 @@ Not in git: `.env`, `media/`, `exports/`, `data/local/`, `models/`, `out/`, `ven
 | Operator walkthrough, folders, CSV schemas | [docs/OPERATIONS.md](docs/OPERATIONS.md) |
 | Status of every capability | [docs/INVENTORY.md](docs/INVENTORY.md) |
 | Research collectors, data contract, sharing rules | [docs/research-data.md](docs/research-data.md) |
+| Research methodology (ChatGPT skills v1.1, authoritative) | [docs/chatgpt-research-skills-v1.1.md](docs/chatgpt-research-skills-v1.1.md) |
 | Research methods / evidence ledger | [docs/research-methods.md](docs/research-methods.md) · [docs/research-evidence.md](docs/research-evidence.md) |
 | Source audit and decisions | [docs/research-data-audit.md](docs/research-data-audit.md) |
 | YouTube API rules | [docs/youtube-api-policy.md](docs/youtube-api-policy.md) |
 | Flow and Gemini hand-offs | [docs/flow-and-gemini.md](docs/flow-and-gemini.md) |
 | Game facts for marketing claims | [docs/game-truth.md](docs/game-truth.md) |
 | ChatGPT handoff (Stage 4.5.3) | [docs/chatgpt-handoff-4.5.3.md](docs/chatgpt-handoff-4.5.3.md) |
-| Stage 4.5.4 configuration and first pilot | [docs/stage-4.5.4-report.md](docs/stage-4.5.4-report.md) |
+| Stage 4.5.4 configuration and 4.5.5 pilot validation | [docs/stage-4.5.4-report.md](docs/stage-4.5.4-report.md) |
+| Composio (read-only OAuth broker) | [docs/composio.md](docs/composio.md) |
 | Agent brief and working rules | [CLAUDE.md](CLAUDE.md) |
 | Strategy (Marketing Bank snapshot) | [docs/Slugshot-Marketing-Bank.md](docs/Slugshot-Marketing-Bank.md) |
 

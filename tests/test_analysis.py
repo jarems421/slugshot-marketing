@@ -241,6 +241,27 @@ class Analysis(unittest.TestCase):
         self.assertIn("needs full_playback or excerpt", r.stdout)
         self.assertIn("not an exact substring", r.stdout)
 
+    def test_coding_packet_has_all_codes_and_beats(self):
+        cb = json.loads((ROOT / "config/research/codebooks/slugshot-creative.json").read_text(encoding="utf-8"))
+        pkt = OUT / "cp" / "blind_packet_x.jsonl"
+        pkt.parent.mkdir(parents=True, exist_ok=True)
+        pkt.write_text(json.dumps({"key": "abc", "url": "https://www.youtube.com/watch?v=abc"}) + "\n", encoding="utf-8")
+        r = subprocess.run([PY, str(ROOT / "scripts" / "research_analysis.py"), "--data-dir", str(OUT / "cproot"),
+                            "coding-packet", str(pkt), "--name", "t"], capture_output=True, text=True, cwd=ROOT)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        text = (OUT / "cproot" / "analysis" / "coding_packet_t.md").read_text(encoding="utf-8")
+        for c in cb["codes"]:
+            self.assertIn(c["code"], text)
+        for b in cb["beats"]:
+            self.assertIn(f'"{b}"', text)
+        self.assertIn(cb["version"], text)
+
+    def test_declared_language_unknown_path(self):
+        self.assertTrue(ra.lang_ok({"default_audio_language": "es-419"}, "es"))
+        self.assertFalse(ra.lang_ok({"default_audio_language": ""}, "es"))
+        self.assertTrue(ra.lang_ok({"default_audio_language": ""}, ["es", "unknown"]))
+        self.assertFalse(ra.lang_ok({"default_audio_language": "en"}, ["es", "unknown"]))
+
     def test_trend_single_snapshot_is_unknown(self):
         d = OUT / "trendroot"
         shutil.rmtree(d, ignore_errors=True)

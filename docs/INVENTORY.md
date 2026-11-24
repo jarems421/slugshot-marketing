@@ -77,18 +77,21 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Roblox experience stats (legacy, experimental) | `ss rbx` | yes (live) | n/a | n/a |
 | Public observations import (Creative Center, TikTok, Instagram, vidIQ, TinyFish) + Creative Center link list and paste parser | `ss observe` | yes (fixtures + 24 Nov Creative Center figures); oEmbed live; paste parser on fake samples only (confirm with a real paste) | n/a | n/a |
 | Research housekeeping | `ss research status/prune/runs` | yes | n/a | n/a |
-| Research analysis (intake QC, stats, repeat, sensitivity, trend dimensions, change points, blind coding, Wikidata/GDELT) | `ss analyze` | yes (24 offline tests; live: intake on real bundles, 11-year Wikipedia change points, Wikidata; GDELT live once, then rate-limited) | coding and interpretation | real coded samples |
+| Research analysis (intake QC, stats, repeat, sensitivity, trend dimensions, change points, blind coding, Wikidata/GDELT) | `ss analyze` | yes (24 offline tests; live: intake on real bundles, 11-year Wikipedia change points, Wikidata; GDELT live once, then rate-limited) | coding and interpretation | n/a (first real coded sample: the 24 Nov pilot) |
 | Watchlist verification + systematic creator discovery + deterministic sampling | `ss research verify-watchlists/discover-creators`, `ss analyze sample` | yes (live: 30 channels, 7 broadcasters, 23 wiki titles; pilot sample 20/20, Gemini playback joined; families-1.1, codebook 1.1) | ChatGPT owns query families and strata | independent spot-check of Gemini coding |
+| Coding packets for Gemini or a person (all codes, five beats, access vocabulary, from the codebook) | `ss analyze coding-packet` | yes (offline test; pilot recode and spot-check packets written) | **a person for the independent spot-check** | n/a |
 | Evidence ledger + validator + EvidenceGuard export | `ss evidence` | yes (traps suite; real worked ledger EXAMPLE-HUSS-SLUGTERRA valid inside a bundle) | AI/owner review of REVIEW items | n/a |
 | Composio (OAuth broker, read-only) | `ss composio status/test/audit` | yes (key accepted; 1 no-auth read-only tool PASS; audit of 15 toolkits) | owner OAuth approval per account (Instagram, Drive/Sheets); TikTok needs its own developer app | 0 connected accounts |
-| One-instruction research operations (skill `slugshot-research-operations`; `ss research collect --profile daily/spanish/refresh`, `ss research bundle`) | `ss research` | yes (live end-to-end: spanish profile, 15 steps OK, bundle of 8 datasets) | n/a | ChatGPT's saved query sets ('daily', 'spanish') |
+| One-instruction research operations (skill `slugshot-research-operations`; `ss research collect --profile daily/spanish/refresh`, `ss research bundle`) | `ss research` | yes (live end-to-end: spanish profile, 15 steps OK, bundle of 8 datasets) | n/a | n/a ('daily', 'spanish' and fam-* sets in place) |
 | Guided Creative Center session (opens pages; imports on Ctrl+A, Ctrl+C) | `ss observe cc-session` | loop tested with simulated copies | n/a | **first real session** confirms the page layout |
 | TikTok Discovery API, Instagram Business Discovery, Google Trends API | none | no | n/a | company identity (TikTok); Slugshot Instagram account; alpha approval |
 | YouTube reports | `ss yt report` | yes | n/a | written to `exports/share/` for ChatGPT (sharing approved by the owner) |
 | Platform metrics for ChatGPT | `ss export` | yes (validation) | n/a | **first posts** |
 | Own-channel retention/watch time | none | no | n/a | **Slugshot channel** (Studio exports, later Analytics API) |
 | Roblox acquisition (share links) | none | no | n/a | **published game** |
-| Dashboard | none | not started (by request) | n/a | n/a |
+| Centralised minimum viable dashboard (milestone 3) | none | not started; build from existing tools when a decision needs it | owner defines the decisions it serves | first own-channel outcomes |
+| Commercial funnel definitions (milestone 2) | none | not started | owner and ChatGPT | published game |
+| Foundational research and knowledge banks (milestone 1) | literature skills, `ss evidence` | started (method set, v1.1) | ChatGPT interpretation | first bounded review: short-form attention, curiosity, comprehension, payoff |
 | Isolated Roblox marketing place | `ss roblox build/rebuild/audit` | yes (audit, live Studio session) | n/a | n/a |
 | Studio target guard | hook, `ss roblox guard` | yes (live deny and allow) | n/a | n/a |
 | Scene specs + runner (stand-ins) | `ss roblox validate`, `Scene.runJson` | yes (smoke scene, 6 takes) | **performance, humour, look** | real animations, sets, slug rigs |
@@ -96,6 +99,6 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Roblox take into the toolkit | `ss roblox import` | yes (Studio capture) | n/a | first OBS recording of a take |
 | Animation library, finished sets, real PvP filming | none | no (production work) | **every animation and set** | production preparation |
 
-Infrastructure: complete, including Roblox-native filming ([roblox-native/README.md](../roblox-native/README.md)). Research data collection (Stage 4.4, 2026-11-24): see [research-data.md](research-data.md). The YouTube key was regenerated and restricted (owner confirmed 2026-11-24). Remaining setup: optionally approve the `makemyclip` MCP server; optionally set `contact` in `config/research/settings.json`; review Twitch onward-transfer terms before sharing Twitch exports.
+Infrastructure: complete, including Roblox-native filming ([roblox-native/README.md](../roblox-native/README.md)), research collection (Stage 4.4), research intelligence (4.5.3) and research configuration (4.5.4; families-1.1, codebook v1.1). The project is now in active research and marketing; add infrastructure only for a genuine operational need. Remaining milestones: foundational research and knowledge banks, commercial funnel, centralised dashboard ([chatgpt-research-skills-v1.1.md](chatgpt-research-skills-v1.1.md)). The YouTube key was regenerated and restricted (owner confirmed 2026-11-24). Remaining setup: optionally approve the `makemyclip` MCP server; optionally set `contact` in `config/research/settings.json`; review Twitch onward-transfer terms before sharing Twitch exports.
 
 Production items (gameplay recording, voice selection, licensed music, SFX, brand fonts, real-world production tests) are deferred to [production-checklist.md](production-checklist.md). They don't block the infrastructure.

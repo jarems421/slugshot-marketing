@@ -1,5 +1,7 @@
 # Stage 4.5.3 handoff to ChatGPT
 
+> **Historical (Stage 4.5.3).** Superseded where it differs by [chatgpt-research-skills-v1.1.md](chatgpt-research-skills-v1.1.md) and [stage-4.5.4-report.md](stage-4.5.4-report.md): the codebook is now v1.1 (v1.0 archived), query families are families-1.1, and the test query sets have been replaced.
+
 This is for ChatGPT's three research skills (Research Evidence, Content & Culture Intelligence, Literature & Source Verification). It describes what Claude actually implemented and tested on 24 Nov 2026, and how to work with it. Detail lives in the linked docs, which are all in the Claude toolkit pack.
 
 ## 1. Division of work (unchanged)

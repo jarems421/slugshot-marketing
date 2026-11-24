@@ -136,7 +136,7 @@ This is the current operating policy and supersedes earlier manual-first handoff
 
 Claude implemented the research intelligence layer in the marketing repo:
 - the `slugshot-research-analysis` skill;
-- `ss analyze` (intake QC, statistics with denominators, same-item changes, sensitivity, trend dimensions with a lifecycle proposal, change points, outcome-blind coding with codebook v1.0, Wikidata/GDELT context);
+- `ss analyze` (intake QC, statistics with denominators, same-item changes, sensitivity, trend dimensions with a lifecycle proposal, change points, outcome-blind coding with codebook v1.0 (now v1.1, with v1.0 archived; see docs/chatgpt-research-skills-v1.1.md), Wikidata/GDELT context);
 - `ss evidence` (ledger + validator, EvidenceGuard V0.1 export);
 - research templates;
 - four pinned upstream skills: verifying-bibliography, surveying-literature, synthesis-fact-checking, hypothesis-generation.

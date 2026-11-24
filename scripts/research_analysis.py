@@ -506,8 +506,7 @@ def cmd_sample(a):
                 if any(c.startswith(p) for c in member[vid] for p in g["collections"])
                 and (not g.get("max_duration_s") or (fnum(v.get("duration_s")) or 10**9) <= g["max_duration_s"])
                 and (not g.get("watchlist_language") or wl.get(v["channel_id"], {}).get("language_stream") == g["watchlist_language"])
-                and (not g.get("declared_audio_language")
-                     or (v.get("default_audio_language") or "").split("-")[0] == g["declared_audio_language"])]
+                and lang_ok(v, g.get("declared_audio_language"))]
         pool.sort(key=lambda v: (v.get("published_at", ""), v["video_id"]), reverse=True)
         got = []
         for v in pool:
@@ -541,6 +540,55 @@ def cmd_sample(a):
     print(f"{len(chosen)} items -> {dest} (contains outcomes: don't open before coding)\nblind packet -> {pkt}")
 
 
+def lang_ok(v, want):
+    """declared_audio_language: a code ("es") or a list; "unknown" keeps rows with no declaration, so a filtered
+    sample can still include an unknown-language discovery path."""
+    if not want:
+        return True
+    declared = (v.get("default_audio_language") or "").split("-")[0]
+    wants = [want] if isinstance(want, str) else want
+    return declared in wants or (not declared and "unknown" in wants)
+
+
+def cmd_coding_packet(a):
+    """Coding instructions for Gemini or a person, built from the codebook so every code, the five beats and the
+    access vocabulary are always included. Input: a blind packet (no outcomes)."""
+    codebook = json.loads(Path(a.codebook).read_text(encoding="utf-8"))
+    items = [json.loads(line) for line in Path(a.packet).read_text(encoding="utf-8").splitlines() if line.strip()]
+    if a.keys:
+        keep = set(a.keys.split(","))
+        items = [i for i in items if i["key"] in keep]
+    codes = codebook["codes"]
+    beats = codebook.get("beats", ["opening", "complication", "attempt", "reversal", "payoff"])
+    ver = codebook["version"]
+    lines = [f"# Coding packet: {a.name}", "",
+             f"Code each item with Slugshot codebook **{ver}**: all {len(codes)} codes, every item. "
+             f"Coder: {a.coder}. {a.note}".strip(), "",
+             "Rules:",
+             "- Don't look at view, like or comment counts before coding. If you saw them, set `blinded` to false.",
+             "- States: present / absent / uncertain / unreviewed. `absent` only when you watched the relevant moment.",
+             "- Give a timestamped note for every `present` code (e.g. '0:00-0:03 rule card').",
+             "- Fill all five beats; write 'none' when a beat doesn't happen.",
+             "- `spoken_language_heard`: what you actually hear ('none' if no speech). Don't infer nationality from accent.",
+             "- Don't use titles, descriptions or search results in place of watching. If you can't play an item, set "
+             "`access` to inaccessible and every code to unreviewed.", "",
+             "Access (pick one): " + "; ".join(f"`{k}` = {v}" for k, v in codebook.get("access_definitions", {}).items())
+             or "Access: " + ", ".join(codebook["access_levels"]), "", "Codes:"]
+    for c in codes:
+        extra = (" Notes: " + " ".join(c["notes"])) if c.get("notes") else ""
+        lines.append(f"- **{c['code']}**: {c['criterion']} (anchor: {c['anchor']}; not: {c['negative']}).{extra}")
+    template = {"key": "<item key>", "codebook_version": ver, "access": "full_playback", "blinded": True, "coder": a.coder,
+                "codes": {c["code"]: "present|absent|uncertain|unreviewed" for c in codes},
+                "evidence_note": "0:00-0:03 ...", "beats": {b: "" for b in beats}, "spoken_language_heard": "es"}
+    lines += ["", "Return one JSON line per item:", "```", json.dumps(template, ensure_ascii=False), "```", "", "Items:"]
+    for n, i in enumerate(items, 1):
+        lines.append(f"{n}. {i['key']}: {i.get('url', '')}")
+    dest = OUT / f"coding_packet_{a.name}.md"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"{len(items)} items, {len(codes)} codes ({ver}) -> {dest}")
+
+
 def cmd_blind_packet(a):
     rows = load_csv(a.file)
     seen, packet = set(), []
@@ -566,8 +614,9 @@ def cmd_blind_packet(a):
 
 
 def cmd_join(a):
-    """Multi-label annotations (codebook v1.0): {key, codebook_version, access, blinded, codes: {CODE: state},
-    evidence: [{quote}] and/or evidence_note, beats{...}}. States: present / absent / uncertain / unreviewed."""
+    """Multi-label annotations (current codebook, or an archived one via --codebook): {key, codebook_version, access,
+    blinded, codes: {CODE: state}, evidence: [{quote}] and/or evidence_note, beats{...}}. States: present / absent /
+    uncertain / unreviewed. Codes left out count as unreviewed and are reported; beat names must be the codebook's."""
     rows = load_csv(a.file)
     codebook = json.loads(Path(a.codebook).read_text(encoding="utf-8"))
     codes = [c["code"] for c in codebook["codes"]]
@@ -581,7 +630,8 @@ def cmd_join(a):
         for line in pkt.read_text(encoding="utf-8").splitlines():
             it = json.loads(line)
             packet_text[it["key"]] = " ".join(str(v) for v in it.values())
-    errors, joined, seen = [], [], set()
+    errors, joined, seen, omitted = [], [], set(), Counter()
+    beat_names = set(codebook.get("beats", []))
     anns = [json.loads(line) for line in Path(a.annotations).read_text(encoding="utf-8").splitlines() if line.strip()]
     for n, ann in enumerate(anns, 1):
         k = ann.get("key")
@@ -599,6 +649,9 @@ def cmd_join(a):
         if not isinstance(ann.get("blinded"), bool):
             errors.append(f"{where}: blinded must be true or false (false if outcomes were seen before coding)")
         given = ann.get("codes") or {}
+        omitted.update(c for c in codes if c not in given)
+        if beat_names and isinstance(ann.get("beats"), dict) and set(ann["beats"]) - beat_names:
+            errors.append(f"{where}: beats must be named {sorted(beat_names)}, got {sorted(set(ann['beats']) - beat_names)}")
         for code, state in given.items():
             if code not in codes:
                 errors.append(f"{where}: unknown code '{code}'")
@@ -643,6 +696,7 @@ def cmd_join(a):
         table.append(row)
     unblinded = sum(1 for j in joined if j["blinded"] == "false")
     print(json.dumps({"joined": len(joined), "unblinded": unblinded, "dest": str(dest), "codebook": codebook["version"],
+                      "codes_left_out_as_unreviewed": dict(omitted),
                       "association_table": table,
                       "note": ("YouTube: counts only (no cross-channel aggregation of statistics). " if youtube else "") +
                               "Associations, not effects. Compare prevalence with ordinary items: a code as common in "
@@ -728,6 +782,13 @@ def main():
     b.add_argument("file")
     b.add_argument("--out")
     b.add_argument("--include-creator", action="store_true", help="add creator names (excluded by default)")
+    cp = sub.add_parser("coding-packet", help="coding instructions for Gemini or a person from a blind packet + codebook")
+    cp.add_argument("packet", help="blind_packet_*.jsonl")
+    cp.add_argument("--name", required=True)
+    cp.add_argument("--keys", help="comma-separated item keys (e.g. a spot-check subset)")
+    cp.add_argument("--coder", default="gemini")
+    cp.add_argument("--note", default="")
+    cp.add_argument("--codebook", default=str(rc.CONFIG / "codebooks" / "slugshot-creative.json"))
     j = sub.add_parser("join-annotations")
     j.add_argument("file")
     j.add_argument("annotations", help="JSONL: key, codebook_version, access, blinded, codes{CODE: state}, evidence[{quote}]")
@@ -744,7 +805,7 @@ def main():
         rc.DATA = Path(a.data_dir)
         OUT = rc.DATA / "analysis"
     {"intake": cmd_intake, "describe": cmd_describe, "repeat": cmd_repeat, "sensitivity": cmd_sensitivity,
-     "trend": cmd_trend, "changepoints": cmd_changepoints, "sample": cmd_sample, "blind-packet": cmd_blind_packet, "join-annotations": cmd_join,
+     "trend": cmd_trend, "changepoints": cmd_changepoints, "sample": cmd_sample, "blind-packet": cmd_blind_packet, "coding-packet": cmd_coding_packet, "join-annotations": cmd_join,
      "context": cmd_context}[a.cmd](a)
 
 

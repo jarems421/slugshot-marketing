@@ -8,6 +8,7 @@ description: Turn Slugshot research data into traceable, evidence-led findings. 
 `slugshot-research-operations` collects; this skill makes the collected material mean something. Do the work yourself: run commands, read the data, write the ledger, and report. ChatGPT leads cultural interpretation and creative strategy, but contribute your own findings, hypotheses and creative ideas too. Just label them by evidence level.
 
 References:
+- `docs/chatgpt-research-skills-v1.1.md`: ChatGPT's authoritative methodology (Research Evidence v1.1, Content & Culture Intelligence, Literature & Source Verification, codebook v1.1, current operating decisions). If this skill disagrees with it, provider policy or game truth, the stricter rule wins.
 - `docs/research-evidence.md`: ledger, claim levels, statuses, strength, the six dimensions.
 - `docs/research-methods.md`: method rules and provider boundaries.
 - `research/schemas/evidence-ledger.schema.json`.
@@ -34,11 +35,15 @@ References:
    - `ss analyze trend TERM`: heat, velocity, breadth, persistence, novelty, context fit and Slugshot fit kept separate, plus a rule-based lifecycle proposal. One snapshot means unknown.
    - `ss analyze changepoints [--entity ID]`: only on long regular daily series (Wikipedia). Check any change point against news context.
    - `ss analyze context wikidata TERM` for identity and aliases (EN/ES). `ss analyze context gdelt TERM` for news-volume context; GDELT allows about one call per 5 s.
-5. **Qualitative coding** (hooks, jokes, formats), using codebook `config/research/codebooks/slugshot-creative.json` (ChatGPT's v1.0, multi-label):
-   - `ss analyze blind-packet FILE` strips metrics, ranks, sample role and creator.
+5. **Qualitative coding** (hooks, jokes, formats), using codebook `config/research/codebooks/slugshot-creative.json` (v1.1, ten codes, multi-label; v1.0 is in `codebooks/archive/` for the first pilot's annotations):
+   - `ss analyze blind-packet FILE` strips metrics, ranks, sample role and creator. (`ss analyze sample SPEC` writes one directly.)
+   - `ss analyze coding-packet BLIND.jsonl --name N [--keys a,b] [--coder gemini|owner]` writes the instructions for Gemini or a person from the codebook. It always includes all ten codes, the five beats (opening, complication, attempt, reversal, payoff) and the access vocabulary. Never hand-write a packet with a subset of codes.
    - Code each item: `present`, `absent` (needs real playback), `uncertain` or `unreviewed`. Record the access level and exact-quote or timestamped evidence. If you saw the outcomes first, set `blinded: false`.
-   - `ss analyze join-annotations FILE ANNOTATIONS.jsonl` validates and joins outcomes, giving prevalence by sample role with denominators. A code that's as common in ordinary items as in featured ones does not distinguish success.
+   - `ss analyze join-annotations FILE ANNOTATIONS.jsonl [--codebook archive/...]` validates and joins outcomes, giving prevalence by sample role with denominators. Codes left out count as unreviewed and are listed. A code that's as common in ordinary items as in featured ones does not distinguish success.
    - You may do first-pass coding yourself from accessible text/transcripts or pages you can open. Mark what you actually viewed, and send ambiguous or culturally loaded items to ChatGPT or the owner.
+   - Gemini's playback coding is Gemini-reported. A second Gemini (or Claude) session is a repeat check, not independent verification. Independent verification means a person, coding before seeing the first coder's notes.
+   - When the codebook version changes, recode explicitly. Never relabel old annotations with the new version.
+   - Spanish content: creator-declared audio language (`declared_audio_language` in sample specs) is a screening proxy, not proof of speech. Keep an unknown-language path (`["es", "unknown"]`) and confirm with playback where possible.
 6. **Write the ledger**:
    - one atomic claim per row, with level O/D/P/I/C/R;
    - evidence items with the exact file, row selector and value, or source path and exact quote;
