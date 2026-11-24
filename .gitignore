@@ -13,11 +13,16 @@ assets/brand/*
 reports/qc_log.csv
 *.qc.json
 *.sheet.jpg
+roblox-native/studio/*.rbxlx
+roblox-native/studio/*.rbxlx.lock
+roblox-native/capture/
+.claude/settings.local.json
 media/
 exports/
 data/local/
 __pycache__/
 vendor/
+!roblox-native/runtime/vendor/
 out/
 public/
 .remotion/

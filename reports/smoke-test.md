@@ -1,6 +1,6 @@
 # Smoke test
 
-Run 2026-11-24T03:20:21+00:00 by `.\ss smoke`. Outputs in `out/smoke/`.
+Run 2026-11-24T06:11:16+00:00 by `.\ss smoke`. Outputs in `out/smoke/`.
 WARN in a render check is about the sample footage (a dark 1422x430 preview strip), not the pipeline.
 
 | Check | Result | Detail |
@@ -8,7 +8,7 @@ WARN in a render check is about the sample footage (a dark 1422x430 preview stri
 | Installed tools | **PASS** | git: git version 2.55.0.windows.3; node: v24.19.0; ffmpeg: ffmpeg version 9.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers; ffmpeg filters: all present; obs: installed; kdenlive: installed; kokoro venv: installed; kokoro model: present |
 | Glossary corrections | **PASS** | 12 term-correction checks passed |
 | Whisper transcription | **PASS** | glossary: 'slug's Hoh' -> 'Slugshot' / 27 words, 11 caption lines -> C:\Users\runni\slugshot marketing\out\smoke\narration.srt / Check these low-confidence words: Slugshot |
-| Kokoro voice + Whisper round trip | **PASS** | Whisper heard: "He brought Inferno, I brought Floppy, Slugshot on Roblox" |
+| Kokoro voice + Whisper round trip | **WARN** | Whisper heard: "He brought Inferno, I brought Floppy, Slugshot on Roblox . ." |
 | Audio tidy + ducked mix | **PASS** | narration 12.7s -> tidied 10.4s; ducked music mix written |
 | FFmpeg vertical render + QC | **PASS** | out\smoke\ffmpeg_vertical.mp4 13.1s |
 | Remotion template render + QC | **PASS** | out\smoke\smoke.mp4 15.2s |

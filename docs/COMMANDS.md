@@ -22,6 +22,7 @@ Run from the workspace folder: `.\ss <command>` (PowerShell) or `ss <command>` (
 | `studio` | Remotion Studio (Vertical and Story compositions) | none | browser | uses files staged in `public\` |
 | `clip <args>` | MakeMyClip CLI (silence removal, trims, reframe, export to Resolve/Premiere XML) | files under `media\` | MakeMyClip workspace in `media\` | paths outside `media\` refused |
 | `yt discover/stats/report/prune` | public YouTube stats (key in `.env`) | queries / IDs | `data\local\youtube_snapshots.csv`; report + data dictionary in `exports\share\` | 30-day storage; per-video maths only; free quota only (ask before anything paid); share for internal analysis, don't publish |
+| `roblox validate/list/audit/build/rebuild/switch/guard/compare/import` | Roblox-native filming: scene spec checks, the isolated marketing place, take repeatability, take import (details: `roblox-native/README.md`) | scene specs in `roblox-native\scenes\`, take manifests, recordings | marketing place in `roblox-native\studio\`, raw footage + `.take.json` in `media\raw\` | Studio MCP only on the marketing place (enforced hook); `switch` only when you ask; never publishes |
 | `export` | checks hand-entered platform metrics, writes a shareable copy | `data\local\platform_metrics.csv` | `exports\share\platform_metrics_<date>.csv` | numbers must be typed in from each platform's analytics |
 
 ## Edit file keys (`assemble`)

@@ -1,0 +1,5 @@
+{
+  "_about": "Reusable production assets referenced by scene specs. Empty until production preparation. Animation entry: {\"id\": \"rbxassetid://...\", \"rig\": \"R15|slug:<species>\", \"source\": \"how it was made\", \"licence\": \"original|...\", \"approved\": false, \"markers\": {\"FIRE\": {\"type\": \"vfx\", \"effect\": \"burst\"}}}. Sound entry: {\"id\": \"rbxassetid://...\", \"volume\": 0.6, \"licence\": \"...\"}. Only add assets the owner has approved; never Floppy transform/ability animations.",
+  "animations": {},
+  "sounds": {}
+}

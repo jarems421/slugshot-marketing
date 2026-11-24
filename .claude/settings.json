@@ -26,7 +26,11 @@
       "PowerShell(npm.cmd run clip *)",
       "PowerShell(node node_modules/@makemyclip/*)",
       "PowerShell(node node_modules\\@makemyclip\\*)",
-      "PowerShell(node_modules\\.bin\\clip *)"
+      "PowerShell(node_modules\\.bin\\clip *)",
+      "Bash(*StudioMCP*)",
+      "Bash(*mcp.bat*)",
+      "PowerShell(*StudioMCP*)",
+      "PowerShell(*mcp.bat*)"
     ],
     "ask": [
       "Edit(./.env)",
@@ -48,7 +52,38 @@
       "PowerShell(git push -f*)",
       "PowerShell(git checkout -- *)",
       "PowerShell(git restore *)",
-      "PowerShell(git branch -D *)"
+      "PowerShell(git branch -D *)",
+      "mcp__Roblox_Studio__insert_asset",
+      "mcp__Roblox_Studio__upload_image",
+      "mcp__Roblox_Studio__open_cloud_invoke",
+      "mcp__Roblox_Studio__generate_mesh",
+      "mcp__Roblox_Studio__generate_material",
+      "mcp__Roblox_Studio__generate_procedural_model",
+      "mcp__Roblox_Studio__generate_texture",
+      "mcp__Roblox_Studio__generate_scene",
+      "mcp__Roblox_Studio__generate_avatar",
+      "mcp__Roblox_Studio__generate_animation",
+      "mcp__Roblox_Studio__auto_setup_avatar",
+      "mcp__Roblox_Studio__segment_mesh",
+      "mcp__Roblox_Studio__subagent",
+      "mcp__Roblox_Studio__create_skill",
+      "mcp__Roblox_Studio__edit_skill"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__Roblox_Studio__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.venv/Scripts/python.exe\" \"$CLAUDE_PROJECT_DIR/roblox-native/tools/studio_guard.py\"",
+            "timeout": 40,
+            "onFailure": "block",
+            "statusMessage": "Checking the Studio target is the marketing place..."
+          }
+        ]
+      }
     ]
   }
 }

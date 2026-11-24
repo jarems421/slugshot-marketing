@@ -1,0 +1,5 @@
+captured_utc=2026-11-24T05:44:13Z
+game_head=08fee46d4ee318c875d3c089115e8ee41c3ad993
+game_status_sha=f031082664b5e568
+source_build_sha256=dd6f7f50f30e794157fa2972c1e3a581afc1401d4918f71d17af7e3874db6b5b
+source_build_mtime=2026-11-22 23:03:31.977318400 +0000

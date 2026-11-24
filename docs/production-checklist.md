@@ -20,6 +20,17 @@ Production work that happens once content-making starts. None of it blocks the i
 - [ ] **Brand fonts.** Choose a display font that suits "Living Comic-Book Fantasy" (licensed for video), put it in `assets\brand\`, then have Claude switch the Remotion template from Arial Black to it.
 - [ ] **Brand end card.** Logo or title art for the end card, once it exists in the game repo or is designed.
 
+## Roblox-native filming (`roblox-native/README.md`)
+
+- [ ] **Animation library.** Original animations (Animation Editor or R15 Animation Capture) for the first skits and reactions, each approved and logged in `roblox-native/library/library.json` with its source and licence. No Floppy transform or ability animations.
+- [ ] **Sets.** Named marks for lobby, arena and grove locations, as `place` sets in scene specs.
+- [ ] **Real actors.** Slug rigs and player avatars cloned from the place instead of stand-ins; facial expressions where rigs have FaceControls.
+- [ ] **First OBS take.** Record a staged take with OBS ("Slugshot Clean Stage"), import it with `ss roblox import --video-start-ms`, and check the trim.
+- [ ] **Real PvP recording** and, if useful, multi-client staged gameplay and a replay recorder for second angles.
+- [ ] **First skit and first hybrid bridge** (Roblox -> Flow cutaway -> Roblox), labelled.
+- [ ] **OBS WebSocket automation**, once manual recording is routine.
+- [ ] **Motion Tools licence.** Ask the author; until then it stays out.
+
 ## Results
 
 - [ ] **First posts and the content log.** Record each upload in `data\local\platform_metrics.csv` with its `experiment_id`, then `ss export`.

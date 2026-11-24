@@ -6,6 +6,8 @@ Before scripting any mechanic, check [docs/game-truth.md](docs/game-truth.md). T
 
 More detail: **[command reference](docs/COMMANDS.md)** · [Flow and Gemini hand-offs](docs/flow-and-gemini.md) · [inventory and status](docs/INVENTORY.md) · [tool research](docs/tool-research.md) · [YouTube API rules](docs/youtube-api-policy.md) · [latest smoke test](reports/smoke-test.md) · [readiness report](reports/readiness-2026-11-24.md)
 
+**Roblox first, AI-enhanced second.** Most videos are filmed in Roblox: real gameplay, plus staged scenes and skits in an isolated copy of the game (`.\ss roblox ...`, [roblox-native/README.md](roblox-native/README.md)). Flow/anime/manga cutaways are short additions. English and Spanish versions share the same visual footage and differ in narration, captions, on-screen text and timing.
+
 Creative editing judgement (pacing, cuts, captions emphasis, audio, formats, review) lives in the Claude Code skill `.claude/skills/slugshot-video-editing/`. Claude loads it for any Slugshot editing or review task, next to the official Remotion skill.
 
 ## Commands
@@ -95,6 +97,7 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 | `scripts/` | the Python commands behind `ss` | yes |
 | `reports/` | smoke-test report | yes |
 | `.claude/` | project skill (Remotion), permission rules | yes |
+| `roblox-native/` | Roblox-native filming: runtime, scene specs, tools; the marketing place and takes stay local | code yes; `.rbxlx` and `capture/` no |
 | `vendor/` | reviewed third-party source clones | no |
 
 ## CSV files
@@ -112,6 +115,7 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 - `.env` holds the YouTube key and is git-ignored; `.env.example` must only ever hold `YOUTUBE_API_KEY=` with nothing after it.
 - MakeMyClip: its MCP server and browser UI refuse files outside `media\` (tested). Its CLI doesn't check paths, so `ss clip` does, including absolute paths, other drives and links.
 - `.claude/settings.json` (for Claude sessions here): blocks reading `.env` and calling the MakeMyClip CLI directly; asks before recursive deletes and destructive git commands. The game repo can be read and copied from; Claude asks before changing game files unless you explicitly request it. These rules guard against mistakes, not against you.
+- Roblox Studio: Claude's Studio MCP calls are refused unless only `SlugshotMarketing.rbxlx` is open and its marker matches (a hook, tested live). The marketing place is never published.
 - Money: nothing here costs anything. Claude asks before any paid request, billing change or subscription.
 - Remotion renders use the Free License flag. If Slugshot becomes a company of more than 3 people, buy a company licence.
 

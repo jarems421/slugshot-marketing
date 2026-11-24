@@ -14,6 +14,7 @@ Slugshot marketing commands. Run from this folder as `.\ss <command> ...` (ss.cm
   candidates <video> <gemini.csv>            cut Gemini's timestamped moments (+/- 5 s) for human review
   qc <file.mp4> ...                          technical checks: size, codec, loudness, black/frozen/silent parts
   sheet <file.mp4> [--every 1]               frame sheet for creative review (<file>.sheet.jpg)
+  roblox <validate|list|audit|build|switch|rebuild|guard|compare|import>   Roblox-native filming (roblox-native/README.md)
   studio                                     open Remotion Studio to tweak the template
   clip <args>                                MakeMyClip CLI, confined to media\ (e.g. `.\ss clip ui`)
   yt <args>                                  YouTube collector (scripts\yt_collect.py -h)
@@ -69,6 +70,22 @@ switch ($cmd) {
     'assemble' { & $Py scripts\assemble.py @rest }
     'candidates' { & $Py scripts\candidates.py @rest }
     'sheet' { & $Py scripts\sheet.py @rest }
+    'roblox' {
+        $sub = $rest[0]
+        $more = @($rest | Select-Object -Skip 1)
+        switch ($sub) {
+            'validate' { & $Py roblox-native\tools\scene.py validate @more }
+            'list' { & $Py roblox-native\tools\scene.py list }
+            'audit' { & $Py roblox-native\tools\audit_place.py roblox-native\studio\SlugshotMarketing.rbxlx @more }
+            'build' { & $Py roblox-native\tools\make_marketing_place.py @more }
+            'switch' { & $Py roblox-native\tools\studio_switch.py @more }
+            'rebuild' { & $Py roblox-native\tools\studio_switch.py --rebuild }
+            'guard' { & $Py roblox-native\tools\studio_guard.py --probe }
+            'compare' { & $Py roblox-native\tools\take.py compare @more }
+            'import' { & $Py roblox-native\tools\take.py import @more }
+            default { 'ss roblox validate|list|audit|build|switch|rebuild|guard|compare|import (see roblox-native/README.md)' }
+        }
+    }
     'qc' { & $Py scripts\qc.py @rest }
     'studio' { & npm.cmd run studio }
     'clip' {

@@ -1,0 +1,1479 @@
+{
+ "place": "roblox-native\\studio\\SlugshotMarketing.source.rbxlx",
+ "instances": 620,
+ "scripts": 168,
+ "script_classes": {
+  "LocalScript": 31,
+  "ModuleScript": 127,
+  "Script": 10
+ },
+ "service_settings": [
+  {
+   "service": "ServerScriptService",
+   "property": "LoadStringEnabled",
+   "value": "(default)"
+  }
+ ],
+ "findings": [
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 6,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local InsertService = game:GetService(\"InsertService\")"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 6,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local InsertService = game:GetService(\"InsertService\")"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 37,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local container = InsertService:LoadAsset(asset.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 37,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "local container = InsertService:LoadAsset(asset.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 92,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local container = InsertService:LoadAsset(id)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 92,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "local container = InsertService:LoadAsset(id)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 175,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local container = InsertService:LoadAsset(id)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 175,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "local container = InsertService:LoadAsset(id)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 256,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local container = InsertService:LoadAsset(id)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 256,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "local container = InsertService:LoadAsset(id)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 345,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local container = InsertService:LoadAsset(id)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Combat",
+   "class": "Script",
+   "line": 345,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "local container = InsertService:LoadAsset(id)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 9,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local InsertService = game:GetService(\"InsertService\")"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 9,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local InsertService = game:GetService(\"InsertService\")"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 84,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local ok, model = pcall(InsertService.LoadAsset, InsertService, spec.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 84,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "local ok, model = pcall(InsertService.LoadAsset, InsertService, spec.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 84,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local ok, model = pcall(InsertService.LoadAsset, InsertService, spec.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 289,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local ok2, container = pcall(InsertService.LoadAsset, InsertService, asset.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 289,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "local ok2, container = pcall(InsertService.LoadAsset, InsertService, asset.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 289,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local ok2, container = pcall(InsertService.LoadAsset, InsertService, asset.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 385,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "pcall(InsertService.LoadAsset, InsertService, infernoAssets.base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 385,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "pcall(InsertService.LoadAsset, InsertService, infernoAssets.base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 385,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "pcall(InsertService.LoadAsset, InsertService, infernoAssets.base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 448,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "pcall(InsertService.LoadAsset, InsertService, (require :: any)(rammstoneAsset).base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 448,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "pcall(InsertService.LoadAsset, InsertService, (require :: any)(rammstoneAsset).base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 448,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "pcall(InsertService.LoadAsset, InsertService, (require :: any)(rammstoneAsset).base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 513,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "pcall(InsertService.LoadAsset, InsertService, (require :: any)(aquabeekAsset).base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 513,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "pcall(InsertService.LoadAsset, InsertService, (require :: any)(aquabeekAsset).base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 513,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "pcall(InsertService.LoadAsset, InsertService, (require :: any)(aquabeekAsset).base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 579,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "pcall(InsertService.LoadAsset, InsertService, (require :: any)(slugAsset).base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 579,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "pcall(InsertService.LoadAsset, InsertService, (require :: any)(slugAsset).base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "class": "Script",
+   "line": 579,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "pcall(InsertService.LoadAsset, InsertService, (require :: any)(slugAsset).base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.HubArt",
+   "class": "Script",
+   "line": 8,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local InsertService = game:GetService(\"InsertService\")"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.HubArt",
+   "class": "Script",
+   "line": 8,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local InsertService = game:GetService(\"InsertService\")"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.HubArt",
+   "class": "Script",
+   "line": 209,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "return InsertService:LoadAsset(info.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.HubArt",
+   "class": "Script",
+   "line": 209,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "return InsertService:LoadAsset(info.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.HubArt",
+   "class": "Script",
+   "line": 290,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "return InsertService:LoadAsset(info.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.HubArt",
+   "class": "Script",
+   "line": 290,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "return InsertService:LoadAsset(info.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.HubArt",
+   "class": "Script",
+   "line": 2274,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "return InsertService:LoadAsset(asset.base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.HubArt",
+   "class": "Script",
+   "line": 2274,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "return InsertService:LoadAsset(asset.base.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.HubArt",
+   "class": "Script",
+   "line": 2349,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "return InsertService:LoadAsset(asset.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.HubArt",
+   "class": "Script",
+   "line": 2349,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "return InsertService:LoadAsset(asset.model)"
+  },
+  {
+   "risk": "persistent_data",
+   "path": "ServerScriptService.LobbySettings.SettingsStore",
+   "class": "ModuleScript",
+   "line": 21,
+   "disabled": false,
+   "match": "DataStoreService",
+   "code": "return Store.new(game:GetService(\"DataStoreService\"):GetDataStore(name)), nil"
+  },
+  {
+   "risk": "persistent_data",
+   "path": "ServerScriptService.LobbySettings.SettingsStore",
+   "class": "ModuleScript",
+   "line": 21,
+   "disabled": false,
+   "match": "GetDataStore",
+   "code": "return Store.new(game:GetService(\"DataStoreService\"):GetDataStore(name)), nil"
+  },
+  {
+   "risk": "persistent_data",
+   "path": "ServerScriptService.SettingsPersistence.SettingsStore",
+   "class": "ModuleScript",
+   "line": 21,
+   "disabled": false,
+   "match": "DataStoreService",
+   "code": "return Store.new(game:GetService(\"DataStoreService\"):GetDataStore(name)), nil"
+  },
+  {
+   "risk": "persistent_data",
+   "path": "ServerScriptService.SettingsPersistence.SettingsStore",
+   "class": "ModuleScript",
+   "line": 21,
+   "disabled": false,
+   "match": "GetDataStore",
+   "code": "return Store.new(game:GetService(\"DataStoreService\"):GetDataStore(name)), nil"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Training.TrainingArena",
+   "class": "Script",
+   "line": 6,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local InsertService = game:GetService(\"InsertService\")"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Training.TrainingArena",
+   "class": "Script",
+   "line": 6,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local InsertService = game:GetService(\"InsertService\")"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Training.TrainingArena",
+   "class": "Script",
+   "line": 319,
+   "disabled": false,
+   "match": "InsertService",
+   "code": "local container = InsertService:LoadAsset(draft.model)"
+  },
+  {
+   "risk": "asset_by_id",
+   "path": "ServerScriptService.Training.TrainingArena",
+   "class": "Script",
+   "line": 319,
+   "disabled": false,
+   "match": "LoadAsset",
+   "code": "local container = InsertService:LoadAsset(draft.model)"
+  }
+ ],
+ "script_list": [
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.AquabeekAsset",
+   "disabled": false,
+   "lines": 7
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.BoonDocAsset",
+   "disabled": false,
+   "lines": 7
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.BoonDocSourceFactory",
+   "disabled": false,
+   "lines": 59
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.Combat",
+   "disabled": false,
+   "lines": 414
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.Combat.Abilities",
+   "disabled": false,
+   "lines": 576
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.Combat.AbilityRuntime",
+   "disabled": false,
+   "lines": 1151
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.Combat.BoonDocRuntime",
+   "disabled": false,
+   "lines": 248
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.Combat.LanternShot",
+   "disabled": false,
+   "lines": 267
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.Combat.PhosphoroRuntime",
+   "disabled": false,
+   "lines": 364
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.Combat.RammstoneRuntime",
+   "disabled": false,
+   "lines": 261
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.Combat.RockWallPlacement",
+   "disabled": false,
+   "lines": 293
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.Combat.SettingsSchema",
+   "disabled": false,
+   "lines": 107
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.Combat.TormatoTwister",
+   "disabled": false,
+   "lines": 500
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.FloppyAsset",
+   "disabled": false,
+   "lines": 11
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.GooArt",
+   "disabled": false,
+   "lines": 99
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.InfernoAsset",
+   "disabled": false,
+   "lines": 78
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LobbyScale.far_side",
+   "disabled": false,
+   "lines": 2960
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LobbyScale.grove_crystals",
+   "disabled": false,
+   "lines": 55
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LobbyScale.grove_feet",
+   "disabled": false,
+   "lines": 6
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LobbyScale.grove_flora",
+   "disabled": false,
+   "lines": 1
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LobbyScale.grove_mountain",
+   "disabled": false,
+   "lines": 131
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LobbyScale.grove_slugs",
+   "disabled": false,
+   "lines": 151
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LobbyScale.grove_stream",
+   "disabled": false,
+   "lines": 1
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LobbyScale.grove_trees",
+   "disabled": false,
+   "lines": 302
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LobbyScale.gun_side",
+   "disabled": false,
+   "lines": 2427
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LobbyScale.layout",
+   "disabled": false,
+   "lines": 178
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LobbyScale.rim_shape",
+   "disabled": false,
+   "lines": 295
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.LookPack",
+   "disabled": false,
+   "lines": 463
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.MapLayouts.CinderRift",
+   "disabled": false,
+   "lines": 727
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.MovementExperiment.Clips",
+   "disabled": false,
+   "lines": 280
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.MovementExperiment.Config",
+   "disabled": false,
+   "lines": 401
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.MovementExperiment.KeybindDefinitions",
+   "disabled": false,
+   "lines": 56
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.MovementExperiment.MotionMath",
+   "disabled": false,
+   "lines": 39
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.MovementExperiment.OriginalClips",
+   "disabled": false,
+   "lines": 1495
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.MovementPrivateClips",
+   "disabled": false,
+   "lines": 423
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.OwnerFireFactory",
+   "disabled": false,
+   "lines": 59
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.PhosphoroAsset",
+   "disabled": false,
+   "lines": 7
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.PhosphoroLightFactory",
+   "disabled": false,
+   "lines": 59
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.RammstoneAsset",
+   "disabled": false,
+   "lines": 7
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.RammstoneSourceFactory",
+   "disabled": false,
+   "lines": 59
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.Shared.Foundation",
+   "disabled": false,
+   "lines": 10
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.TormatoAsset",
+   "disabled": false,
+   "lines": 7
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.TrailArt",
+   "disabled": false,
+   "lines": 9
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.TrainingFloor",
+   "disabled": false,
+   "lines": 151
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ReplicatedStorage.VfxEmit",
+   "disabled": false,
+   "lines": 508
+  },
+  {
+   "class": "Script",
+   "path": "ServerScriptService.Combat",
+   "disabled": false,
+   "lines": 986
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.FloppyAppearance",
+   "disabled": false,
+   "lines": 81
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.FloppyIntegration.AquabeekAppearance",
+   "disabled": false,
+   "lines": 36
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.FloppyIntegration.BoonDocAppearance",
+   "disabled": false,
+   "lines": 36
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.FloppyIntegration.FloppyAppearance",
+   "disabled": false,
+   "lines": 81
+  },
+  {
+   "class": "Script",
+   "path": "ServerScriptService.FloppyIntegration.FloppyBlaster",
+   "disabled": false,
+   "lines": 681
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.FloppyIntegration.InfernoAppearance",
+   "disabled": false,
+   "lines": 91
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.FloppyIntegration.PhosphoroAppearance",
+   "disabled": false,
+   "lines": 31
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.FloppyIntegration.RammstoneAppearance",
+   "disabled": false,
+   "lines": 51
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.FloppyIntegration.TormatoAppearance",
+   "disabled": false,
+   "lines": 36
+  },
+  {
+   "class": "Script",
+   "path": "ServerScriptService.HubArt",
+   "disabled": false,
+   "lines": 3237
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.InfernoAppearance",
+   "disabled": false,
+   "lines": 91
+  },
+  {
+   "class": "Script",
+   "path": "ServerScriptService.LobbySettings.SettingsPersistence",
+   "disabled": false,
+   "lines": 200
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.LobbySettings.SettingsStore",
+   "disabled": false,
+   "lines": 82
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.Maps.MapRuntime",
+   "disabled": false,
+   "lines": 295
+  },
+  {
+   "class": "Script",
+   "path": "ServerScriptService.Maps.MatchService",
+   "disabled": false,
+   "lines": 525
+  },
+  {
+   "class": "Script",
+   "path": "ServerScriptService.MovementSandbox",
+   "disabled": false,
+   "lines": 679
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.MovementSandbox.Arena",
+   "disabled": false,
+   "lines": 1048
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.MovementSandbox.LobbySpawns",
+   "disabled": false,
+   "lines": 45
+  },
+  {
+   "class": "Script",
+   "path": "ServerScriptService.Server",
+   "disabled": false,
+   "lines": 6
+  },
+  {
+   "class": "Script",
+   "path": "ServerScriptService.SettingsPersistence.SettingsPersistence",
+   "disabled": false,
+   "lines": 200
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.SettingsPersistence.SettingsStore",
+   "disabled": false,
+   "lines": 82
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.Training.Armory",
+   "disabled": false,
+   "lines": 18
+  },
+  {
+   "class": "Script",
+   "path": "ServerScriptService.Training.Equipment",
+   "disabled": false,
+   "lines": 81
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerScriptService.Training.Motion",
+   "disabled": false,
+   "lines": 21
+  },
+  {
+   "class": "Script",
+   "path": "ServerScriptService.Training.TrainingArena",
+   "disabled": false,
+   "lines": 865
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerStorage.BlasterMesh",
+   "disabled": false,
+   "lines": 193
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerStorage.FloppyAsset",
+   "disabled": false,
+   "lines": 11
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerStorage.HubAssets",
+   "disabled": false,
+   "lines": 522
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerStorage.InfernoAsset",
+   "disabled": false,
+   "lines": 78
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerStorage.LobbyAssets",
+   "disabled": false,
+   "lines": 684
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerStorage.TrainingDraft",
+   "disabled": false,
+   "lines": 4
+  },
+  {
+   "class": "ModuleScript",
+   "path": "ServerStorage.TrainingLayout",
+   "disabled": false,
+   "lines": 414
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.AquabeekMotion",
+   "disabled": false,
+   "lines": 565
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.BoonDocMotion",
+   "disabled": false,
+   "lines": 368
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Client",
+   "disabled": false,
+   "lines": 6
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.AbilityClient",
+   "disabled": false,
+   "lines": 885
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.AdsSight",
+   "disabled": false,
+   "lines": 270
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.AimAssist",
+   "disabled": false,
+   "lines": 283
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.Backdrop",
+   "disabled": false,
+   "lines": 92
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.BoonDocClient",
+   "disabled": false,
+   "lines": 111
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.BoonDocEffects",
+   "disabled": false,
+   "lines": 1740
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.BurningClient",
+   "disabled": false,
+   "lines": 68
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.CanisterIdle",
+   "disabled": false,
+   "lines": 161
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.CombatClient",
+   "disabled": false,
+   "lines": 1098
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.CurtainHologram",
+   "disabled": false,
+   "lines": 592
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.FlightTrail",
+   "disabled": false,
+   "lines": 248
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.FloppyRecovery",
+   "disabled": false,
+   "lines": 628
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.FlowFire",
+   "disabled": false,
+   "lines": 1596
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.FlowTrail",
+   "disabled": false,
+   "lines": 246
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.Goo",
+   "disabled": false,
+   "lines": 265
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.GooBar",
+   "disabled": false,
+   "lines": 291
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.ImpactFx",
+   "disabled": false,
+   "lines": 192
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.InfernoAbilityFx",
+   "disabled": false,
+   "lines": 1386
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.InfernoEffects",
+   "disabled": false,
+   "lines": 1366
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.InspectActs",
+   "disabled": false,
+   "lines": 206
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.Inventory",
+   "disabled": false,
+   "lines": 1416
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.LanternTargeting",
+   "disabled": false,
+   "lines": 81
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.LoadingScreen",
+   "disabled": false,
+   "lines": 588
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.NameTags",
+   "disabled": false,
+   "lines": 116
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.PhosphoroAbilityFx",
+   "disabled": false,
+   "lines": 234
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.PhosphoroClient",
+   "disabled": false,
+   "lines": 195
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.PhosphoroEffects",
+   "disabled": false,
+   "lines": 737
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.PvpFx",
+   "disabled": false,
+   "lines": 660
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.PvpHud",
+   "disabled": false,
+   "lines": 442
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.PvpTheme",
+   "disabled": false,
+   "lines": 161
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.RammstonePunchFx",
+   "disabled": false,
+   "lines": 1556
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.RockWallArt",
+   "disabled": false,
+   "lines": 986
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.RockWallHologram",
+   "disabled": false,
+   "lines": 221
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.RockWallPreview",
+   "disabled": false,
+   "lines": 236
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.RockWallStoneTexture",
+   "disabled": false,
+   "lines": 77
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.RockWallWear",
+   "disabled": false,
+   "lines": 761
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.Settings",
+   "disabled": false,
+   "lines": 1677
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.SettingsSync",
+   "disabled": false,
+   "lines": 94
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.SlugIcon",
+   "disabled": false,
+   "lines": 500
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.SlugIdle",
+   "disabled": false,
+   "lines": 427
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.SlugTransformation",
+   "disabled": false,
+   "lines": 719
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.SlugVisuals",
+   "disabled": false,
+   "lines": 754
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.TormatoEffects",
+   "disabled": false,
+   "lines": 1582
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.TransformationStyles",
+   "disabled": false,
+   "lines": 157
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.TuningPanel",
+   "disabled": false,
+   "lines": 202
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.Viewmodel",
+   "disabled": false,
+   "lines": 692
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Combat.MotionKit",
+   "disabled": false,
+   "lines": 168
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.FloppyFace",
+   "disabled": false,
+   "lines": 386
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.FloppyIdle",
+   "disabled": false,
+   "lines": 561
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.GroveSlugs",
+   "disabled": false,
+   "lines": 564
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.GroveWater",
+   "disabled": false,
+   "lines": 123
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.HubMotion",
+   "disabled": false,
+   "lines": 790
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.InfernoInspect",
+   "disabled": false,
+   "lines": 238
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.InfernoInspect.Flame",
+   "disabled": false,
+   "lines": 79
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.InfernoInspect.Flow",
+   "disabled": false,
+   "lines": 70
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.InfernoInspect.MouthRest",
+   "disabled": false,
+   "lines": 25
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.InfernoInspect.Rig",
+   "disabled": false,
+   "lines": 333
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.InfernoInspect.Surface",
+   "disabled": false,
+   "lines": 210
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.InfernoMotion",
+   "disabled": false,
+   "lines": 1163
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.InfernoTeeth",
+   "disabled": false,
+   "lines": 199
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.LobbyFirstPerson",
+   "disabled": false,
+   "lines": 22
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.LobbyScale.FallFade",
+   "disabled": false,
+   "lines": 39
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Maps.MatchClient",
+   "disabled": false,
+   "lines": 323
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox",
+   "disabled": false,
+   "lines": 1803
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.AcrobaticCamera",
+   "disabled": false,
+   "lines": 166
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.Ads",
+   "disabled": false,
+   "lines": 47
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.AimCursor",
+   "disabled": false,
+   "lines": 111
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.BlasterAnimator",
+   "disabled": false,
+   "lines": 714
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.BlasterMotion",
+   "disabled": false,
+   "lines": 274
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.BlasterRecoil",
+   "disabled": false,
+   "lines": 215
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.CrosshairStyles",
+   "disabled": false,
+   "lines": 212
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.FirstPerson",
+   "disabled": false,
+   "lines": 88
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.FirstPersonFlip",
+   "disabled": false,
+   "lines": 61
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.HitReaction",
+   "disabled": false,
+   "lines": 142
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.Keybinds",
+   "disabled": false,
+   "lines": 345
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.Presentation",
+   "disabled": false,
+   "lines": 1512
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.Reticle",
+   "disabled": false,
+   "lines": 376
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.SlugInspect",
+   "disabled": false,
+   "lines": 316
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.Traversal",
+   "disabled": false,
+   "lines": 389
+  },
+  {
+   "class": "ModuleScript",
+   "path": "StarterPlayer.StarterPlayerScripts.MovementSandbox.Tuning",
+   "disabled": false,
+   "lines": 189
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.PhosphoroMotion",
+   "disabled": false,
+   "lines": 264
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.RammstoneMotion",
+   "disabled": false,
+   "lines": 1176
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.RocklockBlaster",
+   "disabled": false,
+   "lines": 51
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.TormatoMotion",
+   "disabled": false,
+   "lines": 331
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Training.Controls",
+   "disabled": false,
+   "lines": 588
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Training.DummyBars",
+   "disabled": false,
+   "lines": 88
+  },
+  {
+   "class": "LocalScript",
+   "path": "StarterPlayer.StarterPlayerScripts.Training.TrainingPortal",
+   "disabled": false,
+   "lines": 249
+  }
+ ]
+}

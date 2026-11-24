@@ -24,16 +24,23 @@ Last updated 2026-11-24. Infrastructure phase complete; production work is in [p
 |---|---|---|---|
 | MakeMyClip/editor | e090b42 | `vendor/makemyclip` (ignored) | source review before installing the npm package |
 | remotion-dev/skills | 89c8afa | `vendor/remotion-skills` (ignored) | source of the installed Remotion skill |
+| zAcherttp/roblox-reel | 4b810e9 | `roblox-native/runtime/vendor/Reel/` (tracked, MIT, unmodified) | camera takes for Roblox-native filming |
+| CutsceneService | 059a60d | `vendor/` (ignored) | MIT; fallback if Reel fails, not installed |
+| Motion Tools | 7ff9b0b | `vendor/` (ignored) | no licence found: deferred |
+| RoPlay | b7ea47a | `vendor/` (ignored) | non-commercial licence: excluded |
+| roblox-studio-agent-plugin | 57d7204 | `vendor/` (ignored) | duplicates the built-in Studio MCP: not installed |
 
 ## Claude Code skills and MCP servers (this project)
 
 | Item | Type | File | Notes |
 |---|---|---|---|
 | `remotion-best-practices` | project skill | `.claude/skills/remotion-best-practices/` | official Remotion guidance, Markdown only (see `SOURCE.txt`) |
+| `slugshot-roblox-production` | project skill (ours) | `.claude/skills/slugshot-roblox-production/` | Roblox-native filming: truth modes, canon, scene specs, Studio safety, capture and hand-off into `ss` |
 | `slugshot-video-editing` | project skill (ours) | `.claude/skills/slugshot-video-editing/` | creative editing judgement: pacing, cuts, zooms, captions, audio, format playbooks, review gates; evidence-labelled A/B/C/D/S |
 | `makemyclip` | MCP server (stdio) | `.mcp.json` | 8 timeline tools; media confined to `media\` (tested). Approve it when Claude Code asks |
 | Permission rules | project settings | `.claude/settings.json` | blocks reading `.env` and direct MakeMyClip CLI calls; asks before recursive deletes and destructive git commands. The game repo is readable and copyable; changes to game files need the owner's request (CLAUDE.md) |
-| Roblox Studio, Blender, Google Drive MCPs | user-level, already present | outside this repo | not used by the toolkit; the owner's Studio session was left alone |
+| Roblox Studio MCP (built-in) | user-level, already present | `%LOCALAPPDATA%\Roblox\mcp.bat` | used for Roblox-native filming, **only on the marketing place**: a PreToolUse hook (`roblox-native/tools/studio_guard.py`) denies every call unless that place is the only one open and its marker matches; Roblox-service tools ask first |
+| Blender, Google Drive MCPs | user-level, already present | outside this repo | not used by the toolkit |
 
 ## Capabilities
 
@@ -61,7 +68,13 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Own-channel retention/watch time | none | no | n/a | **Slugshot channel** (Studio exports, later Analytics API) |
 | Roblox acquisition (share links) | none | no | n/a | **published game** |
 | Dashboard | none | not started (by request) | n/a | n/a |
+| Isolated Roblox marketing place | `ss roblox build/rebuild/audit` | yes (audit, live Studio session) | n/a | n/a |
+| Studio target guard | hook, `ss roblox guard` | yes (live deny and allow) | n/a | n/a |
+| Scene specs + runner (stand-ins) | `ss roblox validate`, `Scene.runJson` | yes (smoke scene, 6 takes) | **performance, humour, look** | real animations, sets, slug rigs |
+| Take repeatability | `ss roblox compare` | yes (one PASS; one at 56 ms cuts / 80 ms cues vs a 50 ms target) | n/a | n/a |
+| Roblox take into the toolkit | `ss roblox import` | yes (Studio capture) | n/a | first OBS recording of a take |
+| Animation library, finished sets, real PvP filming | none | no (production work) | **every animation and set** | production preparation |
 
-Infrastructure: complete. Remaining setup: regenerate and restrict the YouTube key; optionally approve the `makemyclip` MCP server.
+Infrastructure: complete, including Roblox-native filming ([roblox-native/README.md](../roblox-native/README.md)). Remaining setup: regenerate and restrict the YouTube key; optionally approve the `makemyclip` MCP server.
 
 Production items (gameplay recording, voice selection, licensed music, SFX, brand fonts, real-world production tests) are deferred to [production-checklist.md](production-checklist.md). They don't block the infrastructure.

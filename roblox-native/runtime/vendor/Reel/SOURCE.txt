@@ -1,0 +1,4 @@
+Reel by zAcherttp, MIT (see LICENSE).
+Source: https://github.com/zAcherttp/roblox-reel commit 4b810e9 (2026-10-14), src/Reel copied unmodified on 2026-11-24.
+Reviewed: strict Luau, no dependencies, no HttpService/loadstring/asset loading; client-side camera, UI hiding, markers.
+To update: re-clone, diff, copy src/Reel, update this note.

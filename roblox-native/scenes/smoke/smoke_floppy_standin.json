@@ -1,0 +1,37 @@
+{
+  "id": "smoke_floppy_standin",
+  "note": "Technical smoke test only: part-built stand-ins on a Reel cyc. Not content.",
+  "format": "vertical",
+  "truth": {
+    "mode": "staged_fiction",
+    "source": "staged_runtime",
+    "gameplay_mechanics": "none",
+    "match_outcome": "n/a",
+    "label": "TEST - not gameplay"
+  },
+  "set": {"kind": "cyc", "at": [4000, 1500, 4000], "radius": 18},
+  "marks": {
+    "A": [-4, 0, 0, 90],
+    "B": [4, 0, 2, -90],
+    "slug": [2, 0, -2, 0]
+  },
+  "actors": {
+    "hero": {"kind": "standin_humanoid", "mark": "A", "face": "floppy"},
+    "floppy": {"kind": "standin_slug", "identity": "floppy", "mark": "slug", "face": "hero"}
+  },
+  "shots": [
+    {"preset": "two_shot", "targets": ["hero", "floppy"], "duration": 1.5},
+    {"preset": "slug_low_angle", "target": "floppy", "duration": 1.2},
+    {"preset": "orbit_reveal", "target": "floppy", "duration": 2.0, "radius": 7},
+    {"preset": "snap_zoom", "target": "hero", "duration": 1.3}
+  ],
+  "timeline": [
+    {"time": 0.2, "marker": "ACTION"},
+    {"time": 0.5, "actor": "hero", "action": "face", "target": "floppy"},
+    {"time": 1.6, "actor": "floppy", "action": "hop", "height": 1.5, "duration": 0.45},
+    {"time": 1.8, "cue": {"type": "vfx", "effect": "burst", "actor": "floppy"}},
+    {"time": 3.0, "actor": "hero", "action": "move_to", "mark": "B", "duration": 1.0},
+    {"time": 4.8, "marker": "PAYOFF"}
+  ],
+  "capture": {"ui": "hidden", "sample": 0.5}
+}
