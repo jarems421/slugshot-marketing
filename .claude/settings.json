@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(//c/Users/runni/slugshot/**)",
+      "Edit(../slugshot/**)",
+      "Bash(npx clip *)",
+      "Bash(npx --no-install clip *)",
+      "Bash(npx @makemyclip/editor *)",
+      "Bash(npx -y @makemyclip/editor *)",
+      "Bash(npm run clip *)",
+      "Bash(node node_modules/@makemyclip/*)",
+      "Bash(node ./node_modules/@makemyclip/*)",
+      "Bash(node_modules/.bin/clip *)",
+      "PowerShell(npx clip *)",
+      "PowerShell(npx.cmd clip *)",
+      "PowerShell(npx --no-install clip *)",
+      "PowerShell(npx.cmd --no-install clip *)",
+      "PowerShell(npx @makemyclip/editor *)",
+      "PowerShell(npx -y @makemyclip/editor *)",
+      "PowerShell(npm run clip *)",
+      "PowerShell(npm.cmd run clip *)",
+      "PowerShell(node node_modules/@makemyclip/*)",
+      "PowerShell(node node_modules\\@makemyclip\\*)",
+      "PowerShell(node_modules\\.bin\\clip *)"
+    ]
+  }
+}

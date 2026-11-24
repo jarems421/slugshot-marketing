@@ -1,0 +1,184 @@
+r"""Smoke test: run each part of the toolkit once and write reports\smoke-test.md (PASS/WARN/FAIL/BLOCKED).
+
+Uses media\sample\ (clip.mp4, narration.wav) and writes only to out\smoke\. Takes a few minutes
+(Whisper and Kokoro on CPU, one Remotion render). The live YouTube check makes one videos.list
+call (1 quota unit) when a key is in .env. Manual checks are listed at the end of the report.
+"""
+import json
+import os
+import shutil
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+import qc
+import render
+
+ROOT = Path(__file__).resolve().parent.parent
+PY = sys.executable
+PY_TTS = ROOT / ".venv-tts" / "Scripts" / "python.exe"
+SAMPLE = ROOT / "media" / "sample"
+OUT = ROOT / "out" / "smoke"
+NPX = "npx.cmd" if os.name == "nt" else "npx"
+results = []
+
+
+def run(cmd, **kw):
+    return subprocess.run([str(c) for c in cmd], capture_output=True, text=True, cwd=ROOT, **kw)
+
+
+def check(name, fn):
+    try:
+        status, detail = fn()
+    except Exception as e:  # a crash in a check is a FAIL, not a crash of the report
+        status, detail = "FAIL", f"{type(e).__name__}: {e}"
+    results.append((name, status, detail))
+    print(f"{status:8} {name}: {detail}", flush=True)
+
+
+def qc_status(path):
+    overall, res, dur = qc.check(path)
+    issues = "; ".join(f"{r['check']}: {r['detail']}" for r in res if r["status"] != "PASS")
+    return overall, f"{path.relative_to(ROOT)} {dur:.1f}s" + (f" ({issues})" if issues else "")
+
+
+def tools():
+    found = {}
+    for name, cmd in {"git": ["git", "--version"], "node": ["node", "--version"],
+                      "ffmpeg": ["ffmpeg", "-hide_banner", "-version"]}.items():
+        r = run(cmd)
+        found[name] = r.stdout.splitlines()[0] if r.returncode == 0 else "MISSING"
+    filters = run(["ffmpeg", "-hide_banner", "-filters"]).stdout
+    need = ["ass", "loudnorm", "sidechaincompress", "silenceremove", "blackdetect", "freezedetect", "ebur128"]
+    missing_f = [f for f in need if f" {f} " not in filters]
+    found["ffmpeg filters"] = "all present" if not missing_f else "MISSING " + ",".join(missing_f)
+    found["obs"] = "installed" if Path(os.environ["ProgramFiles"], "obs-studio/bin/64bit/obs64.exe").exists() else "MISSING"
+    found["kdenlive"] = "installed" if Path(os.environ["LOCALAPPDATA"], "Programs/Kdenlive/bin/kdenlive.exe").exists() else "MISSING"
+    found["kokoro venv"] = "installed" if PY_TTS.exists() else "MISSING"
+    found["kokoro model"] = "present" if (ROOT / "models/kokoro/kokoro-v1.0.onnx").exists() else "MISSING"
+    missing = [k for k, v in found.items() if "MISSING" in v]
+    return ("FAIL" if missing else "PASS"), "; ".join(f"{k}: {v}" for k, v in found.items())
+
+
+def glossary_test():
+    r = run([PY, "scripts/glossary.py", "test"])
+    n = r.stdout.count("PASS")
+    return ("PASS" if r.returncode == 0 else "FAIL"), f"{n} term-correction checks passed" + (
+        "" if r.returncode == 0 else " - " + [l for l in r.stdout.splitlines() if l.startswith("FAIL")][0])
+
+
+def voice():
+    out = OUT / "kokoro.wav"
+    r = run([PY_TTS, "scripts/voice.py", "He brought Inferno. I brought Floppy. Slugshot, on Roblox.", out])
+    if r.returncode:
+        return "FAIL", r.stderr.strip()[-300:]
+    # Round-trip through Whisper (+ glossary) to check the names come out right.
+    r = run([PY, "scripts/caption.py", out, "--out", OUT / "kokoro"])
+    text = " ".join(l for l in (OUT / "kokoro.srt").read_text(encoding="utf-8").splitlines()
+                    if l and "-->" not in l and not l.isdigit())
+    ok = all(w in text for w in ("Inferno", "Floppy", "Slugshot", "Roblox"))
+    extra = len(text.split()) > 9  # the line has 9 words; more means invented words got through
+    return ("PASS" if ok and not extra else "WARN"), f"Whisper heard: \"{text}\""
+
+
+def whisper():
+    r = run([PY, "scripts/caption.py", SAMPLE / "narration.wav", "--out", OUT / "narration"])
+    if r.returncode:
+        return "FAIL", r.stderr.strip().splitlines()[-1]
+    return "PASS", r.stdout.strip().replace("\n", " | ")
+
+
+def audio():
+    tidy, mixed = OUT / "vo_tidy.wav", OUT / "vo_mixed.wav"
+    bed = OUT / "bed_tone.wav"
+    run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-f", "lavfi", "-i",
+         "aevalsrc=0.3*sin(2*PI*220*t):s=48000:d=6", bed])
+    for cmd in (["tidy", SAMPLE / "narration.wav", tidy, "--speed", "1.08"],
+                ["mix", mixed, "--narration", tidy, "--music", bed]):
+        r = run([PY, "scripts/audio.py", *cmd])
+        if r.returncode:
+            return "FAIL", r.stderr.strip()[-300:]
+    dur = lambda p: float(run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", p]).stdout)
+    return "PASS", f"narration {dur(SAMPLE / 'narration.wav'):.1f}s -> tidied {dur(tidy):.1f}s; ducked music mix written"
+
+
+def ffmpeg_vertical():
+    out = OUT / "ffmpeg_vertical.mp4"
+    r = run([PY, "scripts/vertical.py", SAMPLE / "clip.mp4", out, "--narration", SAMPLE / "narration.wav",
+             "--srt", OUT / "narration.srt", "--hook", "TEST RENDER - not gameplay"])
+    return ("FAIL", r.stderr.strip()[-300:]) if r.returncode else qc_status(out)
+
+
+def remotion():
+    out, overall, res, dur = render.render_one("smoke", str(SAMPLE / "clip.mp4"), "TEST", str(SAMPLE / "narration.wav"),
+                                               str(OUT / "narration.srt"), "TEST RENDER", production=False,
+                                               out_dir=OUT)
+    return qc_status(out)
+
+
+def makemyclip():
+    env = {**os.environ, "MAKEMYCLIP_WORKSPACE": str(ROOT / "media"),
+           "MAKEMYCLIP_FFMPEG_PATH": shutil.which("ffmpeg") or ""}
+    r = run([NPX, "--no-install", "clip", "doctor", "--json"], env=env)
+    if r.returncode:
+        return "FAIL", "clip doctor exited non-zero"
+    return "PASS", "clip doctor OK, workspace = media\\ (whisper.cpp intentionally not installed)"
+
+
+def yt_dry():
+    d = OUT / "yt_dryrun"
+    shutil.rmtree(d, ignore_errors=True)
+    for args in (["discover", "roblox pvp"], ["stats"], ["report"]):
+        r = run([PY, "scripts/yt_collect.py", "--dry-run", "--data-dir", d, *args])
+        if r.returncode:
+            return "FAIL", r.stderr.strip()[-300:]
+    return "PASS", "discover -> stats -> report (+ data dictionary) on fake fixtures, no network"
+
+
+def yt_live():
+    env_file = ROOT / ".env"
+    has_key = os.environ.get("YOUTUBE_API_KEY") or (
+        env_file.exists() and any(l.startswith("YOUTUBE_API_KEY=") and l.split("=", 1)[1].strip()
+                                  for l in env_file.read_text(encoding="utf-8").splitlines()))
+    if not has_key:
+        return "BLOCKED", "no YOUTUBE_API_KEY in .env (needs your Google Cloud key)"
+    d = OUT / "yt_live"
+    shutil.rmtree(d, ignore_errors=True)
+    r = run([PY, "scripts/yt_collect.py", "--data-dir", d, "stats", "--ids", "jNQXAC9IVRw"])  # 1 unit
+    return ("FAIL", (r.stderr or r.stdout).strip()[-300:]) if r.returncode else ("PASS", r.stdout.strip())
+
+
+def main():
+    OUT.mkdir(parents=True, exist_ok=True)
+    started = datetime.now(timezone.utc).replace(microsecond=0)
+    check("Installed tools", tools)
+    check("Glossary corrections", glossary_test)
+    check("Whisper transcription", whisper)
+    check("Kokoro voice + Whisper round trip", voice)
+    check("Audio tidy + ducked mix", audio)
+    check("FFmpeg vertical render + QC", ffmpeg_vertical)
+    check("Remotion template render + QC", remotion)
+    check("MakeMyClip setup", makemyclip)
+    check("YouTube collector dry run", yt_dry)
+    check("YouTube collector live call", yt_live)
+
+    lines = ["# Smoke test", "", f"Run {started.isoformat()} by `.\\ss smoke`. Outputs in `out/smoke/`.",
+             "WARN in a render check is about the sample footage (a dark 1422x430 preview strip), not the pipeline.", "",
+             "| Check | Result | Detail |", "|---|---|---|"]
+    lines += [f"| {n} | **{s}** | {d.replace('|', '/')} |" for n, s, d in results]
+    lines += ["", "## Manual checks (a person must do these)", "",
+              "- Watch `out/smoke/ffmpeg_vertical.mp4` and `out/smoke/remotion.mp4` on a phone: captions readable, "
+              "in time with the voice, clear of the platform buttons; audio clean.",
+              "- Listen to `out/smoke/kokoro.wav`: is the voice good enough to use, or should narration be recorded?",
+              "- Read `out/smoke/narration.srt` against the narration; add new mishearings to config/glossary.json.",
+              "- Record 20 s of real gameplay in OBS and run it through `.\\ss import`, `caption`, `render`."]
+    report = ROOT / "reports" / "smoke-test.md"
+    report.parent.mkdir(exist_ok=True)
+    report.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(report)
+    sys.exit(1 if any(s == "FAIL" for _, s, _ in results) else 0)
+
+
+if __name__ == "__main__":
+    main()

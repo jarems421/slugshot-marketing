@@ -1,0 +1,2 @@
+Copied from https://github.com/remotion-dev/skills commit 89c8afa (2026-11-23), skills/remotion-best-practices, after review on 2026-11-24.
+Markdown only; no scripts run. Matches remotion 4.0.546 in package.json. To update: re-clone, diff, copy.

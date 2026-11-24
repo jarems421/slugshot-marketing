@@ -1,0 +1,18 @@
+﻿# TTS venv (separate so it cannot break Whisper): py -3.13 -m venv .venv-tts; .venv-tts\Scripts\python -m pip install -r requirements-tts.txt
+# Model files (not in git): models\kokoro\kokoro-v1.0.onnx and voices-v1.0.bin from https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0
+attrs==26.1.0
+cffi==2.1.1
+cloudpickle==3.1.3
+dlinfo==2.0.0
+espeakng-loader==0.2.4
+flatbuffers==25.12.19
+joblib==1.6.0
+kokoro-onnx==0.6.1
+numpy==2.5.5
+onnxruntime==1.32.0
+packaging==26.4
+phonemizer==3.6.0
+protobuf==7.36.2
+pycparser==3.12
+soundfile==0.14.0
+typing_extensions==4.16.0

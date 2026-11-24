@@ -1,0 +1,2 @@
+experiment_id,edit_file,format,hook_type,slug,platform,published_url,posted_at_utc,observed_at_utc,views,watch_metric_name,watch_metric_value,likes,comments,shares,saves,profile_visits,link_new_players,production_minutes,notes
+EXAMPLE-001,SS_20261124_PVP_FloppyUnderdog_BestSlug_V01_MASTER.mp4,PVP,underdog,Floppy,tiktok,,2026-11-25T17:00:00Z,2026-11-26T17:00:00Z,,average watch time (s),,,,,,,,,delete this example row

@@ -1,0 +1,2 @@
+https://github.com/jarems421/slugshot
+Local clone: ../slugshot (read-only for marketing work)

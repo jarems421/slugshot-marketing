@@ -1,0 +1,31 @@
+{
+  "_about": "Slugshot terms for captions and voiceover. 'misheard': what Whisper has written instead (matched as whole words, case-insensitive, punctuation ignored). 'say': respelling for TTS only. Names taken from ../slugshot/docs/status.md on 2026-11-24; add new ones as the game changes.",
+  "terms": [
+    {"term": "Slugshot", "say": "Slug-shot", "misheard": ["slug shot", "slug's hoe", "slugs hot", "slug shop", "slugs shot", "slug's shot", "slogshot", "slug-shot"]},
+    {"term": "Roblox", "misheard": ["roblocks", "row blocks", "robloxs"]},
+    {"term": "Floppy", "misheard": ["flopy", "floppie"]},
+    {"term": "Inferno", "misheard": ["in ferno"]},
+    {"term": "Aquabeek", "say": "Aqua-beak", "misheard": ["aqua beak", "aquabeak", "aqua beek", "aqua-beak"]},
+    {"term": "Rammstone", "say": "Ram-stone", "misheard": ["ram stone", "ramstone", "rams stone"]},
+    {"term": "Boon Doc", "misheard": ["boondock", "boon dock", "boondoc", "boon doc"]},
+    {"term": "Tormato", "say": "Tor-mato", "misheard": ["tor mato"]},
+    {"term": "Phosphoro", "say": "Foss-for-oh", "misheard": ["fosforo", "phosphor oh"]},
+    {"term": "Tazerling", "say": "Taser-ling", "misheard": ["taser ling", "taserling", "tazer ling"]},
+    {"term": "Arachnet", "say": "Arack-net", "misheard": ["arach net", "arack net"]},
+    {"term": "Frostcrawler", "misheard": ["frost crawler"]},
+    {"term": "Vinedrill", "misheard": ["vine drill"]},
+    {"term": "Flatulorhinkus", "say": "Flatchoo-lo-rink-us", "misheard": ["flatulo rinkus", "flatula rhinkus"]},
+    {"term": "Hop Rock", "misheard": ["hop rok", "hoprock"]},
+    {"term": "Frightgeist", "say": "Fright-guyst", "misheard": ["fright geist", "fright guist"]},
+    {"term": "Burpy", "misheard": ["burpee", "burpie"]},
+    {"term": "Crashwave", "misheard": ["crash wave"]},
+    {"term": "Mistbank", "misheard": ["mist bank"]},
+    {"term": "Snapbind", "misheard": ["snap bind"]},
+    {"term": "Silkline", "misheard": ["silk line"]},
+    {"term": "Iceburst", "misheard": ["ice burst"]},
+    {"term": "Livewire", "misheard": ["live wire"]},
+    {"term": "Cinder Rift", "misheard": ["cinder rift", "cinderift"]},
+    {"term": "Slug Grove", "misheard": ["slug grove"]},
+    {"term": "Veylume", "say": "Vay-loom", "misheard": ["vay loom", "veil loom", "valume"]}
+  ]
+}

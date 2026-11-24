@@ -1,0 +1,38 @@
+{
+  "_about": "Presets for the Remotion Vertical template, picked with `--format NAME` (ss render / ss batch). Any flag overrides a preset value. Codes match the naming convention SS_DATE_FORMAT_CONCEPT_HOOK_Vnn_MASTER. Keep end-card text truthful: the game is not published yet (docs/game-truth.md).",
+  "PVP": {
+    "description": "Real gameplay duel. Crop to fill; word-by-word captions.",
+    "fit": "crop", "captions": "words", "accent": "#ffd23f", "captionTop": 0.69, "clipVolume": 0.35,
+    "label": "", "endCard": true, "endCardTitle": "SLUGSHOT", "endCardSubtitle": "A Roblox creature-combat game"
+  },
+  "PROMO": {
+    "description": "Direct game pitch over real footage.",
+    "fit": "crop", "captions": "words", "accent": "#ffd23f", "captionTop": 0.69, "clipVolume": 0.3,
+    "label": "", "endCard": true, "endCardTitle": "SLUGSHOT", "endCardSubtitle": "Roblox creature combat - in development"
+  },
+  "CHOICE": {
+    "description": "Freeze at a decision and ask the viewer. End card asks the question.",
+    "fit": "crop", "captions": "words", "accent": "#7cff9b", "captionTop": 0.69, "clipVolume": 0.35,
+    "label": "", "endCard": true, "endCardTitle": "WHICH SLUG?", "endCardSubtitle": "Tell us in the comments"
+  },
+  "WORLD": {
+    "description": "In My World / In This Town story. Fiction: the label stays on screen.",
+    "fit": "blur", "captions": "phrases", "accent": "#9ad0ff", "captionTop": 0.7, "clipVolume": 0.15,
+    "label": "Fictional story", "endCard": true, "endCardTitle": "SLUGSHOT", "endCardSubtitle": "A Roblox creature-combat game"
+  },
+  "SKIT": {
+    "description": "Character comedy, dance or meme format.",
+    "fit": "blur", "captions": "phrases", "accent": "#ff8fb1", "captionTop": 0.7, "clipVolume": 0.6,
+    "label": "Skit", "endCard": false, "endCardTitle": "SLUGSHOT", "endCardSubtitle": "A Roblox creature-combat game"
+  },
+  "AISCENE": {
+    "description": "Flow / AI-generated scene. Always labelled so nobody mistakes it for gameplay.",
+    "fit": "crop", "captions": "phrases", "accent": "#c9a7ff", "captionTop": 0.7, "clipVolume": 0.4,
+    "label": "AI-generated scene", "endCard": true, "endCardTitle": "SLUGSHOT", "endCardSubtitle": "A Roblox creature-combat game"
+  },
+  "TEST": {
+    "description": "Toolkit tests only.",
+    "fit": "blur", "captions": "words", "accent": "#ffd23f", "captionTop": 0.69, "clipVolume": 0.25,
+    "label": "TEST - not gameplay", "endCard": true, "endCardTitle": "SLUGSHOT", "endCardSubtitle": "A Roblox creature-combat game"
+  }
+}

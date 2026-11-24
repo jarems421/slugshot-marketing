@@ -1,0 +1,22 @@
+{
+ "_note": "FAKE dry-run fixture. IDs and numbers are invented for testing the collector; never use as data.",
+ "kind": "youtube#videoListResponse",
+ "items": [
+  {"id": "DRYRUN00001",
+   "snippet": {"publishedAt": "2026-11-20T15:00:00Z", "channelId": "UCDRYRUNCHANNELA", "title": "[dry run] 1v1 clutch", "channelTitle": "Dry Run Channel A"},
+   "contentDetails": {"duration": "PT34S"},
+   "statistics": {"viewCount": "12000", "likeCount": "800", "commentCount": "45"}},
+  {"id": "DRYRUN00002",
+   "snippet": {"publishedAt": "2026-11-21T09:30:00Z", "channelId": "UCDRYRUNCHANNELA", "title": "[dry run] friend says trust me", "channelTitle": "Dry Run Channel A"},
+   "contentDetails": {"duration": "PT58S"},
+   "statistics": {"viewCount": "3100", "commentCount": "12"}},
+  {"id": "DRYRUN00003",
+   "snippet": {"publishedAt": "2026-11-22T18:10:00Z", "channelId": "UCDRYRUNCHANNELA", "title": "[dry run] pick a slug", "channelTitle": "Dry Run Channel A"},
+   "contentDetails": {"duration": "PT2M47S"},
+   "statistics": {"viewCount": "5400", "likeCount": "210"}},
+  {"id": "DRYRUN00004",
+   "snippet": {"publishedAt": "2026-11-23T12:00:00Z", "channelId": "UCDRYRUNCHANNELB", "title": "[dry run] long devlog", "channelTitle": "Dry Run Channel B"},
+   "contentDetails": {"duration": "PT11M02S"},
+   "statistics": {"viewCount": "900", "likeCount": "70", "commentCount": "9"}}
+ ]
+}

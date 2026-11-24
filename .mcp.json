@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "makemyclip": {
+      "command": "node",
+      "args": ["node_modules/@makemyclip/editor/dist/cli.js", "mcp"],
+      "env": {
+        "MAKEMYCLIP_WORKSPACE": "C:\\Users\\runni\\slugshot marketing\\media",
+        "MAKEMYCLIP_FFMPEG_PATH": "C:\\Users\\runni\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-9.1-full_build\\bin\\ffmpeg.exe"
+      }
+    }
+  }
+}

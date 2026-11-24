@@ -1,0 +1,11 @@
+{
+  "concept": "ToolkitSample",
+  "clip": "media/sample/clip.mp4",
+  "narration": "media/test/mixed.wav",
+  "captions": "media/test/narration_tidy.srt",
+  "variants": [
+    {"format": "TEST", "hook_id": "Underdog", "hook": "He brought Inferno. I brought Floppy.", "fit": "crop"},
+    {"format": "TEST", "hook_id": "Pitch", "hook": "A Roblox game where the ammo has personalities", "accent": "#9ad0ff", "endCardSubtitle": "Roblox creature combat - in development"},
+    {"format": "TEST", "hook_id": "Choice", "hook": "Inferno or Floppy?", "accent": "#7cff9b", "endCardTitle": "WHICH SLUG?", "endCardSubtitle": "Tell us in the comments"}
+  ]
+}
