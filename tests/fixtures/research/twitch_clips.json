@@ -1,0 +1,46 @@
+{
+ "_note": "FAKE dry-run fixture. IDs and numbers are invented; never use as data.",
+ "data": [
+  {
+   "id": "DryRunClip1",
+   "url": "https://clips.twitch.tv/DryRunClip1",
+   "embed_url": "",
+   "broadcaster_id": "100",
+   "broadcaster_name": "DryRunStreamer",
+   "creator_id": "SHOULD-NOT-BE-STORED",
+   "creator_name": "SHOULD-NOT-BE-STORED",
+   "video_id": "999",
+   "game_id": "23020",
+   "language": "en",
+   "title": "[dry run] clip 1",
+   "view_count": 5400,
+   "created_at": "2026-11-24T08:00:00Z",
+   "thumbnail_url": "",
+   "duration": 28.4,
+   "vod_offset": 1200,
+   "is_featured": false
+  },
+  {
+   "id": "DryRunClip2",
+   "url": "https://clips.twitch.tv/DryRunClip2",
+   "embed_url": "",
+   "broadcaster_id": "100",
+   "broadcaster_name": "DryRunStreamer",
+   "creator_id": "SHOULD-NOT-BE-STORED",
+   "creator_name": "SHOULD-NOT-BE-STORED",
+   "video_id": "",
+   "game_id": "23020",
+   "language": "es",
+   "title": "[dry run] clip 2",
+   "view_count": 830,
+   "created_at": "2026-11-24T08:00:00Z",
+   "thumbnail_url": "",
+   "duration": 28.4,
+   "vod_offset": null,
+   "is_featured": false
+  }
+ ],
+ "pagination": {
+  "cursor": "DRYRUNCURSOR"
+ }
+}

@@ -1,0 +1,23 @@
+{
+ "_note": "FAKE dry-run fixture. IDs and numbers are invented; never use as data.",
+ "data": [
+  {
+   "id": "S1",
+   "user_id": "100",
+   "user_login": "dryrunstreamer",
+   "user_name": "DryRunStreamer",
+   "game_id": "23020",
+   "game_name": "Roblox",
+   "type": "live",
+   "title": "[dry run] stream",
+   "viewer_count": 250,
+   "started_at": "2026-11-24T06:00:00Z",
+   "language": "es",
+   "tags": [
+    "Espa\u00f1ol"
+   ],
+   "is_mature": false
+  }
+ ],
+ "pagination": {}
+}

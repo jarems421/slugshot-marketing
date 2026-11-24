@@ -1,0 +1,4 @@
+{ "_note": "FAKE dry-run fixture. IDs and numbers are invented for testing the collector; never use as data.", "kind": "youtube#commentThreadListResponse", "items": [
+ {"snippet": {"totalReplyCount": 2, "topLevelComment": {"id": "DRYRUNCOMMENT1", "snippet": {"textDisplay": "[dry run] jajaja el final", "authorDisplayName": "SHOULD NOT BE STORED", "authorChannelId": {"value": "UCSHOULDNOTBESTORED"}, "likeCount": 41, "publishedAt": "2026-11-22T12:00:00Z", "updatedAt": "2026-11-22T12:00:00Z"}}}},
+ {"snippet": {"totalReplyCount": 0, "topLevelComment": {"id": "DRYRUNCOMMENT2", "snippet": {"textDisplay": "[dry run] floppy diff", "authorDisplayName": "SHOULD NOT BE STORED", "likeCount": 3, "publishedAt": "2026-11-22T13:00:00Z", "updatedAt": "2026-11-22T13:00:00Z"}}}}
+]}

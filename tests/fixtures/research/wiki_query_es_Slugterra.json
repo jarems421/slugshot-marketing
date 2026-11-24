@@ -1,0 +1,22 @@
+{
+ "_note": "FAKE dry-run fixture.",
+ "query": {
+  "pages": [
+   {
+    "pageid": 2001,
+    "title": "Slugterra",
+    "pageprops": {
+     "wikibase_item": "Q0000001"
+    },
+    "redirects": [
+     {
+      "title": "Bajoterra"
+     },
+     {
+      "title": "Slugterra (serie)"
+     }
+    ]
+   }
+  ]
+ }
+}

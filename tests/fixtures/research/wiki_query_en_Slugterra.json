@@ -1,0 +1,19 @@
+{
+ "_note": "FAKE dry-run fixture. Numbers are invented for testing the collector; never use as data.",
+ "query": {
+  "pages": [
+   {
+    "pageid": 1001,
+    "title": "Slugterra",
+    "pageprops": {
+     "wikibase_item": "Q0000001"
+    },
+    "langlinks": [
+     {
+      "title": "Slugterra"
+     }
+    ]
+   }
+  ]
+ }
+}

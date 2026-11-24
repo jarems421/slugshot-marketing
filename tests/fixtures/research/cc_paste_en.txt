@@ -1,0 +1,21 @@
+FAKE dry-run fixture: imitates text copied from a Creative Center hashtag page. Real layout unconfirmed.
+Trending hashtags
+Region United States
+Last 7 days
+1
+# dryrunhashone
+Games
+24.5K
+Posts
+60.1M
+Views
+2
+# dryrunhashtwo
+News & Entertainment
+940
+Posts
+1.2M
+Views
+3
+# dryrunhashthree
+See analytics

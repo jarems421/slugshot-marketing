@@ -1,0 +1,5 @@
+entity_id,project,title,kind,notes
+slugterra,en.wikipedia,Slugterra,fandom,test entry
+slugterra,es.wikipedia,Bajoterra,fandom,"redirect title; resolves to the canonical es article"
+roblox,en.wikipedia,Roblox,game,test entry
+roblox,es.wikipedia,Roblox,game,test entry

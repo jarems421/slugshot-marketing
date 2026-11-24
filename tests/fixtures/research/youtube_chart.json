@@ -1,0 +1,46 @@
+{
+ "_note": "FAKE dry-run fixture. IDs and numbers are invented for testing the collector; never use as data.",
+ "kind": "youtube#videoListResponse",
+ "items": [
+  {
+   "id": "DRYRUNCHART1",
+   "snippet": {
+    "publishedAt": "2026-11-22T10:00:00Z",
+    "channelId": "UCDRYRUNCHANNELC",
+    "title": "[dry run] chart entry",
+    "channelTitle": "Dry Run Channel C",
+    "categoryId": "20",
+    "defaultAudioLanguage": "es-419",
+    "liveBroadcastContent": "none",
+    "tags": [
+     "roblox",
+     "humor"
+    ]
+   },
+   "contentDetails": {
+    "duration": "PT45S"
+   },
+   "statistics": {
+    "viewCount": "250000",
+    "likeCount": "9000",
+    "commentCount": "300"
+   }
+  },
+  {
+   "id": "DRYRUNCHART2",
+   "snippet": {
+    "publishedAt": "2026-11-21T10:00:00Z",
+    "channelId": "UCDRYRUNCHANNELC",
+    "title": "[dry run] long chart entry",
+    "channelTitle": "Dry Run Channel C",
+    "categoryId": "10"
+   },
+   "contentDetails": {
+    "duration": "PT14M2S"
+   },
+   "statistics": {
+    "viewCount": "80000"
+   }
+  }
+ ]
+}

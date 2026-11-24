@@ -1,0 +1,6 @@
+{ "_note": "FAKE dry-run fixture. IDs and numbers are invented for testing the collector; never use as data.", "kind": "youtube#playlistItemListResponse", "items": [
+ {"contentDetails": {"videoId": "DRYRUN00003", "videoPublishedAt": "2026-11-22T18:10:00Z"}},
+ {"contentDetails": {"videoId": "DRYRUN00002", "videoPublishedAt": "2026-11-21T09:30:00Z"}},
+ {"contentDetails": {"videoId": "DRYRUN00001", "videoPublishedAt": "2026-11-20T15:00:00Z"}},
+ {"contentDetails": {"videoId": "DRYRUNOLD01", "videoPublishedAt": "2025-01-01T00:00:00Z"}}
+]}

@@ -1,0 +1,25 @@
+{
+ "_note": "FAKE dry-run fixture. IDs and numbers are invented; never use as data.",
+ "data": [
+  {
+   "id": "DryRunClip3",
+   "url": "https://clips.twitch.tv/DryRunClip3",
+   "embed_url": "",
+   "broadcaster_id": "100",
+   "broadcaster_name": "DryRunStreamer",
+   "creator_id": "SHOULD-NOT-BE-STORED",
+   "creator_name": "SHOULD-NOT-BE-STORED",
+   "video_id": "999",
+   "game_id": "23020",
+   "language": "pt",
+   "title": "[dry run] clip 3",
+   "view_count": 120,
+   "created_at": "2026-11-24T08:00:00Z",
+   "thumbnail_url": "",
+   "duration": 28.4,
+   "vod_offset": 1200,
+   "is_featured": false
+  }
+ ],
+ "pagination": {}
+}

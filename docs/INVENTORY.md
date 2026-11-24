@@ -1,6 +1,6 @@
 # Inventory and capability status
 
-Last updated 2026-11-24. Infrastructure phase complete; production work is in [production-checklist.md](production-checklist.md). Command details: [COMMANDS.md](COMMANDS.md).
+Last updated 2026-11-24 (Stage 4.4 research collectors added). Infrastructure phase complete; production work is in [production-checklist.md](production-checklist.md). Command details: [COMMANDS.md](COMMANDS.md).
 
 ## Software
 
@@ -62,7 +62,16 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Creative editing judgement | `slugshot-video-editing` skill | used once (see `reports/skill-review-2026-11-24.md`) | **always: funny, energy, clarity to a stranger** | rules become S-rated only with platform results |
 | Template tweaking | `ss studio` | launches | n/a | n/a |
 | Agent timeline editing | `ss clip`, MCP | yes (confinement) | n/a | n/a |
-| YouTube public stats | `ss yt` | yes (live) | n/a | n/a |
+| YouTube public stats | `ss yt` | yes (live, incl. Stage 4.4 chart + Shorts check) | n/a | n/a |
+| YouTube bilingual searches, saved query sets, regional charts, creator uploads, comments, quota budget | `ss yt sweep/chart/creators/comments/quota` | live (bounded tests 2026-11-24: sweep, 2-page search, creators, comments, chart, Shorts check, quota reconciliation) | n/a | ChatGPT's real query sets and creator watchlists |
+| Wikipedia page views (en/es, redirects) | `ss wiki` | yes (live) | n/a | n/a |
+| Google Trending Now RSS (7 markets) | `ss trends rss` | yes (live) | n/a | n/a |
+| Google Trends Explore CSV import | `ss trends import` | sample files only | n/a | **your first real Explore download** |
+| Twitch clips/streams | `ss twitch` | yes (live: clips, streams, recheck) | n/a | owner check of onward transfer before `share_exports` |
+| Roblox experience stats (legacy, experimental) | `ss rbx` | yes (live) | n/a | n/a |
+| Public observations import (Creative Center, TikTok, Instagram, vidIQ, TinyFish) + Creative Center link list and paste parser | `ss observe` | yes (fixtures + 24 Nov Creative Center figures); oEmbed live; paste parser on fake samples only (confirm with a real paste) | n/a | n/a |
+| Research housekeeping | `ss research` | yes | n/a | n/a |
+| TikTok Discovery API, Instagram Business Discovery, Google Trends API | none | no | n/a | company identity (TikTok); Slugshot Instagram account; alpha approval |
 | YouTube reports | `ss yt report` | yes | n/a | written to `exports/share/` for ChatGPT (sharing approved by the owner) |
 | Platform metrics for ChatGPT | `ss export` | yes (validation) | n/a | **first posts** |
 | Own-channel retention/watch time | none | no | n/a | **Slugshot channel** (Studio exports, later Analytics API) |
@@ -75,6 +84,6 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Roblox take into the toolkit | `ss roblox import` | yes (Studio capture) | n/a | first OBS recording of a take |
 | Animation library, finished sets, real PvP filming | none | no (production work) | **every animation and set** | production preparation |
 
-Infrastructure: complete, including Roblox-native filming ([roblox-native/README.md](../roblox-native/README.md)). Remaining setup: regenerate and restrict the YouTube key; optionally approve the `makemyclip` MCP server.
+Infrastructure: complete, including Roblox-native filming ([roblox-native/README.md](../roblox-native/README.md)). Research data collection (Stage 4.4, 2026-11-24): see [research-data.md](research-data.md). The YouTube key was regenerated and restricted (owner confirmed 2026-11-24). Remaining setup: optionally approve the `makemyclip` MCP server; optionally set `contact` in `config/research/settings.json`; review Twitch onward-transfer terms before sharing Twitch exports.
 
 Production items (gameplay recording, voice selection, licensed music, SFX, brand fonts, real-world production tests) are deferred to [production-checklist.md](production-checklist.md). They don't block the infrastructure.

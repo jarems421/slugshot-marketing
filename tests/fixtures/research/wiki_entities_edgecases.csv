@@ -1,0 +1,7 @@
+entity_id,project,title,kind,notes
+slugterra,es.wikipedia,Slugterra,fandom,canonical
+slugterra,es.wikipedia,Bajoterra,fandom,redirect alias
+slugterra_dup,es.wikipedia,Bajoterra,fandom,same alias listed again under another entity
+broken,en.wikipedia,Brokenpage,test,fails
+quiet,en.wikipedia,Quietpage,test,404 no data
+lookupfails,en.wikipedia,Lookupfails,test,title lookup fails

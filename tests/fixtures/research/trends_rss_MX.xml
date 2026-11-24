@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FAKE dry-run fixture. Terms and numbers are invented; never use as data. -->
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:ht="https://trends.google.com/trending/rss" version="2.0"><channel>
+<title>Daily Search Trends</title>
+<item><title>dry run term one MX</title><ht:approx_traffic>2000+</ht:approx_traffic><pubDate>Tue, 24 Nov 2026 01:10:00 -0800</pubDate>
+<ht:news_item><ht:news_item_title>Dry run headline</ht:news_item_title><ht:news_item_url>https://example.com/a</ht:news_item_url><ht:news_item_source>Example News</ht:news_item_source></ht:news_item></item>
+<item><title>dry run term two MX</title><ht:approx_traffic>100+</ht:approx_traffic><pubDate>Tue, 24 Nov 2026 00:00:00 -0800</pubDate></item>
+</channel></rss>

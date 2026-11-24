@@ -27,25 +27,24 @@ Checked 2026-11-24 against the official pages: [Developer Policies](https://deve
 | Views compared with the same creator's median for similar-age uploads | **Removed** | A ratio against an independently calculated average, which the guide lists as prohibited without approval. The original brief asked for this; the policy wins |
 | Age buckets, cross-channel rankings, scores | **Removed / never built** | Ranking or tracking between channels is prohibited |
 | Merging YouTube rows with TikTok/Instagram rows | **Not done**. Platform metrics go in a separate CSV | Merging with other data is prohibited |
+| Search parameters (`region_param`, `relevance_language_param`, date window, query) stored on every row and in `runs.csv` | **On** (Stage 4.4) | Records what was asked; no metric is derived from them |
+| Regional most-popular chart (`ss yt chart`) | **On** | `videos.list chart=mostPopular`: YouTube's own chart, stored as dated snapshots, not re-ranked |
+| Creator uploads via uploads playlists (`ss yt creators`) | **On** | Collects ordinary uploads too; numbers are still only compared per video |
+| `shorts_status` from the channel's Shorts playlist (`UUSH…`) | **On** | A classification read through the official API (an undocumented playlist convention), not a metric |
+| Public comments (`ss yt comments`) | **On**: text, time, like/reply counts; **no author names or IDs**; 30 days | API data like any other (III.E.4); personal data minimised |
+| Captions or video downloads | **Not built** | `captions.download` needs edit permission on the video; downloading media is against YouTube's Terms |
+| Every export carries an expiry date (oldest snapshot + 30 days) in its README and `exports\share\research\MANIFEST.csv`; `ss research prune` deletes expired copies | **On** | The 30-day limit applies to exported copies too |
 
 ## Grey areas
 
-- **Sharing API data with ChatGPT, Gemini or other AI tools: allowed for internal analysis (owner decision, 2026-11-24).** The policies don't mention AI tools; III.E.5 asks you to protect API data from unauthorised disclosure. The owner has decided that sharing public stats with AI tools for internal analysis is acceptable. `ss yt report` writes to `exports\share\` with its data dictionary. Don't publish the data, and never share the API key.
+- **Sharing API data with ChatGPT, Gemini or other AI tools: allowed for internal analysis (owner decision, 2026-11-24).** The policies don't mention AI tools; III.E.5 asks you to protect API data from unauthorised disclosure. The owner has decided that sharing public stats with AI tools for internal analysis is acceptable. `ss yt report` writes to `exports\share\research\` with its data dictionary and expiry date. Copies in ChatGPT or Drive should be deleted by that date, and none should be kept in a permanent knowledge bank. Don't publish the data, and never share the API key.
 - **Money.** Everything here uses YouTube's free quota. Never enable billing, buy quota or make any paid request without asking the owner first.
 - **Internal use.** Privacy-policy and terms-link requirements (III.A) are written for apps with users. A single-person internal script arguably isn't one. Using the API still means accepting the Terms.
 - **Your own channel later.** Once Slugshot has its own channel, use YouTube Studio exports, or the YouTube Analytics API with OAuth, for your own videos. That is authorised data with different rules, and it includes retention and watch time. It isn't built yet.
 
-## Live test: what's done and what needs you
+## Live tests
 
-Done on 2026-11-24 with the key in `.env`: one `stats` call and one `discover` call returned real public data (2 videos.list units and 1 search call).
+- 2026-11-24 (Stage 1): one `stats` call and one `discover` call returned real public data.
+- 2026-11-24 (Stage 4.4): the owner confirmed the key was **regenerated and restricted to YouTube Data API v3** after the earlier exposure. Then: a Mexico Gaming `chart` (1 unit), a Shorts-playlist check (a known Short came back `confirmed_short`; a channel with no Shorts playlist returned 404 and stayed `candidate`; the failed request was counted against quota), and the smoke test's 1-unit `stats` call. All passed.
 
-Still needs you:
-1. **Regenerate the key.** Its value was shown in this Claude Code session when it was saved in `.env.example`. Google Cloud Console > APIs & Services > Credentials > your key > Regenerate key, then paste the new value into `.env` (not `.env.example`).
-2. **Restrict it.** On the same page: API restrictions > Restrict key > YouTube Data API v3 only. Application restrictions can stay "None" for a desktop script.
-3. **Check there's no billing** on the project. Nothing here needs it.
-4. Run `.\ss smoke` (1 unit) to confirm the new key, then start real collection:
-   ```powershell
-   .\ss yt discover "roblox pvp" --days 7 --short-only
-   .\ss yt stats        # again 12-24 h later, so view_increase_since_prev has two snapshots
-   .\ss yt report       # CSV + _README.md data dictionary in exports\share\ (for ChatGPT)
-   ```
+Keep billing off on the Google Cloud project; nothing here needs it. Commands and the routine are in [research-data.md](research-data.md).

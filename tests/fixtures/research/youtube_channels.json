@@ -1,0 +1,4 @@
+{ "_note": "FAKE dry-run fixture. IDs and numbers are invented for testing the collector; never use as data.", "kind": "youtube#channelListResponse", "items": [
+ {"id": "UCDRYRUNCHANNELA", "snippet": {"title": "Dry Run Channel A", "customUrl": "@dryruna", "country": "MX", "publishedAt": "2020-01-01T00:00:00Z"},
+  "contentDetails": {"relatedPlaylists": {"uploads": "UUDRYRUNCHANNELA"}}, "statistics": {"subscriberCount": "52000", "hiddenSubscriberCount": false, "videoCount": "310"}}
+]}

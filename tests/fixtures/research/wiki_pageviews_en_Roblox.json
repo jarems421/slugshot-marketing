@@ -1,0 +1,25 @@
+{
+ "_note": "FAKE dry-run fixture. Numbers are invented for testing the collector; never use as data.",
+ "items": [
+  {
+   "timestamp": "2026110100",
+   "views": 7001
+  },
+  {
+   "timestamp": "2026110200",
+   "views": 7002
+  },
+  {
+   "timestamp": "2026110300",
+   "views": 7003
+  },
+  {
+   "timestamp": "2026110400",
+   "views": 7004
+  },
+  {
+   "timestamp": "2026110500",
+   "views": 7005
+  }
+ ]
+}

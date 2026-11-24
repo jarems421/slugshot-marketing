@@ -1,0 +1,6 @@
+platform,url,observed_at_utc,views,source,published_at
+tiktok,https://www.instagram.com/reel/ABCDEF,2026-11-24,1.2M,platform_page,
+tiktok,https://www.tiktok.com/@a/video/123456789,03/04/2026,lots,platform_page,
+tiktok,https://www.tiktok.com/@a/video/123456789,3 days ago,100,platform_page,
+tiktok,https://www.tiktok.com/@a/video/987654321,2030-01-01,100,,
+tiktok,https://www.tiktok.com/@a/video/555555555,2026-11-24T10:00:00Z,0,platform_page,2026-11-20

@@ -1,0 +1,33 @@
+{
+ "_note": "Research collector settings. Safe to edit. No secrets here: credentials live only in .env. See docs/research-data.md.",
+ "contact": "",
+ "_contact_note": "Optional contact (a URL or address you are happy to send) added to the User-Agent; Wikimedia asks API users for one.",
+ "youtube": {
+  "daily_unit_budget": 3000,
+  "daily_search_budget": 80,
+  "_budget_note": "Google gives 10,000 units/day plus 100 search calls/day; these budgets leave headroom. Quota days reset at midnight US Pacific.",
+  "comments_per_video": 20,
+  "retention_days": 30,
+  "observation_merge_minutes": 10,
+  "min_growth_hours": 1.0,
+  "_growth_note": "Rows of one video within observation_merge_minutes count as one observation moment (e.g. the same video in the MX and ES charts). Growth is only calculated between moments at least min_growth_hours apart."
+ },
+ "twitch": {
+  "terms_reviewed": true,
+  "_terms_note": "Set true by the owner on 2026-11-24 after reading the Twitch Developer Services Agreement storage clause (docs/research-data.md, Twitch). Live Twitch calls are refused until then.",
+  "retention_hours": 24,
+  "share_exports": false,
+  "_share_note": "false keeps Twitch reports in data/local/research/twitch/reports instead of exports/share until onward transfer is confirmed."
+ },
+ "trends": {
+  "geos": ["GB", "US", "MX", "ES", "AR", "CO", "CL"],
+  "rss_retention_days": 90
+ },
+ "wikimedia": {
+  "default_agent": "user"
+ },
+ "roblox": {
+  "max_experiences": 20,
+  "min_minutes_between_runs": 55
+ }
+}

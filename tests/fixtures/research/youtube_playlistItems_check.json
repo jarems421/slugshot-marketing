@@ -1,0 +1,1 @@
+{ "_note": "FAKE dry-run fixture. IDs and numbers are invented for testing the collector; never use as data.", "kind": "youtube#playlistItemListResponse", "items": [ {"id": "DRYRUNITEM"} ] }

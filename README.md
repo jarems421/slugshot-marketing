@@ -4,7 +4,7 @@ This folder holds the local tools for Slugshot's short-form videos: capture impo
 
 Before scripting any mechanic, check [docs/game-truth.md](docs/game-truth.md). The game repo `../slugshot` can be read and copied from freely (docs, assets, renders); game files are only changed when you explicitly ask.
 
-More detail: **[command reference](docs/COMMANDS.md)** · [Flow and Gemini hand-offs](docs/flow-and-gemini.md) · [inventory and status](docs/INVENTORY.md) · [tool research](docs/tool-research.md) · [YouTube API rules](docs/youtube-api-policy.md) · [latest smoke test](reports/smoke-test.md) · [readiness report](reports/readiness-2026-11-24.md)
+More detail: **[command reference](docs/COMMANDS.md)** · [Flow and Gemini hand-offs](docs/flow-and-gemini.md) · [inventory and status](docs/INVENTORY.md) · [tool research](docs/tool-research.md) · [YouTube API rules](docs/youtube-api-policy.md) · [research data collectors](docs/research-data.md) · [latest smoke test](reports/smoke-test.md) · [readiness report](reports/readiness-2026-11-24.md)
 
 **Roblox first, AI-enhanced second.** Most videos are filmed in Roblox: real gameplay, plus staged scenes and skits in an isolated copy of the game (`.\ss roblox ...`, [roblox-native/README.md](roblox-native/README.md)). Flow/anime/manga cutaways are short additions. English and Spanish versions share the same visual footage and differ in narration, captions, on-screen text and timing.
 
@@ -43,10 +43,17 @@ Run from this folder: `.\ss <command>` in PowerShell, or `ss <command>` in Comma
 # MakeMyClip (silence removal, trims, reframing, export to Resolve/Premiere XML). Files must be under media\
 .\ss clip ui
 
-# 5. Metrics
-.\ss yt discover "roblox pvp" --days 7 --short-only   # 1 search call (100/day allowance) + 1 unit
+# 5. Research data and metrics (full guide: docs
+esearch-data.md)
+.\ss research status                            # credentials present?, stored rows, quota today
+.\ss yt discover "roblox pvp" --lang es --region MX --days 7   # 1 search call (100/day allowance) + 1 unit
+.\ss yt chart --region MX                        # Mexico's most-popular Gaming chart, 1 unit
 .\ss yt stats                                   # re-snapshot the watchlist: 1 unit per 50 videos
-.\ss yt report                                  # -> exports\share\youtube_report_YYYYMMDD.csv + _README.md (for ChatGPT)
+.\ss wiki pull; .\ss trends rss; .\ss twitch clips --game Roblox --lang en,es; .\ss rbx games
+.\ss observe import notes.csv --source creative_center --platform tiktok --entity-type hashtag --region US --period "7 days" --observed-at 2026-11-24
+.\ss yt report; .\ss wiki report; .\ss trends report; .\ss observe report   # -> exports\share
+esearch\ (for ChatGPT)
+.\ss research prune                             # retention rules, expired exports deleted
 .\ss export                                     # check data\local\platform_metrics.csv -> exports\share\
 ```
 
@@ -102,9 +109,11 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 
 ## CSV files
 
-**`data/local/youtube_snapshots.csv`**: one row per video per collection run. `video_id, url, title, channel_id, channel_title, published_at, observed_at_utc, duration_s, duration_le_180s, views, likes, comments, source, query`. Blank = hidden or unavailable. Rows older than 30 days are deleted automatically (YouTube policy).
+**Research data** (YouTube, Wikipedia, Google Trends, Twitch, Roblox, public observations): raw stores in `data/local/research/<provider>/`, exports in `exports/share/research/` with a `.json` copy, a `_README.md` data dictionary and `MANIFEST.csv` (expiry dates). Every schema is in [docs/research-data.md](docs/research-data.md). Blank = unknown, never 0.
 
-**`exports/share/youtube_report_YYYYMMDD.csv`**: latest snapshot per video plus `age_hours`, `snapshots`, `hours_since_prev`, `view_increase_since_prev` and `views_per_hour_since_prev`. These derived columns compare the same video with itself, never with other videos or channels. A `_README.md` data dictionary is written next to it: give both to ChatGPT for internal analysis (don't publish the data). Comparing creators with their own averages was removed because YouTube's policies need approval for that ([details](docs/youtube-api-policy.md)).
+**`data/local/research/youtube/youtube_snapshots.csv`**: one row per video per collection run, with the search parameters that found it (`region_param`, `relevance_language_param`, date window), declared language and category, and `shorts_status`. Rows older than 30 days are deleted automatically (YouTube policy).
+
+**`exports/share/research/youtube_report_<time>.csv`**: latest snapshot per video plus `age_hours`, `snapshots`, `hours_since_prev`, `view_increase_since_prev` and `views_per_hour_since_prev`. These derived columns compare the same video with itself, never with other videos or channels. A `_README.md` data dictionary is written next to it: give both to ChatGPT for internal analysis (don't publish the data). Comparing creators with their own averages was removed because YouTube's policies need approval for that ([details](docs/youtube-api-policy.md)).
 
 **`exports/share/variants_log.csv`**: one row per rendered variant (`edit_file, format, concept, hook_id, hook, clip, narration, captions, duration_s, qc, qc_issues, experiment_id`), ready to copy into the content log.
 
@@ -121,8 +130,9 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 
 ## Next actions
 
-Infrastructure is complete. Remaining setup items:
-1. Regenerate and restrict the YouTube key ([steps](docs/youtube-api-policy.md#live-test-whats-done-and-what-needs-you)), then `.\ss smoke`.
-2. Optional: approve the `makemyclip` MCP server when Claude Code asks.
+Infrastructure is complete, including the Stage 4.4 research collectors ([research-data.md](docs/research-data.md)). Remaining setup items:
+1. Optional: approve the `makemyclip` MCP server when Claude Code asks.
+2. Before sharing Twitch exports: check Twitch's onward-transfer terms, then set `twitch.share_exports` to true in `config/research/settings.json`.
+3. ChatGPT: replace the small test query sets and watchlists in `config/research/` with the real bilingual ones.
 
 Production work (gameplay capture, voice choice, music, SFX, brand fonts, real-world tests) is in the [deferred production checklist](docs/production-checklist.md).

@@ -1,0 +1,9 @@
+{
+ "_note": "Saved YouTube search sets. SMALL TEST SET for infrastructure validation only; ChatGPT replaces these with the real bilingual research queries. lang = relevanceLanguage (a ranking hint, not a language filter); region = regionCode (viewable in that country, not creator location or audience).",
+ "sets": {
+  "test": [
+   {"id": "en-gb-roblox-pvp", "query": "roblox pvp", "lang": "en", "region": "GB", "days": 7, "order": "date", "duration": "short", "max": 25},
+   {"id": "es-mx-roblox-pvp", "query": "roblox pvp", "lang": "es", "region": "MX", "days": 7, "order": "date", "duration": "short", "max": 25}
+  ]
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "_note": "FAKE dry-run fixture.",
+ "query": {
+  "pages": [
+   {
+    "pageid": 3001,
+    "title": "Brokenpage",
+    "pageprops": {
+     "wikibase_item": "Q0000003"
+    },
+    "redirects": []
+   }
+  ]
+ }
+}

@@ -20,6 +20,7 @@ PY = sys.executable
 PY_TTS = ROOT / ".venv-tts" / "Scripts" / "python.exe"
 SAMPLE = ROOT / "media" / "sample"
 OUT = ROOT / "out" / "smoke"
+sys.path.insert(0, str(ROOT / "scripts"))
 NPX = "npx.cmd" if os.name == "nt" else "npx"
 results = []
 
@@ -200,9 +201,74 @@ def yt_live():
     return ("FAIL", (r.stderr or r.stdout).strip()[-300:]) if r.returncode else ("PASS", r.stdout.strip())
 
 
+def research_unit():
+    r = run([PY, "-m", "unittest", "tests.test_research"])
+    last = (r.stderr.strip().splitlines() or ["?"])[-1]
+    ran = next((l for l in r.stderr.splitlines() if l.startswith("Ran ")), "")
+    return ("PASS" if r.returncode == 0 else "FAIL"), f"{ran}: {last} (YouTube, Wikimedia, Trends, observations, Twitch, Roblox on fixtures)"
+
+
+def live(script, args, ok_text):
+    d = OUT / "research_live" / script.split(".")[0]
+    shutil.rmtree(d, ignore_errors=True)
+    r = run([PY, f"scripts/{script}", "--data-dir", d, *args])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode:
+        return ("BLOCKED" if "BLOCKED" in out else "FAIL"), out.splitlines()[-1][:300]
+    return ("PASS" if ok_text in out else "WARN"), out.splitlines()[-1][:300]
+
+
+def wiki_live():
+    return live("wiki_collect.py", ["pull", "--days", "3"], "stored")
+
+
+def trends_live():
+    return live("trends_collect.py", ["rss", "--geo", "GB,MX"], "rows ->")
+
+
+def roblox_live():
+    return live("rbx_collect.py", ["games"], "snapshots ->")
+
+
+def oembed_live():
+    d = OUT / "research_live"
+    d.mkdir(parents=True, exist_ok=True)
+    f = d / "oembed.csv"
+    f.write_text("url,observed_at_utc,source\nhttps://www.tiktok.com/@sebasgb572/video/7708074478366100754,2026-11-24,platform_page\n")
+    status, detail = live("observe.py", ["import", f, "--oembed"], "Imported")
+    rows = (d / "observe" / "public_observations.csv")
+    checked = rows.exists() and ",true," in rows.read_text(encoding="utf-8")
+    return (status if checked else "WARN"), f"oEmbed check {'confirmed the post ID' if checked else 'did not confirm the post'} ({detail})"
+
+
+def twitch_live():
+    return live("twitch_collect.py", ["categories", "Roblox"], "Roblox")
+
+
+def youtube_live_v2():
+    """The upgraded collector live: a 1-unit chart call + 1-unit Shorts-playlist check, only when the key is present."""
+    import research_common as rc
+    if not rc.env_value("YOUTUBE_API_KEY"):
+        return "BLOCKED", "no YOUTUBE_API_KEY in .env"
+    return live("yt_collect.py", ["chart", "--region", "MX", "--max", "5", "--check-shorts"], "chart snapshots")
+
+
+RESEARCH = [("Research collectors offline tests", research_unit),
+            ("Wikimedia pageviews live", wiki_live),
+            ("Google Trending Now RSS live", trends_live),
+            ("Roblox experience stats live (legacy API)", roblox_live),
+            ("TikTok oEmbed live check", oembed_live),
+            ("YouTube upgraded collector live (chart + Shorts check)", youtube_live_v2),
+            ("Twitch Helix live", twitch_live)]
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     started = datetime.now(timezone.utc).replace(microsecond=0)
+    if "--research" in sys.argv:
+        for name, fn in RESEARCH:
+            check(name, fn)
+        return write_report(started, research_only=True)
     check("Installed tools", tools)
     check("Glossary corrections", glossary_test)
     check("Whisper transcription", whisper)
@@ -216,11 +282,24 @@ def main():
     check("YouTube collector dry run", yt_dry)
     check("YouTube report + data dictionary", yt_dictionary)
     check("YouTube collector live call", yt_live)
+    for name, fn in RESEARCH:
+        check(name, fn)
+    write_report(started)
 
-    lines = ["# Smoke test", "", f"Run {started.isoformat()} by `.\\ss smoke`. Outputs in `out/smoke/`.",
-             "WARN in a render check is about the sample footage (a dark 1422x430 preview strip), not the pipeline.", "",
+
+def write_report(started, research_only=False):
+    cmd = ".\\ss smoke --research" if research_only else ".\\ss smoke"
+    lines = ["# Smoke test", "", f"Run {started.isoformat()} by `{cmd}`. Outputs in `out/smoke/`.",
+             "WARN in a render check is about the sample footage (a dark 1422x430 preview strip), not the pipeline.",
+             "Live research checks make a handful of free calls (Wikimedia, Google Trends RSS, Roblox, TikTok oEmbed; "
+             "YouTube about 2 units; Twitch 1 point when enabled). BLOCKED = waiting on credentials or an owner decision.", "",
              "| Check | Result | Detail |", "|---|---|---|"]
     lines += [f"| {n} | **{s}** | {d.replace('|', '/')} |" for n, s, d in results]
+    if research_only:
+        report = ROOT / "reports" / "smoke-test-research.md"
+        report.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        print(report)
+        sys.exit(1 if any(s == "FAIL" for _, s, _ in results) else 0)
     lines += ["", "## Manual checks (a person must do these)", "",
               "- Watch `out/smoke/ffmpeg_vertical.mp4` and `out/smoke/remotion.mp4` on a phone: captions readable, "
               "in time with the voice, clear of the platform buttons; audio clean.",

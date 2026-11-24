@@ -1,0 +1,7 @@
+{
+ "_note": "FAKE dry-run fixture.",
+ "_error": {
+  "code": 503,
+  "reason": "simulated failure"
+ }
+}

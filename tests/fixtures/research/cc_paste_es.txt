@@ -1,0 +1,9 @@
+FAKE dry-run fixture (Spanish UI, values on the same line).
+1
+#dryrununo
+Juegos
+12,3K publicaciones
+4,5M visualizaciones
+2
+#dryrundos
+800 publicaciones

@@ -18,6 +18,8 @@ Slugshot marketing commands. Run from this folder as `.\ss <command> ...` (ss.cm
   studio                                     open Remotion Studio to tweak the template
   clip <args>                                MakeMyClip CLI, confined to media\ (e.g. `.\ss clip ui`)
   yt <args>                                  YouTube collector (scripts\yt_collect.py -h)
+  wiki|trends|twitch|rbx|observe <args>      research collectors (docs\research-data.md)
+  research status|prune|runs                 credentials present?, stored rows, retention clean-up
   export                                     check platform metrics and write shareable CSVs to exports\share\
   smoke                                      run the smoke test and write reports\smoke-test.md
 #>
@@ -38,6 +40,8 @@ function Use-MakeMyClipEnv {
 
 $cmd = $args[0]
 $rest = @($args | Select-Object -Skip 1)  # always an array, so a single argument isn't split into characters
+# PowerShell turns an unquoted `en,es` into an array; re-join it so `--lang en,es` reaches Python as one value.
+$rest = @($rest | ForEach-Object { if ($_ -is [array]) { $_ -join ',' } else { $_ } })
 switch ($cmd) {
     'doctor' {
         $kden = Join-Path $env:LOCALAPPDATA 'Programs\Kdenlive\bin\kdenlive.exe'
@@ -53,6 +57,7 @@ switch ($cmd) {
         "remotion  $(node -p "require('./node_modules/remotion/package.json').version")"
         "makemyclip $(node -p "require('./node_modules/@makemyclip/editor/package.json').version")"
         "youtube   $(if ((Test-Path .env) -and (Select-String -Path .env -Pattern '^YOUTUBE_API_KEY=.+' -Quiet)) { 'key present in .env' } else { 'BLOCKED: no key in .env' })"
+        "twitch    $(if ((Test-Path .env) -and (Select-String -Path .env -Pattern '^TWITCH_CLIENT_SECRET=.+' -Quiet)) { 'credentials present in .env' } else { 'BLOCKED: no Twitch credentials in .env' })"
         Use-MakeMyClipEnv
         & npx.cmd --no-install clip doctor
     }
@@ -108,6 +113,12 @@ switch ($cmd) {
         & npx.cmd --no-install clip @rest
     }
     'yt' { & $Py scripts\yt_collect.py @rest }
+    'wiki' { & $Py scripts\wiki_collect.py @rest }
+    'trends' { & $Py scripts\trends_collect.py @rest }
+    'twitch' { & $Py scripts\twitch_collect.py @rest }
+    'rbx' { & $Py scripts\rbx_collect.py @rest }
+    'observe' { & $Py scripts\observe.py @rest }
+    'research' { & $Py scripts\research_admin.py @rest }
     'export' { & $Py scripts\export_metrics.py @rest }
     'smoke' { & $Py scripts\smoke_test.py @rest }
     default { (Get-Content $PSCommandPath -TotalCount 20) -join "`n" }
