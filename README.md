@@ -4,7 +4,7 @@ This folder holds the local tools for Slugshot's short-form videos: capture impo
 
 Before scripting any mechanic, check [docs/game-truth.md](docs/game-truth.md). The game repo `../slugshot` can be read and copied from freely (docs, assets, renders); game files are only changed when you explicitly ask.
 
-More detail: **[command reference](docs/COMMANDS.md)** · [Flow and Gemini hand-offs](docs/flow-and-gemini.md) · [inventory and status](docs/INVENTORY.md) · [tool research](docs/tool-research.md) · [YouTube API rules](docs/youtube-api-policy.md) · [research data collectors](docs/research-data.md) · [latest smoke test](reports/smoke-test.md) · [readiness report](reports/readiness-2026-11-24.md)
+More detail: **[command reference](docs/COMMANDS.md)** · [Flow and Gemini hand-offs](docs/flow-and-gemini.md) · [inventory and status](docs/INVENTORY.md) · [tool research](docs/tool-research.md) · [YouTube API rules](docs/youtube-api-policy.md) · [research data collectors](docs/research-data.md) · [evidence ledger](docs/research-evidence.md) · [research methods](docs/research-methods.md) · [ChatGPT handoff 4.5.3](docs/chatgpt-handoff-4.5.3.md) · [latest smoke test](reports/smoke-test.md) · [readiness report](reports/readiness-2026-11-24.md)
 
 **Roblox first, AI-enhanced second.** Most videos are filmed in Roblox: real gameplay, plus staged scenes and skits in an isolated copy of the game (`.\ss roblox ...`, [roblox-native/README.md](roblox-native/README.md)). Flow/anime/manga cutaways are short additions. English and Spanish versions share the same visual footage and differ in narration, captions, on-screen text and timing.
 
@@ -53,6 +53,9 @@ esearch-data.md)
 .\ss research bundle                            # -> exports\share\bundles\slugshot_research_<time>.zip (for ChatGPT)
 .\ss observe cc-session --periods 7 --category Games   # guided Creative Center: you press Ctrl+A, Ctrl+C on each page
 .\ss research status                            # credentials present?, stored rows, quota today
+.\ss analyze intake                             # QC of the newest bundle (also added to every bundle as INTAKE.md)
+.\ss analyze trend huss                         # heat/velocity/breadth/persistence kept separate; lifecycle proposal
+.\ss evidence validate EXAMPLE-HUSS-SLUGTERRA --bundle exports\share\research   # evidence ledger checks
 .\ss yt discover "roblox pvp" --lang es --region MX --days 7   # 1 search call (100/day allowance) + 1 unit
 .\ss yt chart --region MX                        # Mexico's most-popular Gaming chart, 1 unit
 .\ss yt stats                                   # re-snapshot the watchlist: 1 unit per 50 videos

@@ -23,6 +23,14 @@ Reference: `docs/research-data.md` (sources, schemas, sharing rules), `docs/COMM
 
 Targeted runs (single sources) are fine whenever they fit the request better: `ss yt discover/chart/creators/comments`, `ss wiki pull`, `ss trends rss`, `ss twitch clips/streams`, `ss rbx games`, `ss observe import`. Add `-h` to any command for its options.
 
+## After collection: analysis
+
+Anything that asks what the data *means* goes to the `slugshot-research-analysis` skill. That covers analysing a bundle, checking whether a trend is growing, finding evidence for or against something, coding creators' mechanisms, comparing observations, or academic verification. The skill gives intake QC, deterministic statistics, trend dimensions, outcome-blind coding and the evidence ledger (`ss analyze ...`, `ss evidence ...`).
+
+- Every `ss research bundle` automatically adds an `INTAKE.md`/`INTAKE.json` QC report and any ledgers (`evidence/`) and trend outputs (`analysis/`).
+- For a brief, finish with a ledger and decision memo, not only a data dump.
+- Query families (Stage 4.5.4): ChatGPT edits `config/research/query_families.json`. Run `ss research families --compile` to turn them into YouTube saved sets named `fam-<id>[-<branch>]`.
+
 ## Executing a ChatGPT research brief
 
 1. Read the brief. Map each requested item to a collector; note anything no source can supply (e.g. audience geography, competitors' retention) and say so in the report rather than approximating it.

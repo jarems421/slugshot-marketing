@@ -340,3 +340,18 @@ Earlier Claude source: `Slugshot-Claude-Toolkit-Docs.md`, generated 24 Nov from 
 | Latest committed `Slugshot-Claude-Toolkit-Docs.md` (13adfd2) | Authoritative implementation snapshot for Claude and Roblox-native filming |
 
 The existing bank remains the master strategic index; refresh Project Sources and other local snapshots manually. No automated sync implied.
+
+## Stage 4.5.3 implementation (Claude, 24 Nov 2026), local addendum
+
+Claude implemented the research intelligence layer in the marketing repo:
+- the `slugshot-research-analysis` skill;
+- `ss analyze` (intake QC, statistics with denominators, same-item changes, sensitivity, trend dimensions with a lifecycle proposal, change points, outcome-blind coding with codebook v1.0, Wikidata/GDELT context);
+- `ss evidence` (ledger + validator, EvidenceGuard V0.1 export);
+- research templates;
+- four pinned upstream skills: verifying-bibliography, surveying-literature, synthesis-fact-checking, hypothesis-generation.
+
+Results:
+- Tests: 51 offline research tests pass; the research smoke test passes; full regression in reports/smoke-test.md.
+- Worked example ledger EXAMPLE-HUSS-SLUGTERRA (real data): Huss lifecycle unknown from one snapshot; es.wikipedia Slugterra attention change point 25 Sep 2026, median 41 → 26 daily views. Suggestive, single family.
+
+Handoff: docs/chatgpt-handoff-4.5.3.md. Next: Stage 4.5.4 query families and watchlists (ChatGPT), then 4.5.5 validation through real tasks.

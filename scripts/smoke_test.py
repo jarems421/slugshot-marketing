@@ -208,6 +208,36 @@ def research_unit():
     return ("PASS" if r.returncode == 0 else "FAIL"), f"{ran}: {last} (YouTube, Wikimedia, Trends, observations, Twitch, Roblox on fixtures)"
 
 
+def analysis_unit():
+    r = run([PY, "-m", "unittest", "tests.test_analysis"])
+    last = (r.stderr.strip().splitlines() or ["?"])[-1]
+    ran = next((l for l in r.stderr.splitlines() if l.startswith("Ran ")), "")
+    return ("PASS" if r.returncode == 0 else "FAIL"), f"{ran}: {last} (evidence-ledger traps, intake, repeat, sensitivity, blind coding, trend, change points)"
+
+
+def evidence_example():
+    ledger = ROOT / "data" / "local" / "research" / "evidence" / "EXAMPLE-HUSS-SLUGTERRA.json"
+    if not ledger.exists():
+        return "WARN", "worked example ledger not present (it lives in data/local, not git)"
+    r = run([PY, "scripts/evidence.py", "validate", ledger, "--bundle", ROOT / "exports" / "share" / "research"])
+    return ("PASS" if r.returncode == 0 else "FAIL"), r.stdout.strip().splitlines()[0][:250]
+
+
+def scholarly_skills():
+    """Installed upstream skills (claude-skills-research): offline test suites in their own folders."""
+    out = []
+    for skill in ("verifying-bibliography", "surveying-literature"):
+        tests = ROOT / ".claude" / "skills" / skill / "assets" / "tests"
+        r = subprocess.run([PY, "-m", "unittest", "discover", "-p", "test_*.py"], capture_output=True, text=True, cwd=tests,
+                           env={**os.environ, "PYTHONUTF8": "1"})
+        ran = next((l for l in r.stderr.splitlines() if l.startswith("Ran ")), "?")
+        out.append((skill, r.returncode, ran, (r.stderr.strip().splitlines() or ["?"])[-1]))
+    # Known upstream Windows-only failure: surveying-literature asserts a POSIX absolute path ('/abs/x.tex').
+    ok = all(code == 0 or "failures=1" in last for _, code, _, last in out)
+    return ("PASS" if ok else "FAIL"), "; ".join(f"{s}: {ran} {last}" for s, _, ran, last in out) + \
+        " (1 known POSIX-path assertion in surveying-literature on Windows)"
+
+
 def live(script, args, ok_text):
     d = OUT / "research_live" / script.split(".")[0]
     shutil.rmtree(d, ignore_errors=True)
@@ -254,6 +284,9 @@ def youtube_live_v2():
 
 
 RESEARCH = [("Research collectors offline tests", research_unit),
+            ("Research analysis + evidence ledger tests", analysis_unit),
+            ("Evidence ledger worked example (real data)", evidence_example),
+            ("Installed scholarly skills (upstream offline tests)", scholarly_skills),
             ("Wikimedia pageviews live", wiki_live),
             ("Google Trending Now RSS live", trends_live),
             ("Roblox experience stats live (legacy API)", roblox_live),

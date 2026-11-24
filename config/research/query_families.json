@@ -1,0 +1,28 @@
+{
+ "_note": "Stage 4.5.4 structure. A family = one construct (etic core, shared across languages) + native branches per market (emic; written natively, NOT translated) + negative controls. STARTER EXAMPLE ONLY: ChatGPT writes the real families. Compile into YouTube saved sets with `ss research families --compile`.",
+ "version": "families-0.1",
+ "families": [
+  {
+   "id": "underdog-comedy",
+   "construct": "Underdog / status-reversal comedy in gaming and Roblox content",
+   "etic_core": ["underdog wins", "weak character beats strong"],
+   "layers": ["core", "alias", "slang", "format_phrase", "need_language", "community_vocabulary", "negative", "adjacent_culture"],
+   "branches": {
+    "en": {"markets": ["GB", "US"], "lang": "en", "queries": [
+     {"q": "roblox underdog", "layer": "core"},
+     {"q": "noob vs pro roblox", "layer": "community_vocabulary"}]},
+    "es-MX": {"markets": ["MX"], "lang": "es", "queries": [
+     {"q": "noob vs pro roblox", "layer": "community_vocabulary"},
+     {"q": "el más débil gana roblox", "layer": "core"}]},
+    "es-ES": {"markets": ["ES"], "lang": "es", "queries": [
+     {"q": "noob contra pro roblox", "layer": "community_vocabulary"}]},
+    "es-LATAM": {"markets": ["AR", "CO", "CL"], "lang": "es", "queries": [
+     {"q": "noob vs pro roblox", "layer": "community_vocabulary"}]}
+   },
+   "negative_controls": [
+    {"q": "roblox tutorial how to", "lang": "en", "markets": ["US"], "why": "semantically near but not comedy; should NOT support the construct"}
+   ],
+   "collection": {"days": 7, "order": "date", "duration": "short", "max": 25}
+  }
+ ]
+}

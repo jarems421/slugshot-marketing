@@ -6,6 +6,8 @@ Built and tested 2026-11-24. This is the reference for the research collectors: 
 
 **How it's operated (automation first, 2026-11-24).** Claude runs everything below from a short instruction, using the `slugshot-research-operations` skill (`.claude/skills/slugshot-research-operations/`): it picks the collectors, runs them, handles quotas and errors, validates, builds one bundle and reports. The owner's part is reduced to what can't be delegated: Ctrl+A, Ctrl+C on Creative Center pages that Claude opens, an occasional sign-in, and uploading the bundle zip to ChatGPT. The command lists are Claude's reference; nothing here is scheduled.
 
+**Analysis and evidence (Stage 4.5.3).** What the data means is handled by `slugshot-research-analysis`: `ss analyze` (intake QC, statistics, trend dimensions, change points, outcome-blind coding, context) and `ss evidence` (ledger). See [research-evidence.md](research-evidence.md) and [research-methods.md](research-methods.md).
+
 ## 1. Sources at a glance
 
 | Source | Command | What you get | Language / region filters that really exist | Access | Status |

@@ -1,4 +1,4 @@
-﻿# Install: py -3.13 -m venv .venv; .venv\Scripts\python -m pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+# Install: py -3.13 -m venv .venv; .venv\Scripts\python -m pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
 certifi==2026.11.20
 charset-normalizer==3.5.3
 colorama==0.4.6
@@ -16,6 +16,8 @@ numpy==2.5.5
 openai-whisper==20250625
 regex==2026.11.23
 requests==2.34.2
+ruptures==1.1.10
+scipy==1.18.1
 setuptools==78.1.0
 sympy==1.14.0
 tiktoken==0.14.0

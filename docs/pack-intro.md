@@ -6,6 +6,12 @@
 
 **Operating model (owner decision, 2026-11-24): automation first.** The `ss` commands are Claude's interface. ChatGPT sends Claude a short instruction or a research brief, and Claude runs the collection, validation and bundling and reports back. Claude uses the `slugshot-research-operations` skill and `ss research collect --profile daily/spanish/refresh`. The owner only does what can't be delegated: Ctrl+A, Ctrl+C on Creative Center pages that Claude opens (`ss observe cc-session`), sign-ins, approvals, and uploading the bundle zip (`exports/share/bundles/`). Live-tested end to end with the Spanish profile (15 steps OK, 8 datasets bundled). The Creative Center session loop is tested with simulated copies; the first real session confirms the page layout. Saved YouTube query sets named `daily` and `spanish` are ChatGPT's to define; until then the profiles run charts and labelled default searches.
 
+**Stage 4.5.3 (24 Nov 2026): research intelligence.**
+- `slugshot-research-analysis` skill: `ss analyze` for deterministic analysis, `ss evidence` for a machine-checkable ledger with O/D/P/I/C/R levels, EvidenceGuard statuses and verbal strength. No numeric confidence.
+- Installed upstream skills: verifying-bibliography, surveying-literature, synthesis-fact-checking, hypothesis-generation.
+- ruptures for change points.
+- Read `docs/chatgpt-handoff-4.5.3.md` first.
+
 **What's new in this pack (Stage 4.4):**
 - `docs/research-data.md`: the research collectors' commands, routine, schemas, sharing rules, and TikTok and Google Trends API findings.
 - `docs/research-data-audit.md`: the audit, decisions and outcome.

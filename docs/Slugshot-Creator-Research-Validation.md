@@ -132,3 +132,17 @@ This is the current operating policy and supersedes earlier manual-first handoff
 - Reuse the current toolkit. No new agent, dashboard, database, scheduler or orchestration service merely for convenience. Add a lightweight Claude research-operations skill and small glue only when useful. Prefer existing working tools; add capabilities when real bottlenecks justify them.
 - Deliver one concise collection report with scope, sources, rows collected, failures, material caveats and paths to a clean shareable bundle (manifest and data dictionary included). Keep restricted/local-only data local. Use the connected shared workflow when available and permitted; until then, Claude prepares one clean bundle and the owner performs only the necessary transfer. Do not claim unattended sync is configured.
 
+## Stage 4.5.3 implementation (Claude, 24 Nov 2026), local addendum
+
+Claude implemented the research intelligence layer in the marketing repo:
+- the `slugshot-research-analysis` skill;
+- `ss analyze` (intake QC, statistics with denominators, same-item changes, sensitivity, trend dimensions with a lifecycle proposal, change points, outcome-blind coding with codebook v1.0, Wikidata/GDELT context);
+- `ss evidence` (ledger + validator, EvidenceGuard V0.1 export);
+- research templates;
+- four pinned upstream skills: verifying-bibliography, surveying-literature, synthesis-fact-checking, hypothesis-generation.
+
+Results:
+- Tests: 51 offline research tests pass; the research smoke test passes; full regression in reports/smoke-test.md.
+- Worked example ledger EXAMPLE-HUSS-SLUGTERRA (real data): Huss lifecycle unknown from one snapshot; es.wikipedia Slugterra attention change point 25 Sep 2026, median 41 → 26 daily views. Suggestive, single family.
+
+Handoff: docs/chatgpt-handoff-4.5.3.md. Next: Stage 4.5.4 query families and watchlists (ChatGPT), then 4.5.5 validation through real tasks.

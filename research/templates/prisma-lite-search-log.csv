@@ -1,0 +1,2 @@
+search_id,date_utc,source,query,filters,results_seen,retained,duplicates_removed,excluded,exclusion_reasons,stop_reason,notes
+EXAMPLE-1,2026-11-24,OpenAlex,"triangulation causal inference",type:article,40,6,2,32,"off-topic; no full text",enough for decision,EXAMPLE ROW

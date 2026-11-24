@@ -10,6 +10,7 @@
             -> exports/share/bundles/slugshot_research_<time>.zip (one file to give ChatGPT)
 """
 import argparse
+import json
 import re
 import subprocess
 import sys
@@ -197,7 +198,62 @@ def cmd_bundle(a, steps=None):
             for suffix in (".csv", ".json", "_README.md"):
                 if (base / (stem + suffix)).exists():
                     z.write(base / (stem + suffix), stem + suffix)
+        # Evidence ledgers (+ cards) and analysis outputs travel with the data they cite.
+        for p in sorted((rc.DATA / "evidence").glob("*.json")) + sorted((rc.DATA / "evidence").glob("*.md")):
+            z.write(p, f"evidence/{p.name}")
+        for p in sorted((rc.DATA / "analysis").glob("trend_*.json")):
+            z.write(p, f"analysis/{p.name}")
+    # Intake QC of the finished bundle, added to it so ChatGPT reads it first.
+    r = subprocess.run([PY, str(rc.ROOT / "scripts" / "research_analysis.py"), "intake", str(zpath)], capture_output=True, text=True,
+                       encoding="utf-8", errors="replace")
+    intake = zpath.with_name(zpath.stem + "_intake")
+    if intake.with_suffix(".md").exists():
+        with zipfile.ZipFile(zpath, "a", zipfile.ZIP_DEFLATED) as z:
+            z.write(intake.with_suffix(".md"), "INTAKE.md")
+            z.write(intake.with_suffix(".json"), "INTAKE.json")
+    print((r.stdout or r.stderr).strip().splitlines()[0] if (r.stdout or r.stderr) else "intake: no output")
     print(f"\nBundle -> {zpath} ({len(newest)} datasets, {zpath.stat().st_size // 1024} KB)\nSummary -> {summary}")
+
+
+def cmd_families(a):
+    """Validate config/research/query_families.json and compile it into YouTube saved query sets."""
+    path = rc.CONFIG / "query_families.json"
+    fams = json.loads(path.read_text(encoding="utf-8"))
+    layers_ok = {"core", "alias", "slang", "format_phrase", "need_language", "community_vocabulary", "negative", "adjacent_culture"}
+    problems, sets = [], {}
+    for f in fams.get("families", []):
+        fid, col = f.get("id"), f.get("collection", {})
+        if not fid or not f.get("construct"):
+            problems.append(f"family without id/construct: {f}")
+            continue
+        base = {"days": col.get("days", 7), "order": col.get("order", "date"), "duration": col.get("duration", "any"),
+                "max": col.get("max", 25)}
+        en_qs = {q["q"].lower() for q in f.get("branches", {}).get("en", {}).get("queries", [])}
+        for bname, b in f.get("branches", {}).items():
+            for q in b.get("queries", []):
+                if q.get("layer") not in layers_ok:
+                    problems.append(f"{fid}/{bname}: layer '{q.get('layer')}' not in {sorted(layers_ok)}")
+                for m in b.get("markets", []):
+                    item = {"id": f"{fid}:{bname}:{m}:{q['layer']}", "query": q["q"], "lang": b.get("lang", bname[:2]),
+                            "region": m, **base}
+                    sets.setdefault(f"fam-{fid}", []).append(item)
+                    sets.setdefault(f"fam-{fid}-{bname}", []).append(item)
+            if bname.startswith("es") and en_qs and {q["q"].lower() for q in b.get("queries", [])} == en_qs:
+                problems.append(f"{fid}/{bname}: identical to the English branch - write native queries, don't copy")
+        for nc in f.get("negative_controls", []):
+            for m in nc.get("markets", ["US"]):
+                sets.setdefault(f"fam-{fid}-negative", []).append({"id": f"{fid}:negative:{m}", "query": nc["q"],
+                                                                   "lang": nc.get("lang", "en"), "region": m, **base})
+    for p in problems:
+        print("WARN", p)
+    for name, items in sets.items():
+        print(f"{name}: {len(items)} searches (~{len(items)} of the 100 daily search calls)")
+    if a.compile:
+        qpath = rc.CONFIG / "youtube_queries.json"
+        q = json.loads(qpath.read_text(encoding="utf-8"))
+        q["sets"] = {k: v for k, v in q["sets"].items() if not k.startswith("fam-")} | sets
+        qpath.write_text(json.dumps(q, indent=1, ensure_ascii=False), encoding="utf-8")
+        print(f"Compiled into {qpath} (run with `ss yt sweep --set <name> --check-shorts`)")
 
 
 def cmd_runs(a):
@@ -219,8 +275,11 @@ def main():
     c.add_argument("--yt-set", help="saved YouTube query set to sweep (default: the profile name)")
     b = sub.add_parser("bundle", help="export everything and zip a clean bundle for ChatGPT")
     b.add_argument("--since", help="list runs since this UTC time (default: today 00:00 UTC)")
+    f = sub.add_parser("families", help="validate query families; --compile writes YouTube saved sets")
+    f.add_argument("--compile", action="store_true")
     a = ap.parse_args()
-    {"status": cmd_status, "prune": cmd_prune, "runs": cmd_runs, "collect": cmd_collect, "bundle": cmd_bundle}[a.cmd](a)
+    {"status": cmd_status, "prune": cmd_prune, "runs": cmd_runs, "collect": cmd_collect, "bundle": cmd_bundle,
+     "families": cmd_families}[a.cmd](a)
 
 
 if __name__ == "__main__":

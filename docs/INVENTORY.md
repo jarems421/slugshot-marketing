@@ -9,6 +9,7 @@ Last updated 2026-11-24 (Stage 4.4 research collectors added). Infrastructure ph
 | Git | 2.55.0 | system | version control |
 | Python | 3.13.15 | system; venvs `.venv` and `.venv-tts` | scripts |
 | openai-whisper | 20250625 (torch 2.15 CPU) | `.venv` (`requirements.txt`) | `ss caption` |
+| ruptures + scipy | 1.1.10 + 1.18.1 (BSD) | `.venv` (`requirements.txt`) | `ss analyze changepoints` |
 | kokoro-onnx + Kokoro-82M v1.0 | 0.6.1 | `.venv-tts` (`requirements-tts.txt`), `models/kokoro/` (not in git) | `ss voice` |
 | Node | 24.19.0 | system | Remotion, MakeMyClip |
 | FFmpeg | 9.1 full (gyan.dev) | winget `Gyan.FFmpeg` | everything media |
@@ -36,6 +37,10 @@ Last updated 2026-11-24 (Stage 4.4 research collectors added). Infrastructure ph
 |---|---|---|---|
 | `remotion-best-practices` | project skill | `.claude/skills/remotion-best-practices/` | official Remotion guidance, Markdown only (see `SOURCE.txt`) |
 | `slugshot-roblox-production` | project skill (ours) | `.claude/skills/slugshot-roblox-production/` | Roblox-native filming: truth modes, canon, scene specs, Studio safety, capture and hand-off into `ss` |
+| `slugshot-research-analysis` | project skill (ours) | `.claude/skills/slugshot-research-analysis/` | evidence-led analysis: intake, statistics, trend dimensions, outcome-blind coding, evidence ledger, literature verification routing |
+| `verifying-bibliography`, `surveying-literature` (+ `_shared/scholarly`) | project skills (upstream, MIT) | `.claude/skills/` | claude-skills-research 9d990c1, path-patched to project-local; offline tests 205/207 (2 Windows-only); live DOI check OK |
+| `synthesis-fact-checking` | project skill (upstream, CC0) | `.claude/skills/` | synthesis-skills 62a0a54, Markdown only |
+| `hypothesis-generation` | project skill (upstream, MIT) | `.claude/skills/` | K-Dense scientific-agent-skills c21d13b, stdlib CLIs, no network |
 | `slugshot-research-operations` | project skill (ours) | `.claude/skills/slugshot-research-operations/` | runs research collection from a short instruction: intents, brief execution, Creative Center session, error handling, bundle and report, approval boundaries |
 | `slugshot-video-editing` | project skill (ours) | `.claude/skills/slugshot-video-editing/` | creative editing judgement: pacing, cuts, zooms, captions, audio, format playbooks, review gates; evidence-labelled A/B/C/D/S |
 | `makemyclip` | MCP server (stdio) | `.mcp.json` | 8 timeline tools; media confined to `media\` (tested). Approve it when Claude Code asks |
@@ -72,6 +77,8 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Roblox experience stats (legacy, experimental) | `ss rbx` | yes (live) | n/a | n/a |
 | Public observations import (Creative Center, TikTok, Instagram, vidIQ, TinyFish) + Creative Center link list and paste parser | `ss observe` | yes (fixtures + 24 Nov Creative Center figures); oEmbed live; paste parser on fake samples only (confirm with a real paste) | n/a | n/a |
 | Research housekeeping | `ss research status/prune/runs` | yes | n/a | n/a |
+| Research analysis (intake QC, stats, repeat, sensitivity, trend dimensions, change points, blind coding, Wikidata/GDELT) | `ss analyze` | yes (24 offline tests; live: intake on real bundles, 11-year Wikipedia change points, Wikidata; GDELT live once, then rate-limited) | coding and interpretation | real coded samples |
+| Evidence ledger + validator + EvidenceGuard export | `ss evidence` | yes (traps suite; real worked ledger EXAMPLE-HUSS-SLUGTERRA valid inside a bundle) | AI/owner review of REVIEW items | n/a |
 | One-instruction research operations (skill `slugshot-research-operations`; `ss research collect --profile daily/spanish/refresh`, `ss research bundle`) | `ss research` | yes (live end-to-end: spanish profile, 15 steps OK, bundle of 8 datasets) | n/a | ChatGPT's saved query sets ('daily', 'spanish') |
 | Guided Creative Center session (opens pages; imports on Ctrl+A, Ctrl+C) | `ss observe cc-session` | loop tested with simulated copies | n/a | **first real session** confirms the page layout |
 | TikTok Discovery API, Instagram Business Discovery, Google Trends API | none | no | n/a | company identity (TikTok); Slugshot Instagram account; alpha approval |
