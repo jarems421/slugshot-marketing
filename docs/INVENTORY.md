@@ -36,6 +36,7 @@ Last updated 2026-11-24 (Stage 4.4 research collectors added). Infrastructure ph
 |---|---|---|---|
 | `remotion-best-practices` | project skill | `.claude/skills/remotion-best-practices/` | official Remotion guidance, Markdown only (see `SOURCE.txt`) |
 | `slugshot-roblox-production` | project skill (ours) | `.claude/skills/slugshot-roblox-production/` | Roblox-native filming: truth modes, canon, scene specs, Studio safety, capture and hand-off into `ss` |
+| `slugshot-research-operations` | project skill (ours) | `.claude/skills/slugshot-research-operations/` | runs research collection from a short instruction: intents, brief execution, Creative Center session, error handling, bundle and report, approval boundaries |
 | `slugshot-video-editing` | project skill (ours) | `.claude/skills/slugshot-video-editing/` | creative editing judgement: pacing, cuts, zooms, captions, audio, format playbooks, review gates; evidence-labelled A/B/C/D/S |
 | `makemyclip` | MCP server (stdio) | `.mcp.json` | 8 timeline tools; media confined to `media\` (tested). Approve it when Claude Code asks |
 | Permission rules | project settings | `.claude/settings.json` | blocks reading `.env` and direct MakeMyClip CLI calls; asks before recursive deletes and destructive git commands. The game repo is readable and copyable; changes to game files need the owner's request (CLAUDE.md) |
@@ -70,7 +71,9 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Twitch clips/streams | `ss twitch` | yes (live: clips, streams, recheck) | n/a | owner check of onward transfer before `share_exports` |
 | Roblox experience stats (legacy, experimental) | `ss rbx` | yes (live) | n/a | n/a |
 | Public observations import (Creative Center, TikTok, Instagram, vidIQ, TinyFish) + Creative Center link list and paste parser | `ss observe` | yes (fixtures + 24 Nov Creative Center figures); oEmbed live; paste parser on fake samples only (confirm with a real paste) | n/a | n/a |
-| Research housekeeping | `ss research` | yes | n/a | n/a |
+| Research housekeeping | `ss research status/prune/runs` | yes | n/a | n/a |
+| One-instruction research operations (skill `slugshot-research-operations`; `ss research collect --profile daily/spanish/refresh`, `ss research bundle`) | `ss research` | yes (live end-to-end: spanish profile, 15 steps OK, bundle of 8 datasets) | n/a | ChatGPT's saved query sets ('daily', 'spanish') |
+| Guided Creative Center session (opens pages; imports on Ctrl+A, Ctrl+C) | `ss observe cc-session` | loop tested with simulated copies | n/a | **first real session** confirms the page layout |
 | TikTok Discovery API, Instagram Business Discovery, Google Trends API | none | no | n/a | company identity (TikTok); Slugshot Instagram account; alpha approval |
 | YouTube reports | `ss yt report` | yes | n/a | written to `exports/share/` for ChatGPT (sharing approved by the owner) |
 | Platform metrics for ChatGPT | `ss export` | yes (validation) | n/a | **first posts** |

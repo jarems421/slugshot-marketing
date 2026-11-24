@@ -33,6 +33,13 @@ Set up a local, working production toolkit for one Roblox game. Do not build a n
 - YouTube API https://developers.google.com/youtube/v3
 - Claude Code https://code.claude.com/docs/en/overview
 
+## Operating philosophy: automation first (owner decision, 2026-11-24; supersedes manual-first wording elsewhere)
+- The `ss` toolkit is **Claude's interface, not the owner's**. From a short instruction, run the whole workflow yourself: choose the tools, run the PowerShell/`ss` commands, handle pagination, retries, quotas and ordinary errors, manage files and configs, validate, bundle, and report. Don't ask the owner to run commands, format tables or move files.
+- Be resourceful: investigate APIs, connectors, browser capabilities, native exports and open-source routes; try bounded experiments; report real limits. Uncertainty means investigate and label, not stop. If one route fails, try alternatives before falling back to manual work.
+- Routine free, reversible marketing operations are pre-approved. **Ask first** before: spending money or adding paid services; using vidIQ credits without an agreed budget; publishing; destructive operations; changing the game repo. Keep genuine safeguards: credentials never shown, Studio isolation guard, provider terms and retention, provenance, blank-not-zero. Don't bypass logins, rate limits or access controls, and don't treat owner direction as provider permission.
+- Research requests use the `slugshot-research-operations` skill (`ss research collect/bundle`, `ss observe cc-session`). Roles: ChatGPT = methodology, specifications, interpretation, culture, strategy, scripts; Claude = operational research, tooling, files, editing, Roblox-native production; Gemini/Flow = footage analysis and visuals; owner = strategy, creative judgement, approvals.
+- No new agent, orchestration framework, database, dashboard or scheduler for convenience; reuse the toolkit and add small glue only where it removes real friction.
+
 ## Working notes for this workspace (added during setup, 2026-11-24)
 - The game repo is at `../slugshot`. You may read, inspect and copy anything from it (docs, assets, renders, footage) into this workspace. Don't modify game files, run its build scripts or change its git state unless the owner explicitly asks; otherwise ask first. (Owner instruction, 2026-11-24.)
 - Protections that stay on: no reading or printing `.env`; recursive deletes and destructive git commands ask first (`.claude/settings.json`); never commit secrets or raw media.

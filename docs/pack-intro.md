@@ -4,6 +4,8 @@
 
 **Stage:** infrastructure is complete, including Roblox-native filming and (Stage 4.4) the research data collectors. Real production validation (real gameplay, real animations, real posts) hasn't started; it is listed in the production checklist below. Research methodology, query lists, watchlists, concept classification and interpretation now belong to ChatGPT; the collectors only gather dated, labelled data.
 
+**Operating model (owner decision, 2026-11-24): automation first.** The `ss` commands are Claude's interface. ChatGPT sends Claude a short instruction or a research brief, and Claude runs the collection, validation and bundling and reports back. Claude uses the `slugshot-research-operations` skill and `ss research collect --profile daily/spanish/refresh`. The owner only does what can't be delegated: Ctrl+A, Ctrl+C on Creative Center pages that Claude opens (`ss observe cc-session`), sign-ins, approvals, and uploading the bundle zip (`exports/share/bundles/`). Live-tested end to end with the Spanish profile (15 steps OK, 8 datasets bundled). The Creative Center session loop is tested with simulated copies; the first real session confirms the page layout. Saved YouTube query sets named `daily` and `spanish` are ChatGPT's to define; until then the profiles run charts and labelled default searches.
+
 **What's new in this pack (Stage 4.4):**
 - `docs/research-data.md`: the research collectors' commands, routine, schemas, sharing rules, and TikTok and Google Trends API findings.
 - `docs/research-data-audit.md`: the audit, decisions and outcome.

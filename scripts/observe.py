@@ -542,6 +542,72 @@ def cmd_cc_paste(a):
         cmd_check(a, imp=True)
 
 
+def read_clipboard(tk_root):
+    try:
+        return tk_root.clipboard_get()
+    except Exception:  # empty or non-text clipboard
+        return ""
+
+
+def cmd_cc_session(a):
+    """Guided Creative Center session: open each market/period page in the owner's browser, wait for the owner to
+    copy the page (Ctrl+A, Ctrl+C), then parse, save and import it and open the next page. The owner's browser does
+    all access; this only reads clipboard text that parses as a hashtag list (anything else is ignored, not stored)."""
+    import hashlib
+    import time
+    import tkinter
+    import webbrowser
+    regions = [r.strip().upper() for r in (a.regions or ",".join(rc.settings()["trends"]["geos"])).split(",") if r.strip()]
+    periods = [p.strip() for p in a.periods.split(",") if p.strip()]
+    d, _ = store_paths(a)
+    inbox = d / "inbox"
+    inbox.mkdir(exist_ok=True)
+    root = tkinter.Tk()
+    root.withdraw()
+    seen = hashlib.sha256(read_clipboard(root).encode()).hexdigest()
+    results = []
+    pages = [(r, p) for r in regions for p in periods]
+    print(f"Creative Center session: {len(pages)} pages. On each page that opens: "
+          + (f"select the '{a.category}' industry, " if a.category else "") +
+          "scroll once so the rows load, press Ctrl+A then Ctrl+C. Ctrl+C here to stop.")
+    for n, (region, period) in enumerate(pages, 1):
+        url = CC_HASHTAG.format(region=region, period=period)
+        print(f"\n[{n}/{len(pages)}] {region}, {period} days: {url}")
+        if not a.no_open:
+            webbrowser.open(url)
+        deadline, got = time.time() + a.timeout, None
+        while time.time() < deadline:
+            root.update()
+            text = read_clipboard(root)
+            h = hashlib.sha256(text.encode()).hexdigest()
+            if h != seen:
+                seen = h
+                rows = parse_cc_text(text)
+                if len(rows) >= 2:
+                    got = (text, rows)
+                    break
+                print("  clipboard changed but doesn't look like a hashtag list; still waiting")
+            time.sleep(0.7)
+        if not got:
+            print("  no copy received; skipped")
+            results.append((region, period, "skipped", 0))
+            continue
+        stamp = f"{rc.now():%Y%m%d_%H%M%S}"
+        paste = inbox / f"cc_{region}_{period}d_{stamp}.txt"
+        paste.write_text(got[0], encoding="utf-8")
+        sub = argparse.Namespace(**{**vars(a), "file": str(paste), "region": region, "period": period,
+                                    "observed_at": rc.iso(rc.now()), "import_now": True})
+        try:
+            cmd_cc_paste(sub)
+            results.append((region, period, "imported", len(got[1])))
+        except SystemExit as e:
+            results.append((region, period, f"import refused ({e.code})", len(got[1])))
+    root.destroy()
+    print("\nSession summary:")
+    for region, period, status, n in results:
+        print(f"  {region} {period:>3} days: {status} ({n} hashtags)")
+
+
 def cmd_template(a):
     d, _ = store_paths(a)
     inbox = d / "inbox"
@@ -642,8 +708,16 @@ def main():
     cp.add_argument("--category", help="industry filter that was selected, e.g. Games")
     cp.add_argument("--observed-at", help="when you copied it (default: the paste file's modified time)")
     cp.add_argument("--import", dest="import_now", action="store_true", help="import straight away after the preview")
+    cs = sub.add_parser("cc-session", help="guided session: opens each page, waits for your Ctrl+A/Ctrl+C, imports, next")
+    cs.add_argument("--regions", help="default: settings.json trends.geos")
+    cs.add_argument("--periods", default="7", help="days: 7, 30 or 120 (default 7)")
+    cs.add_argument("--category", help="industry to select on each page, e.g. Games (recorded with the rows)")
+    cs.add_argument("--timeout", type=int, default=240, help="seconds to wait per page before skipping it")
+    cs.add_argument("--no-open", action="store_true", help="don't open pages (you navigate yourself)")
     a = ap.parse_args()
-    if a.cmd == "cc-links":
+    if a.cmd == "cc-session":
+        cmd_cc_session(a)
+    elif a.cmd == "cc-links":
         cmd_cc_links(a)
     elif a.cmd == "cc-paste":
         cmd_cc_paste(a)

@@ -4,6 +4,8 @@ Built and tested 2026-11-24. This is the reference for the research collectors: 
 
 **Split of work.** These collectors gather dated, raw, labelled data and nothing else. ChatGPT owns the query lists, watchlists and entity lists; it classifies concepts (emerging / accelerating / established / saturated / declining / unknown) and does all interpretation. The collectors never rank, score or classify, and never claim anything about fatigue, quality, demographics or conversion.
 
+**How it's operated (automation first, 2026-11-24).** Claude runs everything below from a short instruction, using the `slugshot-research-operations` skill (`.claude/skills/slugshot-research-operations/`): it picks the collectors, runs them, handles quotas and errors, validates, builds one bundle and reports. The owner's part is reduced to what can't be delegated: Ctrl+A, Ctrl+C on Creative Center pages that Claude opens, an occasional sign-in, and uploading the bundle zip to ChatGPT. The command lists are Claude's reference; nothing here is scheduled.
+
 ## 1. Sources at a glance
 
 | Source | Command | What you get | Language / region filters that really exist | Access | Status |
@@ -25,6 +27,13 @@ Built and tested 2026-11-24. This is the reference for the research collectors: 
 All run from the workspace: `.\ss <command>`. Add `-h` to any command for every option. Every collector also takes `--dry-run`, which uses fake fixtures with no network and no credentials.
 
 ```powershell
+# One-instruction operations (what Claude runs for "collect today's research" and similar)
+.\ss research collect --profile daily      # Trends 7 markets, YouTube Gaming charts per market, saved set 'daily', Twitch, creator/broadcaster lists, re-snapshots, Wikipedia, Roblox, then bundle
+.\ss research collect --profile spanish    # MX ES AR CO CL; saved set 'spanish' or a labelled default 'roblox' search per market; Twitch es
+.\ss research collect --profile refresh    # re-observe stored YouTube videos and Twitch clips, watchlists, Wikipedia, Roblox
+.\ss research bundle                       # exports + prune + zip: exports\share\bundles\slugshot_research_<time>.zip
+.\ss observe cc-session --regions US,GB,MX,ES,AR,CO,CL --periods 7 --category Games   # guided Creative Center (owner: Ctrl+A, Ctrl+C per page)
+
 # Health
 .\ss research status            # credentials present? (yes/no only), gates, stored rows, last runs, YouTube quota today
 .\ss research prune             # apply every retention rule and delete expired exports
@@ -223,6 +232,21 @@ Metric columns: `rank, rank_change, views, likes, comments, shares, saves, posts
 - `metric_definition` is `unknown` unless the row lists the metric in `metric_definitions_verified` (for example `views|posts`).
 - **The duplicate key includes the observation's scope:** item, metric, source, observation time, `region`, `period` and `category`. So #huss at US/7 days, GB/7 days, US/30 days and US/7 days/Games on the same day are four observations. Exact repeats are skipped; a different value for the same key is reported as a conflict; the same item at a new time is kept as a repeat observation.
 - Placeholder text ("—", "n/a", "unknown") means blank in **every** column, not just in metrics.
+
+### Creative Center: guided session (the least the owner has to do)
+
+What was investigated (2026-11-24):
+- **Automated access:** not permitted (TikTok's commercial terms) and not technically available here: no browser-control tool (Claude in Chrome, built-in browser, computer use) is connected in this VS Code session.
+- **Exports:** none seen on the page.
+- **TinyFish (ChatGPT):** reached the US 7-day table, but detailed analytics needed a login.
+
+So `ss observe cc-session` reduces the owner's part to two keystrokes per page. Claude opens each market/period page in the owner's normal browser and watches the clipboard. When the owner presses Ctrl+A, Ctrl+C, Claude:
+1. saves the text;
+2. parses rank, hashtag, posts and views;
+3. imports the rows with region, period, category, URL and time;
+4. opens the next page.
+
+Clipboard text that doesn't parse as a hashtag list is ignored and not stored. The loop was tested with simulated copies; the real page layout is confirmed on the first real session.
 
 ### Creative Center: making the manual route quick
 

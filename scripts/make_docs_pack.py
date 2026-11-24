@@ -14,6 +14,7 @@ FILES = [
     ("docs/COMMANDS.md", "every command"),
     ("docs/research-data.md", "research collectors: commands, routine, schemas, sharing rules, TikTok and Trends API findings"),
     ("docs/research-data-audit.md", "Stage 4.4 source audit, decisions and outcome"),
+    (".claude/skills/slugshot-research-operations/SKILL.md", "research operations skill: how Claude runs research from a short instruction"),
     ("roblox-native/README.md", "Roblox-native production (place, guard, runner, tests, decisions)"),
     (".claude/skills/slugshot-roblox-production/SKILL.md", "Roblox production skill"),
     (".claude/skills/slugshot-roblox-production/references/scene-specs.md", None),

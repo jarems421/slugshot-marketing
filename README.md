@@ -10,6 +10,10 @@ More detail: **[command reference](docs/COMMANDS.md)** · [Flow and Gemini hand-
 
 Creative editing judgement (pacing, cuts, captions emphasis, audio, formats, review) lives in the Claude Code skill `.claude/skills/slugshot-video-editing/`. Claude loads it for any Slugshot editing or review task, next to the official Remotion skill.
 
+## How this is operated
+
+Automation first (owner decision, 2026-11-24): these commands are **Claude's interface**. Give Claude Code a short instruction ("collect today's research", "research Spanish Roblox content", "research Creative Center", "execute this brief", "make the Floppy duel edit") and it runs the steps, handles errors and reports back. Research requests go through the `slugshot-research-operations` skill. Your part is decisions, creative judgement, approvals (spending, publishing, destructive or game-repo changes), and the few actions only you can do (a Creative Center copy: Ctrl+A, Ctrl+C on pages Claude opens; signing in; uploading the bundle zip to ChatGPT). The commands below are listed for reference.
+
 ## Commands
 
 Run from this folder: `.\ss <command>` in PowerShell, or `ss <command>` in Command Prompt. Every script also takes `-h`.
@@ -45,6 +49,9 @@ Run from this folder: `.\ss <command>` in PowerShell, or `ss <command>` in Comma
 
 # 5. Research data and metrics (full guide: docs
 esearch-data.md)
+.\ss research collect --profile daily            # or spanish / refresh: runs the collectors, then bundles
+.\ss research bundle                            # -> exports\share\bundles\slugshot_research_<time>.zip (for ChatGPT)
+.\ss observe cc-session --periods 7 --category Games   # guided Creative Center: you press Ctrl+A, Ctrl+C on each page
 .\ss research status                            # credentials present?, stored rows, quota today
 .\ss yt discover "roblox pvp" --lang es --region MX --days 7   # 1 search call (100/day allowance) + 1 unit
 .\ss yt chart --region MX                        # Mexico's most-popular Gaming chart, 1 unit

@@ -1,5 +1,3 @@
-<!-- SNAPSHOT: copied 2026-11-24 from the owner's bank (version dated 24 November 2026). Not synchronized with the master; replace when a newer version is supplied. -->
-
 # Slugshot Marketing Bank
 
 Updated 24 November 2026 · Research scope: TikTok, YouTube Shorts, Instagram Reels · English and Spanish-language audiences
@@ -9,6 +7,29 @@ Slugshot is a Roblox PvP game built around creature-powered shots, transformatio
 **Core creative direction — owner-approved, 24 November 2026:** Slugshot should feel like an entertainment account with a Roblox game behind it, not an account constantly advertising a game. Cultural relevance and humour are a primary marketing research priority, alongside gameplay and conversion. Research what the target audience actually finds funny now, then turn that understanding into original Slugshot content. See the Cultural intelligence section below. This direction is a strategic decision; the performance of individual formats is still untested.
 
 **Bilingual campaign — owner decision, 24 November 2026:** Separate English and Spanish-language account streams, with localisation and independent cultural intelligence for each. Spanish-speaking markets include Latin America as well as Spain. Reuse the production infrastructure and visual assets wherever possible; do not treat Spanish as merely a translated English feed. See the bilingual strategy below.
+
+
+**Roblox-first production — owner decision, 24 November 2026:** Most content is authentic gameplay or Roblox-native staged comedy, animation and storytelling. Short AI/anime/manga cutaways (normally 1–4 seconds) serve a narrative purpose, not substitute gameplay. Floppy never transforms or uses abilities, including fictional scenes. The updated Claude toolkit (`13adfd2` baseline) governs production details.
+
+## Operating philosophy — automation first (owner decision, 24 November 2026)
+
+This is the current operating policy and supersedes earlier manual-first handoff recommendations. The owner wants an ambitious, low-friction AI-assisted marketing workflow, not an enterprise-style approval process. **The command-line toolkit is Claude's interface, not the owner's interface.** A single natural-language request should initiate routine collection, processing, validation and delivery. Human input is reserved for meaningful decisions and interactions that genuinely cannot be delegated.
+
+- Default to execution: Claude runs PowerShell/terminal and existing `ss` commands, selects appropriate collectors, manages local files, handles bounded retries, pagination, quota limits, routine configuration, imports, pruning and reports. Do not ask the owner to run commands or format tables that Claude can handle. ChatGPT designs research and interprets it; Claude owns operational execution; Gemini/Flow handles visual work.
+- Be resourceful: investigate available APIs, browser capabilities, installed connectors, native exports, open-source tools and alternative permitted routes when they offer a material benefit. Prefer small working experiments to prolonged planning. Use free, reversible operations within the marketing workspace without repeatedly asking for approval. Missing documentation or uncertain metric semantics are reasons to investigate and label uncertainty, not automatic blockers.
+- Be proportionate: report real limitations and keep working on the remaining sources if one fails. Do not invent additional restrictions or repeat resolved concerns. Respect actual access restrictions, applicable provider terms, privacy, rights and credential handling. Do not bypass authentication, rate limits or access controls; do not treat owner direction as provider permission. Where an access route is not established as permitted, use a supported alternative, ordinary manual inspection or native export and automate the downstream work.
+- Creative Center is a core research source, not a reason to stall the project. Use supported access and native export options when available; Claude handles `cc-links`, `cc-paste`, `observe import`, validation and reporting. If a human page copy or sign-in is genuinely required, ask only for that smallest action, preferably grouped into one request. No claims of fully automated Creative Center collection until it has been demonstrated and permitted. No scheduled scraping or hidden endpoints.
+- Preserve genuine boundaries: no new paid services, billing changes or further vidIQ credit use without an agreed budget; no publication, destructive operations, credential disclosure, or game-repo modifications/builds/Git changes without owner approval. Preserve provider-specific retention, transfer and metric restrictions, provenance, missing-value semantics and the Studio isolation guard. Routine local marketing research is not a consequential game change.
+- Reuse the current toolkit. No new agent, dashboard, database, scheduler or orchestration service merely for convenience. Add a lightweight Claude research-operations skill and small glue only when useful. Prefer existing working tools; add capabilities when real bottlenecks justify them.
+- Deliver one concise collection report with scope, sources, rows collected, failures, material caveats and paths to a clean shareable bundle (manifest and data dictionary included). Keep restricted/local-only data local. Use the connected shared workflow when available and permitted; until then, Claude prepares one clean bundle and the owner performs only the necessary transfer. Do not claim unattended sync is configured.
+
+## Current research infrastructure and roadmap — 24 November 2026
+
+Stage 4.4 is accepted and committed at marketing repo `13adfd2` (toolkit pack generated 19:26 UTC). Claude reports 20/20 full smoke checks, 7/7 research smoke checks and 27/27 offline tests. These are reported local results, not tests rerun by ChatGPT. YouTube bilingual sweep, pagination, creator uploads, comments, quota accounting, category flags and observation/context deduplication were live-tested. Wikipedia redirect deduplication, coverage logging, pacing and retries are implemented; Trends RSS expiry and public-observation scope deduplication are corrected. Wikimedia, Twitch, Roblox and Trends RSS collectors are live-tested. Google Trends Explore CSV and Creative Center clipboard parsing still need first real inputs; validate naturally during research, not a separate infrastructure phase. Google Trends alpha application submitted; access pending. TikTok Discovery API deferred for business eligibility; Twitch terms review confirmed by owner, local-only export gate and 24-hour retention remain unchanged. No Slugshot campaign results yet.
+
+TinyFish's later interactive Creative Center test reached the US seven-day hashtag table, confirmed regional/industry and 7/30/90-day controls, and imported the displayed post/view figures into the observation importer. Detailed analytics prompted a separate login; authenticated detail access, native export and ongoing usage cost were not confirmed. This supersedes the earlier navigation-only extraction result, not a claim of general automated access.
+
+Next: Stage 4.5.1 methodology; 4.5.2 existing skills/resource evaluation; 4.5.3 specialised research skills; 4.5.4 bilingual collection configurations; 4.5.5 bounded validation through real tasks. Stage 4.6 foundational studies and 4.7 knowledge banks follow. Stage 5 cross-AI handoff, 6 lightweight dashboard only if useful, 7 production preparation and 8 campaign remain later. The operational Claude skill is a small convenience refinement, not a new infrastructure stage or a blocker to Stage 4.5.
 
 ## How to add material
 
@@ -224,6 +245,8 @@ Sources: [Flow model support](https://support.google.com/flow/answer/16352836?hl
 
 ### Roadmap and decisions
 
+Historical setup snapshot below; the updated eight-stage roadmap and latest validation status at the end of this bank supersede its stage numbering and status.
+
 | Stage | Status |
 |---|---|
 | 1. Claude Code local infrastructure | Complete, reported 13/13 smoke checks; API key rotation/restriction still outstanding unless owner confirms |
@@ -277,3 +300,43 @@ Keep the updated bank as the living decisions and research index, not a substitu
 | `Slugshot-Marketing-Bank.md` | This living bank; prior research, hypotheses, decisions, roadmap and results |
 
 The combined toolkit supersedes the earlier shorter toolkit pack. Individual uploads and ZIP are duplicate/reference archives, not necessary as separate Project Sources. Keep Claude's local copy of the bank aligned by supplying the updated file when needed; no automatic synchronisation has been established.
+
+
+## Creator research infrastructure — earlier decision and test history, 24 November 2026
+
+Historical snapshot: current implementation and automation-first policy are at the top of this bank.
+
+**Owner decision following live plugin test:** vidIQ is useful but too credit-intensive for routine research. The small controlled test consumed 50 of 150 monthly credits (nine substantive calls); balance checked at 100 remaining, renewal 24 December. Do not use vidIQ as the main data pipeline. Use official APIs and free native exports for routine collection; reserve vidIQ for high-value concept/hook/format searches, selective breakout discovery and emerging audio that cannot easily be reproduced. Agree further credit spending with the owner. No new paid subscriptions.
+
+Detailed dated evidence, queries, results, references, limitations and cost ledger: `Slugshot-Creator-Research-Validation.md` (24 Nov). This report preserves the test findings, not a permanent raw API-statistics archive. Follow each provider's retention/refresh, transfer and metric rules. The earlier infrastructure-audit summary is a planning input, not evidence of implemented additional APIs.
+
+- vidIQ: English/Spanish Shorts and TikTok/Reels concept searches worked, including creative premise, first-three-second hook and format descriptions. Historical YouTube stats returned dated per-video velocity; audio search returned usage-growth signals. Weaknesses: 5 credits per discovery/history call, 10 for a video analysis, language noise, incomplete recent-velocity field, uncertain provider metric provenance and inferred audience demographics, no representative concept-level growth measure. Video breakdown worked in Spanish but not independently verified. Prefer Gemini for authorised video analysis.
+- TinyFish: public search useful for dated meme origins and contextual references. Instagram page yielded likes/comments/date but not views; YouTube metadata without views; TikTok page error; Creative Center navigation only; Google Trends partial data/chart error. Not reliable bulk collection. Interactive browser untested. No measured usage balance.
+- Huss specific joke, In This Town format, associated audio and broad Roblox animation are distinct entities with distinct lifecycles. The owner's saturation concern is a hypothesis; one successful or declining video, derivative templates or growing sound cannot establish a concept trend. Gather repeated dated observations, independent creator adoption, normal/failed examples and qualitative fatigue evidence. Use emerging/accelerating/established/saturated/declining/unknown labels only with explicit supporting evidence.
+- Data standard: source URL/ID, creator, publication time, observation UTC, query/filter, language, intended locale vs observed geography, metric name/definition, missing values, provenance (first-party measured; first-party sampled/normalised; third-party reported/estimated; qualitative interpretation), confidence, rights and retention requirements. Keep A/B/C/D/S evidence labels. Do not treat AI demographic guesses or estimates as measured data.
+- Claude next: investigate Twitch Helix, Google Trends official CSV/API eligibility, improve existing YouTube regional/language searches and dated exports, investigate Meta Business Discovery eligibility and actual competitor fields. TikTok remains a genuine bulk-data gap; assess legitimate free options. No unapproved scraping, purchases, API keys in chat, or prohibited YouTube aggregation/derived scores. Rotate/restrict previously exposed YouTube key before live use unless confirmed done.
+- Google Drive connected and search tested; no Slugshot files found at that test. Shared folder, approved exports, permissions and retention lifecycle remain deferred to shared workflow. No automatic synchronisation or scheduled collection established.
+
+### Updated roadmap (supersedes historical numbering above)
+
+| Stage | Current status |
+|---|---|
+| 1 Claude production toolkit | Implemented, latest report 12 PASS / 1 WARN (Kokoro punctuation round-trip), not real production validated |
+| 2 Gemini / Flow | Configured, reported dry-run validation; confirm privacy/approval settings before real uploads or generation |
+| 3 Roblox-native filming | Implemented at stand-in level, game isolated; real actors, sets and OBS validation deferred; strict repeatability test one pair failed |
+| 4 ChatGPT creator research infrastructure | 4.1 audit completed; 4.2 Drive connected; 4.3 exploratory plugin validation completed; 4.4 Claude data collection complete (13adfd2); 4.5 methodology/skills, 4.6 foundational studies, 4.7 knowledge banks pending |
+| 5 Shared workflow | Deferred; language-specific handoffs, approved export folder and access |
+| 6 Dashboard | Deferred, lightweight only |
+| 7 Production preparation | Real footage, animations, bilingual voice/captions, asset packs, Flow and pilot validation |
+| 8 Campaign | Not started; no S-rated Slugshot results |
+
+Earlier Claude source: `Slugshot-Claude-Toolkit-Docs.md`, generated 24 Nov from marketing commit `3cd0496`; supersedes older `ad25094` setup record. Includes Roblox-native guard, Reel runner, smoke results, API policy and deferred checklist. Game snapshot `08fee46`; do not conflate stand-in tests with production.
+
+### Additional source registry
+
+| Source | Purpose |
+|---|---|
+| `Slugshot-Creator-Research-Validation.md` | Detailed dated vidIQ/TinyFish validation, cost ledger, reference URLs, verified limitations, revised architecture and concept lifecycle method |
+| Latest committed `Slugshot-Claude-Toolkit-Docs.md` (13adfd2) | Authoritative implementation snapshot for Claude and Roblox-native filming |
+
+The existing bank remains the master strategic index; refresh Project Sources and other local snapshots manually. No automated sync implied.
