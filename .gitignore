@@ -12,6 +12,7 @@ assets/brand/*
 !assets/**/.gitkeep
 reports/qc_log.csv
 *.qc.json
+*.sheet.jpg
 media/
 exports/
 data/local/

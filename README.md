@@ -4,7 +4,9 @@ This folder holds the local tools for Slugshot's short-form videos: capture impo
 
 Before scripting any mechanic, check [docs/game-truth.md](docs/game-truth.md). The game repo `../slugshot` is used only for checking facts; nothing here writes to it.
 
-More detail: [inventory and status](docs/INVENTORY.md) · [tool research](docs/tool-research.md) · [YouTube API rules](docs/youtube-api-policy.md) · [latest smoke test](reports/smoke-test.md)
+More detail: **[command reference](docs/COMMANDS.md)** · [Flow and Gemini hand-offs](docs/flow-and-gemini.md) · [inventory and status](docs/INVENTORY.md) · [tool research](docs/tool-research.md) · [YouTube API rules](docs/youtube-api-policy.md) · [latest smoke test](reports/smoke-test.md) · [readiness report](reports/readiness-2026-11-24.md)
+
+Creative editing judgement (pacing, cuts, captions emphasis, audio, formats, review) lives in the Claude Code skill `.claude/skills/slugshot-video-editing/`. Claude loads it for any Slugshot editing or review task, next to the official Remotion skill.
 
 ## Commands
 
@@ -29,6 +31,9 @@ Run from this folder: `.\ss <command>` in PowerShell, or `ss <command>` in Comma
 # 4. Render (QC runs automatically afterwards)
 .\ss render SS_20261125_PVP_FloppyUnderdog_BestSlug_V01_MASTER media\raw\SS_..._RAW.mkv --format PVP --narration media\vo\floppy_mix.wav --captions media\vo\floppy_clean.srt --hook "He brought Inferno. I brought Floppy."
 .\ss batch jobs\sample-variants.json            # several hooks/formats from one set of assets
+.\ss assemble jobs\edit-sample-story.json       # multi-scene: clips, stills, cards, script -> voice, music, SFX
+.\ss candidates media\raw\X_RAW.mkv media\raw\X_RAW.gemini.csv   # Gemini timestamps -> review clips
+.\ss sheet exports\SS_..._MASTER.mp4             # frame sheet for creative review
 .\ss vertical <clip> <out.mp4> --narration ... --srt ... --hook "..."   # quick FFmpeg route, phrase captions
 .\ss qc exports\SS_..._MASTER.mp4                # re-check any file
 .\ss studio                                      # tweak the template in Remotion Studio
@@ -39,7 +44,7 @@ Run from this folder: `.\ss <command>` in PowerShell, or `ss <command>` in Comma
 # 5. Metrics
 .\ss yt discover "roblox pvp" --days 7 --short-only   # 1 search call (100/day allowance) + 1 unit
 .\ss yt stats                                   # re-snapshot the watchlist: 1 unit per 50 videos
-.\ss yt report                                  # -> exports\share\youtube_report_YYYYMMDD.csv + _README.md
+.\ss yt report                                  # -> data\local\reports\ (internal only: not for AI services)
 .\ss export                                     # check data\local\platform_metrics.csv -> exports\share\
 ```
 
@@ -78,7 +83,7 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 | Path | Contents | In git? |
 |---|---|---|
 | `media/` | raw footage, voiceovers, MakeMyClip workspace | no |
-| `exports/` | finished masters; `exports/share/` holds CSVs for ChatGPT | no |
+| `exports/` | finished masters; `exports/share/` holds CSVs for ChatGPT (variants log, platform metrics; never YouTube API data) | no |
 | `data/local/` | YouTube snapshots, watchlist, quota log, `platform_metrics.csv` | no |
 | `models/` | Kokoro model files (325 MB + 28 MB) | no |
 | `assets/` | your music, SFX, brand files (ignored) + `LICENSES.csv` (tracked) | licence list only |
@@ -96,7 +101,7 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 
 **`data/local/youtube_snapshots.csv`**: one row per video per collection run. `video_id, url, title, channel_id, channel_title, published_at, observed_at_utc, duration_s, duration_le_180s, views, likes, comments, source, query`. Blank = hidden or unavailable. Rows older than 30 days are deleted automatically (YouTube policy).
 
-**`exports/share/youtube_report_YYYYMMDD.csv`**: latest snapshot per video plus `age_hours`, `snapshots`, `hours_since_prev`, `view_increase_since_prev` and `views_per_hour_since_prev`. These derived columns compare the same video with itself, never with other videos or channels. A `_README.md` data dictionary is written next to it: give both to ChatGPT. Comparing creators with their own averages was removed because YouTube's policies need approval for that ([details](docs/youtube-api-policy.md)).
+**`data/local/reports/youtube_report_YYYYMMDD.csv`** (internal only): latest snapshot per video plus `age_hours`, `snapshots`, `hours_since_prev`, `view_increase_since_prev` and `views_per_hour_since_prev`. These derived columns compare the same video with itself, never with other videos or channels. A `_README.md` data dictionary is written next to it. Don't upload either to ChatGPT, Gemini or other AI services until the policy question is settled. Comparing creators with their own averages was removed because YouTube's policies need approval for that ([details](docs/youtube-api-policy.md)).
 
 **`exports/share/variants_log.csv`**: one row per rendered variant (`edit_file, format, concept, hook_id, hook, clip, narration, captions, duration_s, qc, qc_issues, experiment_id`), ready to copy into the content log.
 

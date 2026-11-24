@@ -1,0 +1,24 @@
+{
+  "_about": "Toolkit test: every external asset type in one multi-scene edit. Stand-ins: the PNG, MKV and 'Flow' clip are test files in media/ (not committed). V02 applies the first skill review (full line on the opening card, one CTA).",
+  "concept": "ToolkitStory",
+  "hook_id": "MultiScene",
+  "format": "WORLD",
+  "script": "jobs/scripts/sample-story.md",
+  "voice": {"voice": "am_puck", "speed": 1.05},
+  "tidy": true,
+  "sync": "script",
+  "music": "media/test/bed_tone.wav",
+  "music_db": -24,
+  "sfx": [{"src": "media/test/whoosh.wav", "at": 5.3}],
+  "captions": "auto",
+  "emphasis": ["Floppy", "transform", "dream"],
+  "hook": "",
+  "label": "TEST - not gameplay",
+  "scenes": [
+    {"kind": "card", "text": "In my world, everyone gets one slug.", "seconds": 1.8},
+    {"kind": "image", "src": "media/flow/floppy_ref.png", "seconds": 1.6, "fit": "crop", "zoom": 1.15},
+    {"kind": "video", "src": "media/raw/SS_20261124_PVP_FloppyHop_Sample_V01_RAW.mkv", "trim_start": 2.0, "seconds": 2.4, "fit": "crop", "punch_at": [0.9], "volume": 0},
+    {"kind": "video", "src": "media/flow/flow_standin_9x16.mp4", "seconds": 2.2, "fit": "crop", "transition": "fade", "volume": 0.2, "label": "AI-generated scene"},
+    {"kind": "card", "text": "Would you pick Floppy?", "seconds": 1.8}
+  ]
+}

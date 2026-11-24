@@ -136,6 +136,59 @@ def yt_dry():
     return "PASS", "discover -> stats -> report (+ data dictionary) on fake fixtures, no network"
 
 
+def assembly():
+    """Multi-scene edit from every external asset type: script -> Kokoro WAV, PNG still, OBS-style MKV,
+    a 9:16 'Flow' MP4, text cards, music + SFX, script-synced scenes."""
+    a = OUT / "assets"
+    a.mkdir(parents=True, exist_ok=True)
+    ff = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y"]
+    run([*ff, "-ss", "4", "-i", SAMPLE / "clip.mp4", "-frames:v", "1", "-vf", "crop=480:430:470:0,scale=1080:-1",
+         a / "still.png"])
+    run([*ff, "-i", SAMPLE / "clip.mp4", "-c", "copy", a / "recording.mkv"])
+    run([*ff, "-f", "lavfi", "-i", "gradients=s=1080x1920:d=4:c0=0x2b1d4a:c1=0xc0582a:r=30", "-f", "lavfi", "-i",
+         "sine=f=180:d=4", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", a / "flow.mp4"])
+    run([*ff, "-f", "lavfi", "-i", "aevalsrc=0.3*sin(2*PI*220*t):s=48000:d=8", a / "bed.wav"])
+    run([*ff, "-f", "lavfi", "-i", "anoisesrc=d=0.5:c=pink:a=0.4,afade=t=out:st=0.2:d=0.3", a / "whoosh.wav"])
+    rel = lambda p: str(p.relative_to(ROOT)).replace("\\", "/")
+    edit = {
+        "concept": "Smoke", "hook_id": "Assembly", "format": "WORLD", "script": "jobs/scripts/sample-story.md",
+        "tidy": True, "sync": "script", "music": rel(a / "bed.wav"), "sfx": [{"src": rel(a / "whoosh.wav"), "at": 5.3}],
+        "captions": "auto", "emphasis": ["Floppy"], "label": "TEST - not gameplay",
+        "scenes": [
+            {"kind": "card", "text": "In my world, everyone gets one slug.", "seconds": 2},
+            {"kind": "image", "src": rel(a / "still.png"), "seconds": 2, "fit": "crop", "zoom": 1.15},
+            {"kind": "video", "src": rel(a / "recording.mkv"), "trim_start": 2, "seconds": 2, "fit": "crop", "punch_at": [0.9]},
+            {"kind": "video", "src": rel(a / "flow.mp4"), "seconds": 2, "transition": "fade", "label": "AI-generated scene"},
+            {"kind": "card", "text": "Would you pick Floppy?", "seconds": 2}]}
+    (OUT / "edit.json").write_text(json.dumps(edit, indent=1), encoding="utf-8")
+    r = run([PY, "scripts/assemble.py", OUT / "edit.json", "--test", "--out-dir", OUT])
+    if r.returncode == 1 or "QC" not in r.stdout:
+        return "FAIL", (r.stderr or r.stdout).strip()[-400:]
+    video = next(OUT.glob("SS_*_WORLD_Smoke_Assembly_*.mp4"))
+    status, detail = qc_status(video)
+    starts = next((l for l in r.stdout.splitlines() if l.startswith("scene starts")), "")
+    return status, f"5 scenes (card, PNG, MKV, 9:16 MP4, card) + Kokoro script + music/SFX; {starts}; {detail}"
+
+
+def candidates():
+    r = run([PY, "scripts/candidates.py", SAMPLE / "clip.mp4", ROOT / "tests" / "fixtures" / "gemini_sample.csv"])
+    index = ROOT / "media" / "candidates" / "clip" / "index.csv"
+    if r.returncode or not index.exists():
+        return "FAIL", (r.stderr or r.stdout).strip()[-300:]
+    n = len(index.read_text(encoding="utf-8").strip().splitlines()) - 1
+    skipped = "skip row 3" in r.stdout
+    return ("PASS" if n == 2 and skipped else "WARN"), f"{n} padded clips + index.csv from a Gemini-style CSV; out-of-range row skipped: {skipped}"
+
+
+def yt_internal():
+    reports = list((OUT / "yt_dryrun" / "reports").glob("*youtube_report_*.csv"))
+    shared = list((ROOT / "exports" / "share").glob("*youtube_report*"))
+    readme = next((OUT / "yt_dryrun" / "reports").glob("*_README.md"), None)
+    banner = readme and "INTERNAL ONLY" in readme.read_text(encoding="utf-8")
+    ok = reports and not shared and banner
+    return ("PASS" if ok else "FAIL"), f"report kept in data dir ({len(reports)}), none in exports/share ({len(shared)}), internal-only banner: {bool(banner)}"
+
+
 def yt_live():
     env_file = ROOT / ".env"
     has_key = os.environ.get("YOUTUBE_API_KEY") or (
@@ -159,8 +212,11 @@ def main():
     check("Audio tidy + ducked mix", audio)
     check("FFmpeg vertical render + QC", ffmpeg_vertical)
     check("Remotion template render + QC", remotion)
+    check("Multi-scene assembly (all asset types) + QC", assembly)
+    check("Gemini timestamps -> review clips", candidates)
     check("MakeMyClip setup", makemyclip)
     check("YouTube collector dry run", yt_dry)
+    check("YouTube data kept internal", yt_internal)
     check("YouTube collector live call", yt_live)
 
     lines = ["# Smoke test", "", f"Run {started.isoformat()} by `.\\ss smoke`. Outputs in `out/smoke/`.",
@@ -171,6 +227,7 @@ def main():
               "- Watch `out/smoke/ffmpeg_vertical.mp4` and `out/smoke/remotion.mp4` on a phone: captions readable, "
               "in time with the voice, clear of the platform buttons; audio clean.",
               "- Listen to `out/smoke/kokoro.wav`: is the voice good enough to use, or should narration be recorded?",
+              "- Watch the assembled `out/smoke/SS_*_WORLD_Smoke_Assembly_*.mp4`: do scene changes land on the right words?",
               "- Read `out/smoke/narration.srt` against the narration; add new mishearings to config/glossary.json.",
               "- Record 20 s of real gameplay in OBS and run it through `.\\ss import`, `caption`, `render`."]
     report = ROOT / "reports" / "smoke-test.md"

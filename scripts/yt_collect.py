@@ -4,7 +4,8 @@
                    + their stats (videos.list: 1 unit per 50 IDs); new IDs join the watchlist
   stats            re-snapshot IDs (--ids, --ids-file, or the watchlist): 1 unit per 50 IDs
   report           latest snapshot per video + change since the previous snapshot of the SAME video
-                   -> exports/share/ with a data dictionary for ChatGPT
+                   -> data/local/reports/ with a data dictionary. INTERNAL ONLY: not exported to
+                   external AI services until the policy question is settled
   prune            delete snapshot rows older than --days (at most 30)
 
 Policy limits (YouTube API Services Developer Policies, checked 2026-11-24; see docs/youtube-api-policy.md):
@@ -238,7 +239,9 @@ def cmd_report(a, store):
         out.append(row)
 
     stem = ("dryrun_" if a.dry_run else "") + f"youtube_report_{now():%Y%m%d}"
-    dest = ROOT / "exports" / "share" / f"{stem}.csv"
+    # Internal only: not written to exports/share/ (the folder for ChatGPT) until it's clear whether
+    # YouTube's policies allow sharing API data with external AI services. See docs/youtube-api-policy.md.
+    dest = store.dir / "reports" / f"{stem}.csv"
     dest.parent.mkdir(parents=True, exist_ok=True)
     with dest.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, [c for c, _, _ in REPORT_COLUMNS], extrasaction="ignore")
@@ -251,6 +254,8 @@ def cmd_report(a, store):
 def write_dictionary(path, csv_name, count, dry_run):
     lines = [f"# {csv_name}", "",
              ("**FAKE TEST DATA from fixtures. Do not analyse.**\n" if dry_run else ""),
+             "**INTERNAL ONLY. Do not upload this file or its contents to ChatGPT, Gemini or other external AI "
+             "services until YouTube API permissions for that use are confirmed (docs/youtube-api-policy.md).**\n",
              f"{count} public YouTube videos, one row each, from Slugshot's local collector "
              f"(YouTube Data API v3, public data only). Generated {now().isoformat()}.", "",
              "| column | source | meaning |", "|---|---|---|"]

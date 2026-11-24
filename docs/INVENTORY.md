@@ -30,33 +30,36 @@ Last updated 2026-11-24. Status: **Tested** = run end to end here with checked o
 | Item | Type | File | Notes |
 |---|---|---|---|
 | `remotion-best-practices` | project skill | `.claude/skills/remotion-best-practices/` | official Remotion guidance, Markdown only (see `SOURCE.txt`) |
+| `slugshot-video-editing` | project skill (ours) | `.claude/skills/slugshot-video-editing/` | creative editing judgement: pacing, cuts, zooms, captions, audio, format playbooks, review gates; evidence-labelled A/B/C/D/S |
 | `makemyclip` | MCP server (stdio) | `.mcp.json` | 8 timeline tools; media confined to `media\` (tested). Approve it when Claude Code asks |
 | Permission rules | project settings | `.claude/settings.json` | deny edits to `../slugshot` and direct MakeMyClip CLI calls |
 | Roblox Studio, Blender, Google Drive MCPs | user-level, already present | outside this repo | not used by the toolkit; the owner's Studio session was left alone |
 
 ## Capabilities
 
-| Capability | Command | Status | Notes |
-|---|---|---|---|
-| Tool check | `ss doctor` | Tested | |
-| Smoke test | `ss smoke` | Tested | `reports/smoke-test.md` |
-| Capture import + naming | `ss import` | Tested (unit) | real OBS capture not yet done |
-| AI narration | `ss voice` | Experimental | 5 voices generated; Whisper understood every game name. A person must judge if it's good enough |
-| Voiceover clean-up | `ss audio tidy` | Tested | denoise optional; check speed-ups on a phone |
-| Music ducking + SFX | `ss audio mix` | Tested | with a synthetic test tone; no licensed music yet |
-| Transcription | `ss caption` | Tested | CPU base.en; hallucination guard on |
-| Game-term correction | automatic in `ss caption`; `ss fixcaps` | Tested | 26 terms; exact + cautious fuzzy matching; misses big garbles (e.g. "Slug's Hotool kit"), which the low-confidence list flags |
-| FFmpeg quick render | `ss vertical` | Tested | phrase captions + hook, auto QC |
-| Remotion template + presets | `ss render --format X` | Tested | 7 presets in `config/formats.json`; word highlight, labels, end cards |
-| Variants from one asset set | `ss batch jobs\x.json` | Tested | 3 variants, logged to `exports/share/variants_log.csv` |
-| Automated QC | `ss qc`; automatic after renders | Tested | technical only; phone review still required |
-| Template tweaking | `ss studio` | Implemented | opens Remotion Studio in the browser |
-| Agent timeline editing | `ss clip ...` / MCP | Tested | CLI path guard + MCP confinement |
-| YouTube discovery and snapshots | `ss yt discover/stats` | Tested live | 30-day storage, policy-limited metrics (`docs/youtube-api-policy.md`) |
-| YouTube report for ChatGPT | `ss yt report` | Tested | CSV + `_README.md` data dictionary |
-| TikTok / Instagram metrics | `ss export` | Implemented | manual entry into the CSV template; validated |
-| Real gameplay sample | n/a | **Outstanding** | needs your OBS capture |
-| YouTube key hygiene | n/a | **Outstanding** | regenerate and restrict the key (see policy doc) |
-| Licensed music / SFX library | `assets/` | **Outstanding** | add files plus a row in `assets/LICENSES.csv` |
-| Own-channel analytics (retention etc.) | n/a | **Outstanding** | YouTube Studio exports now; Analytics API with OAuth later |
-| Dashboard | n/a | Not started (by request) | |
+Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded test. **Human approval** = works, but its creative output must be judged by a person before anything is published. **Waits on footage/channel** = can't be fully proven until real gameplay or a Slugshot channel exists.
+
+| Capability | Command | Tested | Human approval | Waits on footage/channel |
+|---|---|---|---|---|
+| Tool check / smoke test | `ss doctor`, `ss smoke` | yes (13/13) | n/a | n/a |
+| Capture import + naming | `ss import` | yes (MKV stand-in) | n/a | first real OBS session |
+| AI narration (Kokoro) | `ss voice`, `assemble` with `script` | yes | **voice quality and energy** | n/a |
+| Voice clean-up, ducking, SFX | `ss audio tidy/mix` | yes | **music/SFX choice and feel** | licensed music/SFX files |
+| Transcription + term correction | `ss caption`, `ss fixcaps` | yes | read every `.srt` | real voice recordings |
+| Single-clip render + presets | `ss render`, `ss vertical` | yes | **phone review** | real gameplay |
+| Variants | `ss batch` | yes (3 variants) | which variant to post | real gameplay |
+| Multi-scene assembly (MP4, MKV, PNG, WAV, script, cards) | `ss assemble` | yes (5 scenes, script-synced) | **pacing, story, humour** | Flow clips, real gameplay |
+| Gemini timestamps to review clips | `ss candidates` | yes (sample CSV) | person picks moments | real Gemini output on a real session |
+| Frame sheet for review | `ss sheet` | yes | n/a | n/a |
+| Technical QC | `ss qc` (automatic) | yes | n/a | n/a |
+| Creative editing judgement | `slugshot-video-editing` skill | used once (see `reports/skill-review-2026-11-24.md`) | **always: funny, energy, clarity to a stranger** | rules become S-rated only with platform results |
+| Template tweaking | `ss studio` | launches | n/a | n/a |
+| Agent timeline editing | `ss clip`, MCP | yes (confinement) | n/a | n/a |
+| YouTube public stats | `ss yt` | yes (live) | n/a | n/a |
+| YouTube reports | `ss yt report` | yes | n/a | **internal only**; sharing with AI services disabled pending policy clarity |
+| Platform metrics for ChatGPT | `ss export` | yes (validation) | n/a | **first posts** |
+| Own-channel retention/watch time | none | no | n/a | **Slugshot channel** (Studio exports, later Analytics API) |
+| Roblox acquisition (share links) | none | no | n/a | **published game** |
+| Dashboard | none | not started (by request) | n/a | n/a |
+
+Outstanding actions for you: regenerate and restrict the YouTube key; first OBS capture; licensed music/SFX in `assets/LICENSES.csv`; approve the `makemyclip` MCP server if wanted.

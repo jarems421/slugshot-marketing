@@ -40,4 +40,6 @@ Set up a local, working production toolkit for one Roblox game. Do not build a n
 - One transcription engine: openai-whisper in `.venv`. Do not add whisper.cpp unless a test shows openai-whisper can't do a job. TTS (Kokoro) lives in `.venv-tts` so it can't break Whisper.
 - New Slugshot names or mishearings go in `config/glossary.json`; new video looks go in `config/formats.json`. Fiction and AI scenes use the WORLD/SKIT/AISCENE presets, which keep a label on screen.
 - YouTube collector: stay within `docs/youtube-api-policy.md` (30-day storage, per-video arithmetic only, no cross-channel ratios or rankings). Never print or commit the key; `.env.example` holds only the empty placeholder.
-- Status of every capability is in `docs/INVENTORY.md`; update it when something changes.
+- Status of every capability is in `docs/INVENTORY.md`; update it when something changes. Command reference: `docs/COMMANDS.md`.
+- For any editing, assembly or review decision, use the `slugshot-video-editing` skill (creative judgement) alongside `remotion-best-practices` (API). Label recommendations A/B/C/D/S as the skill describes; never give numeric quality grades; say what needs a person.
+- YouTube Data API reports are internal only: never put them in `exports/share/` or give them to ChatGPT/Gemini until the permission question is settled.

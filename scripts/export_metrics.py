@@ -2,8 +2,9 @@
 
 Input:  data/local/platform_metrics.csv (start from data/templates/platform_metrics_template.csv;
         one row per upload per observation, copied from TikTok/Instagram/YouTube Studio analytics)
-Output: exports/share/platform_metrics_YYYYMMDD.csv with hours_since_post added, plus the latest
-        YouTube report if one exists. Problems are listed; rows with problems are still exported, flagged.
+Output: exports/share/platform_metrics_YYYYMMDD.csv with hours_since_post added. Problems are listed;
+        rows with problems are still exported, flagged. Your own numbers typed in from the platforms'
+        analytics are fine to share; YouTube Data API reports are not included (internal only).
 """
 import csv
 import shutil
@@ -67,9 +68,6 @@ def main():
         w.writeheader()
         w.writerows(rows)
     print(f"{len(rows)} rows -> {out}")
-    yt = sorted(out_dir.glob("youtube_report_*.csv"))
-    if yt:
-        print(f"Latest YouTube report to share alongside: {yt[-1]}")
     for p in problems:
         print("CHECK", p)
 

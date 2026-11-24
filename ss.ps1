@@ -10,7 +10,10 @@ Slugshot marketing commands. Run from this folder as `.\ss <command> ...` (ss.cm
   vertical <clip> <out.mp4> [options]        FFmpeg 1080x1920 with captions/hook, then QC (scripts\vertical.py -h)
   render <job> <clip> [--format PVP] ...     Remotion template -> exports\<job>.mp4, then QC (scripts\render.py -h)
   batch <jobs\file.json>                     several variants from one set of assets (scripts\batch.py -h)
+  assemble <jobs\edit.json>                  multi-scene video: clips, stills, cards, script/VO, music, SFX
+  candidates <video> <gemini.csv>            cut Gemini's timestamped moments (+/- 5 s) for human review
   qc <file.mp4> ...                          technical checks: size, codec, loudness, black/frozen/silent parts
+  sheet <file.mp4> [--every 1]               frame sheet for creative review (<file>.sheet.jpg)
   studio                                     open Remotion Studio to tweak the template
   clip <args>                                MakeMyClip CLI, confined to media\ (e.g. `.\ss clip ui`)
   yt <args>                                  YouTube collector (scripts\yt_collect.py -h)
@@ -63,6 +66,9 @@ switch ($cmd) {
     }
     'render' { & $Py scripts\render.py @rest }
     'batch' { & $Py scripts\batch.py @rest }
+    'assemble' { & $Py scripts\assemble.py @rest }
+    'candidates' { & $Py scripts\candidates.py @rest }
+    'sheet' { & $Py scripts\sheet.py @rest }
     'qc' { & $Py scripts\qc.py @rest }
     'studio' { & npm.cmd run studio }
     'clip' {
@@ -90,3 +96,4 @@ switch ($cmd) {
     default { (Get-Content $PSCommandPath -TotalCount 20) -join "`n" }
 }
 exit $LASTEXITCODE
+

@@ -22,9 +22,14 @@ NPX = "npx.cmd" if os.name == "nt" else "npx"
 def render_one(job, clip, fmt="PVP", narration=None, captions=None, hook="", production=True, out_dir=None,
                **overrides):
     props = remotion_job.build(job, clip, fmt, narration, captions, hook, **overrides)
+    return finish("Vertical", job, props, production, out_dir)
+
+
+def finish(composition, job, props, production=True, out_dir=None):
+    """Render a staged job (public/<job>/props.json), level the audio, QC it, clean up."""
     tmp = ROOT / "out" / f"{job}.mp4"
     tmp.parent.mkdir(exist_ok=True)
-    cmd = [NPX, "--no-install", "remotion", "render", "remotion/index.ts", "Vertical", str(tmp),
+    cmd = [NPX, "--no-install", "remotion", "render", "remotion/index.ts", composition, str(tmp),
            f"--props={props}", "--pixel-format=yuv420p", "--color-space=bt709",
            "--license-key=free-license", "--log=error"]
     if not production:

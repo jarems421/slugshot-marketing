@@ -30,7 +30,7 @@ Checked 2026-11-24 against the official pages: [Developer Policies](https://deve
 
 ## Grey areas
 
-- **Sharing CSVs with ChatGPT.** The policies don't mention AI tools. III.E.5 asks you to protect API data from unauthorised disclosure. Sharing public counts for your own analysis is a reasonable reading, but not an explicit permission. The safer habit: share the report for a specific question, don't keep a permanent library of API data in ChatGPT, and never paste the key.
+- **Sharing API data with ChatGPT, Gemini or other AI services: disabled.** The policies don't mention AI tools, and III.E.5 asks you to protect API data from unauthorised disclosure. Until that's clarified (e.g. through YouTube's API support or a compliance audit), `ss yt report` writes only to `data\local\reports\` (git-ignored, never `exports\share\`) with an "internal only" banner, and `ss export` no longer points to it. Your own analytics typed in from YouTube Studio, TikTok and Instagram are not API data and can still be shared through `ss export`.
 - **Internal use.** Privacy-policy and terms-link requirements (III.A) are written for apps with users. A single-person internal script arguably isn't one. Using the API still means accepting the Terms.
 - **Your own channel later.** Once Slugshot has its own channel, use YouTube Studio exports, or the YouTube Analytics API with OAuth, for your own videos. That is authorised data with different rules, and it includes retention and watch time. It isn't built yet.
 
@@ -46,5 +46,5 @@ Still needs you:
    ```powershell
    .\ss yt discover "roblox pvp" --days 7 --short-only
    .\ss yt stats        # again 12-24 h later, so view_increase_since_prev has two snapshots
-   .\ss yt report       # CSV + _README.md data dictionary in exports\share\
+   .\ss yt report       # CSV + _README.md data dictionary in data\local\reports\ (internal only)
    ```
