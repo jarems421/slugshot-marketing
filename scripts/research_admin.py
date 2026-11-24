@@ -203,7 +203,7 @@ def cmd_bundle(a, steps=None):
         for p in sorted((rc.DATA / "evidence").glob("*.json")) + sorted((rc.DATA / "evidence").glob("*.md")):
             z.write(p, f"evidence/{p.name}")
         for pattern in ("trend_*.json", "sample_*.csv", "blind_packet_*.jsonl", "annotations_*.jsonl", "association_*.json",
-                        "branch_overlap_*.txt", "yields_*.txt", "gemini_packet_*.md", "changepoints_*.json"):
+                        "branch_overlap_*.txt", "yields_*.txt", "playback_findings_*.txt", "gemini_packet_*.md", "changepoints_*.json"):
             for p in sorted((rc.DATA / "analysis").glob(pattern)):
                 z.write(p, f"analysis/{p.name}")
         for p in sorted((rc.ROOT / "research" / "pilots").glob("*.json")):
@@ -401,9 +401,13 @@ def cmd_discover_creators(a):
 
 
 def cmd_families(a):
-    """Validate config/research/query_families.json and compile it into YouTube saved query sets."""
+    """Validate config/research/query_families.json and compile it into YouTube saved query sets.
+    market_mode "rotate": each query runs in one of its branch's markets, moving on each ISO week (regionCode barely
+    changes results for the same query, so wording, not repeated markets, is what varies the sample)."""
     path = rc.CONFIG / "query_families.json"
     fams = json.loads(path.read_text(encoding="utf-8"))
+    rotate = fams.get("market_mode") == "rotate"
+    week = rc.now().isocalendar()[1]
     layers_ok = {"core", "alias", "slang", "format_phrase", "need_language", "community_vocabulary", "negative", "adjacent_culture"}
     problems, sets = [], {}
     for f in fams.get("families", []):
@@ -415,12 +419,13 @@ def cmd_families(a):
                 "max": col.get("max", 25)}
         en_qs = {q["q"].lower() for q in f.get("branches", {}).get("en", {}).get("queries", [])}
         for bname, b in f.get("branches", {}).items():
-            for q in b.get("queries", []):
+            markets = b.get("markets", [])
+            for i, q in enumerate(b.get("queries", [])):
                 if q.get("layer") not in layers_ok:
                     problems.append(f"{fid}/{bname}: layer '{q.get('layer')}' not in {sorted(layers_ok)}")
-                for m in b.get("markets", []):
+                for m in ([markets[(i + week) % len(markets)]] if rotate and markets else markets):
                     item = {"id": f"{fid}:{bname}:{m}:{q['layer']}", "query": q["q"], "lang": b.get("lang", bname[:2]),
-                            "region": m, **base}
+                            "region": m, **base, **({"days": b["days"]} if b.get("days") else {})}
                     sets.setdefault(f"fam-{fid}", []).append(item)
                     sets.setdefault(f"fam-{fid}-{bname}", []).append(item)
             if bname.startswith("es") and en_qs and {q["q"].lower() for q in b.get("queries", [])} == en_qs:

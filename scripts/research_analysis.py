@@ -62,10 +62,13 @@ def load_csv(path):
         return list(csv.DictReader(f))
 
 
-def provider_of(name):
+def provider_of(name, cols=()):
     for p in ("youtube", "wikimedia", "google_trend", "twitch", "roblox", "public_observations"):
         if name.startswith(p):
             return {"google_trend": "google_trends", "public_observations": "observations"}.get(p, p)
+    # Derived files (samples, joins) keep YouTube's columns but not its filename; the policy follows the data.
+    if {"video_id", "channel_id", "views"} <= set(cols):
+        return "youtube"
     return "other"
 
 
@@ -125,7 +128,7 @@ def cmd_intake(a):
             continue
         rows = load_csv(f)
         cols = list(rows[0].keys()) if rows else []
-        prov = provider_of(f.name)
+        prov = provider_of(f.name, cols)
         m = manifest.get(f.name, {})
         d = {"file": f.name, "provider": prov, "rows": len(rows), "columns": len(cols),
              "has_dictionary": (folder / (f.stem + "_README.md")).exists(), "has_json": (f.with_suffix(".json")).exists(),
@@ -218,7 +221,7 @@ def filtered(rows, where):
 
 def youtube_guard(path, rows, per_item_ok=False):
     """Policy III.E.2.a: no aggregation of API data across content owners."""
-    if provider_of(Path(path).name) == "youtube":
+    if provider_of(Path(path).name, rows[0].keys() if rows else ()) == "youtube":
         chans = {r.get("channel_id") or r.get("channel_title") for r in rows}
         if len(chans) > 1:
             return (f"YouTube API rows from {len(chans)} channels: aggregating across channels isn't permitted "
@@ -479,7 +482,9 @@ def blind_key(r):
 
 def cmd_sample(a):
     """Deterministic, outcome-blind sample selection from collected YouTube snapshots, driven by a spec:
-    {"groups": [{"name", "sample_role", "n", "collections": [prefixes], "max_duration_s", "watchlist_language"}]}.
+    {"groups": [{"name", "sample_role", "n", "collections": [prefixes], "max_duration_s", "watchlist_language",
+    "declared_audio_language"}]}. declared_audio_language keeps rows whose creator-declared audio matches (e.g. "es"),
+    so a Spanish branch's English-declared results don't stand in for Spanish content.
     Order: newest first (published_at desc, then video_id); one item per channel across the whole sample.
     Never reads or prints outcome columns while selecting."""
     import csv as _csv
@@ -500,7 +505,9 @@ def cmd_sample(a):
         pool = [v for vid, v in latest.items()
                 if any(c.startswith(p) for c in member[vid] for p in g["collections"])
                 and (not g.get("max_duration_s") or (fnum(v.get("duration_s")) or 10**9) <= g["max_duration_s"])
-                and (not g.get("watchlist_language") or wl.get(v["channel_id"], {}).get("language_stream") == g["watchlist_language"])]
+                and (not g.get("watchlist_language") or wl.get(v["channel_id"], {}).get("language_stream") == g["watchlist_language"])
+                and (not g.get("declared_audio_language")
+                     or (v.get("default_audio_language") or "").split("-")[0] == g["declared_audio_language"])]
         pool.sort(key=lambda v: (v.get("published_at", ""), v["video_id"]), reverse=True)
         got = []
         for v in pool:
@@ -514,7 +521,8 @@ def cmd_sample(a):
             chosen.append({**v, "sample_group": g["name"], "sample_role": g["sample_role"], "selection_rank": rank,
                            "selection_rule": f"newest-first distinct channel in {'|'.join(g['collections'])}"
                                              + (f", <= {g['max_duration_s']} s" if g.get("max_duration_s") else "")
-                                             + (f", watchlist language {g['watchlist_language']}" if g.get("watchlist_language") else ""),
+                                             + (f", watchlist language {g['watchlist_language']}" if g.get("watchlist_language") else "")
+                                             + (f", declared audio {g['declared_audio_language']}" if g.get("declared_audio_language") else ""),
                            "retrieval_contexts": "|".join(sorted(c for c in member[v["video_id"]] if c))})
         report.append(f"{g['name']}: {len(got)}/{g['n']} selected from {len(pool)} eligible")
     name = Path(a.spec).stem
@@ -610,14 +618,14 @@ def cmd_join(a):
                        "blinded": str(ann.get("blinded")).lower(),
                        "sample_role": r.get("sample_role") or ann.get("sample_role") or "unknown",
                        **{f"code_{c}": given.get(c, "unreviewed") for c in codes},
-                       "outcome": r.get(a.metric, ""), "provider": provider_of(Path(a.file).name)})
+                       "outcome": r.get(a.metric, ""), "provider": provider_of(Path(a.file).name, rows[0].keys() if rows else ())})
     if errors:
         print("\n".join("ERROR " + e for e in errors))
         sys.exit(1)
     dest = OUT / "annotations_joined.csv"
     cols = ["key", "title", "access", "blinded", "sample_role", "provider", "outcome"] + [f"code_{c}" for c in codes]
     rc.write_rows(dest, cols, joined)
-    youtube = provider_of(Path(a.file).name) == "youtube"
+    youtube = provider_of(Path(a.file).name, rows[0].keys() if rows else ()) == "youtube"
     table = []
     for c in codes:
         row = {"code": c}

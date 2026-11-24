@@ -189,6 +189,9 @@ class Analysis(unittest.TestCase):
         self.assertIsNotNone(ra.youtube_guard("youtube_report_x.csv", rows))
         self.assertIsNone(ra.youtube_guard("youtube_report_x.csv", rows[:1]))
         self.assertIsNone(ra.youtube_guard("public_observations_x.csv", rows))
+        # derived files (samples, joins) carry YouTube columns without the youtube_ filename
+        self.assertIsNotNone(ra.youtube_guard("sample_BRIEF-X.sample.csv", rows))
+        self.assertEqual(ra.provider_of("sample_BRIEF-X.sample.csv", rows[0].keys()), "youtube")
 
     def test_repeat_collapses_duplicate_contexts(self):
         rows = [{"video_id": "v", "observation_moment": "2026-11-24T10:00:00+00:00", "views": "100"},
@@ -212,15 +215,16 @@ class Analysis(unittest.TestCase):
         self.assertNotIn("creator", item)
 
     def test_multilabel_annotations(self):
+        ver = json.loads((ROOT / "config/research/codebooks/slugshot-creative.json").read_text(encoding="utf-8"))["version"]
         rows = [{"content_key": "tiktok:post:1", "title_or_name": "everyone gets one creature in this town", "value_numeric": "500",
                  "sample_role": "featured"},
                 {"content_key": "tiktok:post:2", "title_or_name": "my starter slug run", "value_numeric": "40", "sample_role": "ordinary"}]
         f = write_csv(OUT / "ann" / "public_observations_x.csv", rows)
         good = OUT / "ann" / "good.jsonl"
         good.write_text("\n".join(json.dumps(x) for x in [
-            {"key": "tiktok:post:1", "codebook_version": "slugshot-codebook-1.0", "access": "full_playback", "blinded": True,
+            {"key": "tiktok:post:1", "codebook_version": ver, "access": "full_playback", "blinded": True,
              "codes": {"RULE_WORLD": "present", "STATUS_REVERSAL": "absent"}, "evidence": [{"quote": "everyone gets one creature"}]},
-            {"key": "tiktok:post:2", "codebook_version": "slugshot-codebook-1.0", "access": "caption_only", "blinded": True,
+            {"key": "tiktok:post:2", "codebook_version": ver, "access": "caption_only", "blinded": True,
              "codes": {"RULE_WORLD": "uncertain"}}]), encoding="utf-8")
         run = lambda p: subprocess.run([PY, str(ROOT / "scripts" / "research_analysis.py"), "--data-dir", str(OUT / "annroot"),
                                         "join-annotations", str(f), str(p)], capture_output=True, text=True, cwd=ROOT)
@@ -230,7 +234,7 @@ class Analysis(unittest.TestCase):
         self.assertEqual(table["RULE_WORLD"]["featured"]["present"], 1)
         self.assertEqual(table["RULE_WORLD"]["ordinary"]["uncertain"], 1)
         bad = OUT / "ann" / "bad.jsonl"
-        bad.write_text(json.dumps({"key": "tiktok:post:2", "codebook_version": "slugshot-codebook-1.0", "access": "caption_only",
+        bad.write_text(json.dumps({"key": "tiktok:post:2", "codebook_version": ver, "access": "caption_only",
                                    "blinded": True, "codes": {"RULE_WORLD": "absent", "CHOICE": "present"},
                                    "evidence": [{"quote": "which slug would you bring"}]}), encoding="utf-8")
         r = run(bad)

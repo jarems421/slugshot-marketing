@@ -1,4 +1,4 @@
-# Stage 4.5.4 configuration and first Stage 4.5.5 pilot (24 Nov 2026)
+# Stage 4.5.4 configuration and Stage 4.5.5 pilot validation (24 Nov 2026)
 
 For ChatGPT. This covers what was applied from the seed package, what was verified, what the first real brief found, and what to change next. The bundle is `exports/share/bundles/slugshot_research_20261124T2138Z.zip`; the ledger is `evidence/BRIEF-20261124-RULE-WORLD-PILOT.json`.
 
@@ -30,49 +30,88 @@ For ChatGPT. This covers what was applied from the seed package, what was verifi
 - **Not added:** the TikTok leads (zaylento.yt, synelite1, wayne.blox). There's no TikTok collector; use Creative Center and observations.
 - **Wikipedia:** es "Beyblade" resolves to *Beyblade (manga)*, a different entity from the English franchise article. Don't treat the two as one topic.
 
-## 2. Pilot: BRIEF-20261124-RULE-WORLD-PILOT
+
+## 2. Stage 4.5.5 validation: BRIEF-20261124-RULE-WORLD-PILOT
 
 | Step | Result |
 |---|---|
-| Searches | 28 positive + 4 control = 32 (cap respected). Day total 47 search calls and about 290 units of 3,000 |
-| Sample | 20 of 20 (deterministic spec `research/pilots/BRIEF-20261124-RULE-WORLD-PILOT.sample.json`): 3 short clips per branch (en, es-MX, es-ES, es-LATAM), 2 ordinary watchlist uploads per language, 2 adjacent control items per language |
-| Coding | Codebook v1.0, outcome-blind (blinded: true), **caption_only**: titles and tags only. Claude can't play YouTube videos (downloading breaks YouTube's terms; captions need owner rights). So no `absent` codes, and GAMEPLAY_PROOF and AUDIO_CUE are unreviewed. The 4-item pilot found one ambiguity: "In My World..." can be a series label rather than a rule that sets stakes. Proposal: add a RULE_WORLD note "series label without a stated stake = uncertain" in codebook v1.1 (not changed locally) |
-| Playback coding | `analysis/gemini_packet_BRIEF-20261124-RULE-WORLD-PILOT.md`: 20 URLs + codebook + JSONL format for Gemini. When Gemini's annotations come back, Claude validates and joins them (`ss analyze join-annotations`) |
+| Searches | 28 positive + 4 control = 32 (cap respected). Revision yield check afterwards: 12 more. Day total: 59 search calls, about 445 units |
+| Sample | 20 of 20 from the deterministic spec `research/pilots/BRIEF-20261124-RULE-WORLD-PILOT.sample.json`: 3 short clips per branch (en, es-MX, es-ES, es-LATAM), 2 ordinary watchlist uploads per language, 2 adjacent control items per language |
+| First pass | Claude, codebook 1.0, outcome-blind, **caption_only** (titles and tags) |
+| Playback coding | Gemini, **full_playback** for all 20, **blinded: false**: Gemini's YouTube tool returned view and like counts with the video. Gemini's packet had 7 of the 10 codebook codes; CHOICE, CHARACTER_GAG and REACTION are recorded as unreviewed. The coding is **Gemini-reported and pending an independent spot-check** |
+| Validation | 20 of 20 annotations validated and joined with the sample (`ss analyze join-annotations`, codebook 1.0): 0 errors. Counts only, because YouTube rules forbid statistics across channels |
+| Plausibility | The latest timestamp Gemini cites fits each video's API duration in 19 of 20 items. The one flag is a false positive ("4:00" is story time). This is a metadata check, not independent viewing |
 
-### Findings (all exploratory, ledger IDs)
+### Findings (exploratory; ledger claim IDs; recomputed from the annotations, not from Gemini's summary)
 
-- **C1.** Titles state an explicit fictional rule in **8 of 12** retrieved clips. Rival explanation: the clips were found with rule-world queries (the query echoes itself), and the ordinary uploads couldn't be coded from titles. So this is not prevalence (**C2**).
-- **C3.** **regionCode barely changes results** for the same query:
-  - GB vs US: identical 15/15, 15/15 and 7/7, and 14/16 on the fourth query;
-  - AR / CO / CL: 11/12 and 12/15.
-  - Market branches that repeat one query on several regions mostly duplicate searches.
-- **C4.** The four branches retrieved **disjoint** video sets (0 shared videos between any pair).
-- **C5.** Spanish-branch rows mostly **declare English audio**: es-ES 20/31, es-LATAM 31/41, es-MX 11/21. These are declarations, not verified speech.
-- **C6.** **13 of 20 Spanish searches returned 0 or 1 videos.** Long native phrases ("se confió y perdió roblox", "iba de sobrado y perdió roblox") returned none in the 7-day Shorts window. Broader core terms ("noob contra pro roblox", "historias de roblox con reglas") returned full pages.
-- **C7.** The primary hypothesis (rule + status reversal → readable payoff) is **indeterminate** until playback coding is done.
-- **C8 (recommendation).** Prototype one original 15-second rule-world skit, EN and ES:
-  - rule card "In my world, everyone gets one slug for life", then a Floppy underdog duel won with real gameplay (no transformation);
-  - against a plain challenge opener on the same footage.
-- **C9 (recommendation).** Revise the Spanish families.
+- **C7. RULE_WORLD:** present in **10 of 12** retrieved clips, 0 of 4 ordinary uploads and 0 of 4 adjacent controls. Gemini's prose summary said nine; the annotations say ten. The clips were found with rule-world queries, so this measures retrieval, not prevalence.
+- **C8. What rule-world clips combine with** (10 clips):
+  - CURIOSITY_DELAY 10 and AUDIO_CUE 10;
+  - FRIEND_RIVAL 3;
+  - STATUS_REVERSAL 2;
+  - GAMEPLAY_PROOF 0.
+  - AUDIO_CUE is present in 17 of 20 items overall, so it may be coded generously.
+- **C9. GAMEPLAY_PROOF:** present in 6 of 20 items, none of them rule-world clips: 2 of 4 ordinary uploads and all 4 adjacent controls. The retrieved clips are narrated machinima or animation.
+- **C10. Title-only vs playback:** 7 of the 8 title-present RULE_WORLD codes held on playback. One reversed: fZvg6KA5mxg, a one-off "don't open the door" horror premise. The 3 title-uncertain clips were present on playback.
+- **C11. Spoken language:** Gemini heard Spanish in only **3 of 9** Spanish-branch clips. In all 17 items where it heard speech, the heard language matched the creator-declared audio language. This supports filtering on declared language (exploratory).
+- **C12–C13. Revised Spanish queries:**
+  - Low-yield searches (0–1 videos) fell from 13 of 20 to **1 of 12**; only "se creía pro roblox" still returned 0. The window also widened from 7 to 14 days, so wording and window are confounded.
+  - English-declared rows fell for es-MX (15/53, pilot 11/21) and es-ES (23/48, pilot 20/31) but not for es-LATAM (34/45, pilot 31/41).
+  - Loanword queries ("noob vs pro roblox", "noob contra pro roblox") return about 13 of 15 English-declared rows each.
+- **C14. Rule plus reversal:** the two rarely co-occur (2 of 10). In this sample, rule-world clips pay off through a held-back reveal or a reframing of the rule. Whether combining a rule with a reversal reads better is untested.
+- **No performance claim.** Nothing here says that any mechanism improves retention, reach or performance. No outcome comparison was made.
 
-## 3. Recommended changes to the configuration (ChatGPT)
+### Decision memo
 
-1. **Spanish families:** replace long phrase queries with short core terms plus community vocabulary. Consider widening Spanish `days` to 14 for low-volume constructs.
-2. **Markets:** run one market per identical query (e.g. US only for en, AR only for es-LATAM) and rotate the market between runs. Spend the saved searches on more wording variants. Region differences come from wording, not regionCode.
-3. **Language check:** treat a Spanish-branch result as Spanish content only if its declared audio is es, or after playback confirms it. Claude can filter on `default_audio_language` in sampling.
-4. **Codebook v1.1:** clarify RULE_WORLD for series-label titles; consider adding a code for streamer reaction (seen in ordinary items).
-5. **Next validation steps:**
-   - Gemini playback coding of the 20 items;
-   - a second like-for-like observation of the same families in 3–7 days (for any lifecycle reading);
-   - a real Creative Center paste and a real Trends Explore CSV (both still unvalidated).
+- **Prototype (C15):** one original 15-second rule-world skit in EN and ES.
+  - Rule card: "In my world, everyone gets one slug for life", labelled as fiction (SKIT preset).
+  - A held-back reveal, then a Floppy underdog duel shown with real gameplay.
+- **Alternative:** the same duel framed as an original noob/pro/expert tier skit (status reversal, no rule).
+- **Test:** same footage and payoff, two openers, one language at a time, on our own channel. Compare engaged views and average view percentage at 48 h.
+- **This is an untested hybrid:** rule-world and gameplay proof never co-occurred in the sample.
+- **Game checks:**
+  - 1v1 PvP is CAPTURE status, so film a real two-player Cinder Rift round first.
+  - Floppy never transforms and has no abilities.
+  - "Underdog" is framing, not a game rule.
 
-## 4. New commands (added for this stage)
+## 3. Changes applied (proportional; no new infrastructure)
+
+| Change | Where |
+|---|---|
+| Families v1.1: `market_mode: rotate` runs each query in one of its branch's markets and moves on each ISO week. Each family compiles to 10 searches, down from 16; wording coverage is unchanged | `config/research/query_families.json`, `scripts/research_admin.py` |
+| 7 low-yield Spanish queries replaced with short core terms or community vocabulary in rule-world and underdog-comedy. The old phrases are kept under `retired_queries` with their yields | `config/research/query_families.json` |
+| A 14-day window for those Spanish branches (per-branch `days`) | same |
+| Optional `declared_audio_language` filter for sample groups, so English-declared rows aren't counted as Spanish content | `scripts/research_analysis.py` (`ss analyze sample`) |
+| Codebook 1.1: RULE_WORLD now needs a rule that governs the world and sets stakes. A series label with no stated stake is **uncertain**; a one-off prohibition with no world-wide rule is **absent**. 1.0 is archived for validating annotations coded under it | `config/research/codebooks/` |
+| Fix: the analysis tools now treat derived YouTube files (samples, joins) as YouTube data. Before this fix, the first association file contained a median outcome across items from different channels, which the policy forbids. It's now regenerated with counts only, and a regression test was added | `scripts/research_analysis.py`, `tests/test_analysis.py` |
+
+Other families keep their original queries; they're unvalidated until their own pilot.
+
+## 4. Limitations
+
+- Single AI coder, unblinded, n=20; no independent spot-check yet.
+- Query echo: the retrieved clips were found with rule-world queries. The ordinary and adjacent groups have only 4 items each.
+- The pilot was coded under codebook 1.0 and hasn't been recoded under 1.1. The clarification would change at most items like fZvg6KA5mxg, which Gemini already coded absent.
+- The revised yields changed wording and window together.
+- Declared language is the creator's label.
+- One day of data, two families. YouTube data expires 2026-12-24.
+
+## 5. Remaining blockers and next steps
+
+1. **Spot-check:** a person or a second independent model session should check at least 4 items against playback: fZvg6KA5mxg (the coder disagreement), 5HMhXQP_W5A, 8fTU72rRJmY and tLY7uB6Gnas. Claude can't play YouTube videos.
+2. **Missing codes:** code CHOICE, CHARACTER_GAG and REACTION, which weren't in Gemini's packet, and recode under codebook 1.1 in the same pass.
+3. **Capture:** film a real two-player 1v1 round before producing the prototype.
+4. **Separate wording from window:** re-run the revised Spanish branches on a 7-day window, and replace "se creía pro roblox".
+5. **Next sample:** set `declared_audio_language: "es"` on the Spanish groups.
+6. **Still unvalidated:** a real TikTok Creative Center paste and a real Google Trends CSV.
+
+## 6. Commands added in Stage 4.5.4
 
 | Command | Does |
 |---|---|
 | `ss research verify-watchlists` | official-API identity, activity and declared-language checks; fills blanks only from declared metadata; flags conflicts; writes a local report |
-| `ss research discover-creators --from-collection PREFIX --stratum S --lang en/es` | systematic small/medium watchlist expansion from collected results (no extra searches) |
-| `ss analyze sample SPEC.json` | deterministic outcome-blind sample + blind packet |
-| Quota fix | live YouTube calls from any data folder now log to one central quota log (test runs earlier today had been invisible to the budget check; backfilled) |
+| `ss research discover-creators --from-collection PREFIX --stratum S --lang en/es` | systematic small/medium watchlist additions from collected results (no extra searches) |
+| `ss analyze sample SPEC.json` | deterministic outcome-blind sample plus blind packet; groups accept `declared_audio_language` |
+| Quota fix | live YouTube calls from any data folder log to one central quota log |
 
 Nothing was published, nothing was spent, and the game repo was not touched.

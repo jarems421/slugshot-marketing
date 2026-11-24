@@ -1,6 +1,6 @@
 {
  "_note": "Stage 4.5.4 seed hypotheses; native phrasing not validated prevalence. Compile individual families; do not run all in one day. Huss is a temporary research lead, not a permanent trend.",
- "version": "families-1.0",
+ "version": "families-1.1",
  "families": [
   {
    "id": "underdog-comedy",
@@ -48,8 +48,17 @@
        "layer": "core"
       },
       {
+       "q": "se burlaron de mi roblox",
+       "layer": "format_phrase",
+       "added": "families-1.1, untested"
+      }
+     ],
+     "days": 14,
+     "retired_queries": [
+      {
        "q": "se burló de mí y perdió roblox",
-       "layer": "format_phrase"
+       "layer": "format_phrase",
+       "why": "0 result(s) in the 7-day short window, 2026-11-24 pilot"
       }
      ]
     },
@@ -64,8 +73,17 @@
        "layer": "core"
       },
       {
+       "q": "me subestimaron roblox",
+       "layer": "format_phrase",
+       "added": "families-1.1, untested"
+      }
+     ],
+     "days": 14,
+     "retired_queries": [
+      {
        "q": "iba de sobrado y perdió roblox",
-       "layer": "format_phrase"
+       "layer": "format_phrase",
+       "why": "0 result(s) in the 7-day short window, 2026-11-24 pilot"
       }
      ]
     },
@@ -78,12 +96,27 @@
      "lang": "es",
      "queries": [
       {
+       "q": "noob vs pro roblox",
+       "layer": "community_vocabulary",
+       "added": "families-1.1, untested"
+      },
+      {
+       "q": "se creía pro roblox",
+       "layer": "format_phrase",
+       "added": "families-1.1, untested"
+      }
+     ],
+     "days": 14,
+     "retired_queries": [
+      {
        "q": "el más débil gana roblox",
-       "layer": "core"
+       "layer": "core",
+       "why": "0 result(s) in the 7-day short window, 2026-11-24 pilot"
       },
       {
        "q": "se confió y perdió roblox",
-       "layer": "format_phrase"
+       "layer": "format_phrase",
+       "why": "0 result(s) in the 7-day short window, 2026-11-24 pilot"
       }
      ]
     }
@@ -159,8 +192,17 @@
        "layer": "core"
       },
       {
+       "q": "en un mundo donde roblox",
+       "layer": "format_phrase",
+       "added": "families-1.1, untested"
+      }
+     ],
+     "days": 14,
+     "retired_queries": [
+      {
        "q": "a todos les toca un poder roblox",
-       "layer": "format_phrase"
+       "layer": "format_phrase",
+       "why": "1 result(s) in the 7-day short window, 2026-11-24 pilot"
       }
      ]
     },
@@ -175,8 +217,17 @@
        "layer": "core"
       },
       {
+       "q": "en un mundo donde todos roblox",
+       "layer": "format_phrase",
+       "added": "families-1.1, untested"
+      }
+     ],
+     "days": 14,
+     "retired_queries": [
+      {
        "q": "cada uno tiene un poder roblox",
-       "layer": "format_phrase"
+       "layer": "format_phrase",
+       "why": "1 result(s) in the 7-day short window, 2026-11-24 pilot"
       }
      ]
     },
@@ -189,12 +240,21 @@
      "lang": "es",
      "queries": [
       {
-       "q": "en mi mundo cada uno tiene un poder",
-       "layer": "core"
+       "q": "en mi mundo roblox",
+       "layer": "core",
+       "added": "families-1.1, untested"
       },
       {
        "q": "historias de roblox con reglas",
        "layer": "format_phrase"
+      }
+     ],
+     "days": 14,
+     "retired_queries": [
+      {
+       "q": "en mi mundo cada uno tiene un poder",
+       "layer": "core",
+       "why": "1 result(s) in the 7-day short window, 2026-11-24 pilot"
       }
      ]
     }
@@ -1224,5 +1284,7 @@
     "max": 15
    }
   }
- ]
+ ],
+ "market_mode": "rotate",
+ "_changes_1.1": "2026-11-24, from BRIEF-20261124-RULE-WORLD-PILOT: one market per query, rotating weekly (regionCode barely changed results); zero/one-result Spanish phrases in rule-world and underdog-comedy replaced with shorter core terms and community vocabulary (old phrases under retired_queries); those Spanish branches search 14 days. Revised wordings are untested hypotheses until a yield check; other families unchanged."
 }

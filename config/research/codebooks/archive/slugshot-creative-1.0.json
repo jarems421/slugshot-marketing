@@ -1,0 +1,32 @@
+{
+ "version": "slugshot-codebook-1.0",
+ "source": "ChatGPT Slugshot Content & Culture Intelligence, Codebook v1.0 (24 Nov 2026). Pilot before freezing; bump the version on every change and recode the pilot.",
+ "unit_of_analysis": "one accessible post or clip; record timestamp window, language evidence and playback access",
+ "multi_label": true,
+ "states": {
+  "present": "the criterion is observable in the item",
+  "absent": "enough of the item was accessible to say it is not there",
+  "uncertain": "ambiguous; review separately, do not force",
+  "unreviewed": "not examined"
+ },
+ "access_levels": ["full_playback", "excerpt", "caption_only", "provider_description", "inaccessible"],
+ "rules": [
+  "Hide metrics, ranks, sample role and performance labels before coding (`ss analyze blind-packet`); if outcomes were seen, mark the annotation unblinded.",
+  "'absent' needs full_playback or excerpt access covering the relevant moment.",
+  "Record opening, complication, attempt, reversal and payoff beats, timing, visual proof and voice/dialect as observed.",
+  "Keep meme_id, sound_id, format_id, genre_id and concept_id distinct.",
+  "Examples are invented anchors, not evidence."
+ ],
+ "codes": [
+  {"code": "SOCIAL_CONFLICT", "criterion": "opening shows or voices opposing goals", "anchor": "rival mocks starter", "negative": "two friends standing, no conflict"},
+  {"code": "RULE_WORLD", "criterion": "explicit fictional or general rule sets stakes", "anchor": "everyone receives one creature", "negative": "normal game rule tutorial"},
+  {"code": "CURIOSITY_DELAY", "criterion": "premise clear, outcome intentionally unresolved", "anchor": "starter vs strongest, result withheld", "negative": "vague 'wait for it' alone"},
+  {"code": "STATUS_REVERSAL", "criterion": "explicit status flips at payoff", "anchor": "boastful rival loses", "negative": "impressive win without prior status"},
+  {"code": "GAMEPLAY_PROOF", "criterion": "observable real mechanic provides payoff", "anchor": "actual captured dodge", "negative": "animation or unverified clip"},
+  {"code": "CHOICE", "criterion": "explicit alternatives with a viewer decision", "anchor": "which slug would you bring?", "negative": "multiple items merely visible"},
+  {"code": "FRIEND_RIVAL", "criterion": "relationship drives tension or gag", "anchor": "teammate promises clutch", "negative": "random opponents, no relational cue"},
+  {"code": "CHARACTER_GAG", "criterion": "distinct personality drives comedic contrast", "anchor": "grand entrance then tiny hop", "negative": "random unrelated audio"},
+  {"code": "REACTION", "criterion": "a response is the central payoff", "anchor": "visible surprise after miss", "negative": "generic overlay unrelated to outcome"},
+  {"code": "AUDIO_CUE", "criterion": "sound timed to an observable beat", "anchor": "pause then original sting", "negative": "background music only"}
+ ]
+}
