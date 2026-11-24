@@ -35,4 +35,4 @@ Flow clips usually carry their own generated audio. Set `"volume": 0` on the sce
 
 Gemini never makes the final selection, and its descriptions of what an ability "did" are not evidence of a mechanic. Check `docs/game-truth.md`.
 
-Privacy: unreleased footage goes to Google when you upload it. Check the Gemini activity setting first (see the research PDF). Don't give Gemini or ChatGPT the YouTube API reports from `data\local\reports\`.
+Privacy: unreleased footage goes to Google when you upload it. Check the Gemini activity setting first (see the research PDF).

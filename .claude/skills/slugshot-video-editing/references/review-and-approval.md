@@ -37,7 +37,7 @@ The research PDF's script rubric also applies: natural speech, specificity, ener
 Use it when a format is new, a story is complex, or you're unsure the premise is clear. Upload the master and ask:
 > "You've never heard of this game. Describe what you understood at 2 seconds, at the midpoint and at the end. Where would you have scrolled away and why? What did you think the video was promising? Describe only what you can see and hear; say UNCERTAIN otherwise."
 
-Compare the answers with the intended promise. Treat mismatches as questions for a person, not verdicts. Gemini can misread game state and timing (research PDF). Don't upload YouTube API data to Gemini (internal only, see `docs/youtube-api-policy.md`).
+Compare the answers with the intended promise. Treat mismatches as questions for a person, not verdicts. Gemini can misread game state and timing (research PDF).
 
 ## 5. After posting
 

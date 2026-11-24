@@ -1,8 +1,13 @@
 {
   "permissions": {
     "deny": [
-      "Edit(//c/Users/runni/slugshot/**)",
-      "Edit(../slugshot/**)",
+      "Read(./.env)",
+      "Read(**/.env)",
+      "Bash(cat .env)",
+      "Bash(cat ./.env)",
+      "PowerShell(Get-Content .env)",
+      "PowerShell(Get-Content .\\.env)",
+      "PowerShell(type .env)",
       "Bash(npx clip *)",
       "Bash(npx --no-install clip *)",
       "Bash(npx @makemyclip/editor *)",
@@ -22,6 +27,28 @@
       "PowerShell(node node_modules/@makemyclip/*)",
       "PowerShell(node node_modules\\@makemyclip\\*)",
       "PowerShell(node_modules\\.bin\\clip *)"
+    ],
+    "ask": [
+      "Edit(./.env)",
+      "Bash(rm -rf *)",
+      "Bash(rm -r *)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean *)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git checkout -- *)",
+      "Bash(git restore *)",
+      "Bash(git branch -D *)",
+      "Bash(git stash drop*)",
+      "PowerShell(Remove-Item -Recurse *)",
+      "PowerShell(Remove-Item * -Recurse*)",
+      "PowerShell(git reset --hard*)",
+      "PowerShell(git clean *)",
+      "PowerShell(git push --force*)",
+      "PowerShell(git push -f*)",
+      "PowerShell(git checkout -- *)",
+      "PowerShell(git restore *)",
+      "PowerShell(git branch -D *)"
     ]
   }
 }

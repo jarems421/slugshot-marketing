@@ -19,7 +19,7 @@ Say which label a recommendation rests on. Never present C or D as fact.
 
 ## Non-negotiables before any creative choice
 
-1. **Truth gate.** Check every gameplay claim against `docs/game-truth.md` and re-check `../slugshot/docs/status.md` (read only). Floppy never transforms. Nothing is published, so no "play now". Fiction and AI shots carry a label (WORLD, SKIT and AISCENE presets) and are never cut into gameplay in a way that implies they happened. **(A: Roblox ad standards and platform AI-disclosure rules; research PDF)**
+1. **Truth gate.** Check every gameplay claim against `docs/game-truth.md` and re-check `../slugshot/docs/status.md` (read and copy freely; ask before changing game files). Floppy never transforms. Nothing is published, so no "play now". Fiction and AI shots carry a label (WORLD, SKIT and AISCENE presets) and are never cut into gameplay in a way that implies they happened. **(A: Roblox ad standards and platform AI-disclosure rules; research PDF)**
 2. **Rights.** Trending sounds are added in each platform's app; only files listed in `assets/LICENSES.csv` go into masters. **(A)**
 3. **One video, one promise.** Write down in one sentence what the viewer is promised in the first seconds and where it pays off. If you can't, the edit isn't ready.
 

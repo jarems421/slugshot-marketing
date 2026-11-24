@@ -2,7 +2,7 @@
 
 This folder holds the local tools for Slugshot's short-form videos: capture import, AI or recorded narration, voiceover clean-up and music ducking, Whisper captions with Slugshot term correction, vertical renders from format presets, batches of variants, automated QC, and a YouTube statistics collector. Research and scripts happen in ChatGPT; footage screening and Flow scenes happen in Gemini. The brief is in [CLAUDE.md](CLAUDE.md).
 
-Before scripting any mechanic, check [docs/game-truth.md](docs/game-truth.md). The game repo `../slugshot` is used only for checking facts; nothing here writes to it.
+Before scripting any mechanic, check [docs/game-truth.md](docs/game-truth.md). The game repo `../slugshot` can be read and copied from freely (docs, assets, renders); game files are only changed when you explicitly ask.
 
 More detail: **[command reference](docs/COMMANDS.md)** · [Flow and Gemini hand-offs](docs/flow-and-gemini.md) · [inventory and status](docs/INVENTORY.md) · [tool research](docs/tool-research.md) · [YouTube API rules](docs/youtube-api-policy.md) · [latest smoke test](reports/smoke-test.md) · [readiness report](reports/readiness-2026-11-24.md)
 
@@ -44,7 +44,7 @@ Run from this folder: `.\ss <command>` in PowerShell, or `ss <command>` in Comma
 # 5. Metrics
 .\ss yt discover "roblox pvp" --days 7 --short-only   # 1 search call (100/day allowance) + 1 unit
 .\ss yt stats                                   # re-snapshot the watchlist: 1 unit per 50 videos
-.\ss yt report                                  # -> data\local\reports\ (internal only: not for AI services)
+.\ss yt report                                  # -> exports\share\youtube_report_YYYYMMDD.csv + _README.md (for ChatGPT)
 .\ss export                                     # check data\local\platform_metrics.csv -> exports\share\
 ```
 
@@ -83,7 +83,7 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 | Path | Contents | In git? |
 |---|---|---|
 | `media/` | raw footage, voiceovers, MakeMyClip workspace | no |
-| `exports/` | finished masters; `exports/share/` holds CSVs for ChatGPT (variants log, platform metrics; never YouTube API data) | no |
+| `exports/` | finished masters; `exports/share/` holds CSVs for ChatGPT (variants log, platform metrics, YouTube report) | no |
 | `data/local/` | YouTube snapshots, watchlist, quota log, `platform_metrics.csv` | no |
 | `models/` | Kokoro model files (325 MB + 28 MB) | no |
 | `assets/` | your music, SFX, brand files (ignored) + `LICENSES.csv` (tracked) | licence list only |
@@ -101,7 +101,7 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 
 **`data/local/youtube_snapshots.csv`**: one row per video per collection run. `video_id, url, title, channel_id, channel_title, published_at, observed_at_utc, duration_s, duration_le_180s, views, likes, comments, source, query`. Blank = hidden or unavailable. Rows older than 30 days are deleted automatically (YouTube policy).
 
-**`data/local/reports/youtube_report_YYYYMMDD.csv`** (internal only): latest snapshot per video plus `age_hours`, `snapshots`, `hours_since_prev`, `view_increase_since_prev` and `views_per_hour_since_prev`. These derived columns compare the same video with itself, never with other videos or channels. A `_README.md` data dictionary is written next to it. Don't upload either to ChatGPT, Gemini or other AI services until the policy question is settled. Comparing creators with their own averages was removed because YouTube's policies need approval for that ([details](docs/youtube-api-policy.md)).
+**`exports/share/youtube_report_YYYYMMDD.csv`**: latest snapshot per video plus `age_hours`, `snapshots`, `hours_since_prev`, `view_increase_since_prev` and `views_per_hour_since_prev`. These derived columns compare the same video with itself, never with other videos or channels. A `_README.md` data dictionary is written next to it: give both to ChatGPT for internal analysis (don't publish the data). Comparing creators with their own averages was removed because YouTube's policies need approval for that ([details](docs/youtube-api-policy.md)).
 
 **`exports/share/variants_log.csv`**: one row per rendered variant (`edit_file, format, concept, hook_id, hook, clip, narration, captions, duration_s, qc, qc_issues, experiment_id`), ready to copy into the content log.
 
@@ -110,13 +110,15 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 ## Safety rails
 
 - `.env` holds the YouTube key and is git-ignored; `.env.example` must only ever hold `YOUTUBE_API_KEY=` with nothing after it.
-- MakeMyClip: its MCP server and browser UI refuse files outside `media\` (tested). Its CLI doesn't check paths, so `ss clip` does, including absolute paths, other drives and links. `.claude/settings.json` stops Claude sessions here from calling the CLI directly or editing `../slugshot`. Anyone typing commands by hand can still bypass these; they guard against mistakes, not against you.
+- MakeMyClip: its MCP server and browser UI refuse files outside `media\` (tested). Its CLI doesn't check paths, so `ss clip` does, including absolute paths, other drives and links.
+- `.claude/settings.json` (for Claude sessions here): blocks reading `.env` and calling the MakeMyClip CLI directly; asks before recursive deletes and destructive git commands. The game repo can be read and copied from; Claude asks before changing game files unless you explicitly request it. These rules guard against mistakes, not against you.
+- Money: nothing here costs anything. Claude asks before any paid request, billing change or subscription.
 - Remotion renders use the Free License flag. If Slugshot becomes a company of more than 3 people, buy a company licence.
 
 ## Next actions
 
+Infrastructure is complete. Remaining setup items:
 1. Regenerate and restrict the YouTube key ([steps](docs/youtube-api-policy.md#live-test-whats-done-and-what-needs-you)), then `.\ss smoke`.
-2. Approve the `makemyclip` MCP server when Claude Code asks, if you want Claude to edit timelines directly.
-3. Film 20 seconds of a real round from the current build and run it through `import`, `caption` and `render --format PVP`. Watch it on a phone.
-4. Listen to `out\smoke\kokoro.wav` and `media\vo\test_*.wav`, and decide between AI narration and recording your own.
-5. Add licensed music/SFX with a row in `assets\LICENSES.csv` each.
+2. Optional: approve the `makemyclip` MCP server when Claude Code asks.
+
+Production work (gameplay capture, voice choice, music, SFX, brand fonts, real-world tests) is in the [deferred production checklist](docs/production-checklist.md).

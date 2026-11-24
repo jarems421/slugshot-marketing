@@ -12,7 +12,8 @@ Date: 2026-11-24. Final refinement phase: creative editing intelligence and oper
 | Template refactor | Shared parts (`remotion/parts.tsx`) for both compositions; emphasis words; captions hidden on cards; label positions. |
 | Gemini hand-off | `ss candidates`: Gemini CSV -> padded review clips with burned-in source timecode + `index.csv` for the human check. |
 | Review aid | `ss sheet`: frame sheets that Claude and people can scan. |
-| YouTube data | Reports now go to `data/local/reports/` with an internal-only banner. Nothing from the API reaches `exports/share/`; `ss export` no longer points to it. |
+| YouTube data | Briefly kept internal, then re-enabled after the owner approved sharing public stats with AI tools for internal analysis: reports go to `exports/share/` with a data dictionary. Free quota only; anything paid needs the owner's approval. |
+| Permissions (later the same day) | The game-repo edit block was removed: reading and copying game assets is allowed; changing game files needs the owner's request. Kept: `.env` read block, MakeMyClip CLI block; added confirmation for recursive deletes and destructive git commands. |
 | Docs | [COMMANDS.md](../docs/COMMANDS.md) (every command: inputs, outputs, limits), [flow-and-gemini.md](../docs/flow-and-gemini.md), [INVENTORY.md](../docs/INVENTORY.md) readiness table, README and CLAUDE.md updated. |
 
 ## Production-readiness test (external asset types)
@@ -55,12 +56,9 @@ The skill makes Claude's reviews specific and honest about this limit. It doesn'
 - Roblox share-link acquisition (needs the published game);
 - turning D rules into S rules (needs posting results).
 
-**Still waiting on you:**
-1. Regenerate and restrict the YouTube key, then `.\ss smoke`.
-2. First OBS session; then `ss candidates` on Gemini's CSV and `ss assemble`.
-3. Listen to the Kokoro samples and decide on the voice.
-4. Licensed music/SFX into `assets/` with `LICENSES.csv` rows.
-5. Optionally ask YouTube API support whether sharing public API stats with AI tools for internal analysis is allowed; until then, sharing stays disabled.
+**Infrastructure: complete.** The only remaining setup item is to regenerate and restrict the YouTube key, then run `.\ss smoke`.
+
+**Deferred production work** (not infrastructure blockers) is in [docs/production-checklist.md](../docs/production-checklist.md): gameplay recording, voice selection, licensed music, SFX, brand fonts and real-world production tests.
 
 ## Known limitations
 

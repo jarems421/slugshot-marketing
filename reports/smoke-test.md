@@ -1,6 +1,6 @@
 # Smoke test
 
-Run 2026-11-24T03:05:53+00:00 by `.\ss smoke`. Outputs in `out/smoke/`.
+Run 2026-11-24T03:20:21+00:00 by `.\ss smoke`. Outputs in `out/smoke/`.
 WARN in a render check is about the sample footage (a dark 1422x430 preview strip), not the pipeline.
 
 | Check | Result | Detail |
@@ -16,7 +16,7 @@ WARN in a render check is about the sample footage (a dark 1422x430 preview stri
 | Gemini timestamps -> review clips | **PASS** | 2 padded clips + index.csv from a Gemini-style CSV; out-of-range row skipped: True |
 | MakeMyClip setup | **PASS** | clip doctor OK, workspace = media\ (whisper.cpp intentionally not installed) |
 | YouTube collector dry run | **PASS** | discover -> stats -> report (+ data dictionary) on fake fixtures, no network |
-| YouTube data kept internal | **PASS** | report kept in data dir (1), none in exports/share (0), internal-only banner: True |
+| YouTube report + data dictionary | **PASS** | report + data dictionary written (real runs go to exports/share for ChatGPT) |
 | YouTube collector live call | **PASS** | 1/1 snapshots -> C:\Users\runni\slugshot marketing\out\smoke\yt_live\youtube_snapshots.csv (~1 units) |
 
 ## Manual checks (a person must do these)

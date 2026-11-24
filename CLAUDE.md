@@ -34,7 +34,8 @@ Set up a local, working production toolkit for one Roblox game. Do not build a n
 - Claude Code https://code.claude.com/docs/en/overview
 
 ## Working notes for this workspace (added during setup, 2026-11-24)
-- The game repo is at `../slugshot`. Read it; never write to it, run its build scripts, or change its git state.
+- The game repo is at `../slugshot`. You may read, inspect and copy anything from it (docs, assets, renders, footage) into this workspace. Don't modify game files, run its build scripts or change its git state unless the owner explicitly asks; otherwise ask first. (Owner instruction, 2026-11-24.)
+- Protections that stay on: no reading or printing `.env`; recursive deletes and destructive git commands ask first (`.claude/settings.json`); never commit secrets or raw media.
 - Game claims go through `docs/game-truth.md`. Re-check `../slugshot/docs/status.md` before relying on it; it changes daily.
 - Commands live in `ss.ps1` (see README). Raw media goes in `media/` (ignored); MakeMyClip is confined to `media/`. Use MakeMyClip through `ss clip` or its MCP server, never `npx clip` directly (its CLI ignores the workspace limit).
 - One transcription engine: openai-whisper in `.venv`. Do not add whisper.cpp unless a test shows openai-whisper can't do a job. TTS (Kokoro) lives in `.venv-tts` so it can't break Whisper.
@@ -42,4 +43,6 @@ Set up a local, working production toolkit for one Roblox game. Do not build a n
 - YouTube collector: stay within `docs/youtube-api-policy.md` (30-day storage, per-video arithmetic only, no cross-channel ratios or rankings). Never print or commit the key; `.env.example` holds only the empty placeholder.
 - Status of every capability is in `docs/INVENTORY.md`; update it when something changes. Command reference: `docs/COMMANDS.md`.
 - For any editing, assembly or review decision, use the `slugshot-video-editing` skill (creative judgement) alongside `remotion-best-practices` (API). Label recommendations A/B/C/D/S as the skill describes; never give numeric quality grades; say what needs a person.
-- YouTube Data API reports are internal only: never put them in `exports/share/` or give them to ChatGPT/Gemini until the permission question is settled.
+- YouTube public stats may be shared with AI tools (ChatGPT, Gemini) for internal analysis (owner decision, 2026-11-24). `ss yt report` writes to `exports/share/`. Don't publish the data.
+- Money: never make a paid request or enable billing (APIs, cloud renders, subscriptions, paid models) without asking first. Free quotas (YouTube Data API) are fine.
+- Production work (gameplay capture, voice choice, music/SFX, brand fonts, real-world tests) is tracked in `docs/production-checklist.md`; it is not infrastructure.

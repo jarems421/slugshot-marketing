@@ -21,8 +21,8 @@ Run from the workspace folder: `.\ss <command>` (PowerShell) or `ss <command>` (
 | `qc <video> ...` | technical checks | MP4 | console, `.qc.json`, `reports\qc_log.csv` | technical only |
 | `studio` | Remotion Studio (Vertical and Story compositions) | none | browser | uses files staged in `public\` |
 | `clip <args>` | MakeMyClip CLI (silence removal, trims, reframe, export to Resolve/Premiere XML) | files under `media\` | MakeMyClip workspace in `media\` | paths outside `media\` refused |
-| `yt discover/stats/report/prune` | public YouTube stats (key in `.env`) | queries / IDs | `data\local\youtube_snapshots.csv`, `data\local\reports\` | 30-day storage; per-video maths only; **internal only, don't upload to AI services** |
-| `export` | checks hand-entered platform metrics, writes a shareable copy | `data\local\platform_metrics.csv` | `exports\share\platform_metrics_<date>.csv` | your own analytics only |
+| `yt discover/stats/report/prune` | public YouTube stats (key in `.env`) | queries / IDs | `data\local\youtube_snapshots.csv`; report + data dictionary in `exports\share\` | 30-day storage; per-video maths only; free quota only (ask before anything paid); share for internal analysis, don't publish |
+| `export` | checks hand-entered platform metrics, writes a shareable copy | `data\local\platform_metrics.csv` | `exports\share\platform_metrics_<date>.csv` | numbers must be typed in from each platform's analytics |
 
 ## Edit file keys (`assemble`)
 

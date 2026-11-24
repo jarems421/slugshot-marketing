@@ -3,8 +3,8 @@
 Input:  data/local/platform_metrics.csv (start from data/templates/platform_metrics_template.csv;
         one row per upload per observation, copied from TikTok/Instagram/YouTube Studio analytics)
 Output: exports/share/platform_metrics_YYYYMMDD.csv with hours_since_post added. Problems are listed;
-        rows with problems are still exported, flagged. Your own numbers typed in from the platforms'
-        analytics are fine to share; YouTube Data API reports are not included (internal only).
+        rows with problems are still exported, flagged. The YouTube report (`ss yt report`) sits
+        in the same folder, so both can go to ChatGPT together.
 """
 import csv
 import shutil

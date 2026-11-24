@@ -180,13 +180,11 @@ def candidates():
     return ("PASS" if n == 2 and skipped else "WARN"), f"{n} padded clips + index.csv from a Gemini-style CSV; out-of-range row skipped: {skipped}"
 
 
-def yt_internal():
+def yt_dictionary():
     reports = list((OUT / "yt_dryrun" / "reports").glob("*youtube_report_*.csv"))
-    shared = list((ROOT / "exports" / "share").glob("*youtube_report*"))
     readme = next((OUT / "yt_dryrun" / "reports").glob("*_README.md"), None)
-    banner = readme and "INTERNAL ONLY" in readme.read_text(encoding="utf-8")
-    ok = reports and not shared and banner
-    return ("PASS" if ok else "FAIL"), f"report kept in data dir ({len(reports)}), none in exports/share ({len(shared)}), internal-only banner: {bool(banner)}"
+    ok = reports and readme and "| views_per_hour_since_prev |" in readme.read_text(encoding="utf-8")
+    return ("PASS" if ok else "FAIL"), "report + data dictionary written (real runs go to exports/share for ChatGPT)"
 
 
 def yt_live():
@@ -216,7 +214,7 @@ def main():
     check("Gemini timestamps -> review clips", candidates)
     check("MakeMyClip setup", makemyclip)
     check("YouTube collector dry run", yt_dry)
-    check("YouTube data kept internal", yt_internal)
+    check("YouTube report + data dictionary", yt_dictionary)
     check("YouTube collector live call", yt_live)
 
     lines = ["# Smoke test", "", f"Run {started.isoformat()} by `.\\ss smoke`. Outputs in `out/smoke/`.",

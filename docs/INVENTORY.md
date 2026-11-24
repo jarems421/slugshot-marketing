@@ -1,6 +1,6 @@
 # Inventory and capability status
 
-Last updated 2026-11-24. Status: **Tested** = run end to end here with checked output. **Implemented** = built, partly exercised. **Experimental** = works, quality not yet judged by a person. **Outstanding** = not done / needs you.
+Last updated 2026-11-24. Infrastructure phase complete; production work is in [production-checklist.md](production-checklist.md). Command details: [COMMANDS.md](COMMANDS.md).
 
 ## Software
 
@@ -32,7 +32,7 @@ Last updated 2026-11-24. Status: **Tested** = run end to end here with checked o
 | `remotion-best-practices` | project skill | `.claude/skills/remotion-best-practices/` | official Remotion guidance, Markdown only (see `SOURCE.txt`) |
 | `slugshot-video-editing` | project skill (ours) | `.claude/skills/slugshot-video-editing/` | creative editing judgement: pacing, cuts, zooms, captions, audio, format playbooks, review gates; evidence-labelled A/B/C/D/S |
 | `makemyclip` | MCP server (stdio) | `.mcp.json` | 8 timeline tools; media confined to `media\` (tested). Approve it when Claude Code asks |
-| Permission rules | project settings | `.claude/settings.json` | deny edits to `../slugshot` and direct MakeMyClip CLI calls |
+| Permission rules | project settings | `.claude/settings.json` | blocks reading `.env` and direct MakeMyClip CLI calls; asks before recursive deletes and destructive git commands. The game repo is readable and copyable; changes to game files need the owner's request (CLAUDE.md) |
 | Roblox Studio, Blender, Google Drive MCPs | user-level, already present | outside this repo | not used by the toolkit; the owner's Studio session was left alone |
 
 ## Capabilities
@@ -56,10 +56,12 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Template tweaking | `ss studio` | launches | n/a | n/a |
 | Agent timeline editing | `ss clip`, MCP | yes (confinement) | n/a | n/a |
 | YouTube public stats | `ss yt` | yes (live) | n/a | n/a |
-| YouTube reports | `ss yt report` | yes | n/a | **internal only**; sharing with AI services disabled pending policy clarity |
+| YouTube reports | `ss yt report` | yes | n/a | written to `exports/share/` for ChatGPT (sharing approved by the owner) |
 | Platform metrics for ChatGPT | `ss export` | yes (validation) | n/a | **first posts** |
 | Own-channel retention/watch time | none | no | n/a | **Slugshot channel** (Studio exports, later Analytics API) |
 | Roblox acquisition (share links) | none | no | n/a | **published game** |
 | Dashboard | none | not started (by request) | n/a | n/a |
 
-Outstanding actions for you: regenerate and restrict the YouTube key; first OBS capture; licensed music/SFX in `assets/LICENSES.csv`; approve the `makemyclip` MCP server if wanted.
+Infrastructure: complete. Remaining setup: regenerate and restrict the YouTube key; optionally approve the `makemyclip` MCP server.
+
+Production items (gameplay recording, voice selection, licensed music, SFX, brand fonts, real-world production tests) are deferred to [production-checklist.md](production-checklist.md). They don't block the infrastructure.
