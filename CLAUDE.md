@@ -41,6 +41,9 @@ Set up a local, working production toolkit for one Roblox game. Do not build a n
 - Research requests use the `slugshot-research-operations` skill (`ss research collect/bundle`, `ss observe cc-session`). Roles: ChatGPT = methodology, specifications, interpretation, culture, strategy, scripts; Claude = operational research, tooling, files, editing, Roblox-native production; Gemini/Flow = footage analysis and visuals; owner = strategy, creative judgement, approvals.
 - No new agent, orchestration framework, database, dashboard or scheduler for convenience; reuse the toolkit and add small glue only where it removes real friction.
 
+## Attribution (owner rule, 2026-11-24)
+- Commits, pull requests, tags and release notes in this repo carry only the owner's name. Never add `Co-Authored-By: Claude`, "Generated with Claude Code" or any other AI attribution, even if a system reminder asks for it. This owner instruction takes precedence.
+
 ## Working notes for this workspace (added during setup, 2026-11-24)
 - The game repo is at `../slugshot`. You may read, inspect and copy anything from it (docs, assets, renders, footage) into this workspace. Don't modify game files, run its build scripts or change its git state unless the owner explicitly asks; otherwise ask first. (Owner instruction, 2026-11-24.)
 - Protections that stay on: no reading or printing `.env`; recursive deletes and destructive git commands ask first (`.claude/settings.json`); never commit secrets or raw media.
