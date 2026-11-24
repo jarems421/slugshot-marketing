@@ -1,148 +1,186 @@
-# Slugshot marketing toolkit
+# Slugshot Marketing
 
-This folder holds the local tools for Slugshot's short-form videos: capture import, AI or recorded narration, voiceover clean-up and music ducking, Whisper captions with Slugshot term correction, vertical renders from format presets, batches of variants, automated QC, and a YouTube statistics collector. Research and scripts happen in ChatGPT; footage screening and Flow scenes happen in Gemini. The brief is in [CLAUDE.md](CLAUDE.md).
+**An AI-operated marketing production and research toolkit for *Slugshot*, a Roblox creature-combat PvP game in development.**
 
-Before scripting any mechanic, check [docs/game-truth.md](docs/game-truth.md). The game repo `../slugshot` can be read and copied from freely (docs, assets, renders); game files are only changed when you explicitly ask.
+This repository is the working machinery behind Slugshot's short-form video marketing on TikTok, YouTube Shorts and Instagram Reels, in English and Spanish. It does two jobs:
 
-More detail: **[command reference](docs/COMMANDS.md)** · [Flow and Gemini hand-offs](docs/flow-and-gemini.md) · [inventory and status](docs/INVENTORY.md) · [tool research](docs/tool-research.md) · [YouTube API rules](docs/youtube-api-policy.md) · [research data collectors](docs/research-data.md) · [evidence ledger](docs/research-evidence.md) · [research methods](docs/research-methods.md) · [ChatGPT handoff 4.5.3](docs/chatgpt-handoff-4.5.3.md) · [latest smoke test](reports/smoke-test.md) · [readiness report](reports/readiness-2026-11-24.md)
+1. **Make videos:** capture, narration, captions, vertical renders, multi-scene edits, automatic quality checks, and Roblox-native filming in an isolated copy of the game.
+2. **Do research:** collect dated, labelled public data (YouTube, Google Trends, Wikipedia, Twitch, Roblox, TikTok Creative Center observations), check it, and turn it into findings that are traceable and evidence-led, rather than "AI vibes".
 
-**Roblox first, AI-enhanced second.** Most videos are filmed in Roblox: real gameplay, plus staged scenes and skits in an isolated copy of the game (`.\ss roblox ...`, [roblox-native/README.md](roblox-native/README.md)). Flow/anime/manga cutaways are short additions. English and Spanish versions share the same visual footage and differ in narration, captions, on-screen text and timing.
+It is built to be **operated by an AI agent**. [Claude Code](https://code.claude.com/docs/en/overview) runs the toolkit from short natural-language instructions ("collect today's research", "is this meme still growing?", "make the Floppy duel edit"). ChatGPT designs research and writes scripts; Gemini/Flow analyses footage and generates visuals; the owner makes decisions and approves anything consequential.
 
-Creative editing judgement (pacing, cuts, captions emphasis, audio, formats, review) lives in the Claude Code skill `.claude/skills/slugshot-video-editing/`. Claude loads it for any Slugshot editing or review task, next to the official Remotion skill.
+> Status (24 Nov 2026): infrastructure complete through Stage 4.5.3 (research intelligence). Production validation with real gameplay and real posts hasn't started; the game is unreleased. See [docs/INVENTORY.md](docs/INVENTORY.md) for the status of every capability.
 
-## How this is operated
+---
 
-Automation first (owner decision, 2026-11-24): these commands are **Claude's interface**. Give Claude Code a short instruction ("collect today's research", "research Spanish Roblox content", "research Creative Center", "execute this brief", "make the Floppy duel edit") and it runs the steps, handles errors and reports back. Research requests go through the `slugshot-research-operations` skill. Your part is decisions, creative judgement, approvals (spending, publishing, destructive or game-repo changes), and the few actions only you can do (a Creative Center copy: Ctrl+A, Ctrl+C on pages Claude opens; signing in; uploading the bundle zip to ChatGPT). The commands below are listed for reference.
+## How it fits together
 
-## Commands
-
-Run from this folder: `.\ss <command>` in PowerShell, or `ss <command>` in Command Prompt. Every script also takes `-h`.
-
-```powershell
-.\ss doctor                     # versions + setup checks
-.\ss smoke                      # full smoke test -> reports\smoke-test.md
-
-# 1. Capture: record in OBS, then copy into media\raw\ with the naming convention
-.\ss import "C:\Users\runni\Videos\2026-11-25 17-02-11.mkv" --format PVP --concept FloppyUnderdog --hook BestSlug --note "build 08fee46, me vs Sam"
-
-# 2. Narration: record your own, or generate one (label AI voices where platforms ask)
-.\ss voice "He brought Inferno. I brought Floppy." media\vo\floppy.wav --voice am_puck --speed 1.1
-.\ss audio tidy media\vo\floppy.wav media\vo\floppy_clean.wav --speed 1.05        # add --denoise for mic recordings
-.\ss audio mix media\vo\floppy_mix.wav --narration media\vo\floppy_clean.wav --music assets\music\bed.mp3 --sfx assets\sfx\hit.wav@3.2
-
-# 3. Captions: Whisper + automatic Slugshot term fixes; then read the .srt
-.\ss caption media\vo\floppy_clean.wav          # -> .srt, .words.json; prints every fix and low-confidence word
-.\ss fixcaps media\vo\floppy_clean.srt          # re-apply config\glossary.json after you add terms
-
-# 4. Render (QC runs automatically afterwards)
-.\ss render SS_20261125_PVP_FloppyUnderdog_BestSlug_V01_MASTER media\raw\SS_..._RAW.mkv --format PVP --narration media\vo\floppy_mix.wav --captions media\vo\floppy_clean.srt --hook "He brought Inferno. I brought Floppy."
-.\ss batch jobs\sample-variants.json            # several hooks/formats from one set of assets
-.\ss assemble jobs\edit-sample-story.json       # multi-scene: clips, stills, cards, script -> voice, music, SFX
-.\ss candidates media\raw\X_RAW.mkv media\raw\X_RAW.gemini.csv   # Gemini timestamps -> review clips
-.\ss sheet exports\SS_..._MASTER.mp4             # frame sheet for creative review
-.\ss vertical <clip> <out.mp4> --narration ... --srt ... --hook "..."   # quick FFmpeg route, phrase captions
-.\ss qc exports\SS_..._MASTER.mp4                # re-check any file
-.\ss studio                                      # tweak the template in Remotion Studio
-
-# MakeMyClip (silence removal, trims, reframing, export to Resolve/Premiere XML). Files must be under media\
-.\ss clip ui
-
-# 5. Research data and metrics (full guide: docs
-esearch-data.md)
-.\ss research collect --profile daily            # or spanish / refresh: runs the collectors, then bundles
-.\ss research bundle                            # -> exports\share\bundles\slugshot_research_<time>.zip (for ChatGPT)
-.\ss observe cc-session --periods 7 --category Games   # guided Creative Center: you press Ctrl+A, Ctrl+C on each page
-.\ss research status                            # credentials present?, stored rows, quota today
-.\ss analyze intake                             # QC of the newest bundle (also added to every bundle as INTAKE.md)
-.\ss analyze trend huss                         # heat/velocity/breadth/persistence kept separate; lifecycle proposal
-.\ss evidence validate EXAMPLE-HUSS-SLUGTERRA --bundle exports\share\research   # evidence ledger checks
-.\ss yt discover "roblox pvp" --lang es --region MX --days 7   # 1 search call (100/day allowance) + 1 unit
-.\ss yt chart --region MX                        # Mexico's most-popular Gaming chart, 1 unit
-.\ss yt stats                                   # re-snapshot the watchlist: 1 unit per 50 videos
-.\ss wiki pull; .\ss trends rss; .\ss twitch clips --game Roblox --lang en,es; .\ss rbx games
-.\ss observe import notes.csv --source creative_center --platform tiktok --entity-type hashtag --region US --period "7 days" --observed-at 2026-11-24
-.\ss yt report; .\ss wiki report; .\ss trends report; .\ss observe report   # -> exports\share
-esearch\ (for ChatGPT)
-.\ss research prune                             # retention rules, expired exports deleted
-.\ss export                                     # check data\local\platform_metrics.csv -> exports\share\
+```mermaid
+flowchart LR
+    Owner([Owner: decisions & approvals])
+    GPT[ChatGPT: research design, culture, scripts]
+    Gem[Gemini / Flow: footage analysis, visuals]
+    subgraph Repo [This repo, run by Claude Code]
+        Collect[Collectors: YouTube, Trends, Wikipedia, Twitch, Roblox, observations]
+        Analyse[Analysis + evidence ledger]
+        Bundle[(Research bundle zip)]
+        Produce[Video production: captions, renders, assembly, QC]
+        Roblox[Roblox-native filming: isolated place, scene runner]
+    end
+    Owner --> GPT
+    GPT -- brief --> Collect --> Analyse --> Bundle --> GPT
+    GPT -- approved script --> Produce
+    Gem -- clips & timestamps --> Produce
+    Roblox --> Produce
+    Produce -- masters for review --> Owner
 ```
 
-## Formats (`config/formats.json`)
+- **Claude** collects, validates, computes, edits and films. It runs commands itself: the `ss` CLI is Claude's interface, not the owner's.
+- **ChatGPT** owns research methodology, cultural interpretation and creative strategy.
+- **The owner** approves spending, publishing, destructive operations and changes to the game repository; everything else that is free and reversible is pre-approved.
 
-| Code | Use | Look |
+## What it can do
+
+### Video production
+| Capability | Command |
+|---|---|
+| Import OBS captures with a naming convention | `ss import` |
+| AI narration (Kokoro, local) or recorded voice clean-up, music ducking, SFX | `ss voice`, `ss audio` |
+| Whisper captions with automatic correction of Slugshot terms | `ss caption`, `ss fixcaps` |
+| 1080×1920 renders from format presets (Remotion), variants, multi-scene edits synced to a script | `ss render`, `ss batch`, `ss assemble` |
+| Gemini-timestamped clip candidates, frame sheets, technical QC (loudness, black/frozen frames, codecs) | `ss candidates`, `ss sheet`, `ss qc` |
+| Timeline editing through MakeMyClip (confined to `media/`) | `ss clip` |
+
+Creative judgement (pacing, cuts, captions, audio, formats) lives in a Claude skill with evidence-labelled rules: [`.claude/skills/slugshot-video-editing`](.claude/skills/slugshot-video-editing/SKILL.md).
+
+### Roblox-native filming
+Staged scenes and skits are filmed in an **isolated marketing copy** of the game, with DataStores disabled. A hook enforces that Claude's Roblox Studio MCP calls can only touch that place. Declarative JSON scene specs drive a scene runner (camera presets, timed actions, VFX/sound cues) and give repeatable takes. Details: [roblox-native/README.md](roblox-native/README.md).
+
+### Research data collection
+| Source | What it gives | Command |
 |---|---|---|
-| PVP | real gameplay duel | crop to fill, word-by-word captions, yellow accent |
-| PROMO | direct game pitch | crop, end card "Roblox creature combat - in development" |
-| CHOICE | "which slug?" decision | green accent, end card asks the question |
-| WORLD | In My World story | blur fill, **"Fictional story"** label stays on screen |
-| SKIT | character comedy/dance | blur fill, "Skit" label, no end card |
-| AISCENE | Flow / AI clip | **"AI-generated scene"** label stays on screen |
-| TEST | toolkit tests | "TEST - not gameplay" label |
+| YouTube Data API | bilingual searches, regional gaming charts, creator uploads (ordinary ones too), comments, confirmed Shorts, per-video history | `ss yt` |
+| Google Trends | Trending Now feeds for 7 markets; importer for Explore CSVs | `ss trends` |
+| Wikipedia | daily page views back to 2015 in English and Spanish, redirects resolved | `ss wiki` |
+| Twitch | Roblox clips and live streams by broadcaster language | `ss twitch` |
+| Roblox | player/visit/favourite snapshots for a small watchlist | `ss rbx` |
+| TikTok Creative Center, vidIQ, TinyFish, manual | validated public observations with provenance; a guided Creative Center session (you press Ctrl+A, Ctrl+C; it does the rest) | `ss observe` |
+| One instruction | run a profile, then a bundle for ChatGPT | `ss research collect`, `ss research bundle` |
 
-Any flag (`--fit`, `--accent`, `--label`, `--end-title`, `--end-subtitle`, `--clip-volume`, `--no-end-card`) overrides the preset. In a batch file, put the same names on a variant (`fit`, `accent`, `label`, `endCardTitle`, `endCardSubtitle`, `clipVolume`, `endCard`).
+### Research intelligence
+Turning data into findings that can be checked:
+- **Bundle intake QC:** what each dataset is, its scope, expiry, missingness, rounding and what it *cannot* answer.
+- **Deterministic analysis:** statistics with explicit denominators, same-item repeated observations, sensitivity checks (is the finding fragile?), trend dimensions kept separate (heat, velocity, breadth, persistence, novelty, fit) with a rule-based lifecycle proposal, change-point detection on long series, Wikidata/GDELT context.
+- **Outcome-blind qualitative coding:** creative features are coded before performance is revealed, so "it went viral" can't contaminate "it has a good hook".
+- **Evidence ledger:** every claim carries a level (observation → derived statistic → pattern → interpretation → causal → recommendation), a support status (supported / partially supported / unsupported / indeterminate), a verbal strength (exploratory → experimental) and exact references to bundle rows or quoted passages. A validator catches common overclaims, for example one snapshot called "accelerating", a Spanish search called "Mexican viewers", correlation written as causation, or a blank read as zero.
+- **Literature verification:** installed skills check that cited papers exist and match their DOIs, and survey a field (OpenAlex, Crossref, Semantic Scholar, arXiv, dblp).
 
-## Captions and the glossary
+Commands: `ss analyze`, `ss evidence`. Guides: [research methods](docs/research-methods.md), [evidence ledger](docs/research-evidence.md).
 
-`config/glossary.json` lists Slugshot names (slugs, abilities, places) with their usual mishearings and, where needed, a respelling for the voice generator. `ss caption` uses it three ways: as Whisper's spelling hints, to correct the transcript (merging split words such as "Slug's Hoe" into "Slugshot" with the right timing), and to list low-confidence words. Fuzzy matching only joins two or three words that are within a letter or two of a made-up name, so normal words ("sloppy", "slugs are hot") are left alone. Big garbles still get through. Read every `.srt` and add new mishearings to the glossary rather than fixing them by hand each time.
+## Principles built into the code
 
-The PVP, PROMO and CHOICE presets use the `.words.json` file (word highlight). WORLD, SKIT and AISCENE use the `.srt`. Both come from the same corrected transcript; if you edit the `.srt` by hand, use a phrase-caption preset or re-run `ss caption`.
+- **Missing is unknown, never zero.** Rounded figures stay as displayed, with their numeric value alongside.
+- **Provenance on every row** (P1 platform count, P2 index/rank, P3 third-party estimate, P4 interpretation) and a run log with the exact parameters sent.
+- **Provider rules are enforced, not just documented:**
+  - YouTube statistics expire after 30 days, including exported copies, and are never aggregated across channels or turned into scores.
+  - Twitch data is kept 24 hours and stays local.
+  - TikTok Creative Center is only read by a person (TikTok's terms bar automated collection).
+- **No composite "viral scores".** Heat and confidence are different things.
+- **Retrieval is not audience.** A video found with a Mexico filter says nothing about Mexican viewers.
+- **Rigour serves experiments, not paralysis.** Suggestive evidence can justify a cheap 15-second test; only our own experiments can support causal claims.
+- **Credentials stay in a git-ignored `.env`.** They are never printed or logged, and errors are redacted.
 
-## QC (`ss qc`, automatic after renders)
+## Getting started
 
-FAIL: not H.264/yuv420p, no AAC audio, loudness outside -18..-10 LUFS, opens on black. WARN: not 1080x1920, odd frame rate, longer than 180 s, true peak above -1 dBTP, near-black for 0.5 s or more, frozen for 3 s or more, silence of 1.5 s or more before the ending. Results go to `<file>.qc.json` and `reports\qc_log.csv`. These checks are technical only: still watch every master on a phone for captions, crop, truth and rights.
+Requirements (Windows): Git, Python 3.13, Node 24, FFmpeg; OBS Studio and Kdenlive optional. Exact versions are in [docs/INVENTORY.md](docs/INVENTORY.md).
 
-## OBS settings (once)
+```powershell
+git clone https://github.com/jarems421/slugshot-marketing.git
+cd slugshot-marketing
+py -3.13 -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+py -3.13 -m venv .venv-tts; .venv-tts\Scripts\python -m pip install -r requirements-tts.txt   # optional AI narration
+npm ci
+copy .env.example .env    # then add YOUTUBE_API_KEY / TWITCH_CLIENT_ID / TWITCH_CLIENT_SECRET (all free tiers)
+.\ss doctor               # tool check
+.\ss smoke                # end-to-end smoke test -> reports\smoke-test.md
+```
 
-Settings > Output > Recording: Recording Path = `C:\Users\runni\slugshot marketing\media\obs`, format MKV, encoder NVIDIA NVENC H.264, quality "High Quality". Settings > Video: 1920x1080, 60 fps. Keep the action in the middle third of the screen so the vertical crop doesn't cut it.
+The Kokoro voice model and sample media aren't in the repo (they live in `models/` and `media/`, both git-ignored).
 
-Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, import the checked `.srt` onto the subtitle track (Import Subtitle File) and render with the MP4-H264/AAC profile.
+### Using it
+With Claude Code open in this folder, ask in plain language:
 
-## Folders
+```text
+Collect today's research.
+Research Spanish Roblox comedy.
+Is the Huss meme still growing?
+Analyse our latest research bundle.
+Find academic research on short-form hooks and verify the key findings.
+Make a vertical edit of this match with the PVP preset and captions.
+```
 
-| Path | Contents | In git? |
+Or run the commands directly: every `ss` command takes `-h`. Full reference: [docs/COMMANDS.md](docs/COMMANDS.md); walkthrough: [docs/OPERATIONS.md](docs/OPERATIONS.md).
+
+## Repository layout
+
+```
+ss.ps1 / ss.cmd          the CLI entry point (PowerShell)
+scripts/                 production pipeline, research collectors, analysis, evidence ledger
+remotion/                Remotion compositions (vertical template, multi-scene story)
+roblox-native/           isolated marketing place builder, Studio guard, scene runner, scene specs
+.claude/skills/          Claude skills: video editing, Roblox production, research operations,
+                         research analysis + installed upstream research skills
+config/                  formats, glossary, research settings, query families, watchlists, codebook
+research/                evidence-ledger schema, templates, upstream provenance
+docs/                    commands, inventory, research guides, policies, game truth, handoffs
+tests/                   offline tests and fixtures (fake data)
+jobs/                    example edit, variant and script files
+reports/                 latest smoke-test reports
+data/templates/          import templates (raw research data in data/local/ is git-ignored)
+```
+
+Not in git: `.env`, `media/`, `exports/`, `data/local/`, `models/`, `out/`, `vendor/`.
+
+## Documentation
+
+| Topic | File |
+|---|---|
+| Every command | [docs/COMMANDS.md](docs/COMMANDS.md) |
+| Operator walkthrough, folders, CSV schemas | [docs/OPERATIONS.md](docs/OPERATIONS.md) |
+| Status of every capability | [docs/INVENTORY.md](docs/INVENTORY.md) |
+| Research collectors, data contract, sharing rules | [docs/research-data.md](docs/research-data.md) |
+| Research methods / evidence ledger | [docs/research-methods.md](docs/research-methods.md) · [docs/research-evidence.md](docs/research-evidence.md) |
+| Source audit and decisions | [docs/research-data-audit.md](docs/research-data-audit.md) |
+| YouTube API rules | [docs/youtube-api-policy.md](docs/youtube-api-policy.md) |
+| Flow and Gemini hand-offs | [docs/flow-and-gemini.md](docs/flow-and-gemini.md) |
+| Game facts for marketing claims | [docs/game-truth.md](docs/game-truth.md) |
+| ChatGPT handoff (Stage 4.5.3) | [docs/chatgpt-handoff-4.5.3.md](docs/chatgpt-handoff-4.5.3.md) |
+| Agent brief and working rules | [CLAUDE.md](CLAUDE.md) |
+| Strategy (Marketing Bank snapshot) | [docs/Slugshot-Marketing-Bank.md](docs/Slugshot-Marketing-Bank.md) |
+
+## Testing
+
+- `ss smoke` runs every capability once and writes a PASS / WARN / FAIL / BLOCKED report. Latest: 23/23 PASS ([reports/smoke-test.md](reports/smoke-test.md)).
+- `ss smoke --research` runs only the research checks (about 30 s).
+- Offline suites: `python -m unittest tests.test_research tests.test_analysis` (51 tests on fake fixtures, no network).
+
+## Third-party components
+
+| Component | Licence | Where |
 |---|---|---|
-| `media/` | raw footage, voiceovers, MakeMyClip workspace | no |
-| `exports/` | finished masters; `exports/share/` holds CSVs for ChatGPT (variants log, platform metrics, YouTube report) | no |
-| `data/local/` | YouTube snapshots, watchlist, quota log, `platform_metrics.csv` | no |
-| `models/` | Kokoro model files (325 MB + 28 MB) | no |
-| `assets/` | your music, SFX, brand files (ignored) + `LICENSES.csv` (tracked) | licence list only |
-| `config/` | `formats.json` presets, `glossary.json` terms | yes |
-| `jobs/` | batch job files | yes |
-| `data/templates/` | CSV template for hand-entered platform metrics | yes |
-| `docs/` | brief sources, bank snapshot, game truth, policy, research, inventory | yes |
-| `remotion/` | the 9:16 template (`Vertical` composition) | yes |
-| `scripts/` | the Python commands behind `ss` | yes |
-| `reports/` | smoke-test report | yes |
-| `.claude/` | project skill (Remotion), permission rules | yes |
-| `roblox-native/` | Roblox-native filming: runtime, scene specs, tools; the marketing place and takes stay local | code yes; `.rbxlx` and `capture/` no |
-| `vendor/` | reviewed third-party source clones | no |
+| Remotion | [Remotion licence](https://www.remotion.dev/docs/license) (free tier for individuals and small teams) | npm |
+| MakeMyClip editor | MIT | npm |
+| OpenAI Whisper | MIT | pip |
+| Kokoro-82M model via kokoro-onnx | Apache-2.0 (model) | pip, model downloaded separately |
+| ruptures, SciPy | BSD | pip |
+| Reel (roblox-reel) | MIT | `roblox-native/runtime/vendor/Reel/` |
+| remotion-dev/skills: remotion-best-practices | as published by Remotion (see `SOURCE.txt`) | `.claude/skills/remotion-best-practices/` |
+| claude-skills-research: verifying-bibliography, surveying-literature | MIT | `.claude/skills/` (licence in `_shared/`) |
+| synthesis-skills: synthesis-fact-checking | CC0-1.0 | `.claude/skills/` |
+| K-Dense scientific-agent-skills: hypothesis-generation | MIT | `.claude/skills/` |
+| EvidenceGuard schema and evals | MIT | `research/upstream/evidenceguard/` |
 
-## CSV files
+Pinned commits and adaptations: [research/upstream/PROVENANCE.md](research/upstream/PROVENANCE.md).
 
-**Research data** (YouTube, Wikipedia, Google Trends, Twitch, Roblox, public observations): raw stores in `data/local/research/<provider>/`, exports in `exports/share/research/` with a `.json` copy, a `_README.md` data dictionary and `MANIFEST.csv` (expiry dates). Every schema is in [docs/research-data.md](docs/research-data.md). Blank = unknown, never 0.
-
-**`data/local/research/youtube/youtube_snapshots.csv`**: one row per video per collection run, with the search parameters that found it (`region_param`, `relevance_language_param`, date window), declared language and category, and `shorts_status`. Rows older than 30 days are deleted automatically (YouTube policy).
-
-**`exports/share/research/youtube_report_<time>.csv`**: latest snapshot per video plus `age_hours`, `snapshots`, `hours_since_prev`, `view_increase_since_prev` and `views_per_hour_since_prev`. These derived columns compare the same video with itself, never with other videos or channels. A `_README.md` data dictionary is written next to it: give both to ChatGPT for internal analysis (don't publish the data). Comparing creators with their own averages was removed because YouTube's policies need approval for that ([details](docs/youtube-api-policy.md)).
-
-**`exports/share/variants_log.csv`**: one row per rendered variant (`edit_file, format, concept, hook_id, hook, clip, narration, captions, duration_s, qc, qc_issues, experiment_id`), ready to copy into the content log.
-
-**`data/local/platform_metrics.csv`** (from `data/templates/platform_metrics_template.csv`): one row per upload per observation, typed in from TikTok, Instagram and YouTube Studio. `experiment_id, edit_file, format, hook_type, slug, platform, published_url, posted_at_utc, observed_at_utc, views, watch_metric_name, watch_metric_value, likes, comments, shares, saves, profile_visits, link_new_players, production_minutes, notes`. `ss export` adds `hours_since_post` and a `check` column.
-
-## Safety rails
-
-- `.env` holds the YouTube key and is git-ignored; `.env.example` must only ever hold `YOUTUBE_API_KEY=` with nothing after it.
-- MakeMyClip: its MCP server and browser UI refuse files outside `media\` (tested). Its CLI doesn't check paths, so `ss clip` does, including absolute paths, other drives and links.
-- `.claude/settings.json` (for Claude sessions here): blocks reading `.env` and calling the MakeMyClip CLI directly; asks before recursive deletes and destructive git commands. The game repo can be read and copied from; Claude asks before changing game files unless you explicitly request it. These rules guard against mistakes, not against you.
-- Roblox Studio: Claude's Studio MCP calls are refused unless only `SlugshotMarketing.rbxlx` is open and its marker matches (a hook, tested live). The marketing place is never published.
-- Money: nothing here costs anything. Claude asks before any paid request, billing change or subscription.
-- Remotion renders use the Free License flag. If Slugshot becomes a company of more than 3 people, buy a company licence.
-
-## Next actions
-
-Infrastructure is complete, including the Stage 4.4 research collectors ([research-data.md](docs/research-data.md)). Remaining setup items:
-1. Optional: approve the `makemyclip` MCP server when Claude Code asks.
-2. Before sharing Twitch exports: check Twitch's onward-transfer terms, then set `twitch.share_exports` to true in `config/research/settings.json`.
-3. ChatGPT: replace the small test query sets and watchlists in `config/research/` with the real bilingual ones.
-
-Production work (gameplay capture, voice choice, music, SFX, brand fonts, real-world tests) is in the [deferred production checklist](docs/production-checklist.md).
+Slugshot, its characters and its game design belong to the game's owner. No licence has been chosen yet for this repository's own code. Slugshot is an original game and is not affiliated with Slugterra or its rights holders.

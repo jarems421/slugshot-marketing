@@ -10,7 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "exports" / "share" / "chatgpt-pack" / "Slugshot-Claude-Toolkit-Docs.md"
 FILES = [
-    ("README.md", "toolkit overview, commands, folders, CSV schemas, safety rails"),
+    ("README.md", "project overview, architecture, capabilities, setup"),
+    ("docs/OPERATIONS.md", "operator walkthrough: commands, folders, CSV schemas, safety rails"),
     ("docs/COMMANDS.md", "every command"),
     ("docs/research-data.md", "research collectors: commands, routine, schemas, sharing rules, TikTok and Trends API findings"),
     ("docs/research-data-audit.md", "Stage 4.4 source audit, decisions and outcome"),
