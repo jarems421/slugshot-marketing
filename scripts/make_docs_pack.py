@@ -17,6 +17,7 @@ FILES = [
     ("docs/research-data-audit.md", "Stage 4.4 source audit, decisions and outcome"),
     (".claude/skills/slugshot-research-operations/SKILL.md", "research operations skill: how Claude runs research from a short instruction"),
     ("docs/stage-4.5.4-report.md", "Stage 4.5.4 configuration and first 4.5.5 pilot: results and recommended changes"),
+    ("docs/composio.md", "Composio integration: what is installed, tested, audited and what needs owner authorisation"),
     ("docs/chatgpt-handoff-4.5.3.md", "Stage 4.5.3 handoff: what Claude implemented, bundle format, ledger names, recommended skill changes"),
     (".claude/skills/slugshot-research-analysis/SKILL.md", "research analysis skill: intake, statistics, trends, coding, ledger"),
     ("docs/research-evidence.md", "evidence ledger: fields, statuses, strength, validator checks, example"),

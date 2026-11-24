@@ -132,7 +132,7 @@ def http(url, params=None, headers=None, data=None, timeout=30, user_agent=None)
 
 
 def redact(text):
-    for name in ("YOUTUBE_API_KEY", "TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET"):
+    for name in ("YOUTUBE_API_KEY", "TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET", "COMPOSIO_API_KEY"):
         v = env_value(name)
         if v and len(v) > 6:
             text = text.replace(v, "[redacted]")

@@ -22,6 +22,7 @@ Slugshot marketing commands. Run from this folder as `.\ss <command> ...` (ss.cm
   research status|prune|runs|collect|bundle|families   collection runs, bundles, query families
   analyze <intake|describe|repeat|sensitivity|trend|changepoints|blind-packet|join-annotations|context>
   evidence <new|validate|card|export-evidenceguard>   evidence ledger (docs\research-evidence.md)
+  composio status|test|audit                 Composio read-only checks (docs\composio.md)
   export                                     check platform metrics and write shareable CSVs to exports\share\
   smoke                                      run the smoke test and write reports\smoke-test.md
 #>
@@ -123,6 +124,7 @@ switch ($cmd) {
     'research' { & $Py scripts\research_admin.py @rest }
     'analyze' { & $Py scripts\research_analysis.py @rest }
     'evidence' { & $Py scripts\evidence.py @rest }
+    'composio' { & $Py scripts\composio_check.py @rest }
     'export' { & $Py scripts\export_metrics.py @rest }
     'smoke' { & $Py scripts\smoke_test.py @rest }
     default { (Get-Content $PSCommandPath -TotalCount 20) -join "`n" }
