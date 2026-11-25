@@ -1,55 +1,94 @@
 ---
 name: slugshot-roblox-production
-description: Roblox-native filming for Slugshot marketing. Use when planning, staging, filming or capturing anything in Roblox Studio for Slugshot videos (staged scenes, comedy skits, dances, story scenes, cinematic shots, spectator/second-angle gameplay capture, Roblox-to-anime/manga bridge frames), when writing or validating scene specs, when using the Roblox Studio MCP tools from this repo, or when moving Roblox footage into the ss editing workflow. Pairs with slugshot-video-editing (creative judgement) and remotion-best-practices (template API).
+description: Roblox-native filming for Slugshot marketing. Use when planning, staging, directing, filming or capturing anything in Roblox Studio for Slugshot videos (dialogue skits, reaction scenes, story and lore scenes, cinematic shots, staged gameplay, Roblox-to-anime/manga bridge frames), when writing or validating scene specs, when directing character acting or cameras, when using the Roblox Studio MCP tools from this repo, or when moving Roblox footage into the ss editing workflow. Pairs with slugshot-video-editing (creative judgement, visual direction) and remotion-best-practices (template API).
 ---
 
 # Slugshot Roblox-native production
 
-**Roblox first, AI-enhanced second.** Most Slugshot videos are real Roblox footage: gameplay, staged Roblox scenes, Roblox-native comedy, characters and cinematics, filmed in an isolated copy of the game. Flow, manga and anime tools only add short cutaways (1-4 s) with a narrative job: exaggeration, fantasy, punchline setup.
+**Roblox first, AI-enhanced second.** Most Slugshot videos are real Roblox footage, filmed in an isolated copy of the game:
+- gameplay;
+- staged scenes and Roblox-native comedy;
+- characters and cinematics.
 
-Status: infrastructure validated with stand-ins (`roblox-native/README.md`). Animation libraries, finished sets, real PvP recording and campaign content are deferred to production preparation (`docs/production-checklist.md`).
+Flow, manga and anime tools only add short cutaways (1-4 s) with a narrative job.
+
+Status (2026-11-25): the deterministic performance engine is built and real-asset tested. Real slug rigs act through the game's own `SlugIdle`/`FloppyFace` code, mouths and eyelines follow the dialogue, and takes are filmed frame by frame at native resolution. Results, register and limits: `docs/production-quality.md`.
+
+## Quality bar (owner rules, 2026-11-25: non-negotiable)
+
+1. **Resolution and completeness.**
+   - Vertical footage comes from **film mode** (rolled camera, native pixels, exact 30 fps) and `ss roblox film`, never from a centre crop of a landscape recording.
+   - A take is usable only when the decoder reports **0 repeated frames**. Patch missing ranges; don't accept duplicates.
+   - Always check the decoded footage (contact sheet or frames) before showing anyone.
+2. **Story-matched performance, never random snippets.**
+   - Every shot and every acting beat has a job in the script: who matters now, what they feel, what changes.
+   - Anchor cuts and beats to dialogue lines (`"until": "L3.end+0.3"`, `"time": "L6.end+0.4"`). Don't eyeball seconds.
+   - "This is Floppy": the camera pushes in *as* his name is said; he turns and smiles *on* the beat.
+   - Never use an idle loop as a stand-in for acting, and never use a shot just because it looks nice.
+3. **Look before you claim.** Judge from real frames (`video_capture` grabs; `screen_capture` without camera arguments is unreliable in play mode). Say what needs the owner: humour, voice, "does it feel like our world".
 
 ## Hard rules
 
-1. **Studio target.** Roblox Studio MCP tools may only act on `SlugshotMarketing.rbxlx`, and it must be the only Studio window open. A PreToolUse hook enforces this and fails closed. Never try to get around it: no launching `StudioMCP.exe`/`mcp.bat` yourself, no settings edits to loosen it. Details: [references/studio-safety.md](references/studio-safety.md).
-2. **Game repo.** `../slugshot` may be read and copied from. Don't modify, build, commit or push it without the owner's explicit request. The only sanctioned exception is `ss roblox switch`, run when the owner asks: it stops a playtest, saves and closes whatever is open, and opens the marketing place.
-3. **No publishing, uploads or spending** without approval: never publish the marketing place; asset insertion, AI generation, image upload, Open Cloud and sub-agent tools ask first.
-4. **Truth classification on every scene and take.** Modes:
-   - `authentic_gameplay`: real play. Captured, never staged by the runner.
-   - `staged_gameplay`: real mechanics, scripted outcome.
-   - `staged_fiction`: a story or skit; must carry a disclosure label.
-   - `hybrid_bridge`: a Roblox shot built to cut to or from an AI cutaway; also labelled.
-
-   Fields: `source`, `gameplay_mechanics` (real/none/fictional), `match_outcome` (organic/scripted/n/a). A scripted match is never presented as organic.
-5. **Canon.** Re-check `docs/game-truth.md` and `../slugshot/docs/status.md` before showing a mechanic. **Floppy never transforms or uses abilities**: the validator and runtime both reject it. Don't invent abilities, maps or rules for gameplay modes; fiction is labelled.
-6. **Rights.** Original or licensed animations, dances, sounds and assets only, recorded in `roblox-native/library/library.json` with source and licence. Don't copy a creator's recognisable choreography. RoPlay (non-commercial licence) and Motion Tools (no licence) must not be integrated.
+1. **Studio target.**
+   - Studio MCP tools may only act on `SlugshotMarketing.rbxlx`, and it must be the only Studio window open.
+   - A PreToolUse hook enforces this and fails closed. Never get around it: no launching `StudioMCP.exe`/`mcp.bat`, no settings edits.
+   - Details: [references/studio-safety.md](references/studio-safety.md).
+2. **Game repo.**
+   - `../slugshot` may be read and copied from. Never modify, build, commit or push it.
+   - `ss roblox switch` runs only when the owner asks. `ss roblox rebuild`, with only the marketing place involved, is the normal workflow.
+3. **No publishing, uploads or spending** without approval. Never publish the marketing place. Asset insertion, AI generation, image upload, Open Cloud and sub-agent tools ask first.
+4. **Truth classification on every scene and take.**
+   - `staged_gameplay`, `staged_fiction` (label) or `hybrid_bridge` (label). `authentic_gameplay` is captured, never staged.
+   - A scripted outcome is never presented as organic.
+5. **Canon.**
+   - Re-check `docs/game-truth.md` and `../slugshot/docs/status.md` before showing a mechanic.
+   - **Floppy never transforms or uses abilities.** Validator and runtime reject it; a `slug` actor's species sets its canon identity.
+   - Floppy deals 7 damage: never "does nothing".
+   - Fantasy or "what if" feats are unmistakable fiction, labelled, and never a new canon power.
+6. **Rights.**
+   - Original or licensed assets only, recorded in `roblox-native/library/library.json` or `assets/LICENSES.csv`.
+   - No copied franchise designs, footage, music or dialogue. Slugterra is a feeling to evoke, not a source to copy.
 
 ## Workflow
 
-1. **Brief to spec.** A creative brief (ChatGPT), or an edit idea, becomes a JSON scene spec in `roblox-native/scenes/<group>/<id>.json`. Format: [references/scene-specs.md](references/scene-specs.md). Reuse sets, marks, camera presets and library entries; don't hand-write one-off Luau.
-2. **Validate**: `.\ss roblox validate`. Fix every error; never weaken a canon check to pass.
-3. **Build into the place**: `.\ss roblox rebuild`. This saves and closes the marketing place, rebuilds it from the game snapshot with the runtime and all valid scenes, and reopens it.
-4. **Film:** `list_roblox_studios`, then `start_stop_play(true)`, then `execute_luau` (Client) `require(game.ReplicatedStorage.SlugshotMarketing.Scene).runJson("<id>", {take = "<id>_v01"})`. Record with OBS (production) or Studio `video_capture` (previews; drops frames). Details and handoffs: [references/capture-and-handoff.md](references/capture-and-handoff.md).
-5. **Check repeatability** when takes will be intercut: `.\ss roblox compare takeA.json takeB.json`.
-6. **Into the toolkit**: `.\ss roblox import <take.json> <video>` trims to the take markers, runs `ss import`, and keeps the take manifest beside the footage. From there, everything is the existing workflow (`ss candidates`, `caption`, `assemble`, `render`, `batch`, `qc`, `sheet`) and the `slugshot-video-editing` skill.
-7. **Human gates:** canon check, animation approval, recording approval, publication approval. Claude reports what it can't judge (performance, humour, whether it looks like Slugshot).
+1. **Script first.** `jobs/dialogue/<id>.txt` (cast script) → `.\ss dialogue <file> --engine qwen --mode clone`.
+   - Read the flagged deviations. Re-do one line with `--only N`.
+   - The manifest `out/dialogue/<id>/dialogue.json` is the single timing source.
+2. **Direct the spec.**
+   - Write `roblox-native/scenes/<group>/<id>.json` with `"dialogue"` pointing at the manifest. Format: [references/scene-specs.md](references/scene-specs.md).
+   - Apply [references/directing.md](references/directing.md): shot choice, the 180° line, eyelines, vertical framing, acting beats, comic timing.
+3. **Validate**: `.\ss roblox validate`. Fix every error; never weaken a canon check.
+4. **Build**: `.\ss roblox rebuild`, then `start_stop_play(true)` and wait about 7 s for the game to load.
+5. **Look at stills**:
+   - `execute_luau` (Client): `Scene.still("<id>", t)`.
+   - Then a 1-2 s `video_capture` to see the real viewport. Fix framing before filming.
+6. **Film**: [references/capture-and-handoff.md](references/capture-and-handoff.md).
+   - In short: chunks of ≤ about 170 frames, each inside its own `video_capture`, via `Scene.start("film", id, {first, last, hold = 6})`.
+   - **Copy each recording to `media/takes/` immediately**: Studio deletes its capture folder when play restarts.
+7. **Decode**: `.\ss roblox film <take.json> <chunk1.mp4> <chunk2.mp4> ...`. Patch any listed range with another `first/last` pass and decode again with all recordings.
+8. **Edit**: `ss assemble` with `"dialogue"` (slugshot-video-editing skill), then `ss sheet` and watch.
+9. **Human gates**: canon check, performance and voice approval, publication approval.
+
+## Actors and acting (what's available)
+
+- **Real slugs**: `{"kind": "slug", "species": "Floppy|Inferno|Aquabeek|Rammstone|Tormato|BoonDoc|Phosphoro"}`.
+  - Clones the rig from `ReplicatedStorage.CombatAssets` (icon pose).
+  - Inked with a charcoal Highlight, performed by `SlugIdle`. Floppy's face comes through `FloppyFace`.
+- **Acting channels** (`express`, eased): `smile`, `react` (each slug's in-character "notice" answer), `angry` (Rammstone's grimace), `look_up`, `squint` (Floppy's lids), `lean`, `open` (mouth).
+  - Plus `look` (eyeline), `face` (turn), `move_to`, `hop` (anticipation, arc, landing squash) and `blink`.
+- **Automatic**:
+  - mouths follow each line's loudness;
+  - talkers nod on stressed syllables;
+  - listeners look at whoever is speaking (turn off per actor with `"auto_look": false`).
+- **Faces per species**:
+  - Floppy: eyes, lids, gaze, mouth.
+  - Aquabeek: eyes, lids, mouth.
+  - Rammstone and Boon Doc: mouth only (painted eyes); they act with head and body.
+  - Tormato: spinning eyes, mouth.
+  - Inferno: shaped mouth bones not yet driven.
+  - Phosphoro: no face bones.
+- Player avatars: not yet. Next route: `KeyframeSequenceProvider:RegisterKeyframeSequence` (no upload).
 
 ## Bilingual reuse
 
-Film one language-neutral plate: no baked-in text, and dialogue only if the scene needs it. English and Spanish versions differ in narration, captions, on-screen text and joke timing, which are done downstream in `ss assemble` with separate scripts. When timing must differ per language, adjust scene beat times in a language-specific spec copy rather than stretching one edit.
-
-## What's built vs deferred
-
-- **Built:**
-  - spec validation (structure, references, canon, truth);
-  - the runner on Reel (MIT, commit 4b810e9) with set, marks, actors (stand-ins, clones of place models), timed actions (move_to, face, hop, animate), VFX/sound cues, markers and take manifests;
-  - 9 camera presets;
-  - reset per take, plus the take bridge into `ss import`.
-- **Deferred:**
-  - the animation library (Animation Editor and R15 Animation Capture, owner-approved);
-  - facial expressions (only on rigs with FaceControls);
-  - finished sets with named marks in the game environments;
-  - real slug rigs as actors (clone from the place once spawned);
-  - multi-client staged gameplay (StudioTestService);
-  - OBS WebSocket automation (documented only);
-  - a replay recorder (only if replay filming proves valuable).
+One language-neutral performance per language: each language gets its own dialogue manifest, and the same spec re-times to it (copy the spec, change `dialogue`). No baked-in text.

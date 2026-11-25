@@ -1,32 +1,69 @@
 # Capture and handoffs
 
-## Running a take (MCP, marketing place only)
+## Filming a staged scene (production route, marketing place only)
+
+Film mode is how staged footage is made. It is deterministic, native-resolution vertical, and exact to the frame.
+
+**Preferred recorder (2026-11-25): `ss roblox rec`.** Studio's own recorder encodes at about 6 Mbps, which smeared close-up detail (owner: slugs "look low quality up close"). Instead:
+
+```
+.\ss roblox rec start media\takes\<take>_g01.mkv     (run in the background)
+execute_luau(Client): Scene.start("film", "<id>", {hold = 2}); poll until not _G.SlugshotTake.running
+.\ss roblox rec stop
+save the manifest (_G.SlugshotTake.json minus "camera") to roblox-native/capture/takes/<take>.json
+.\ss roblox film roblox-native\capture\takes\<take>.json media\takes\<take>_g01.mkv [g02 ...] --crf 12
+```
+
+- It records only the Studio window whose title names SlugshotMarketing (Windows Graphics Capture, not the screen; never use gdigrab, which records the owner's desktop). It runs without the cursor, at x264 CRF 8 4:4:4, with no 30 s cap.
+- Scene.film shows a magenta calibration card first, so the decoder crops to the viewport.
+- A full take at hold 2 missed about 10% of frames. A second full pass at hold 4 plus one hold-8 patch brought that to 0 repeated (decode passes all recordings; later ones only fill gaps).
+- Masters render at Remotion CRF 14 (about 13 Mbps). The Studio-recorder route below still works as a fallback.
 
 ```
 list_roblox_studios                     -> the marketing window's id (changes on every reopen)
-start_stop_play(is_start=true)
-execute_luau(Client): wait for Players.LocalPlayer.Character, then
-  return require(game.ReplicatedStorage.SlugshotMarketing.Scene).runJson("<id>", {take="<id>_v01"})
-start_stop_play(is_start=false)         when done
+start_stop_play(is_start=true); execute_luau(Client): task.wait(7)   -- the game finishes loading
+execute_luau(Client): Scene.still("<id>", t) for key moments, then a 1-2 s video_capture to SEE them
+for each chunk (<= ~170 frames; the recorder stops at 30.0 s):
+  video_capture(is_start=true)
+  execute_luau(Client):
+    local Scene = require(game.ReplicatedStorage.SlugshotMarketing.Scene)
+    Scene.start("film", "<id>", {take = "<take>", hold = 6, first = A, last = B, preroll = 1.5})
+    -- poll until not _G.SlugshotTake.running, return a summary
+  video_capture(is_start=false)  -> copy the mp4 to media/takes/<take>_<n>.mp4 AT ONCE
+save the full-take manifest (frames, stamp, viewport, truth, marks) to roblox-native/capture/takes/<take>.json
+.\ss roblox film roblox-native\capture\takes\<take>.json media\takes\<take>_0.mp4 media\takes\<take>_1.mp4 ...
+  -> out/takes/<take>.mp4: 1080x1920, 30 fps. If it lists "re-film: 125-128", run one more chunk with
+     first/last covering it and decode again with all recordings (later recordings only fill gaps).
 ```
 
-- `runJson` yields until the take ends and returns the manifest: truth block; Reel marks (start, cut, end with elapsed and Unix-ms `at`); cues and markers; camera samples.
-- Save the manifest to `roblox-native/capture/takes/<take>.json`.
-- Large manifests: return a summary (start/end `at`) if the response would be huge.
-- Each take builds its set and actors in setup and destroys them in cleanup, so the next take starts identical. Reel restores the camera and UI.
+Why it works:
+- Scene frame i (t = i/30) is held for `hold` rendered frames, with its index stamped in squares at the viewport's left edge (outside the picture).
+- The decoder keeps the best recorded frame of each index from any recording, so drops and stalls cost nothing.
+- The camera is rolled a quarter turn so the 9:16 frame lies along the viewport's long side, giving native pixels and no upscaling.
+- World particles are slowed to scene time while filming.
 
-## Recording
+Measured (2026-11-25):
+- the recorder stops at 30.0 s;
+- it dropped 784 frames in one capture, with gaps over 240 ms 1% of the time and one 1.7 s stall;
+- its temp folder is deleted when play restarts;
+- 4 full takes decoded with 0 repeated frames after chunking and one 4-frame patch.
 
-- **OBS (production):**
-  - two scenes, "Slugshot Gameplay" (window, game audio, optional HUD) and "Slugshot Clean Stage" (tightly cropped viewport, no overlays);
-  - press Ctrl+Shift+G in the playtest to hide Roblox's top bar, which scripts can't hide;
-  - record and note when recording started (Unix ms), then `.\ss roblox import <take.json> <obs.mkv> --video-start-ms <ms>`.
-  - Replay Buffer suits organic play; full start/stop suits staged takes.
-- **Studio `video_capture` (previews/tests):**
-  - call it with `is_start=true` before `runJson` and `false` after;
-  - it returns an mp4 plus a manifest with `creation_timestamp_ms` on the same clock as the marks, so use `.\ss roblox import <take.json> <video.mp4> --capture-manifest <manifest.json>`;
-  - measured: 2368x1104 at about 27 fps, with dropped frames and a 1.1 s client stall in one take. Not for final footage.
-- **Automated OBS (future, not built):** OBS WebSocket (built into OBS 28+, use authentication). Sequence: validate scene -> OBS start -> run take -> wait for end mark -> OBS stop -> `ss roblox import`. Build it only after manual recording is routine.
+Facts to remember:
+- `screen_capture` without camera arguments didn't show the play viewport; use `video_capture` grabs as the truth.
+- The player's avatar must stay in the world (the lobby's presentation follows it); the runner hides it and parks it under the set (the game draws a blaster holster on its back outside the character model, which showed as black blobs).
+- Local lights lose their shadows during takes (Roblox reassigns a few shadow maps as the camera moves, so shadows flashed on the slugs); `look.local_shadows: true` keeps them.
+- Camera.Focus follows the shot, or Roblox drops detail on distant set pieces and small actors.
+- The camera is re-applied at the last render priority each frame, so game camera scripts can't move it.
+
+`Scene.run(id, {speed})` is a real-time preview of the same frames (fine for checking motion by eye, not for final footage).
+
+## Real gameplay (OBS)
+
+- Organic PvP can't be staged, so it is recorded with OBS:
+  - scenes "Slugshot Gameplay" and "Slugshot Clean Stage";
+  - Ctrl+Shift+G hides Roblox's top bar.
+- Then `.\ss roblox import <take.json> <obs.mkv> --video-start-ms <ms>` or `ss import`.
+- OBS WebSocket automation stays deferred: staged scenes no longer need OBS.
 
 ## Into the existing toolkit
 

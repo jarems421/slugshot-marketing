@@ -1,6 +1,6 @@
 # Smoke test
 
-Run 2026-11-25T09:26:44+00:00 by `.\ss smoke`. Outputs in `out/smoke/`.
+Run 2026-11-25T16:40:15+00:00 by `.\ss smoke`. Outputs in `out/smoke/`.
 WARN in a render check is about the sample footage (a dark 1422x430 preview strip), not the pipeline.
 Live research checks make a handful of free calls (Wikimedia, Google Trends RSS, Roblox, TikTok oEmbed; YouTube about 2 units; Twitch 1 point when enabled). BLOCKED = waiting on credentials or an owner decision.
 
@@ -18,22 +18,22 @@ Live research checks make a handful of free calls (Wikimedia, Google Trends RSS,
 | MakeMyClip setup | **PASS** | clip doctor OK, workspace = media\ (whisper.cpp intentionally not installed) |
 | YouTube collector dry run | **PASS** | discover -> stats -> report (+ data dictionary) on fake fixtures, no network |
 | YouTube report + data dictionary | **PASS** | report + data dictionary written (real runs go to exports/share for ChatGPT) |
-| YouTube collector live call | **PASS** | Estimated cost: ~1 units + 0 search calls (used today: 9 units, 0 searches).
-1/1 snapshots -> C:\Users\runni\slugshot marketing\out\smoke\yt_live\youtube_snapshots.csv [run youtube-20261125T092914Z-a671: 1 ok / 0 failed requests, ~1 units] |
-| Research collectors offline tests | **PASS** | Ran 27 tests in 15.122s: OK (YouTube, Wikimedia, Trends, observations, Twitch, Roblox on fixtures) |
-| Research analysis + evidence ledger tests | **PASS** | Ran 26 tests in 6.835s: OK (evidence-ledger traps, intake, repeat, sensitivity, blind coding, trend, change points) |
+| YouTube collector live call | **PASS** | Estimated cost: ~1 units + 0 search calls (used today: 11 units, 0 searches).
+1/1 snapshots -> C:\Users\runni\slugshot marketing\out\smoke\yt_live\youtube_snapshots.csv [run youtube-20261125T164252Z-9ef7: 1 ok / 0 failed requests, ~1 units] |
+| Research collectors offline tests | **PASS** | Ran 27 tests in 7.238s: OK (YouTube, Wikimedia, Trends, observations, Twitch, Roblox on fixtures) |
+| Research analysis + evidence ledger tests | **PASS** | Ran 26 tests in 10.664s: OK (evidence-ledger traps, intake, repeat, sensitivity, blind coding, trend, change points) |
 | Evidence ledger worked example (real data) | **PASS** | EXAMPLE-HUSS-SLUGTERRA.json: VALID - 0 errors, 1 warnings, 2 items for AI review; 5 claims, 4 evidence items |
-| Installed scholarly skills (upstream offline tests) | **PASS** | verifying-bibliography: Ran 97 tests in 21.804s OK; surveying-literature: Ran 110 tests in 0.792s FAILED (failures=1) (1 known POSIX-path assertion in surveying-literature on Windows) |
-| Wikimedia pageviews live | **PASS** | 58 points read, 58 stored -> C:\Users\runni\slugshot marketing\out\smoke\research_live\wiki_collect\wiki_pageviews.csv; request log -> C:\Users\runni\slugshot marketing\out\smoke\research_live\wiki_collect\wiki_coverage.csv [run wikimedia-20261125T093103Z-c853] |
-| Google Trending Now RSS live | **PASS** | 20 rows -> C:\Users\runni\slugshot marketing\out\smoke\research_live\trends_collect\trending_now.csv [run google_trends-20261125T093139Z-0c45] |
-| Roblox experience stats live (legacy API) | **PASS** | 1 snapshots -> C:\Users\runni\slugshot marketing\out\smoke\research_live\rbx_collect\roblox_experiences.csv [run roblox-20261125T093140Z-7bd5] |
+| Installed scholarly skills (upstream offline tests) | **PASS** | verifying-bibliography: Ran 97 tests in 22.484s OK; surveying-literature: Ran 110 tests in 0.539s FAILED (failures=1) (1 known POSIX-path assertion in surveying-literature on Windows) |
+| Wikimedia pageviews live | **PASS** | 62 points read, 62 stored -> C:\Users\runni\slugshot marketing\out\smoke\research_live\wiki_collect\wiki_pageviews.csv; request log -> C:\Users\runni\slugshot marketing\out\smoke\research_live\wiki_collect\wiki_coverage.csv [run wikimedia-20261125T164436Z-a13f] |
+| Google Trending Now RSS live | **PASS** | 20 rows -> C:\Users\runni\slugshot marketing\out\smoke\research_live\trends_collect\trending_now.csv [run google_trends-20261125T164606Z-1fdd] |
+| Roblox experience stats live (legacy API) | **PASS** | 1 snapshots -> C:\Users\runni\slugshot marketing\out\smoke\research_live\rbx_collect\roblox_experiences.csv [run roblox-20261125T164607Z-2126] |
 | TikTok oEmbed live check | **PASS** | oEmbed check confirmed the post ID (Imported 1 values -> C:\Users\runni\slugshot marketing\out\smoke\research_live\observe\public_observations.csv) |
-| YouTube upgraded collector live (chart + Shorts check) | **PASS** | 5 chart snapshots (region MX, category 20) -> C:\Users\runni\slugshot marketing\out\smoke\research_live\yt_collect\youtube_snapshots.csv [run youtube-20261125T093141Z-3ed9: 1 ok / 0 failed requests, ~1 units] |
+| YouTube upgraded collector live (chart + Shorts check) | **PASS** | 5 chart snapshots (region MX, category 20) -> C:\Users\runni\slugshot marketing\out\smoke\research_live\yt_collect\youtube_snapshots.csv [run youtube-20261125T164608Z-3827: 1 ok / 0 failed requests, ~1 units] |
 | Twitch Helix live | **PASS** |     1960479087  Robox |
-| Dashboard tests | **PASS** | Ran 33 tests in 2.726s: OK (store, metric rules, connectors on fixtures, imports, exports, vault, server security) |
-| Knowledge and sentiment tests | **PASS** | Ran 21 tests in 0.109s: OK (schema, links, game truth, expiry, export and policy gates, sentiment pipeline, fixture isolation) |
-| Publishing tests (no network) | **PASS** | Ran 24 tests in 4.823s: OK (fixture uploads only: chunking, approval binding, reveal lock, game truth, manual fallback, linking) |
-| Analytics tests (owner screens) | **PASS** | Ran 14 tests in 1.222s: OK (combined totals, no double counting, measurement windows, tags, comparisons, learning loop) |
+| Dashboard tests | **PASS** | Ran 33 tests in 4.824s: OK (store, metric rules, connectors on fixtures, imports, exports, vault, server security) |
+| Knowledge and sentiment tests | **PASS** | Ran 21 tests in 0.220s: OK (schema, links, game truth, expiry, export and policy gates, sentiment pipeline, fixture isolation) |
+| Publishing tests (no network) | **PASS** | Ran 24 tests in 9.247s: OK (fixture uploads only: chunking, approval binding, reveal lock, game truth, manual fallback, linking) |
+| Analytics tests (owner screens) | **PASS** | Ran 16 tests in 1.741s: OK (combined totals, no double counting, measurement windows, tags, comparisons, learning loop) |
 | Knowledge banks validate | **PASS** | VALID - 0 errors, 0 warnings |
 | Dashboard fixture sync (all connectors) | **PASS** | 9 connector runs ok/partial; 1 isolated failures as designed (youtube_analytics/yt-es: no ES fixture) |
 | Dashboard server on loopback | **PASS** | 127.0.0.1:47615 answers |

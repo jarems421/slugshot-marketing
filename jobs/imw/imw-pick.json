@@ -1,0 +1,49 @@
+{
+ "_about": "In My World format sample (toolkit capability demo; script is a placeholder for the owner's own). Fiction: label stays on screen. Not for publishing.",
+ "concept": "InMyWorldPick",
+ "hook_id": "SampleGemini",
+ "format": "WORLD",
+ "label": "Fictional story",
+ "language": "en",
+ "dialogue": "out/dialogue/imw-pick-gemini/dialogue.json",
+ "music": "assets/sfx/cavern_bed.wav",
+ "music_db": -30,
+ "sfx": [
+  {
+   "src": "assets/sfx/slug_land.wav",
+   "at": 1.02,
+   "db": -20
+  },
+  {
+   "src": "assets/sfx/slug_land.wav",
+   "at": "L2.start+0.53",
+   "db": -16
+  },
+  {
+   "src": "assets/sfx/slug_land.wav",
+   "at": "L5.end-0.35",
+   "db": -10
+  },
+  {
+   "src": "assets/sfx/slug_land.wav",
+   "at": "L5.end+0.16",
+   "db": -11
+  },
+  {
+   "src": "assets/sfx/floppy_burble.wav",
+   "at": "L8.end+0.55",
+   "db": -10
+  }
+ ],
+ "hook": "",
+ "end_card": false,
+ "scenes": [
+  {
+   "kind": "video",
+   "src": "out/takes/imw_pick_g01.mp4",
+   "seconds": 30.367,
+   "fit": "crop",
+   "volume": 0
+  }
+ ]
+}

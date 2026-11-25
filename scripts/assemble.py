@@ -21,6 +21,9 @@ Edit file (JSON), paths relative to this folder:
        "punch_at": [1.2], "volume": 0.3, "transition": "fade", "label": "AI-generated scene"}
     ]
   }
+"dialogue": "out/dialogue/<id>/dialogue.json"   character dialogue from `ss dialogue`: its performed audio is the
+    voice (never tidied: pauses are acting), its script-aligned words are the captions (speaker colours), and any
+    "at" (SFX) may be a line anchor such as "L4.end+0.1". Replaces "script"/"narration"/"captions".
 "sync": "script" times each scene to its [stage direction] block of the script (needs "captions": "auto"
 and one block per scene); scene "seconds" are then ignored. Otherwise, if the narration is longer than
 the scenes, the last picture scene is extended to cover it.
@@ -96,6 +99,20 @@ def sync_to_script(scenes, script, words_json, voice_len):
     print("scene starts (s): " + ", ".join(f"{t:.2f}" for t in starts))
 
 
+ANCHOR = re.compile(r"^L(\d+)(?:\.(start|end))?\s*([+-]\s*[0-9.]+)?$")
+
+
+def when(value, dialogue):
+    """Seconds, or a dialogue line anchor ("L3", "L3.end-0.1")."""
+    if isinstance(value, (int, float)):
+        return float(value)
+    m = ANCHOR.match(str(value).strip())
+    if not m or not dialogue:
+        raise SystemExit(f"can't resolve time {value!r} (line anchors need \"dialogue\")")
+    line = {ln["n"]: ln for ln in dialogue["lines"]}[int(m.group(1))]
+    return round(line[m.group(2) or "start"] + float((m.group(3) or "0").replace(" ", "")), 3)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("edit_file")
@@ -113,9 +130,15 @@ def main():
     shutil.rmtree(stage_dir, ignore_errors=True)
     stage_dir.mkdir(parents=True)
 
-    # 1. Voice: recorded narration, or the approved script through Kokoro.
-    voice = None
-    if edit.get("narration"):
+    # 1. Voice: character dialogue, recorded narration, or the approved script through Kokoro.
+    voice, dialogue = None, None
+    if edit.get("dialogue"):
+        dialogue = json.loads(Path(edit["dialogue"]).read_text(encoding="utf-8"))
+        voice = Path(dialogue["audio"])
+        flagged = [f"line {ln['n']}" for ln in dialogue["lines"] if ln.get("deviations")]
+        print(f"dialogue: {dialogue['id']} ({dialogue['engine']}, {dialogue['duration']}s)"
+              + (f"; performance differs from script on {', '.join(flagged)}" if flagged else ""))
+    elif edit.get("narration"):
         voice = Path(edit["narration"])
     elif edit.get("script"):
         text = spoken_lines(edit["script"])
@@ -124,13 +147,15 @@ def main():
         sh([PY_TTS, "scripts/voice.py", text, voice, "--voice", opts.get("voice", "am_puck"),
             "--speed", opts.get("speed", 1.1)])
         print(f"voice: Kokoro {opts.get('voice', 'am_puck')} from {edit['script']}")
-    if voice and edit.get("tidy"):
+    if voice and edit.get("tidy") and not dialogue:
         sh([PY, "scripts/audio.py", "tidy", voice, work / "voice_tidy.wav"])
         voice = work / "voice_tidy.wav"
 
     # 2. Captions from the clean voice (before music is added).
     captions = edit.get("captions")
-    if captions == "auto":
+    if dialogue:
+        captions = str(Path(edit["dialogue"]).with_name("dialogue.words.json"))
+    elif captions == "auto":
         if not voice:
             raise SystemExit('"captions": "auto" needs a script or narration')
         print(sh([PY, "scripts/caption.py", voice, "--out", work / "voice"]).strip())
@@ -143,7 +168,7 @@ def main():
         if edit.get("music"):
             cmd += ["--music", edit["music"], "--music-db", edit.get("music_db", -20)]
         if edit.get("sfx"):
-            cmd += ["--sfx", *[f"{s['src']}@{s['at']}" for s in edit["sfx"]]]
+            cmd += ["--sfx", *[f"{s['src']}@{when(s['at'], dialogue)}" + (f"@{s['db']}" if "db" in s else "") for s in edit["sfx"]]]
         sh(cmd)
         mix = work / "mix.wav"
 
@@ -195,7 +220,10 @@ def main():
         shutil.copyfile(mix, stage_dir / "narration.wav")
 
     caption_prop = None
-    if captions:
+    if captions and dialogue:
+        shutil.copyfile(captions, stage_dir / "captions.words.json")
+        caption_prop = f"{name}/captions.words.json"
+    elif captions:
         words = Path(captions).with_suffix("").with_suffix(".words.json")
         if preset.get("captions") == "words" and captions.endswith(".srt") and words.exists():
             shutil.copyfile(words, stage_dir / "captions.words.json")
@@ -212,11 +240,17 @@ def main():
         "endCardTitle": edit.get("end_title", preset["endCardTitle"]),
         "endCardSubtitle": edit.get("end_subtitle", preset["endCardSubtitle"]), "endCardSeconds": 2,
     }
+    fonts = ROOT / "public" / "fonts"
+    fonts.mkdir(parents=True, exist_ok=True)
+    if not (fonts / "Kalam-Bold.ttf").exists():
+        shutil.copyfile(ROOT / "assets" / "brand" / "Kalam-Bold.ttf", fonts / "Kalam-Bold.ttf")
     props_path = stage_dir / "props.json"
     props_path.write_text(json.dumps(props, indent=1), encoding="utf-8")
     (work / "props.json").write_text(json.dumps(props, indent=1), encoding="utf-8")  # kept for checking
 
     out, overall, results, dur = render.finish("Story", name, props_path, production=not a.test, out_dir=a.out_dir)
+    # Which language's accounts the edit is for (the dashboard shows it on the video's card).
+    Path(out).with_suffix(".meta.json").write_text(json.dumps({"language": edit.get("language", "en")}), encoding="utf-8")
     issues = "; ".join(f"{r['check']}: {r['detail']}" for r in results if r["status"] != "PASS")
     print(f"{out} ({dur:.1f}s, {len(scenes)} scenes) QC {overall}" + (f" - {issues}" if issues else ""))
     if a.out_dir:

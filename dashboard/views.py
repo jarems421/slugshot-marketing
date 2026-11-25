@@ -238,7 +238,15 @@ def local_renders():
                 pass
         length = next((c["detail"] for c in qc.get("checks", []) if c.get("check") == "length"), "")
         dur = re.match(r"([\d.]+)s", length)
+        meta = {}  # <video>.meta.json, written by ss assemble: the language the edit is for
+        mp = p.with_suffix(".meta.json")
+        if mp.exists():
+            try:
+                meta = json.loads(mp.read_text(encoding="utf-8"))
+            except ValueError:
+                pass
         out.append({"file": p.name, "date": m.group(1), "format": m.group(2), "concept": m.group(3), "hook": m.group(4) or "",
+                    "language": meta.get("language", ""),
                     "version": m.group(5), "duration_s": float(dur.group(1)) if dur else None,
                     "qc": qc.get("overall", ""), "test": m.group(2) == "TEST"})
     return out

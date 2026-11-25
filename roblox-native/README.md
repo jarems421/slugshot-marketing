@@ -2,7 +2,7 @@
 
 **Roblox first, AI-enhanced second.** Most Slugshot videos are real Roblox footage: gameplay, staged scenes, Roblox-native comedy, characters and cinematics, filmed in an isolated copy of the game. Flow and other AI tools add short anime/manga/cinematic cutaways only.
 
-Status (2026-11-24): **infrastructure built and validated with stand-in actors.** No content production yet. Claude's working instructions are in the skill `.claude/skills/slugshot-roblox-production/`.
+Status (2026-11-25): **real slug actors, deterministic film mode and dialogue-driven acting, tested with real assets** (benchmark skit filmed with 3 voices, 0 repeated frames; `docs/production-quality.md`). Status 2026-11-24: infrastructure validated with stand-ins. Claude's working instructions are in the skill `.claude/skills/slugshot-roblox-production/`.
 
 ## Commands
 
@@ -16,14 +16,15 @@ Status (2026-11-24): **infrastructure built and validated with stand-in actors.*
 | `.\ss roblox switch` | **only when the owner asks:** stops a playtest, saves and closes the open place(s), opens the marketing place |
 | `.\ss roblox guard` | runs the Studio target check once and prints the verdict |
 | `.\ss roblox compare a.json b.json` | repeatability check between two take manifests (cuts/cues within 50 ms, camera within 0.05 studs / 0.5 deg) |
-| `.\ss roblox import take.json video --capture-manifest m.json` (or `--video-start-ms N`) | trims the recording to the take, runs `ss import`, writes `<raw>.take.json` beside it |
+| `.\ss roblox import take.json video --capture-manifest m.json` (or `--video-start-ms N`) | trims the recording to the take, runs `ss import`, writes `<raw>.take.json` beside it (real-time takes and OBS) |
+| `.\ss roblox film take.json rec1.mp4 [rec2.mp4 ...]` | decodes a film-mode take (frame-stamped chunks and patches) into exact 30 fps, native-resolution 1080x1920 in `out/takes/`; lists any frame ranges to re-film |
 
 ## Layout
 
 | Path | Contents | In git? |
 |---|---|---|
 | `studio/` | `SlugshotMarketing.rbxlx` (built place), `.source.rbxlx` (game snapshot), `marker.json`, `provenance.json` | place files no (they hold the game's private asset IDs); json yes |
-| `runtime/Scene/` | our Luau runner: `init` (sets, marks, beats, manifest), `Cameras` (presets), `Actors` (spawn and actions), `Canon` (truth and canon checks) | yes |
+| `runtime/Scene/` | our Luau engine: `init` (prepare a scene as a pure function of time; drivers `run`, `film`, `still`), `Cameras` (12 presets, portrait roll), `Actors` (real slugs via the game's SlugIdle/FloppyFace, acting tracks, dialogue mouths and eyelines), `Canon` (truth and canon checks) | yes |
 | `runtime/vendor/Reel/` | Reel, unmodified (MIT, `SOURCE.txt` records commit 4b810e9) | yes |
 | `scenes/<group>/*.json` | declarative scene specs | yes |
 | `library/library.json` | animation and sound registry (empty: real animations are production work) | yes |
@@ -73,6 +74,8 @@ Also in `.claude/settings.json`:
 - `ss roblox switch` saves and closes whatever Studio has open (owner-approved helper). It needs per-session approval, because a local allow rule for it was refused by Claude Code's safety classifier.
 
 ## Scene specs and the runner
+
+**2026-11-25:** the runner is now one deterministic engine. Every frame is computed from scene time, so preview, film and still show the same picture, and Reel supplies only the shot maths, cyc and UI clearing. Dialogue-anchored timing, real slug actors and film mode are described in the production skill (`references/scene-specs.md`, `references/capture-and-handoff.md`, `references/directing.md`). The 2026-11-24 notes below describe the first, stand-in version.
 
 The spec format is in the skill (`references/scene-specs.md`). In short:
 - `truth` block;

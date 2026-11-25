@@ -31,3 +31,10 @@ Order of importance on screen: **the action** > hook (first seconds only) > capt
 - Accent colour = "look here". Use it for emphasis words and the hook only. Each preset has one accent; don't add more colours.
 - Labels ("Fictional story", "AI-generated scene") stay small and constant. They inform; they shouldn't compete.
 - Read the frame sheet (`ss sheet`) as a thumbnail strip: if you can't tell what each frame is about in half a second, the hierarchy is wrong.
+
+## Dialogue captions (2026-11-25)
+
+- Captions use the **approved script's words** with measured timing (`ss dialogue`), never raw recognition output. Words the performer didn't say are flagged, not captioned. **(S: benchmark)**
+- One caption per spoken line when it has six words or fewer: a punchline never splits ("I never said it / was." was the failure). Longer lines split into balanced pieces at punctuation. **(S)**
+- Each speaker's lines take their colour from `config/cast.json` (Floppy lime, Rammstone orange, Aquabeek blue). No word-by-word bouncing on dialogue; a deadpan line stays still. A page clears 350 ms after its last word, so held silences read as silence. **(D)**
+- Font: Kalam Bold with a charcoal ink edge, about 108 px (Kalam draws small). The label sits at about 12% from the top, clear of platform UI. **(A: safe areas; owner font choice)**

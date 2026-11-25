@@ -51,6 +51,16 @@ def close_window(place_name):
     return False, f"no Studio window titled like {place_name}"
 
 
+def maximise():
+    """Studio can reopen in a small window (seen 2026-11-25: 1088x624), which would make film-mode footage low
+    resolution; maximise the marketing window (Scene.film also refuses small viewports)."""
+    script = ('Add-Type -Namespace W -Name U -MemberDefinition \'[DllImport("user32.dll")] public static extern bool '
+              'ShowWindow(System.IntPtr h, int c);\'; Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | '
+              'Where-Object { $_.MainWindowTitle -like "*SlugshotMarketing*" } | '
+              'ForEach-Object { [W.U]::ShowWindow($_.MainWindowHandle, 3) | Out-Null }')
+    subprocess.run(["powershell", "-NoProfile", "-Command", script], capture_output=True)
+
+
 def main():
     rebuild = "--rebuild" in sys.argv
     mcp = Mcp()
@@ -111,6 +121,7 @@ def main():
         except Exception:
             continue
         if names == [MARKER["place_file"]]:
+            maximise()
             print("Studio reports only SlugshotMarketing.rbxlx open")
             return
     raise SystemExit("Marketing place did not appear in Studio within 3 minutes; check the Studio window.")

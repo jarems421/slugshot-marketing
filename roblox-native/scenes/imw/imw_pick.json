@@ -1,0 +1,371 @@
+{
+  "id": "imw_pick",
+  "note": "In My World format sample: narrator + three speaking slugs + four background slugs in the lobby plaza under the mushroom arch. Every shot is anchored to the line it serves.",
+  "format": "vertical",
+  "truth": {
+    "mode": "staged_fiction",
+    "source": "staged_runtime",
+    "gameplay_mechanics": "none",
+    "match_outcome": "n/a",
+    "label": "Fictional story"
+  },
+  "dialogue": "out/dialogue/imw-pick-gemini/dialogue.json",
+  "set": {
+    "kind": "place",
+    "origin": [
+      19,
+      0,
+      20
+    ],
+    "yaw": 0
+  },
+  "marks": {
+    "floppy": [
+      -1.0,
+      0,
+      1.0,
+      180
+    ],
+    "aquabeek": [
+      -3.6,
+      0,
+      0.2,
+      -90
+    ],
+    "ram_start": [
+      7.5,
+      0,
+      2.5,
+      90
+    ],
+    "ram": [
+      1.8,
+      0,
+      1.0,
+      90
+    ],
+    "inferno": [
+      3.5,
+      0,
+      -4.0,
+      160
+    ],
+    "tormato": [
+      -5.0,
+      0,
+      -3.5,
+      200
+    ],
+    "boondoc": [
+      6.0,
+      0,
+      -6.0,
+      170
+    ],
+    "phosphoro": [
+      -2.5,
+      0,
+      -6.0,
+      180
+    ],
+    "lens": [
+      -0.6,
+      1.5,
+      -6,
+      0
+    ]
+  },
+  "actors": {
+    "floppy": {
+      "kind": "slug",
+      "species": "Floppy",
+      "mark": "floppy"
+    },
+    "aquabeek": {
+      "kind": "slug",
+      "species": "Aquabeek",
+      "mark": "aquabeek",
+      "face": "floppy",
+      "phase": 1.3
+    },
+    "rammstone": {
+      "kind": "slug",
+      "species": "Rammstone",
+      "mark": "ram_start",
+      "face": "floppy",
+      "phase": 2.3
+    },
+    "inferno": {
+      "kind": "slug",
+      "species": "Inferno",
+      "mark": "inferno",
+      "phase": 0.7,
+      "auto_look": false
+    },
+    "tormato": {
+      "kind": "slug",
+      "species": "Tormato",
+      "mark": "tormato",
+      "phase": 3.1,
+      "auto_look": false
+    },
+    "boondoc": {
+      "kind": "slug",
+      "species": "BoonDoc",
+      "mark": "boondoc",
+      "phase": 4.2,
+      "auto_look": false
+    },
+    "phosphoro": {
+      "kind": "slug",
+      "species": "Phosphoro",
+      "mark": "phosphoro",
+      "phase": 5.0,
+      "auto_look": false
+    }
+  },
+  "shots": [
+    {
+      "preset": "push_in",
+      "target": "floppy",
+      "until": "L1.end+0.2",
+      "side": 0,
+      "from_size": 4.0,
+      "size": 3.0,
+      "eye": 0.6,
+      "headroom": -0.25,
+      "fov": 42
+    },
+    {
+      "preset": "close_up",
+      "target": "inferno",
+      "until": "L2.end+0.2",
+      "side": 10,
+      "size": 1.65
+    },
+    {
+      "preset": "close_up",
+      "target": "aquabeek",
+      "until": "L3.end+0.3",
+      "side": 25,
+      "size": 1.6
+    },
+    {
+      "preset": "push_in",
+      "target": "floppy",
+      "until": "L4.end+0.35",
+      "side": 8,
+      "from_size": 3.0,
+      "size": 1.55
+    },
+    {
+      "preset": "over_shoulder",
+      "from": "floppy",
+      "target": "aquabeek",
+      "until": "L5.end+0.25",
+      "shoulder": 1,
+      "back": 1.0,
+      "offset": 0.45
+    },
+    {
+      "preset": "close_up",
+      "target": "rammstone",
+      "until": "L6.end+0.5",
+      "side": -22,
+      "size": 1.5,
+      "eye": -0.05
+    },
+    {
+      "preset": "close_up",
+      "target": "floppy",
+      "until": "L7.end+0.5",
+      "side": 18,
+      "size": 1.55
+    },
+    {
+      "preset": "push_in",
+      "target": "floppy",
+      "until": "L8.end+1.1",
+      "side": 6,
+      "from_size": 2.3,
+      "size": 1.35
+    }
+  ],
+  "timeline": [
+    {
+      "time": 0.0,
+      "actor": "floppy",
+      "action": "express",
+      "set": {
+        "squint": 2.0
+      },
+      "ease": 0
+    },
+    {
+      "time": 0.0,
+      "actor": "floppy",
+      "action": "look",
+      "target": "none"
+    },
+    {
+      "time": 0.6,
+      "actor": "tormato",
+      "action": "hop",
+      "height": 0.25,
+      "duration": 0.42
+    },
+    {
+      "time": 1.4,
+      "actor": "boondoc",
+      "action": "express",
+      "set": {
+        "react": 1
+      },
+      "ease": 0.5
+    },
+    {
+      "time": 2.3,
+      "actor": "phosphoro",
+      "action": "hop",
+      "height": 0.18,
+      "duration": 0.35
+    },
+    {
+      "time": "L2.start-0.1",
+      "actor": "inferno",
+      "action": "express",
+      "set": {
+        "react": 0.5
+      },
+      "ease": 0.3
+    },
+    {
+      "time": "L2.start+0.15",
+      "actor": "inferno",
+      "action": "hop",
+      "height": 0.22,
+      "duration": 0.38
+    },
+    {
+      "time": "L3.start-0.1",
+      "actor": "aquabeek",
+      "action": "look",
+      "target": "lens",
+      "ease": 0.5
+    },
+    {
+      "time": "L3.start",
+      "actor": "aquabeek",
+      "action": "express",
+      "set": {
+        "react": 1
+      },
+      "ease": 0.5
+    },
+    {
+      "time": "L4.end",
+      "actor": "aquabeek",
+      "action": "look",
+      "target": "floppy",
+      "ease": 0.5
+    },
+    {
+      "time": "L5.end-0.75",
+      "actor": "rammstone",
+      "action": "move_to",
+      "mark": "ram",
+      "duration": 1.0
+    },
+    {
+      "time": "L5.end-0.75",
+      "actor": "rammstone",
+      "action": "hop",
+      "height": 0.2,
+      "duration": 0.4
+    },
+    {
+      "time": "L5.end-0.2",
+      "actor": "rammstone",
+      "action": "hop",
+      "height": 0.18,
+      "duration": 0.36
+    },
+    {
+      "time": "L6.start",
+      "actor": "rammstone",
+      "action": "face",
+      "target": "floppy",
+      "duration": 0.3
+    },
+    {
+      "time": "L6.start-0.1",
+      "actor": "rammstone",
+      "action": "express",
+      "set": {
+        "angry": 0.6,
+        "lean": 1
+      },
+      "ease": 0.35
+    },
+    {
+      "time": "L6.end+0.4",
+      "actor": "rammstone",
+      "action": "express",
+      "set": {
+        "angry": 0.2,
+        "lean": 0
+      },
+      "ease": 0.6
+    },
+    {
+      "time": "L7.start-0.5",
+      "actor": "floppy",
+      "action": "express",
+      "set": {
+        "squint": 0.9
+      },
+      "ease": 0.6
+    },
+    {
+      "time": "L7.start-0.3",
+      "actor": "floppy",
+      "action": "look",
+      "target": "rammstone",
+      "ease": 0.6
+    },
+    {
+      "time": "L7.end+0.3",
+      "actor": "floppy",
+      "action": "express",
+      "set": {
+        "squint": 1.6
+      },
+      "ease": 0.8
+    },
+    {
+      "time": "L8.end-0.2",
+      "actor": "floppy",
+      "action": "look",
+      "target": "lens",
+      "ease": 0.6
+    },
+    {
+      "time": "L8.end-0.1",
+      "actor": "floppy",
+      "action": "express",
+      "set": {
+        "squint": 0.5,
+        "smile": 1
+      },
+      "ease": 0.7
+    },
+    {
+      "time": "L8.end",
+      "marker": "PAYOFF"
+    }
+  ],
+  "capture": {
+    "ui": "hidden",
+    "sample": 0.5
+  }
+}

@@ -17,6 +17,12 @@ The toolkit already does the technical half (cut, caption, zoom, mix, render, QC
 
 Say which label a recommendation rests on. Never present C or D as fact.
 
+## Quality bar (owner rules, 2026-11-25)
+
+1. **Pixels and frames.** Masters are 1080x1920 from native pixels: Roblox-native footage comes from film mode (`ss roblox film`, 0 repeated frames). Never upscale a centre crop of landscape footage when a native take is possible. Inspect frames (`ss sheet`) before showing anyone.
+2. **Story-matched picture.** Every shot, push-in, reaction and sound is motivated by the script beat it sits on, and timed to the dialogue (line anchors), not to whatever clip was handy. A random idle snippet or a pretty shot with no job is cut.
+3. **Identity.** It should look like our world: inked characters, glowing caverns, the Kalam font, one accent colour at a time. See [references/visual-direction.md](references/visual-direction.md). Generic Roblox-story styling (default baseplates, random meme fonts, constant shake) is a fail.
+
 ## Non-negotiables before any creative choice
 
 1. **Truth gate.** Check every gameplay claim against `docs/game-truth.md` and re-check `../slugshot/docs/status.md` (read and copy freely; ask before changing game files). Floppy never transforms. Nothing is published, so no "play now". Fiction and AI shots carry a label (WORLD, SKIT and AISCENE presets) and are never cut into gameplay in a way that implies they happened. **(A: Roblox ad standards and platform AI-disclosure rules; research PDF)**
@@ -29,6 +35,7 @@ Say which label a recommendation rests on. Never present C or D as fact.
 2. **Pick the playbook** for the format: [references/format-playbooks.md](references/format-playbooks.md).
 3. **Make the decisions**: pacing and cuts in [references/pacing-cuts-zooms.md](references/pacing-cuts-zooms.md); captions and layout in [references/captions-and-hierarchy.md](references/captions-and-hierarchy.md); voice, music, SFX and silence in [references/audio-design.md](references/audio-design.md).
 4. **Build** with the toolkit (commands in `docs/COMMANDS.md`):
+   - character dialogue: `ss dialogue` → Roblox scene (slugshot-roblox-production) → `ss assemble` with `"dialogue"`, line-anchored `"sfx"` and the `cavern_bed` ambience (worked example: `jobs/bench/floppy-seven-qwenclone.json`);
    - one clip: `ss render --format X`;
    - several scenes, stills, cards or a script: `ss assemble jobs\<edit>.json` (use `"sync": "script"` so scenes follow the narration);
    - several hooks: `ss batch`.

@@ -63,6 +63,44 @@ Cameras.presets = {
 		local snap = math.clamp((s.snap or 0.15) / s.duration, 0.01, 1)
 		return ctx.Shot.still({ at = CFrame.lookAt(at, aim), duration = s.duration, fov = ctx.Curve.ease(s.fov or 55, s.fov_end or 30, snap) })
 	end,
+	-- Size-aware framings for creatures of any size. `size` is the frame height in actor heights (1.2 = a tight
+	-- close-up of a slug, 2.5 = a medium shot). `side` swings the camera off the actor's face axis (degrees,
+	-- positive to the actor's left) so eyelines read; `eye` is the camera height as a fraction of actor height.
+	close_up = function(s, ctx)
+		local f, h = ctx.frame(s.target), ctx.height(s.target)
+		local head = ctx.head(s.target)
+		local fov = s.fov or 30
+		local dist = (s.size or 1.3) * h / (2 * math.tan(math.rad(fov) / 2))
+		local dir = (f * CFrame.Angles(0, math.rad(s.side or 18), 0)).LookVector
+		local at = head + dir * dist + Vector3.new(0, (s.eye or 0) * h, 0)
+		local aim = head - Vector3.new(0, (s.headroom or 0.12) * h, 0)
+		return ctx.Shot.still({ at = CFrame.lookAt(at, aim), duration = s.duration, fov = fov })
+	end,
+	-- A slow push from `from_size` to `size`: the camera tells you who matters ("this is Floppy").
+	push_in = function(s, ctx)
+		local f, h = ctx.frame(s.target), ctx.height(s.target)
+		local head = ctx.head(s.target)
+		local fov = s.fov or 32
+		local k = h / (2 * math.tan(math.rad(fov) / 2))
+		local dir = (f * CFrame.Angles(0, math.rad(s.side or 10), 0)).LookVector
+		local lift = Vector3.new(0, (s.eye or 0.05) * h, 0)
+		local aim = head - Vector3.new(0, (s.headroom or 0.15) * h, 0)
+		local from = head + dir * (s.from_size or 3) * k + lift
+		local to = head + dir * (s.size or 1.4) * k + lift
+		return ctx.Shot.dolly({ from = CFrame.lookAt(from, aim), to = CFrame.lookAt(to, aim), duration = s.duration,
+			fov = fov, ease = ctx.Curve.rise(0, 1) })
+	end,
+	-- Shot/reverse-shot: over `from`'s shoulder onto `target`'s face. `shoulder` picks the side (1 right, -1 left).
+	over_shoulder = function(s, ctx)
+		local a, b = ctx.frame(s.from).Position, ctx.head(s.target)
+		local ha = ctx.height(s.from)
+		local flat = Vector3.new(b.X - a.X, 0, b.Z - a.Z).Unit
+		local right = flat:Cross(Vector3.yAxis)
+		local at = a - flat * (s.back or 1.1) * ha + right * (s.shoulder or 1) * (s.offset or 0.55) * ha
+			+ Vector3.new(0, (s.eye or 0.85) * ha, 0)
+		return ctx.Shot.still({ at = CFrame.lookAt(at, b - Vector3.new(0, 0.1 * ctx.height(s.target), 0)),
+			duration = s.duration, fov = s.fov or 34 })
+	end,
 	whip_pan = function(s, ctx)
 		local a, b = ctx.frame(s.from).Position, ctx.frame(s.to).Position
 		local at = (a + b) / 2 + Vector3.new(0, s.height or 3, 0) + (b - a).Unit:Cross(Vector3.yAxis) * (s.distance or 10)
@@ -70,17 +108,19 @@ Cameras.presets = {
 	end,
 }
 
-function Cameras.build(shotSpec: any, ctx: any)
+-- `ctx.at(start)` returns a context whose frame/head/position read actors as they stand at the shot's start,
+-- so fixed framings use where actors are at that cut, and a still posed mid-shot frames it the same way as
+-- the filmed take. After that the shot is a pure function of its local time.
+function Cameras.build(shotSpec: any, ctx: any, start: number)
 	local preset = Cameras.presets[shotSpec.preset]
 	assert(preset, `unknown camera preset {shotSpec.preset}`)
-	-- Built lazily, when the shot first plays, so fixed framings use where actors are at that cut
-	-- (an actor may have moved since the take started). After that the shot is a pure function of t.
 	local inner
 	return {
 		duration = shotSpec.duration,
+		start = start,
 		pose = function(t: number)
 			if not inner then
-				inner = preset(shotSpec, ctx)
+				inner = preset(shotSpec, ctx.at(start))
 				if shotSpec.shake then
 					inner = ctx.Shot.shake(inner, { amplitude = shotSpec.shake, seed = ctx.seed })
 				end
@@ -88,6 +128,14 @@ function Cameras.build(shotSpec: any, ctx: any)
 			return inner.pose(t)
 		end,
 	}
+end
+
+-- Vertical video from a landscape viewport: roll the camera a quarter turn so the 9:16 frame lies along the
+-- viewport's long side (native pixels instead of an upscaled centre crop), and convert the spec's FOV (the
+-- 9:16 frame's vertical FOV) to Roblox's FieldOfView (the viewport's vertical, i.e. the portrait's horizontal).
+function Cameras.portrait(cf: CFrame, fov: number): (CFrame, number)
+	local h = 2 * math.deg(math.atan(math.tan(math.rad(fov) / 2) * 9 / 16))
+	return cf * CFrame.Angles(0, 0, math.rad(90)), h
 end
 
 return Cameras

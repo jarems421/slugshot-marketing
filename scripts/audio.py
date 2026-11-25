@@ -50,10 +50,12 @@ def mix(a):
     else:
         graph.append("[key]anullsink")
     for i, spec in enumerate(a.sfx or []):
-        path, _, at = spec.rpartition("@")
+        parts = spec.split("@")  # file@seconds or file@seconds@dB
+        path, at = parts[0], parts[1]
+        db = float(parts[2]) if len(parts) > 2 else a.sfx_db
         inputs += ["-i", path]
         ms = int(float(at) * 1000)
-        graph.append(f"[{count}:a]aresample=48000,volume={a.sfx_db}dB,adelay={ms}|{ms}[sfx{i}]")
+        graph.append(f"[{count}:a]aresample=48000,volume={db}dB,adelay={ms}|{ms}[sfx{i}]")
         layers.append(f"[sfx{i}]")
         count += 1
     graph.append(f"{''.join(layers)}amix=inputs={len(layers)}:duration=first:normalize=0,"
@@ -78,7 +80,7 @@ def main():
     m.add_argument("--narration", required=True)
     m.add_argument("--music")
     m.add_argument("--music-db", type=float, default=-18)
-    m.add_argument("--sfx", nargs="*", help="file@seconds")
+    m.add_argument("--sfx", nargs="*", help="file@seconds[@dB]")
     m.add_argument("--sfx-db", type=float, default=-6)
     a = ap.parse_args()
     Path(a.output).parent.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,214 @@
+{
+  "_about": "Original character voices for `ss dialogue`. The script's NAME (upper case) maps to a key. engine qwen (default): each character's fixed reference voice (assets/voices/<NAME>.wav, designed once by `ss cast` from `design` reading `sample`, then cloned for every line) keeps one consistent voice across lines and videos. kokoro: fast draft fallback. caption: this speaker's caption colour. actor: the scene-spec actor whose mouth the voice drives. persona: from the game's catalog and owner notes (../slugshot/docs/slugs/catalog), with archetype colour from docs/creative/slugterra-handbook (inspiration only, not canon). Designs ask for high-energy storytime delivery (owner, 2026-11-25: the first set had no 'life' or 'punch'). Voices are original designs in the style of short-form storytime narration; no cloning or imitation of real people or of any app's proprietary voice. status: draft until the owner approves by ear. engine gemini: a fixed Google prebuilt voice per character (gemini.voice; `ss audition` renders each character's sample in every candidate so the owner can pick), with gemini.style as the base delivery and the script's (direction) added per line. gemini: gemini_delivery (shared) + the character's style + the line's (direction) form each line's style.",
+  "characters": {
+    "NARRATOR": {
+      "actor": null,
+      "caption": "#ffffff",
+      "status": "draft",
+      "gender": "male",
+      "persona": "In My World storyteller: calm, warm, confident, a hint of drama; the voice that carries the story.",
+      "qwen": {
+        "design": "A young adult male storyteller with an energetic, charismatic, punchy delivery in the style of viral TikTok storytime videos. Expressive and dramatic, leaning into suspense then breaking into a grin, clear and close to the microphone. High energy and full of life, like a viral short-form storytime voice: punchy emphasis on key words, big emotional swings, dramatic pauses, a grin you can hear, never flat or monotone.",
+        "sample": "In my world, everyone gets ONE slug. And most people? They get something AMAZING. Fire! Lightning! Pure power! And then... there's me. And honestly? I would NOT trade him for anything!"
+      },
+      "kokoro": {
+        "voice": "bm_george",
+        "speed": 0.95,
+        "pitch": 0
+      },
+      "gemini": {
+        "voice": "Puck",
+        "candidates": [
+          "Puck",
+          "Fenrir",
+          "Sadachbia"
+        ],
+        "style": "energetic, charismatic storytime narrator, grinning, building suspense then hitting the punchline hard"
+      }
+    },
+    "NARRATOR_F": {
+      "actor": null,
+      "caption": "#ffffff",
+      "status": "draft",
+      "gender": "female",
+      "persona": "Alternative storyteller: bright, friendly, expressive; for stories told by a girl character or variety.",
+      "qwen": {
+        "design": "A bright, bubbly young adult female storyteller with an energetic, expressive delivery in the style of viral TikTok storytime videos, playful and dramatic, quick comic timing. High energy and full of life, like a viral short-form storytime voice: punchy emphasis on key words, big emotional swings, dramatic pauses, a grin you can hear, never flat or monotone.",
+        "sample": "Okay so in my world, your slug picks YOU. Not the other way round! And the day mine finally chose me? Oh my gosh. It was the LAST one I expected!"
+      },
+      "gemini": {
+        "voice": "Zephyr",
+        "candidates": [
+          "Zephyr",
+          "Laomedeia",
+          "Autonoe"
+        ],
+        "style": "bright, bubbly storytime narrator, gasping and giggling at her own story, big dramatic emphasis"
+      }
+    },
+    "FLOPPY": {
+      "actor": "floppy",
+      "caption": "#c8e66a",
+      "status": "draft",
+      "gender": "male",
+      "persona": "The weakest slug and proud of it: drowsy, slow, a little out of it (owner: 'weak, drowsy, slightly drunk/stoned'), unbothered, with stubborn, dead-serious dignity. Never powerful; his wins are attitude.",
+      "qwen": {
+        "design": "A young adult male cartoon voice, sleepy, slow and mellow, a little slurred and laid-back, but expressive: big lazy yawns, comic sighs, and sudden deadpan confidence. Funny and full of character, never monotone.",
+        "sample": "Huh? Oh... yeah, I heard you. I'm just... resting my eyes. Look. Everybody's in SUCH a rush to be the strongest. Me? Mmm. I'm good. Really, really good, actually."
+      },
+      "kokoro": {
+        "voice": "am_michael",
+        "speed": 0.92,
+        "pitch": 1.5
+      },
+      "gemini": {
+        "voice": "Umbriel",
+        "candidates": [
+          "Umbriel",
+          "Zubenelgenubi"
+        ],
+        "style": "sleepy, slow and mellow, a little slurred, deadpan but with lazy warmth and a proud little smile in the voice",
+        "rejected": {
+          "Enceladus": "spoke the audition line twice (2026-11-25)"
+        }
+      }
+    },
+    "RAMMSTONE": {
+      "actor": "rammstone",
+      "caption": "#ff8a5c",
+      "status": "draft",
+      "gender": "male",
+      "persona": "Rock-armoured bruiser: loud, cocky, short fuse (his angry face is a grimace); a show-off who is secretly easy to rattle.",
+      "qwen": {
+        "design": "A deep, gravelly, LOUD male cartoon voice, explosive and over-the-top, cocky gym-bro swagger, booming laughs and shouted boasts, cracks into panic when rattled. High energy and full of life, like a viral short-form storytime voice: punchy emphasis on key words, big emotional swings, dramatic pauses, a grin you can hear, never flat or monotone.",
+        "sample": "OUT of my way! You see these HORNS? You see this ARMOUR? Nobody, and I mean NOBODY, takes a hit like me! Wait... why are you laughing? Stop laughing!"
+      },
+      "kokoro": {
+        "voice": "am_fenrir",
+        "speed": 1.0,
+        "pitch": -2.5
+      },
+      "gemini": {
+        "voice": "Algenib",
+        "candidates": [
+          "Algenib",
+          "Orus",
+          "Alnilam"
+        ],
+        "style": "loud, cocky, booming show-off, chest puffed out, laughing at his own bravado"
+      }
+    },
+    "AQUABEEK": {
+      "actor": "aquabeek",
+      "caption": "#7fd6ff",
+      "status": "draft",
+      "gender": "female",
+      "persona": "Cool, unimpressed, half-lidded (the only slug who blinks fully); says little, every word lands; quietly the smartest in the room.",
+      "qwen": {
+        "design": "A smooth, cool young adult female voice with sass: dry and unimpressed but expressive, eye-roll energy, sharp comic timing, a smirk you can hear, rising to playful teasing.",
+        "sample": "Mm. You're doing the loud thing again. That's cute. Really. Wake me up when you've got an ACTUAL plan. Actually... don't. I'll just figure it out myself."
+      },
+      "kokoro": {
+        "voice": "af_nicole",
+        "speed": 0.95,
+        "pitch": 0
+      },
+      "gemini": {
+        "voice": "Despina",
+        "candidates": [
+          "Despina",
+          "Kore",
+          "Aoede",
+          "Callirrhoe",
+          "Sulafat",
+          "Autonoe"
+        ],
+        "style": "young woman, cool and dry with a smirk you can hear, unimpressed but playful, teasing, every word lands",
+        "rejected": {
+          "Vindemiatrix": "owner: sounds like a man putting on a woman's voice (2026-11-25)"
+        }
+      }
+    },
+    "INFERNO": {
+      "actor": "inferno",
+      "caption": "#ffb347",
+      "status": "draft",
+      "gender": "male",
+      "persona": "Playful flame with a temper: quick, excitable, cocky, flares up fast and cools down just as fast.",
+      "qwen": {
+        "design": "An energetic, hot-headed teenage boy voice, fast and excitable, cocky and playful, crackling with hype, laughs easily and flares up loudly when annoyed. High energy and full of life, like a viral short-form storytime voice: punchy emphasis on key words, big emotional swings, dramatic pauses, a grin you can hear, never flat or monotone.",
+        "sample": "Ha! Did you see that? Did you see that? That was so cool! Okay, okay, I might have burned the snacks a little. A lot. But it was worth it!"
+      },
+      "gemini": {
+        "voice": "Fenrir",
+        "candidates": [
+          "Fenrir",
+          "Puck",
+          "Sadachbia"
+        ],
+        "style": "hyped, excitable, fast and cocky, flaring up loud then laughing it off"
+      }
+    },
+    "TORMATO": {
+      "actor": "tormato",
+      "caption": "#ff6f91",
+      "status": "draft",
+      "gender": "male",
+      "persona": "A walking storm: bouncy, chaotic, spinning eyes, never stays on one thought for long.",
+      "qwen": {
+        "design": "A hyper, chaotic, high-energy male cartoon voice, fast-talking, giggly and breathless, jumping between ideas with wild enthusiasm. High energy and full of life, like a viral short-form storytime voice: punchy emphasis on key words, big emotional swings, dramatic pauses, a grin you can hear, never flat or monotone.",
+        "sample": "Wait wait wait, what if we spin? No, no, listen! What if we spin really fast and then, ooh, a cloud! Did anyone else see that cloud? Okay, focus. Focus. Spinning!"
+      },
+      "gemini": {
+        "voice": "Sadachbia",
+        "candidates": [
+          "Sadachbia",
+          "Laomedeia",
+          "Fenrir"
+        ],
+        "style": "hyper, chaotic, giggly and breathless, words tumbling out"
+      }
+    },
+    "BOONDOC": {
+      "actor": "boondoc",
+      "caption": "#8ff0c8",
+      "status": "draft",
+      "gender": "male",
+      "persona": "The healer with a halo: gentle, kind, a bit fussy, nods while he listens; the grown-up of the group.",
+      "qwen": {
+        "design": "A gentle, kind, slightly older male voice, warm and reassuring but expressive: fussy worry, relieved chuckles, exasperated sighs, like a caring doctor with real feelings.",
+        "sample": "Easy now, easy. Let me take a look. Hmm. A few bumps, nothing serious. You'll be fine. But please, for my sake, stop jumping off things."
+      },
+      "gemini": {
+        "voice": "Sadaltager",
+        "candidates": [
+          "Sadaltager",
+          "Achird",
+          "Sulafat"
+        ],
+        "style": "gentle, warm and reassuring, a little fussy, a soft chuckle, caring"
+      }
+    },
+    "PHOSPHORO": {
+      "actor": "phosphoro",
+      "caption": "#ffe066",
+      "status": "draft",
+      "gender": "male",
+      "persona": "Small and curious: tilts his head at everything, lights up when he learns something, eager to help.",
+      "qwen": {
+        "design": "A small, curious, bright young male voice, wide-eyed and excited, gasps of wonder, quick eager questions, friendly and a little shy, full of life.",
+        "sample": "Ooh, what's that? Is it glowing? It's glowing! Can I touch it? I won't break it. Probably. Hey, do you think it likes the dark too?"
+      },
+      "gemini": {
+        "voice": "Leda",
+        "candidates": [
+          "Leda",
+          "Achird",
+          "Autonoe"
+        ],
+        "style": "curious, wide-eyed and eager, soft and quick, delighted gasps"
+      }
+    }
+  },
+  "gemini_delivery": "TikTok storytime performance: animated and emotionally committed, real pitch and pace changes, punchy stress on the key word, reacting as if it is happening right now; never a flat read"
+}

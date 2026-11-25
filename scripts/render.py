@@ -30,7 +30,9 @@ def finish(composition, job, props, production=True, out_dir=None):
     tmp = ROOT / "out" / f"{job}.mp4"
     tmp.parent.mkdir(exist_ok=True)
     cmd = [NPX, "--no-install", "remotion", "render", "remotion/index.ts", composition, str(tmp),
-           f"--props={props}", "--pixel-format=yuv420p", "--color-space=bt709",
+           # CRF 14, not Remotion's 18: platforms re-encode uploads, so the master keeps fine detail for them
+           # (owner, 2026-11-25: slugs looked low-resolution up close).
+           f"--props={props}", "--pixel-format=yuv420p", "--color-space=bt709", "--crf=14",
            "--license-key=free-license", "--log=error"]
     if not production:
         cmd.append("--is-production=false")

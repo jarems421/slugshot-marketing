@@ -84,6 +84,8 @@ function compact(v) {
   return Number.isInteger(v) || a >= 100 ? Math.round(v).toLocaleString() : v.toLocaleString(undefined, { maximumFractionDigits: 1 });
 }
 const signed = (v, unit) => (v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + n(Math.abs(v), unit));
+// "25 Nov 16:40": a short local date and time for telling videos apart.
+const when = (iso) => new Date(iso).toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 function ago(iso) {
   if (!iso) return "never";
   const m = (Date.now() - new Date(iso).getTime()) / 60000;
@@ -600,12 +602,15 @@ async function conceptsView(tabs) {
         const [st, tone] = STATUS_CHIP[g.status];
         return h("button", { class: "card", type: "button", onclick: () => conceptDrawer(g) },
           thumb(v.path, { badge: dur(v.duration_s), chips: g.languages.map((l) => chip(l.toUpperCase())) }),
-          h("div", { class: "t" }, g.title), h("div", { class: "s" }, chip(st, tone), g.versions.length > 1 ? `${g.versions.length} versions` : null));
+          h("div", { class: "t" }, g.title),
+          h("div", { class: "s muted" }, g.audience),
+          g.made_at ? h("div", { class: "s muted", title: new Date(g.made_at).toLocaleString() }, `${ago(g.made_at)} · ${when(g.made_at)}`) : null,
+          h("div", { class: "s" }, chip(st, tone), g.versions.length > 1 ? `${g.versions.length} versions` : null));
       })) : empty("No videos waiting", showPosted ? "Finished edits in exports/ appear here." : "Finished edits in exports/ appear here. Posted ones are hidden; switch on Show posted to see them."))];
 }
 function conceptDrawer(g, index = 0) {
   const v = g.versions[index];
-  const versionPick = g.versions.length > 1 ? seg(g.versions.map((x, i) => [String(i), `${(x.language || "?").toUpperCase()} ${x.version}`]), String(index), (i) => conceptDrawer(g, Number(i)), "Version") : null;
+  const versionPick = g.versions.length > 1 ? seg(g.versions.map((x, i) => [String(i), [x.variant, (x.language || "").toUpperCase(), x.version].filter(Boolean).join(" ")]), String(index), (i) => conceptDrawer(g, Number(i)), "Version") : null;
   const [st, tone] = STATUS_CHIP[v.status];
   const publish = h("button", { class: "btn primary", type: "button", onclick: () => startPublish(g, v) }, "Publish…");
   drawer(h("div", { class: "eyebrow" }, "Concept"), h("h2", {}, g.title), h("div", { style: "display:flex;gap:8px;flex-wrap:wrap;align-items:center" }, chip(st, tone), versionPick),
@@ -613,6 +618,8 @@ function conceptDrawer(g, index = 0) {
       h("div", {},
         h("dl", { class: "kv" }, h("dt", {}, "Length"), h("dd", {}, dur(v.duration_s) || "—"), h("dt", {}, "Size"), h("dd", {}, v.width ? `${v.width}×${v.height}` : "—"),
           h("dt", {}, "Language"), h("dd", {}, v.language ? v.language.toUpperCase() : "not set"),
+          h("dt", {}, "For"), h("dd", {}, v.audience.replace(/^For: /, "")),
+          h("dt", {}, "Made"), h("dd", {}, v.made_at ? `${when(v.made_at)} (${ago(v.made_at)})` : "—"),
           v.fiction_label ? [h("dt", {}, "Label"), h("dd", {}, v.fiction_label)] : null,
           h("dt", {}, "Posted on"), h("dd", {}, v.posted_on.length ? v.posted_on.map((p) => h("a", { href: p.url || "#", target: "_blank", rel: "noreferrer", style: "margin-right:10px" }, acctLabel(p.account_id))) : "not yet"),
           v.jobs.length ? [h("dt", {}, "In Publish"), h("dd", {}, v.jobs.map((j) => h("a", { href: "#/publish/" + j.job_id, style: "margin-right:10px", onclick: closeDrawer }, acctLabel(j.account_id))))] : null),

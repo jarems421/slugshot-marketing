@@ -1,0 +1,38 @@
+{
+ "_about": "Benchmark edit (dialogue/reaction). Same scene, camera and edit for every voice; only the performance differs. Fiction: label on screen. Not for publishing.",
+ "concept": "BenchFloppySeven",
+ "hook_id": "QwenClone",
+ "format": "SKIT",
+ "label": "Fictional skit",
+ "dialogue": "out/dialogue/floppy-seven-qwen-clone/dialogue.json",
+ "music": "assets/sfx/cavern_bed.wav",
+ "music_db": -30,
+ "sfx": [
+  {
+   "src": "assets/sfx/slug_land.wav",
+   "at": 0.4,
+   "db": -9
+  },
+  {
+   "src": "assets/sfx/slug_land.wav",
+   "at": 0.85,
+   "db": -11
+  },
+  {
+   "src": "assets/sfx/floppy_burble.wav",
+   "at": "L6.end+0.55",
+   "db": -10
+  }
+ ],
+ "hook": "",
+ "end_card": false,
+ "scenes": [
+  {
+   "kind": "video",
+   "src": "out/takes/bench_floppy_seven_qc03.mp4",
+   "seconds": 14.633,
+   "fit": "crop",
+   "volume": 0
+  }
+ ]
+}

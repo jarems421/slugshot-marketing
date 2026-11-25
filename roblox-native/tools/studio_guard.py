@@ -116,10 +116,17 @@ def verify(studio_id):
         if studio_id is not None and s.get("id") != studio_id:
             return False, "tool call targets a different Studio id than the open marketing place"
         datamodel = "Server" if s.get("mode") == "Play" or "Mode: Play" in s.get("state", "") else "Edit"
-        value = mcp.tool("execute_luau", {
-            "studio_id": s["id"], "datamodel_type": datamodel,
-            "code": 'local m = game:GetService("ServerStorage"):FindFirstChild("SlugshotMarketingMarker") '
-                    'return m and m:IsA("StringValue") and m.Value or "<missing>"'})
+        code = ('local m = game:GetService("ServerStorage"):FindFirstChild("SlugshotMarketingMarker") '
+                'return m and m:IsA("StringValue") and m.Value or "<missing>"')
+        try:
+            value = mcp.tool("execute_luau", {"studio_id": s["id"], "datamodel_type": datamodel, "code": code})
+        except RuntimeError as e:
+            # Studio's reported mode can lag a play start or stop by a moment (seen 2026-11-25: "Edit datamodel is
+            # not available in Play mode"). Read the same marker in the other datamodel; the token must still match.
+            if "not available" not in str(e):
+                raise
+            datamodel = "Edit" if datamodel == "Server" else "Server"
+            value = mcp.tool("execute_luau", {"studio_id": s["id"], "datamodel_type": datamodel, "code": code})
         if MARKER["token"] not in value:
             return False, f"marker check failed in {datamodel} datamodel"
         return True, f"verified marketing place ({datamodel})"

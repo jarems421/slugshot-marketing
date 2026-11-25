@@ -1,15 +1,19 @@
 {
- "built_utc": "2026-11-24T06:03:27+00:00",
+ "built_utc": "2026-11-25T19:50:06+00:00",
  "source": "C:\\Users\\runni\\slugshot marketing\\roblox-native\\studio\\SlugshotMarketing.source.rbxlx",
  "source_sha256": "dd6f7f50f30e794157fa2972c1e3a581afc1401d4918f71d17af7e3874db6b5b",
  "game_commit": "08fee46d4ee318c875d3c089115e8ee41c3ad993",
- "output_sha256": "56cf3a2e6d1c3553931075cd5c99f48f560bc4f9dd824fc261f6c21712f14809",
+ "output_sha256": "40e3c9f1f869f324cc31372a8332925ede64b1ee2f47d33382a1ed2eb3cdd2b5",
  "patches": [
   "SettingsStore.connect -> MarketingIsolated (x2)",
   "ServerStorage marker + provenance",
   "ReplicatedStorage.SlugshotMarketing runtime (Reel 4b810e9, Scene, Library, Scenes)"
  ],
  "scenes": [
+  "bench_floppy_seven",
+  "bench_floppy_seven_qc",
+  "bench_floppy_seven_qd",
+  "imw_pick",
   "smoke_floppy_standin"
  ]
 }

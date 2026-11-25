@@ -150,8 +150,14 @@ h1, h2, h3 { font-weight: 650; letter-spacing: -0.01em; }
 :root.no-stars .sky { display: none; }
 
 /* Shell */
-.shell { position: relative; z-index: 1; display: grid; grid-template-columns: 212px minmax(0, 1fr); gap: 28px; padding: 18px 28px 18px 18px; min-height: 100vh; max-width: 1480px; margin: 0 auto; }
-.nav { position: sticky; top: 18px; align-self: start; height: calc(100vh - 36px); display: flex; flex-direction: column; gap: 2px; padding: 12px 8px;
+/* Fills the window at any size (owner, 2026-11-25: on 27-inch 2560-px monitors everything sat in a narrow centre
+   column). On wide windows the whole interface scales up (--z) instead of stretching thin; heights divide by --z so
+   the sidebar still fits the window. */
+:root { --z: 1; }
+@media (min-width: 1800px) { :root { --z: 1.15; } }
+@media (min-width: 2300px) { :root { --z: 1.3; } }
+.shell { position: relative; z-index: 1; display: grid; grid-template-columns: 212px minmax(0, 1fr); gap: 28px; padding: 18px 28px 18px 18px; min-height: calc(100vh / var(--z)); zoom: var(--z); }
+.nav { position: sticky; top: 18px; align-self: start; height: calc(100vh / var(--z) - 36px); display: flex; flex-direction: column; gap: 2px; padding: 12px 8px;
   border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow); }
 .brand { display: flex; align-items: center; gap: 10px; padding: 6px 10px 14px; }
 .brand img { border-radius: 8px; }

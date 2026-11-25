@@ -4,6 +4,9 @@ Slugshot marketing commands. Run from this folder as `.\ss <command> ...` (ss.cm
   doctor                                     tool versions and setup checks
   import <file> --format PVP --concept X --hook Y   copy a recording into media\raw\ with the naming convention
   voice "<text>" <out.wav> [--voice am_puck]  Kokoro AI narration (scripts\voice.py -h)
+  audition [NAMES]                           Gemini voice candidates per character (out\voices\review.html)
+  cast [--redo NAME ...]                     design each character's fixed reference voice from config\cast.json (once)
+  dialogue <jobs\dialogue\x.txt> [--engine]  cast script -> per-line voices + timing manifest + captions (scripts\dialogue.py -h)
   audio tidy|mix ...                         clean a voiceover; mix with ducked music + SFX (scripts\audio.py -h)
   caption <audio-or-video>                   Whisper -> .srt + .words.json, game terms auto-fixed (check the .srt)
   fixcaps <file.srt|file.words.json> ...     re-apply config\glossary.json to caption files
@@ -14,7 +17,7 @@ Slugshot marketing commands. Run from this folder as `.\ss <command> ...` (ss.cm
   candidates <video> <gemini.csv>            cut Gemini's timestamped moments (+/- 5 s) for human review
   qc <file.mp4> ...                          technical checks: size, codec, loudness, black/frozen/silent parts
   sheet <file.mp4> [--every 1]               frame sheet for creative review (<file>.sheet.jpg)
-  roblox <validate|list|audit|build|switch|rebuild|guard|compare|import>   Roblox-native filming (roblox-native/README.md)
+  roblox <validate|list|audit|build|switch|rebuild|guard|compare|import|film|rec>   Roblox-native filming (roblox-native/README.md)
   studio                                     open Remotion Studio to tweak the template
   clip <args>                                MakeMyClip CLI, confined to media\ (e.g. `.\ss clip ui`)
   yt <args>                                  YouTube collector (scripts\yt_collect.py -h)
@@ -70,6 +73,14 @@ switch ($cmd) {
     }
     'import' { & $Py scripts\import_capture.py @rest }
     'voice' { & $PyTts scripts\voice.py @rest }
+    'dialogue' { & $Py scripts\dialogue.py @rest }
+    'audition' { & $Py scripts\gemini_tts.py audition @rest }
+    'cast' {
+        # qwen-tts prints a harmless "sox not found" warning on stderr; don't let PowerShell treat it as fatal.
+        $ErrorActionPreference = 'Continue'
+        & (Join-Path $Root '.venv-voicelab\Scripts\python.exe') scripts\voicelab.py cast @rest 2>&1 | ForEach-Object { "$_" } | Where-Object { $_ -notmatch "sox|SoX|sourceforge|path variables|proceed here|flash-attn|^\*+$" }
+    }
+    'sfx' { & $Py scripts\sfx.py @rest }
     'audio' { & $Py scripts\audio.py @rest }
     'caption' { & $Py scripts\caption.py @rest }
     'fixcaps' { & $Py scripts\glossary.py fix @rest }
@@ -95,6 +106,8 @@ switch ($cmd) {
             'guard' { & $Py roblox-native\tools\studio_guard.py --probe }
             'compare' { & $Py roblox-native\tools\take.py compare @more }
             'import' { & $Py roblox-native\tools\take.py import @more }
+            'film' { & $Py roblox-native\tools\take.py film @more }
+            'rec' { & $Py roblox-native\tools\rec.py @more }
             default { 'ss roblox validate|list|audit|build|switch|rebuild|guard|compare|import (see roblox-native/README.md)' }
         }
     }

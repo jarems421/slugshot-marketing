@@ -4,11 +4,15 @@
 node_modules/
 .venv/
 .venv-tts/
+.venv-voicelab/
 whisper-env/
 models/
 assets/music/*
 assets/sfx/*
 assets/brand/*
+!assets/brand/Kalam-Bold.ttf
+!assets/brand/Kalam-OFL.txt
+assets/voices/*
 !assets/**/.gitkeep
 reports/qc_log.csv
 *.qc.json

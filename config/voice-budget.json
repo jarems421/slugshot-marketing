@@ -1,0 +1,11 @@
+{
+  "_about": "Spending guard for paid voice APIs (owner rule: no spend without an approved hard cap). project_billing false = the GEMINI_API_KEY's Google project has no billing enabled, so only the free tier can be used and nothing is charged. Set it true only if the owner enables billing, and set monthly_cap_usd to the cap the owner approved. Prices per 1M tokens for gemini-3.8-flash-tts as listed 2026-11-25 (rise on 2027-01-01: $1.00 input, $18.00 audio).",
+  "gemini_tts": {
+    "model": "gemini-3.8-flash-tts",
+    "project_billing": true,
+    "monthly_cap_usd": 8.5,
+    "usd_per_m_input": 0.5,
+    "usd_per_m_audio": 9.0,
+    "cap_note": "Owner approved 2026-11-25: billing enabled, monthly cap GBP 7. USD 8.5 sits just under GBP 7 at about 1.25-1.30 USD/GBP; Google's own budget alerts don't stop charges, this guard does."
+  }
+}

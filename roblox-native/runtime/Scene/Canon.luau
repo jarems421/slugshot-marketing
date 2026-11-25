@@ -19,7 +19,7 @@ function Canon.check(spec: any): (boolean, string?)
 	end
 	local identities: { [string]: string } = {}
 	for name, actor in spec.actors or {} do
-		identities[name] = actor.identity
+		identities[name] = actor.identity or (actor.species and string.lower(actor.species))
 	end
 	for _, beat in spec.timeline or {} do
 		local identity = beat.actor and identities[beat.actor]

@@ -441,9 +441,12 @@ def library(store, show_posted=False):
         if r["test"] or r["file"] in seen:
             continue  # smoke-test renders aren't content
         items.append({"key": "render:" + r["concept"], "title": r["concept"], "asset_id": None, "path": f"exports/{r['file']}",
-                      "language": "", "version": r["version"], "fiction_label": "", "qc": r["qc"]})
+                      "language": r.get("language", ""), "version": r["version"], "fiction_label": "", "qc": r["qc"],
+                      "variant": r.get("hook", "")})
+    accounts = {a["account_id"]: a for a in store.accounts()}
     groups = {}
     for it in items:
+        it["made_at"] = _made_at(it["path"])
         info = _probe(it["path"])
         it.update(duration_s=info.get("duration_s"), width=info.get("width"), height=info.get("height"),
                   qc=it.get("qc") or _qc(it["path"]))
@@ -451,17 +454,58 @@ def library(store, show_posted=False):
         it["jobs"] = [{"job_id": j["job_id"], "account_id": j["account_id"], "state": j["state"]} for j in jobs
                       if (it["asset_id"] and j["asset_id"] == it["asset_id"] and j["video_path"] == it["path"]) or j["video_path"] == it["path"]]
         it["status"] = "posted" if it["posted_on"] else "publishing" if any(j["state"] not in ("done",) for j in it["jobs"]) else "ready"
+        it["audience"] = _audience(it, accounts)
         groups.setdefault(it["key"], {"key": it["key"], "title": it["title"], "versions": []})["versions"].append(it)
     out = []
     for g in groups.values():
         g["versions"].sort(key=lambda v: (v["language"], v["version"]))
         g["languages"] = sorted({v["language"] for v in g["versions"] if v["language"]})
+        g["made_at"] = max((v["made_at"] for v in g["versions"] if v["made_at"]), default="")
+        auds = list(dict.fromkeys(v["audience"] for v in g["versions"]))
+        if len(auds) == 1:
+            g["audience"] = auds[0]
+        else:  # versions differ: name every destination rather than summarise by one language
+            parts = []
+            for a in auds:
+                for p in a.removeprefix("For: ").split(", "):
+                    if p not in parts:
+                        parts.append(p)
+            g["audience"] = "For: " + ", ".join(parts)
         st = {v["status"] for v in g["versions"]}
         g["status"] = "ready" if "ready" in st else "publishing" if "publishing" in st else "posted"
         if show_posted or g["status"] != "posted":
             out.append(g)
     order = {"ready": 0, "publishing": 1, "posted": 2}
     return sorted(out, key=lambda g: (order[g["status"]], g["title"].lower()))
+
+
+LANG_NAMES = {"en": "English", "es": "Spanish"}
+
+
+def _made_at(relpath):
+    """When the video file was made (its modification time), ISO UTC; blank when the file is missing."""
+    from datetime import datetime, timezone
+    from .publish import ROOT
+    p = ROOT / relpath
+    return datetime.fromtimestamp(p.stat().st_mtime, timezone.utc).isoformat(timespec="seconds") if p.exists() else ""
+
+
+def _audience(it, accounts):
+    """Who a video is for, in plain words: the accounts it has drafts or posts on, else every active account in its
+    language, else that the language isn't set yet."""
+    named = [accounts[x["account_id"]] for x in it["jobs"] + it["posted_on"] if x["account_id"] in accounts]
+    if named:
+        seen = []
+        for a in named:
+            h = a["handle"] or a["account_id"]
+            if h not in seen:
+                seen.append(h)
+        return "For: " + ", ".join(seen)
+    lang = it.get("language") or ""
+    if not lang:
+        return "For: language not set"
+    n = sum(1 for a in accounts.values() if a["language"] == lang and a["active"] and a["platform"] != "roblox")
+    return f"For: all {LANG_NAMES.get(lang, lang.upper())} accounts ({n})"
 
 
 def _qc(relpath):

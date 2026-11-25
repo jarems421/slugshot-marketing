@@ -7,6 +7,7 @@ Checks structure, references (marks, actors, presets, actions, library entries),
 same canon rules as runtime/Scene/Canon.luau. make_marketing_place.py refuses to build invalid specs.
 """
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -18,13 +19,46 @@ MODES = {"authentic_gameplay", "staged_gameplay", "staged_fiction", "hybrid_brid
 MECHANICS = {"real", "none", "fictional"}
 OUTCOMES = {"organic", "scripted", "n/a"}
 PRESETS = {"static_wide", "two_shot", "orbit_reveal", "dolly_in", "slug_low_angle", "reaction_closeup",
-           "follow", "snap_zoom", "whip_pan"}
-ACTIONS = {"move_to", "face", "hop", "animate"}
-ACTOR_KINDS = {"standin_humanoid", "standin_slug", "clone"}
+           "follow", "snap_zoom", "whip_pan", "close_up", "push_in", "over_shoulder"}
+ACTIONS = {"move_to", "face", "hop", "animate", "express", "look", "blink"}
+ACTOR_KINDS = {"standin_humanoid", "standin_slug", "clone", "slug"}
+SPECIES = {"Floppy", "Inferno", "Aquabeek", "Rammstone", "Tormato", "BoonDoc", "Phosphoro"}
+CHANNELS = {"smile", "angry", "react", "look_up", "squint", "open", "lean"}
+REPO = ROOT.parent
 SET_KINDS = {"cyc", "place"}
 CUE_TYPES = {"vfx", "sound"}
 TRANSFORM_ACTIONS = {"transform", "ability", "ability_q", "ability_e"}
 NEVER_TRANSFORMS = {"floppy"}
+
+
+ANCHOR = re.compile(r"^L(\d+)(?:\.(start|end))?\s*([+-]\s*[0-9.]+)?$")
+
+
+def resolve_anchors(spec, dialogue):
+    """Times tied to the dialogue: "L3" / "L3.start+0.2" / "L3.end-0.1" in timeline `time` and in a shot's
+    `until` (the shot then lasts until that moment). Returns error strings; resolves in place."""
+    errs = []
+    lines = {ln["n"]: ln for ln in dialogue["lines"]} if dialogue else {}
+
+    def when(v, where):
+        if isinstance(v, (int, float)):
+            return float(v)
+        m = ANCHOR.match(str(v).strip())
+        if not m or int(m.group(1)) not in lines:
+            errs.append(f"{where}: can't resolve time {v!r} (dialogue lines: {sorted(lines)})")
+            return 0.0
+        ln = lines[int(m.group(1))]
+        return round(ln[m.group(2) or "start"] + float((m.group(3) or "0").replace(" ", "")), 3)
+
+    for b in spec.get("timeline", []):
+        if "time" in b:
+            b["time"] = when(b["time"], f"beat {b['time']}")
+    start = 0.0
+    for i, sh in enumerate(spec.get("shots", []), 1):
+        if "until" in sh:
+            sh["duration"] = round(when(sh.pop("until"), f"shot {i}") - start, 3)
+        start += float(sh.get("duration") or 0)
+    return errs
 
 
 def validate(spec):
@@ -54,6 +88,8 @@ def validate(spec):
     for name, a in actors.items():
         if a.get("kind") not in ACTOR_KINDS:
             e.append(f"actor {name}: kind must be one of {sorted(ACTOR_KINDS)}")
+        if a.get("kind") == "slug" and a.get("species") not in SPECIES:
+            e.append(f"actor {name}: slug needs species, one of {sorted(SPECIES)}")
         if a.get("kind") == "clone" and not a.get("asset"):
             e.append(f"actor {name}: clone needs 'asset' (dotted path to a Model in the place)")
         if a.get("mark") not in marks:
@@ -61,6 +97,19 @@ def validate(spec):
         if a.get("face") and a["face"] not in actors and a["face"] not in marks:
             e.append(f"actor {name}: face target {a['face']} is not an actor or mark")
     named = set(actors) | set(marks)
+    dialogue = None
+    if not spec.get("dialogue"):
+        e += resolve_anchors(spec, None)
+    if spec.get("dialogue"):
+        path = REPO / spec["dialogue"]
+        if not path.exists():
+            e.append(f"dialogue {spec['dialogue']} not found (run `ss dialogue` first)")
+        else:
+            dialogue = json.loads(path.read_text(encoding="utf-8"))
+            e += resolve_anchors(spec, dialogue)
+            for ln in dialogue["lines"]:
+                if ln.get("actor") and ln["actor"] not in actors:
+                    e.append(f"dialogue line {ln['n']}: speaker's actor '{ln['actor']}' is not in this scene")
     total = 0.0
     for i, s in enumerate(spec["shots"], 1):
         total += float(s.get("duration", 0))
@@ -74,6 +123,8 @@ def validate(spec):
         for name in s.get("targets", []):
             if name not in named:
                 e.append(f"shot {i}: target {name} is not an actor or mark")
+    if dialogue and dialogue["duration"] > total + 0.05:
+        e.append(f"shots last {total:.2f}s but the dialogue lasts {dialogue['duration']:.2f}s")
     for b in spec.get("timeline", []):
         where = f"beat at {b.get('time')}s"
         if not isinstance(b.get("time"), (int, float)) or b["time"] < 0:
@@ -95,7 +146,7 @@ def validate(spec):
         if actor not in actors:
             e.append(f"{where}: unknown actor {actor}")
             continue
-        identity = actors[actor].get("identity")
+        identity = actors[actor].get("identity") or str(actors[actor].get("species", "")).lower() or None
         action = b.get("action")
         if identity in NEVER_TRANSFORMS and (action in TRANSFORM_ACTIONS or any(
                 w in str(b.get("animation", "")).lower() for w in ("transform", "ability"))):
@@ -107,6 +158,12 @@ def validate(spec):
             e.append(f"{where}: unknown mark {b.get('mark')}")
         if action == "face" and b.get("target") not in named:
             e.append(f"{where}: face target {b.get('target')} unknown")
+        if action == "express":
+            bad = set(b.get("set", {})) - CHANNELS
+            if not b.get("set") or bad:
+                e.append(f"{where}: express needs 'set' with channels from {sorted(CHANNELS)}")
+        if action == "look" and b.get("target") not in named | {"none", "auto"}:
+            e.append(f"{where}: look target {b.get('target')} unknown")
         if action == "animate" and b.get("animation") not in LIBRARY["animations"]:
             e.append(f"{where}: animation {b.get('animation')} is not in library.json")
     return e
@@ -121,10 +178,19 @@ def load_valid():
     specs, problems = [], []
     for path in all_specs():
         spec = json.loads(path.read_text(encoding="utf-8"))
+        if spec.get("dialogue") and not (REPO / spec["dialogue"]).exists():
+            # dialogue manifests are generated (out/ is not in git): skip the scene rather than block every build
+            print(f"skipped {path.relative_to(ROOT)}: {spec['dialogue']} not generated yet (run `ss dialogue`)")
+            continue
         errs = validate(spec)
         if spec.get("id") != path.stem:
             errs.append(f"id {spec.get('id')} must match the file name {path.stem}")
         problems += [f"{path.relative_to(ROOT)}: {x}" for x in errs]
+        if spec.get("dialogue") and not errs:
+            # the runtime reads one timing source: the dialogue manifest, inlined (words dropped; not needed there)
+            d = json.loads((REPO / spec["dialogue"]).read_text(encoding="utf-8"))
+            spec["_dialogue"] = {"id": d["id"], "duration": d["duration"], "lines": [
+                {k: ln[k] for k in ("n", "speaker", "actor", "start", "end", "mouth")} for ln in d["lines"]]}
         specs.append(spec)
     ids = [s.get("id") for s in specs]
     problems += [f"duplicate scene id {i}" for i in set(ids) if ids.count(i) > 1]

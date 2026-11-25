@@ -1,1 +1,7 @@
 file,kind,source_url,licence,attribution_required,allowed_platforms,commercial_ok,added,notes
+assets/sfx/cavern_bed.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-25,"procedural; no samples, recordings or services"
+assets/sfx/slug_land.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-25,"procedural; no samples, recordings or services"
+assets/sfx/floppy_burble.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-25,"procedural; no samples, recordings or services"
+assets/sfx/whoosh.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-25,"procedural; no samples, recordings or services"
+assets/sfx/crystal_tick.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-25,"procedural; no samples, recordings or services"
+assets/brand/Kalam-Bold.ttf,font,https://github.com/google/fonts/tree/main/ofl/kalam,SIL OFL 1.1 (assets/brand/Kalam-OFL.txt),no (keep licence with the font),all,yes,2026-11-25,"the game's one font (owner, 2026-11-22, ../slugshot/docs/pvp-ui.md)"

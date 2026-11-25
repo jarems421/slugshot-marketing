@@ -1,0 +1,13 @@
+# Benchmark: dialogue/reaction. Fiction (staged_fiction, label on screen). Game truth: Floppy deals 7 damage.
+RAMMSTONE (smug, booming): So. You're the starter slug.
+[beat 0.5]
+FLOPPY (flat, sleepy): Yep.
+[beat 0.35]
+RAMMSTONE (leaning in, mocking): I heard you do seven damage.
+[beat 1.1]
+FLOPPY (deadpan): Per shot.
+[beat 0.8]
+RAMMSTONE (thrown, slower): That's... not a lot.
+[beat 0.5]
+FLOPPY (calm, unbothered): I never said it was.
+[beat 1.4]

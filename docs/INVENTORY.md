@@ -1,6 +1,6 @@
 # Inventory and capability status
 
-Last updated 2026-11-24 (Stage 4.4 research collectors added). Infrastructure phase complete; production work is in [production-checklist.md](production-checklist.md). Command details: [COMMANDS.md](COMMANDS.md).
+Last updated 2026-11-25 (production quality pass: docs/production-quality.md). Infrastructure phase complete; production work is in [production-checklist.md](production-checklist.md). Command details: [COMMANDS.md](COMMANDS.md).
 
 ## Software
 
@@ -10,6 +10,7 @@ Last updated 2026-11-24 (Stage 4.4 research collectors added). Infrastructure ph
 | Python | 3.13.15 | system; venvs `.venv` and `.venv-tts` | scripts |
 | openai-whisper | 20250625 (torch 2.15 CPU) | `.venv` (`requirements.txt`) | `ss caption` |
 | ruptures + scipy | 1.1.10 + 1.18.1 (BSD) | `.venv` (`requirements.txt`) | `ss analyze changepoints` |
+| Qwen3-TTS 1.7B VoiceDesign + Base | qwen-tts 0.1.1, torch 2.8.0+cu128 (Apache-2.0) | `.venv-voicelab` (not in git; weights in the Hugging Face cache) | `ss dialogue --engine qwen`; 3.94 GiB peak VRAM on the RTX 3070 |
 | kokoro-onnx + Kokoro-82M v1.0 | 0.6.1 | `.venv-tts` (`requirements-tts.txt`), `models/kokoro/` (not in git) | `ss voice` |
 | Node | 24.19.0 | system | Remotion, MakeMyClip |
 | FFmpeg | 9.1 full (gyan.dev) | winget `Gyan.FFmpeg` | everything media |
@@ -46,7 +47,7 @@ Last updated 2026-11-24 (Stage 4.4 research collectors added). Infrastructure ph
 | `makemyclip` | MCP server (stdio) | `.mcp.json` | 8 timeline tools; media confined to `media\` (tested). Approve it when Claude Code asks |
 | Permission rules | project settings | `.claude/settings.json` | blocks reading `.env` and direct MakeMyClip CLI calls; asks before recursive deletes and destructive git commands. The game repo is readable and copyable; changes to game files need the owner's request (CLAUDE.md) |
 | Roblox Studio MCP (built-in) | user-level, already present | `%LOCALAPPDATA%\Roblox\mcp.bat` | used for Roblox-native filming, **only on the marketing place**: a PreToolUse hook (`roblox-native/tools/studio_guard.py`) denies every call unless that place is the only one open and its marker matches; Roblox-service tools ask first |
-| Blender, Google Drive MCPs | user-level, already present | outside this repo | not used by the toolkit |
+| Blender, Google Drive MCPs | user-level, already present | outside this repo | not used by the toolkit (Blender evaluated 2026-11-25: deferred, see production-quality.md) |
 
 ## Capabilities
 
@@ -102,8 +103,12 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Studio target guard | hook, `ss roblox guard` | yes (live deny and allow) | n/a | n/a |
 | Scene specs + runner (stand-ins) | `ss roblox validate`, `Scene.runJson` | yes (smoke scene, 6 takes) | **performance, humour, look** | real animations, sets, slug rigs |
 | Take repeatability | `ss roblox compare` | yes (one PASS; one at 56 ms cuts / 80 ms cues vs a 50 ms target) | n/a | n/a |
+| Real slug actors with acting (SlugIdle/FloppyFace, mouths from dialogue, eyelines, size-aware cameras) | scene specs `kind: slug` | **real assets** (Floppy, Rammstone filmed 2026-11-25) | **performance, look** | n/a |
+| Film mode: deterministic, frame-stamped, chunked, native 1080x1920 at 30 fps | `Scene.film`, `ss roblox film` | **real assets**: 4 takes, 0 repeated frames | n/a | n/a |
+| Character dialogue (cast script, per-line voices, script-aligned captions, deviation flags) | `ss dialogue` | yes (Kokoro, Qwen design, Qwen clone) | **voice choice** | n/a |
+| Original procedural SFX set | `ss sfx` | yes (in the benchmark mix) | **sound feel** | n/a |
 | Roblox take into the toolkit | `ss roblox import` | yes (Studio capture) | n/a | first OBS recording of a take |
-| Animation library, finished sets, real PvP filming | none | no (production work) | **every animation and set** | production preparation |
+| Player-avatar acting, finished set marks, real PvP filming | none | no (production work) | **every animation and set** | production preparation |
 
 Infrastructure: complete, including Roblox-native filming ([roblox-native/README.md](../roblox-native/README.md)), research collection (Stage 4.4), research intelligence (4.5.3) and research configuration (4.5.4; families-1.1, codebook v1.1). The project is now in active research and marketing; add infrastructure only for a genuine operational need. Remaining milestone: foundational research and knowledge banks; the commercial funnel and centralised dashboard were built 2026-11-25 ([dashboard/README.md](dashboard/README.md)) ([chatgpt-research-skills-v1.1.md](chatgpt-research-skills-v1.1.md)). The YouTube key was regenerated and restricted (owner confirmed 2026-11-24). Remaining setup: optionally approve the `makemyclip` MCP server; optionally set `contact` in `config/research/settings.json`; review Twitch onward-transfer terms before sharing Twitch exports.
 

@@ -77,7 +77,7 @@ export const Story: React.FC<StoryProps> = (p) => {
 								/>
 							)}
 						</FadeIn>
-						{s.label ? <Label text={s.label} top={p.label ? 215 : 150} /> : null}
+						{s.label ? <Label text={s.label} top={p.label ? 300 : 230} /> : null}
 					</Sequence>
 				);
 			})}
