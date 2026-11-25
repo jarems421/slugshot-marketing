@@ -1,0 +1,34 @@
+{
+ "data": {
+  "videos": [
+   {
+    "id": "7400000000000000001",
+    "title": "FIXTURE Floppy underdog",
+    "create_time": "{{TS-2}}",
+    "share_url": "https://www.tiktok.com/@fixture_tt/video/7400000000000000001",
+    "duration": 15,
+    "view_count": 22400,
+    "like_count": 1900,
+    "comment_count": 88,
+    "share_count": 140
+   },
+   {
+    "id": "7400000000000000002",
+    "title": "FIXTURE rule world",
+    "create_time": "{{TS-8}}",
+    "share_url": "https://www.tiktok.com/@fixture_tt/video/7400000000000000002",
+    "duration": 16,
+    "view_count": 41000,
+    "like_count": 3300,
+    "comment_count": 150,
+    "share_count": 410
+   }
+  ],
+  "cursor": 0,
+  "has_more": false
+ },
+ "error": {
+  "code": "ok",
+  "message": ""
+ }
+}

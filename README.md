@@ -9,12 +9,7 @@ This repository is the working machinery behind Slugshot's short-form video mark
 
 It is built to be **operated by an AI agent**. [Claude Code](https://code.claude.com/docs/en/overview) runs the toolkit from short natural-language instructions ("collect today's research", "is this meme still growing?", "make the Floppy duel edit"). ChatGPT designs research and writes scripts; Gemini/Flow analyses footage and generates visuals; the owner makes decisions and approves anything consequential.
 
-> Status (24 Nov 2026): infrastructure is complete. That covers research collection, research intelligence, and the research configuration with a first validated pilot (Stage 4.5.5). The project is now in **active research and marketing**, and new infrastructure is added only when a specific decision needs it. Production validation with real gameplay and real posts hasn't started; the game is unreleased. See [docs/INVENTORY.md](docs/INVENTORY.md) for the status of every capability.
->
-> Remaining milestones:
-> 1. **Foundational marketing research and initial knowledge banks.** Bounded literature reviews and creative hypotheses, starting with short-form attention, curiosity, narrative comprehension and payoff.
-> 2. **Commercial funnel.** Acquisition, attribution, activation, retention and monetisation: definitions and an implementation plan.
-> 3. **Centralised dashboard.** A minimum viable view of research, experiments, content and player outcomes.
+> Status (25 Nov 2026): infrastructure is complete. That covers research collection and intelligence, knowledge banks, the dashboard with its commercial funnel, and publishing. All five social accounts are connected and live-validated. Publishing waits only on the owner approving the first test posts ([validation report](reports/live-integration-validation-2026-11-25.md)). The research feature freeze is in place: only account setup, live validation and small fixes. Next: a dashboard usability and design pass, then content production. The game is unreleased, so player analytics wait for launch. See [docs/INVENTORY.md](docs/INVENTORY.md) for the status of every capability.
 
 ---
 
@@ -31,13 +26,18 @@ flowchart LR
         Bundle[(Research bundle zip)]
         Produce[Video production: captions, renders, assembly, QC]
         Roblox[Roblox-native filming: isolated place, scene runner]
+        Dash[Dashboard: analytics, experiments, publishing]
     end
+    Platforms[(YouTube · TikTok · Instagram)]
     Owner --> GPT
     GPT -- brief --> Collect --> Analyse --> Bundle --> GPT
     GPT -- approved script --> Produce
     Gem -- clips & timestamps --> Produce
     Roblox --> Produce
     Produce -- masters for review --> Owner
+    Owner -- approves each upload --> Dash
+    Dash -- YouTube API / Buffer --> Platforms
+    Platforms -- analytics --> Dash
 ```
 
 - **Claude** collects, validates, computes, edits and films. It runs commands itself: the `ss` CLI is Claude's interface, not the owner's.
@@ -82,6 +82,22 @@ Turning data into findings that can be checked:
 
 Commands: `ss analyze`, `ss evidence`. Guides: [research methods](docs/research-methods.md), [evidence ledger](docs/research-evidence.md).
 
+### Personal dashboard
+A local app (Desktop shortcut or `ss dash`) with Overview, Content, Research, Game, Experiments, Publish and Settings pages, styled after Jami. Standard-library Python + SQLite, loopback only, credentials encrypted with Windows DPAPI. Guide: [docs/dashboard/README.md](docs/dashboard/README.md).
+
+- **Analytics** for our own accounts, from official owner-authorised APIs. Metric rules keep platforms separate and never invent zeros.
+  - YouTube Analytics (EN, ES).
+  - TikTok Display API (EN, ES).
+  - Buffer (TikTok and Instagram post metrics; it only adds what the native APIs lack, so nothing is double-counted).
+  - Roblox (after launch).
+- **Research and knowledge:** evidence ledgers, knowledge banks (`ss kb`), audience sentiment (`ss sentiment`), experiments, and a portable snapshot export for ChatGPT, Claude and Gemini.
+- **Publishing** (`ss publish`, [docs/dashboard/publishing.md](docs/dashboard/publishing.md)):
+  - YouTube uploads directly through its API. TikTok and Instagram go through Buffer, and Cloudinary's free plan briefly hosts the approved file behind a private signed link. Manual packages cover everything else.
+  - **Only the owner approves an upload**, by typing the account handle. The approval binds the exact file and text.
+  - Each upload re-checks that the connected account is the right one.
+  - The **reveal lock** keeps the game unnamed in public posts.
+  - Hosted copies are deleted after posting. Free-tier usage and Buffer's API allowance are shown in Settings.
+
 ## Principles built into the code
 
 - **Missing is unknown, never zero.** Rounded figures stay as displayed, with their numeric value alongside.
@@ -93,7 +109,8 @@ Commands: `ss analyze`, `ss evidence`. Guides: [research methods](docs/research-
 - **No composite "viral scores".** Heat and confidence are different things.
 - **Retrieval is not audience.** A video found with a Mexico filter says nothing about Mexican viewers.
 - **Rigour serves experiments, not paralysis.** Suggestive evidence can justify a cheap 15-second test; only our own experiments can support causal claims.
-- **Credentials stay in a git-ignored `.env`.** They are never printed or logged, and errors are redacted.
+- **Credentials stay in a git-ignored `.env`** (or the DPAPI vault). They are never printed or logged, and errors and exports are redacted.
+- **Nothing is published without the owner.** Claude prepares drafts and checks; the owner approves every upload in the dashboard. No scheduling or auto-posting, and free tiers only.
 
 ## Getting started
 
@@ -106,12 +123,21 @@ py -3.13 -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
 py -3.13 -m venv .venv-tts; .venv-tts\Scripts\python -m pip install -r requirements-tts.txt   # optional AI narration
 npm ci
-copy .env.example .env    # then add YOUTUBE_API_KEY / TWITCH_CLIENT_ID / TWITCH_CLIENT_SECRET (all free tiers)
+copy .env.example .env    # research: YOUTUBE_API_KEY, TWITCH_CLIENT_ID/SECRET; dashboard and publishing: see below (all free tiers)
 .\ss doctor               # tool check
 .\ss smoke                # end-to-end smoke test -> reports\smoke-test.md
 ```
 
 The Kokoro voice model and sample media aren't in the repo (they live in `models/` and `media/`, both git-ignored).
+
+Dashboard and publishing credentials (the [credentials checklist](docs/dashboard/credentials-checklist.md) has every step):
+
+- Google OAuth client: YouTube analytics and uploads.
+- TikTok developer app: Login Kit and Content Posting.
+- `BUFFER_API_KEY`.
+- `CLOUDINARY_CLOUD_NAME` / `_API_KEY` / `_API_SECRET`.
+
+Accounts are connected from the dashboard's Settings page. `.\ss dash hosting test` checks Cloudinary with a neutral test card.
 
 ### Using it
 With Claude Code open in this folder, ask in plain language:
@@ -123,6 +149,8 @@ Is the Huss meme still growing?
 Analyse our latest research bundle.
 Find academic research on short-form hooks and verify the key findings.
 Make a vertical edit of this match with the PVP preset and captions.
+Refresh the dashboard and export a snapshot for ChatGPT.
+Prepare this video for TikTok EN/ES and Instagram (I'll approve it in the dashboard).
 ```
 
 Or run the commands directly: every `ss` command takes `-h`. Full reference: [docs/COMMANDS.md](docs/COMMANDS.md); walkthrough: [docs/OPERATIONS.md](docs/OPERATIONS.md).
@@ -139,6 +167,7 @@ roblox-native/           isolated marketing place builder, Studio guard, scene r
 config/                  formats, glossary, research settings, query families, watchlists, codebook
 research/                evidence-ledger schema, templates, upstream provenance
 docs/                    commands, inventory, research guides, policies, game truth, handoffs
+dashboard/               personal dashboard: local server, connectors, metric rules, publishing, hosting, front end
 tests/                   offline tests and fixtures (fake data)
 jobs/                    example edit, variant and script files
 reports/                 latest smoke-test reports
@@ -164,19 +193,25 @@ Not in git: `.env`, `media/`, `exports/`, `data/local/`, `models/`, `out/`, `ven
 | ChatGPT handoff (Stage 4.5.3) | [docs/chatgpt-handoff-4.5.3.md](docs/chatgpt-handoff-4.5.3.md) |
 | Stage 4.5.4 configuration and 4.5.5 pilot validation | [docs/stage-4.5.4-report.md](docs/stage-4.5.4-report.md) |
 | Composio (read-only OAuth broker) | [docs/composio.md](docs/composio.md) |
+| Knowledge banks / audience sentiment | [docs/knowledge-banks.md](docs/knowledge-banks.md) · [docs/audience-sentiment.md](docs/audience-sentiment.md) |
+| Live integration validation (accounts, Buffer, Cloudinary) | [reports/live-integration-validation-2026-11-25.md](reports/live-integration-validation-2026-11-25.md) |
+| Dashboard: guide, credential checklist, publishing, activation-events proposal | [docs/dashboard/README.md](docs/dashboard/README.md) · [credentials-checklist.md](docs/dashboard/credentials-checklist.md) · [publishing.md](docs/dashboard/publishing.md) · [activation-events-proposal.md](docs/dashboard/activation-events-proposal.md) |
 | Agent brief and working rules | [CLAUDE.md](CLAUDE.md) |
 | Strategy (Marketing Bank snapshot) | [docs/Slugshot-Marketing-Bank.md](docs/Slugshot-Marketing-Bank.md) |
 
 ## Testing
 
-- `ss smoke` runs every capability once and writes a PASS / WARN / FAIL / BLOCKED report. Latest: 23/23 PASS ([reports/smoke-test.md](reports/smoke-test.md)).
-- `ss smoke --research` runs only the research checks (about 30 s).
-- Offline suites: `python -m unittest tests.test_research tests.test_analysis` (51 tests on fake fixtures, no network).
+- `ss smoke` runs every capability once and writes a PASS / WARN / FAIL / BLOCKED report. Latest: 28/28 PASS ([reports/smoke-test.md](reports/smoke-test.md)).
+- `ss smoke --research` runs only the research checks (10/10, about 30 s); `ss smoke --dashboard` the dashboard checks (6/6, about 10 s).
+- Offline suites (131 tests on fake fixtures, no network; the publishing tests never upload or post):
+  `.venv\Scripts\python -m unittest tests.test_publish tests.test_dashboard tests.test_knowledge tests.test_analysis tests.test_research`
+- Test environment: numpy/ruptures use OpenBLAS, which on this machine can fail with "OpenBLAS error: Memory allocation still failed" at its default thread count. `scripts/research_analysis.py` sets `OPENBLAS_NUM_THREADS=1` by default; if another numpy script hits it, set `$env:OPENBLAS_NUM_THREADS = '1'` before running tests.
 
 ## Third-party components
 
 | Component | Licence | Where |
 |---|---|---|
+| Buffer API, Cloudinary (free plans; used through their HTTP APIs, no SDK) | their terms of service | external services |
 | Remotion | [Remotion licence](https://www.remotion.dev/docs/license) (free tier for individuals and small teams) | npm |
 | MakeMyClip editor | MIT | npm |
 | OpenAI Whisper | MIT | pip |

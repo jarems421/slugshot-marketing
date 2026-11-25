@@ -1,0 +1,31 @@
+{
+ "items": [
+  {
+   "contentDetails": {
+    "videoId": "FXyt0000001",
+    "videoPublishedAt": "{{DT-3}}"
+   },
+   "snippet": {
+    "title": "FIXTURE Floppy underdog duel"
+   }
+  },
+  {
+   "contentDetails": {
+    "videoId": "FXyt0000002",
+    "videoPublishedAt": "{{DT-9}}"
+   },
+   "snippet": {
+    "title": "FIXTURE One slug for life (rule world)"
+   }
+  },
+  {
+   "contentDetails": {
+    "videoId": "FXyt0000003",
+    "videoPublishedAt": "{{DT-16}}"
+   },
+   "snippet": {
+    "title": "FIXTURE Noob vs pro slug picks"
+   }
+  }
+ ]
+}

@@ -1,0 +1,146 @@
+{
+ "path": "v1/universes/9990001/operations/metrics/FIXTURE",
+ "done": true,
+ "metadata": {
+  "createdTime": "{{DT-0}}"
+ },
+ "response": {
+  "values": [
+   {
+    "breakdowns": [],
+    "dataPoints": [
+     {
+      "time": "{{D-28}}T00:00:00Z",
+      "value": 0.22,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-27}}T00:00:00Z",
+      "value": 0.236,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-26}}T00:00:00Z",
+      "value": 0.251,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-25}}T00:00:00Z",
+      "value": 0.262,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-24}}T00:00:00Z",
+      "value": 0.269,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-23}}T00:00:00Z",
+      "value": 0.27,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-22}}T00:00:00Z",
+      "value": 0.265,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-21}}T00:00:00Z",
+      "value": 0.256,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-20}}T00:00:00Z",
+      "value": 0.243,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-19}}T00:00:00Z",
+      "value": 0.227,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-18}}T00:00:00Z",
+      "value": 0.21,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-17}}T00:00:00Z",
+      "value": 0.195,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-16}}T00:00:00Z",
+      "value": 0.182,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-15}}T00:00:00Z",
+      "value": 0.174,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-14}}T00:00:00Z",
+      "value": 0.17,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-13}}T00:00:00Z",
+      "value": 0.172,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-12}}T00:00:00Z",
+      "value": 0.179,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-11}}T00:00:00Z",
+      "value": 0.191,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-10}}T00:00:00Z",
+      "value": 0.206,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-9}}T00:00:00Z",
+      "value": 0.223,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-8}}T00:00:00Z",
+      "value": 0.239,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-7}}T00:00:00Z",
+      "value": 0.253,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-6}}T00:00:00Z",
+      "value": 0.263,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-5}}T00:00:00Z",
+      "value": 0.269,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-4}}T00:00:00Z",
+      "value": 0.269,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-3}}T00:00:00Z",
+      "value": 0.264,
+      "status": "Valid"
+     }
+    ]
+   }
+  ]
+ }
+}

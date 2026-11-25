@@ -11,6 +11,8 @@ Labels: **OK** = safe to say/show. **CAPTURE** = only with real footage from the
 | Floppy is a small, soft starter-style slug | OK as framing | Final design; "underdog" is a narrative choice, not a game rule |
 | Floppy transforms or uses an ability | NO | "Final design; never transforms, so it has no abilities" |
 | Floppy belly-flops and hops back into its burrow after a shot | CAPTURE | Recovery implemented with limited Studio verification |
+| Floppy deals light damage (7 of 100 HP) with no knockback; the weakest slug, not a useless one | CAPTURE | `combat.md`: owner raised it from 5 to 7 on 2026-11-01 "so they're not completely useless"; Studio shots dealt 7 server damage. Build-dependent: re-check before stating a number |
+| Floppy does nothing / deals zero damage | NO | Contradicts the build (7 damage). OK only as an obviously exaggerated, labelled joke, never as a game fact or Floppy's defining line |
 | Slugs transform mid-flight when fired (Inferno, Aquabeek, Boon Doc, Tormato, Phosphoro, Rammstone) | CAPTURE | Transformations exist in the game place; Tormato/Boon Doc flight "not yet seen" |
 | Each slug has a Q main and E passive ability | CAPTURE, per slug | Built in range and/or game place: Aquabeek, Inferno, Phosphoro, Boon Doc. Rammstone pieces in Temp Range. Others designed only. Most owner verdicts pending |
 | Inferno: Dragon's Breath / Fire Curtain | CAPTURE (range build) | Built 2026-11-17 to 22, still being tuned |

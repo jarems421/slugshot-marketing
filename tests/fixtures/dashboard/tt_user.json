@@ -1,0 +1,16 @@
+{
+ "data": {
+  "user": {
+   "open_id": "FIXTURE-open-id",
+   "display_name": "FIXTURE",
+   "follower_count": 2310,
+   "following_count": 4,
+   "likes_count": 18000,
+   "video_count": 3
+  }
+ },
+ "error": {
+  "code": "ok",
+  "message": ""
+ }
+}

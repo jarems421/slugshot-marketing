@@ -1,0 +1,2 @@
+date_start,date_end,platform,account_id,entity_type,entity_id,metric,value,breakdown_dim,breakdown_value,note
+2026-11-24,2026-11-24,roblox,rbx-slugshot,experience,,link_visits,,ShareLink,EXAMPLE yt-en bio link,delete example rows; blank value rows are refused

@@ -1,0 +1,23 @@
+{
+ "data": {
+  "videos": [
+   {
+    "id": "7400000000000000101",
+    "title": "FIXTURE ES: una babosa para toda la vida",
+    "create_time": "{{TS-6}}",
+    "share_url": "https://www.tiktok.com/@fixture_tt_es/video/7400000000000000101",
+    "duration": 16,
+    "view_count": 18300,
+    "like_count": 1500,
+    "comment_count": 97,
+    "share_count": 120
+   }
+  ],
+  "cursor": 0,
+  "has_more": false
+ },
+ "error": {
+  "code": "ok",
+  "message": ""
+ }
+}

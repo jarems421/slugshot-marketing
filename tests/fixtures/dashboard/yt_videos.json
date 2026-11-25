@@ -1,0 +1,66 @@
+{
+ "columnHeaders": [
+  {
+   "name": "video"
+  },
+  {
+   "name": "views"
+  },
+  {
+   "name": "estimatedMinutesWatched"
+  },
+  {
+   "name": "averageViewDuration"
+  },
+  {
+   "name": "averageViewPercentage"
+  },
+  {
+   "name": "likes"
+  },
+  {
+   "name": "comments"
+  },
+  {
+   "name": "shares"
+  },
+  {
+   "name": "subscribersGained"
+  }
+ ],
+ "rows": [
+  [
+   "FXyt0000001",
+   8400,
+   2380,
+   17,
+   82.4,
+   610,
+   44,
+   71,
+   96
+  ],
+  [
+   "FXyt0000002",
+   12100,
+   3120,
+   15,
+   68.0,
+   830,
+   75,
+   112,
+   140
+  ],
+  [
+   "FXyt0000003",
+   3900,
+   1010,
+   16,
+   61.2,
+   240,
+   19,
+   22,
+   31
+  ]
+ ]
+}

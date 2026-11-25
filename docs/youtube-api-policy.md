@@ -32,11 +32,13 @@ Checked 2026-11-24 against the official pages: [Developer Policies](https://deve
 | Creator uploads via uploads playlists (`ss yt creators`) | **On** | Collects ordinary uploads too; numbers are still only compared per video |
 | `shorts_status` from the channel's Shorts playlist (`UUSH…`) | **On** | A classification read through the official API (an undocumented playlist convention), not a metric |
 | Public comments (`ss yt comments`) | **On**: text, time, like/reply counts; **no author names or IDs**; 30 days | API data like any other (III.E.4); personal data minimised |
+| Comment sentiment coding (`ss sentiment`) | **On** (2026-11-25): per video, no cross-channel totals; coded summaries kept up to 36 months, text 30 days; text never exported to `exports/share` | [Derived-metrics policy](https://developers.google.com/youtube/terms/derived-metrics-policy) (updated 2026-09-14), allowed for clients that accepted the amendment. The owner states it was accepted with the API key; record Google's confirmation in `config/research/settings.json` → `sentiment.youtube_amendment_reference`. See [audience-sentiment.md](audience-sentiment.md) |
 | Captions or video downloads | **Not built** | `captions.download` needs edit permission on the video; downloading media is against YouTube's Terms |
 | Every export carries an expiry date (oldest snapshot + 30 days) in its README and `exports\share\research\MANIFEST.csv`; `ss research prune` deletes expired copies | **On** | The 30-day limit applies to exported copies too |
 
 ## Grey areas
 
+- **Comment text is not shared with ChatGPT/Gemini** (Stage 4.7, 2026-11-25): `sentiment.raw_comment_export_to_ai` is false, so `ss yt report --comments` refuses; coded summaries without text can be shared.
 - **Sharing API data with ChatGPT, Gemini or other AI tools: allowed for internal analysis (owner decision, 2026-11-24).** The policies don't mention AI tools; III.E.5 asks you to protect API data from unauthorised disclosure. The owner has decided that sharing public stats with AI tools for internal analysis is acceptable. `ss yt report` writes to `exports\share\research\` with its data dictionary and expiry date. Copies in ChatGPT or Drive should be deleted by that date, and none should be kept in a permanent knowledge bank. Don't publish the data, and never share the API key.
 - **Money.** Everything here uses YouTube's free quota. Never enable billing, buy quota or make any paid request without asking the owner first.
 - **Internal use.** Privacy-policy and terms-link requirements (III.A) are written for apps with users. A single-person internal script arguably isn't one. Using the API still means accepting the Terms.

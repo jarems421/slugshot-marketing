@@ -1,0 +1,20 @@
+{
+ "items": [
+  {
+   "id": "UCFIXTURE000000000000001",
+   "snippet": {
+    "title": "FIXTURE channel",
+    "customUrl": "@ronin_jt"
+   },
+   "statistics": {
+    "subscriberCount": "1240",
+    "hiddenSubscriberCount": false
+   },
+   "contentDetails": {
+    "relatedPlaylists": {
+     "uploads": "UUFIXTURE000000000000001"
+    }
+   }
+  }
+ ]
+}

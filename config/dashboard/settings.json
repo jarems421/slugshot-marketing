@@ -1,0 +1,120 @@
+{
+ "_note": "Dashboard settings (no secrets). Credentials go in .env or the encrypted local vault (Settings page). Edit accounts in the dashboard or below; IDs of our own public accounts are not secret.",
+ "port": 47615,
+ "auto_refresh": true,
+ "refresh_hours": 24,
+ "stale_hours": 36,
+ "accounts": [
+  {
+   "account_id": "yt-en",
+   "platform": "youtube",
+   "language": "en",
+   "label": "YouTube EN",
+   "handle": "Ronin_JT",
+   "external_id": ""
+  },
+  {
+   "account_id": "yt-es",
+   "platform": "youtube",
+   "language": "es",
+   "label": "YouTube ES",
+   "handle": "Roni_JTes",
+   "external_id": ""
+  },
+  {
+   "account_id": "tt-en",
+   "platform": "tiktok",
+   "language": "en",
+   "label": "TikTok EN",
+   "handle": ".roni_jt",
+   "external_id": ""
+  },
+  {
+   "account_id": "tt-es",
+   "platform": "tiktok",
+   "language": "es",
+   "label": "TikTok ES",
+   "handle": "es.roni_jt",
+   "external_id": ""
+  },
+  {
+   "account_id": "ig-en",
+   "platform": "instagram",
+   "language": "en",
+   "label": "Instagram EN",
+   "handle": "1roni_jt",
+   "external_id": "",
+   "account_type": "creator"
+  },
+  {
+   "account_id": "ig-es",
+   "platform": "instagram",
+   "language": "es",
+   "label": "Instagram ES",
+   "handle": "",
+   "external_id": "",
+   "active": false,
+   "_note": "Spanish Instagram is added later; set active true and a handle then."
+  },
+  {
+   "account_id": "rbx-slugshot",
+   "platform": "roblox",
+   "language": "",
+   "label": "Slugshot (Roblox)",
+   "handle": "",
+   "external_id": ""
+  }
+ ],
+ "connectors": {
+  "instagram": {
+   "api_version": "v24.0",
+   "_check": "Confirm the current Graph API version at developers.facebook.com/docs/instagram-platform/changelog before the first live run."
+  },
+  "youtube_analytics": {
+   "history_start": "2026-01-01"
+  },
+  "roblox_analytics": {
+   "backfill_days": 90
+  }
+ },
+ "sharing": {
+  "_note": "Applied by `ss dash export --share`. Own-account analytics are the owner's data; sharing them with AI tools for internal analysis follows the owner's 2026-11-24 decision for YouTube public stats, extended here to own accounts pending owner confirmation. Twitch follows config/research/settings.json twitch.share_exports.",
+  "youtube_analytics": true,
+  "instagram": true,
+  "tiktok": true,
+  "roblox_analytics": true,
+  "roblox_public": true,
+  "research_evidence": true,
+  "local_media_paths": false,
+  "buffer": true,
+  "manual": true
+ },
+ "publishing": {
+  "_note": "Publishing to our own accounts (docs/dashboard/publishing.md). Every upload needs the owner's approval in the dashboard (typing the account handle). Visibility and the reveal lock are separate: public_posting allows posts others can see; reveal_lock keeps the game's identity hidden whatever the visibility (text matching reveal_terms blocks any non-private post, and the owner confirms at approval that the video doesn't reveal the game). Only the owner turns reveal_lock off. tiktok_app_audited stays false until TikTok audits the app (Direct Post is then SELF_ONLY on private accounts only; public TikTok posts go through Upload to inbox).",
+  "public_posting": true,
+  "reveal_lock": true,
+  "reveal_terms": [
+   "slug\\s*shot",
+   "roblox\\.com/(?:games|share)",
+   "ro\\.blox\\.com"
+  ],
+  "tiktok_app_audited": false,
+  "youtube_category_id": "20",
+  "allowed_roots": [
+   "exports",
+   "media"
+  ],
+  "hosting": {
+   "_note": "Cloudinary free plan, only for handing approved videos to Buffer. Uploads stop at these limits (well inside the free plan); the plan is never changed. Files are deleted when every Buffer post of them has finished; abandoned ones after abandon_hours.",
+   "provider": "cloudinary",
+   "folder": "slugshot-publish",
+   "max_file_mb": 95,
+   "max_hosted_files": 5,
+   "max_credit_pct": 60,
+   "max_storage_pct": 60,
+   "max_bandwidth_pct": 60,
+   "abandon_hours": 72,
+   "usage_cache_minutes": 60
+  }
+ }
+}

@@ -1,0 +1,301 @@
+{
+ "path": "v1/universes/9990001/operations/metrics/FIXTURE",
+ "done": true,
+ "metadata": {
+  "createdTime": "{{DT-0}}"
+ },
+ "response": {
+  "values": [
+   {
+    "breakdowns": [
+     {
+      "dimension": "IsNewUser",
+      "value": "true"
+     }
+    ],
+    "dataPoints": [
+     {
+      "time": "{{D-28}}T00:00:00Z",
+      "value": 150,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-27}}T00:00:00Z",
+      "value": 168,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-26}}T00:00:00Z",
+      "value": 185,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-25}}T00:00:00Z",
+      "value": 200,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-24}}T00:00:00Z",
+      "value": 212,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-23}}T00:00:00Z",
+      "value": 222,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-22}}T00:00:00Z",
+      "value": 228,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-21}}T00:00:00Z",
+      "value": 230,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-20}}T00:00:00Z",
+      "value": 229,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-19}}T00:00:00Z",
+      "value": 224,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-18}}T00:00:00Z",
+      "value": 216,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-17}}T00:00:00Z",
+      "value": 206,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-16}}T00:00:00Z",
+      "value": 194,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-15}}T00:00:00Z",
+      "value": 183,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-14}}T00:00:00Z",
+      "value": 171,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-13}}T00:00:00Z",
+      "value": 161,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-12}}T00:00:00Z",
+      "value": 153,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-11}}T00:00:00Z",
+      "value": 147,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-10}}T00:00:00Z",
+      "value": 145,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-9}}T00:00:00Z",
+      "value": 147,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-8}}T00:00:00Z",
+      "value": 152,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-7}}T00:00:00Z",
+      "value": 161,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-6}}T00:00:00Z",
+      "value": 174,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-5}}T00:00:00Z",
+      "value": 189,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-4}}T00:00:00Z",
+      "value": 205,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-3}}T00:00:00Z",
+      "value": 223,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-2}}T00:00:00Z",
+      "value": 241,
+      "status": "Valid"
+     }
+    ]
+   },
+   {
+    "breakdowns": [
+     {
+      "dimension": "IsNewUser",
+      "value": "false"
+     }
+    ],
+    "dataPoints": [
+     {
+      "time": "{{D-28}}T00:00:00Z",
+      "value": 270,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-27}}T00:00:00Z",
+      "value": 293,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-26}}T00:00:00Z",
+      "value": 314,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-25}}T00:00:00Z",
+      "value": 334,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-24}}T00:00:00Z",
+      "value": 351,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-23}}T00:00:00Z",
+      "value": 363,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-22}}T00:00:00Z",
+      "value": 372,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-21}}T00:00:00Z",
+      "value": 377,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-20}}T00:00:00Z",
+      "value": 377,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-19}}T00:00:00Z",
+      "value": 373,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-18}}T00:00:00Z",
+      "value": 366,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-17}}T00:00:00Z",
+      "value": 356,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-16}}T00:00:00Z",
+      "value": 345,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-15}}T00:00:00Z",
+      "value": 333,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-14}}T00:00:00Z",
+      "value": 321,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-13}}T00:00:00Z",
+      "value": 311,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-12}}T00:00:00Z",
+      "value": 303,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-11}}T00:00:00Z",
+      "value": 299,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-10}}T00:00:00Z",
+      "value": 299,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-9}}T00:00:00Z",
+      "value": 303,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-8}}T00:00:00Z",
+      "value": 311,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-7}}T00:00:00Z",
+      "value": 323,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-6}}T00:00:00Z",
+      "value": 339,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-5}}T00:00:00Z",
+      "value": 359,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-4}}T00:00:00Z",
+      "value": 380,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-3}}T00:00:00Z",
+      "value": 403,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-2}}T00:00:00Z",
+      "value": 425,
+      "status": "Valid"
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,4 @@
+{"data": {"channels": [
+ {"id": "ch-ig-en", "name": "1roni_jt", "service": "instagram", "isLocked": false, "isDisconnected": false},
+ {"id": "ch-tt-es", "name": "es.roni_jt", "service": "tiktok", "isLocked": false, "isDisconnected": false},
+ {"id": "ch-tt-en", "name": ".roni_jt", "service": "tiktok", "isLocked": false, "isDisconnected": false}]}}

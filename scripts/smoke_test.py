@@ -295,9 +295,74 @@ RESEARCH = [("Research collectors offline tests", research_unit),
             ("Twitch Helix live", twitch_live)]
 
 
+def dashboard_unit():
+    r = run([PY, "-m", "unittest", "tests.test_dashboard"])
+    last = (r.stderr.strip().splitlines() or ["?"])[-1]
+    ran = next((l for l in r.stderr.splitlines() if l.startswith("Ran ")), "")
+    return ("PASS" if r.returncode == 0 else "FAIL"), f"{ran}: {last} (store, metric rules, connectors on fixtures, imports, exports, vault, server security)"
+
+
+def dashboard_demo():
+    """Fixture sync of every connector into out/dashboard_demo/ (separate database), then a safe export check."""
+    r = run([PY, "-m", "dashboard", "demo", "--no-open"])
+    out = (r.stdout + r.stderr).strip()
+    runs = [l for l in out.splitlines() if l.startswith("fixture ") and not l.startswith("fixture import")]
+    ok = sum(" ok " in l or " partial " in l for l in runs)
+    failed = [l.split()[1] + "/" + l.split()[2] for l in out.splitlines() if l.startswith("fixture ") and " failed " in l]
+    # Only Spanish accounts without their own fixtures may fail (isolated by design); inactive accounts are skipped.
+    status = "PASS" if r.returncode == 0 and ok >= 6 and failed and all(f.endswith("-es") for f in failed) else "FAIL"
+    return status, f"{ok} connector runs ok/partial; {len(failed)} isolated failures as designed ({', '.join(failed)}: no ES fixture)"
+
+
+def dashboard_live_server():
+    """The real server answers on loopback with the dashboard's own health reply (if running)."""
+    import json as _j
+    import urllib.request
+    port = _j.loads((ROOT / "config" / "dashboard" / "settings.json").read_text(encoding="utf-8"))["port"]
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/health", timeout=2) as resp:
+            return ("PASS" if _j.loads(resp.read()).get("app") == "slugshot-dashboard" else "FAIL"), f"127.0.0.1:{port} answers"
+    except Exception as e:
+        return "WARN", f"not running on {port} ({type(e).__name__}); start it with ss dash"
+
+
+def knowledge_unit():
+    r = run([PY, "-m", "unittest", "tests.test_knowledge"])
+    last = (r.stderr.strip().splitlines() or ["?"])[-1]
+    ran = next((l for l in r.stderr.splitlines() if l.startswith("Ran ")), "")
+    return ("PASS" if r.returncode == 0 else "FAIL"), f"{ran}: {last} (schema, links, game truth, expiry, export and policy gates, sentiment pipeline, fixture isolation)"
+
+
+def publish_unit():
+    r = run([PY, "-m", "unittest", "tests.test_publish"])
+    last = (r.stderr.strip().splitlines() or ["?"])[-1]
+    ran = next((l for l in r.stderr.splitlines() if l.startswith("Ran ")), "")
+    return ("PASS" if r.returncode == 0 else "FAIL"), f"{ran}: {last} (fixture uploads only: chunking, approval binding, reveal lock, game truth, manual fallback, linking)"
+
+
+def knowledge_live():
+    """The real private knowledge banks validate (skipped when they don't exist on this machine)."""
+    kbdir = ROOT / "data" / "local" / "research" / "knowledge"
+    if not kbdir.exists():
+        return "WARN", "no knowledge banks on this machine (data/local/research/knowledge)"
+    r = run([PY, "scripts/kb.py", "validate"])
+    first = (r.stdout.strip().splitlines() or ["?"])[0]
+    return ("PASS" if r.returncode == 0 else "FAIL"), first.split(": ", 1)[-1]
+
+
+DASHBOARD = [("Dashboard tests", dashboard_unit), ("Knowledge and sentiment tests", knowledge_unit),
+             ("Publishing tests (no network)", publish_unit),
+             ("Knowledge banks validate", knowledge_live), ("Dashboard fixture sync (all connectors)", dashboard_demo),
+             ("Dashboard server on loopback", dashboard_live_server)]
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     started = datetime.now(timezone.utc).replace(microsecond=0)
+    if "--dashboard" in sys.argv:
+        for name, fn in DASHBOARD:
+            check(name, fn)
+        return write_report(started, research_only=True, name="dashboard")
     if "--research" in sys.argv:
         for name, fn in RESEARCH:
             check(name, fn)
@@ -315,13 +380,13 @@ def main():
     check("YouTube collector dry run", yt_dry)
     check("YouTube report + data dictionary", yt_dictionary)
     check("YouTube collector live call", yt_live)
-    for name, fn in RESEARCH:
+    for name, fn in RESEARCH + DASHBOARD:
         check(name, fn)
     write_report(started)
 
 
-def write_report(started, research_only=False):
-    cmd = ".\\ss smoke --research" if research_only else ".\\ss smoke"
+def write_report(started, research_only=False, name="research"):
+    cmd = f".\\ss smoke --{name}" if research_only else ".\\ss smoke"
     lines = ["# Smoke test", "", f"Run {started.isoformat()} by `{cmd}`. Outputs in `out/smoke/`.",
              "WARN in a render check is about the sample footage (a dark 1422x430 preview strip), not the pipeline.",
              "Live research checks make a handful of free calls (Wikimedia, Google Trends RSS, Roblox, TikTok oEmbed; "
@@ -329,7 +394,7 @@ def write_report(started, research_only=False):
              "| Check | Result | Detail |", "|---|---|---|"]
     lines += [f"| {n} | **{s}** | {d.replace('|', '/')} |" for n, s, d in results]
     if research_only:
-        report = ROOT / "reports" / "smoke-test-research.md"
+        report = ROOT / "reports" / f"smoke-test-{name}.md"
         report.write_text("\n".join(lines) + "\n", encoding="utf-8")
         print(report)
         sys.exit(1 if any(s == "FAIL" for _, s, _ in results) else 0)

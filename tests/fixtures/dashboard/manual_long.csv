@@ -1,0 +1,6 @@
+date_start,date_end,platform,account_id,entity_type,entity_id,metric,value,breakdown_dim,breakdown_value,note
+{{D-7}},{{D-1}},roblox,rbx-slugshot,experience,,link_visits,312,ShareLink,yt-en bio link,FIXTURE Creator Dashboard share link
+{{D-7}},{{D-1}},roblox,rbx-slugshot,experience,,new_users,41,ShareLink,yt-en bio link,FIXTURE
+{{D-7}},{{D-1}},roblox,rbx-slugshot,experience,,link_visits,128,ShareLink,tt-es bio link,FIXTURE
+{{D-7}},{{D-1}},roblox,rbx-slugshot,experience,,new_users,17,ShareLink,tt-es bio link,FIXTURE
+{{D-2}},{{D-2}},tiktok,tt-es,account,,profile_visits,57,,,FIXTURE TikTok Studio overview

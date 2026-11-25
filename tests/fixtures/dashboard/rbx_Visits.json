@@ -1,0 +1,151 @@
+{
+ "path": "v1/universes/9990001/operations/metrics/FIXTURE",
+ "done": true,
+ "metadata": {
+  "createdTime": "{{DT-0}}"
+ },
+ "response": {
+  "values": [
+   {
+    "breakdowns": [],
+    "dataPoints": [
+     {
+      "time": "{{D-28}}T00:00:00Z",
+      "value": 640,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-27}}T00:00:00Z",
+      "value": 692,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-26}}T00:00:00Z",
+      "value": 742,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-25}}T00:00:00Z",
+      "value": 787,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-24}}T00:00:00Z",
+      "value": 826,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-23}}T00:00:00Z",
+      "value": 856,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-22}}T00:00:00Z",
+      "value": 876,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-21}}T00:00:00Z",
+      "value": 887,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-20}}T00:00:00Z",
+      "value": 888,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-19}}T00:00:00Z",
+      "value": 880,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-18}}T00:00:00Z",
+      "value": 864,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-17}}T00:00:00Z",
+      "value": 842,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-16}}T00:00:00Z",
+      "value": 816,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-15}}T00:00:00Z",
+      "value": 789,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-14}}T00:00:00Z",
+      "value": 763,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-13}}T00:00:00Z",
+      "value": 741,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-12}}T00:00:00Z",
+      "value": 724,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-11}}T00:00:00Z",
+      "value": 714,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-10}}T00:00:00Z",
+      "value": 714,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-9}}T00:00:00Z",
+      "value": 723,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-8}}T00:00:00Z",
+      "value": 743,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-7}}T00:00:00Z",
+      "value": 771,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-6}}T00:00:00Z",
+      "value": 809,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-5}}T00:00:00Z",
+      "value": 853,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-4}}T00:00:00Z",
+      "value": 902,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-3}}T00:00:00Z",
+      "value": 955,
+      "status": "Valid"
+     },
+     {
+      "time": "{{D-2}}T00:00:00Z",
+      "value": 1007,
+      "status": "Valid"
+     }
+    ]
+   }
+  ]
+ }
+}

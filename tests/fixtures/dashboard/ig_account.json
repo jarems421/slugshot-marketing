@@ -1,0 +1,48 @@
+{
+ "data": [
+  {
+   "name": "views",
+   "total_value": {
+    "value": 410
+   }
+  },
+  {
+   "name": "reach",
+   "total_value": {
+    "value": 300
+   }
+  },
+  {
+   "name": "profile_links_taps",
+   "total_value": {
+    "value": 6
+   }
+  },
+  {
+   "name": "follows_and_unfollows",
+   "total_value": {
+    "breakdowns": [
+     {
+      "dimension_keys": [
+       "follow_type"
+      ],
+      "results": [
+       {
+        "dimension_values": [
+         "FOLLOWER"
+        ],
+        "value": 9
+       },
+       {
+        "dimension_values": [
+         "NON_FOLLOWER"
+        ],
+        "value": 2
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

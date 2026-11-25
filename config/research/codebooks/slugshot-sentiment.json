@@ -1,0 +1,36 @@
+{
+ "version": "slugshot-sentiment-0.2",
+ "_note": "Audience-opinion codebook (Stage 4.7). Multi-label: every code is marked for every item. Used by `ss sentiment`. 0.1 was the audit draft; 0.2 adds the Stage 4.7 review clarifications.",
+ "unit": "one public comment, reply or post (split into clauses only when parts clearly have different targets)",
+ "states": ["present", "absent", "uncertain", "unreviewed"],
+ "rules": [
+  "Read the whole text before marking absent; partial or truncated text means uncertain.",
+  "Emoji-only, sarcasm and ambiguous irony are uncertain unless the context settles them; never default them to positive.",
+  "Never record usernames, handles or profile details, and never infer age, gender, nationality, location or any protected attribute.",
+  "Commenters are a self-selected group: a sample describes what some commenters wrote, not what viewers think.",
+  "Spanish expressions such as 'es cine', 'me muero', 'qué cringe', 'ya otro más', 'no puede ser' change meaning with context: mark uncertain when the context does not settle them.",
+  "Code the text you were given; do not look up the commenter."
+ ],
+ "item_fields": {
+  "stance": {"values": ["positive", "negative", "mixed", "neutral", "unclear"], "about": "overall valence of the item, separate from the codes"},
+  "target": {"values": ["format", "sound", "meme", "creator", "game", "brand", "other_commenter", "unclear"], "multiple": true},
+  "irony": {"values": ["literal", "ironic", "unclear"]},
+  "language": {"values": ["en", "es", "mixed", "other", "unknown"], "about": "language as observed in the text; not the commenter's country"},
+  "fatigue_intensity": {"values": ["none", "mild", "strong", "unclear"], "about": "only when FATIGUE is present"},
+  "play_intent_subtype": {"values": ["information_request", "release_interest", "expressed_play_intent", "ambiguous"], "about": "only when PLAY_INTENT is present; 'what game is this?' is information_request, not intent"},
+  "ai_authenticity_mode": {"values": ["suspicion", "assertion"], "about": "only when AUTHENTICITY_AI is present"}
+ },
+ "codes": [
+  {"code": "APPRECIATION", "definition": "Positive judgement of the content, craft or idea.", "boundary": "May co-occur with HUMOUR_APPRECIATION."},
+  {"code": "CRITICISM", "definition": "Negative judgement of the content, craft or idea.", "boundary": "Repetition complaints are FATIGUE; forced tone is CRINGE; both can co-occur with CRITICISM."},
+  {"code": "FATIGUE", "definition": "Repetition or exhaustion of a format, sound or trend: 'not again', 'every video is this now', 'this trend is dead', 'otra vez lo mismo', 'ya cansa'.", "boundary": "Needs a repetition or exhaustion context; disliking one video is CRITICISM."},
+  {"code": "CRINGE", "definition": "Perceived forced or out-of-touch execution: try-hard slang, brands or adults misusing a meme, 'cringe', 'lache', 'qué cringe'.", "boundary": "Targets execution, not the topic."},
+  {"code": "AUTHENTICITY_AI", "definition": "Suspicion or assertion that content is AI-made, fake or misrepresented gameplay: 'AI slop', 'is this real?', 'fake gameplay', 'hecho con IA'.", "boundary": "Record ai_authenticity_mode: suspicion (a question or hedge) vs assertion."},
+  {"code": "NOSTALGIA_FORMAT", "definition": "Explicit preference for an earlier version of the format, creator or trend: 'the old ones were better', 'era mejor antes'.", "boundary": "Childhood-show nostalgia without a format comparison is not this code."},
+  {"code": "REQUEST_ALT", "definition": "An identifiable request for different or new content: 'do one where…', 'haz uno de…'.", "boundary": "A bare 'part 2' with no alternative named is not REQUEST_ALT."},
+  {"code": "HUMOUR_APPRECIATION", "definition": "Laughter or praise for the joke, including ironic forms ('I hate that I laughed', 'jajaja', 'me muero').", "boundary": "Set irony; emoji-only laughter is uncertain unless context confirms it."},
+  {"code": "PLAY_INTENT", "definition": "Interest in finding, the release of, or playing the game.", "boundary": "Record play_intent_subtype; only expressed_play_intent states a wish to play."},
+  {"code": "DISAGREEMENT", "definition": "Disputes the premise, the video or another commenter.", "boundary": "Target other_commenter when replying to a person."},
+  {"code": "PARODY_SIGNAL", "definition": "The item actually subverts or parodies the format, or explicitly suggests a parody or counter-version.", "boundary": "Mentioning the format is not enough."}
+ ]
+}

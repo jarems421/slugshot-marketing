@@ -22,8 +22,12 @@ Slugshot marketing commands. Run from this folder as `.\ss <command> ...` (ss.cm
   research status|prune|runs|collect|bundle|families   collection runs, bundles, query families
   analyze <intake|describe|repeat|sensitivity|trend|changepoints|sample|blind-packet|coding-packet|join-annotations|context>
   evidence <new|validate|card|export-evidenceguard>   evidence ledger (docs\research-evidence.md)
+  kb <validate|find|show|due|brief|stats|render|export|migrate|new>   knowledge banks (docs\knowledge-banks.md)
+  sentiment <status|packet|join|list|prune>   audience comment coding (docs\audience-sentiment.md)
   composio status|test|audit                 Composio read-only checks (docs\composio.md)
   export                                     check platform metrics and write shareable CSVs to exports\share\
+  dash [open|sync|status|import|export|install|demo|stop]   personal dashboard (docs\dashboard\README.md)
+  publish <accounts|list|show|new|check|package|mark-posted>   publishing drafts (owner approves in the dashboard)
   smoke                                      run the smoke test and write reports\smoke-test.md
 #>
 $ErrorActionPreference = 'Stop'
@@ -124,8 +128,12 @@ switch ($cmd) {
     'research' { & $Py scripts\research_admin.py @rest }
     'analyze' { & $Py scripts\research_analysis.py @rest }
     'evidence' { & $Py scripts\evidence.py @rest }
+    'kb' { & $Py scripts\kb.py @rest }
+    'sentiment' { & $Py scripts\sentiment.py @rest }
     'composio' { & $Py scripts\composio_check.py @rest }
     'export' { & $Py scripts\export_metrics.py @rest }
+    'dash' { & $Py -m dashboard @rest }
+    'publish' { & $Py -m dashboard publish @rest }
     'smoke' { & $Py scripts\smoke_test.py @rest }
     default { (Get-Content $PSCommandPath -TotalCount 20) -join "`n" }
 }

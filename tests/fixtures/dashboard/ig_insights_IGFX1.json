@@ -1,0 +1,85 @@
+{
+ "data": [
+  {
+   "name": "views",
+   "period": "lifetime",
+   "values": [
+    {
+     "value": 5300
+    }
+   ]
+  },
+  {
+   "name": "reach",
+   "period": "lifetime",
+   "values": [
+    {
+     "value": 4100
+    }
+   ]
+  },
+  {
+   "name": "likes",
+   "period": "lifetime",
+   "values": [
+    {
+     "value": 380
+    }
+   ]
+  },
+  {
+   "name": "comments",
+   "period": "lifetime",
+   "values": [
+    {
+     "value": 21
+    }
+   ]
+  },
+  {
+   "name": "shares",
+   "period": "lifetime",
+   "values": [
+    {
+     "value": 40
+    }
+   ]
+  },
+  {
+   "name": "saved",
+   "period": "lifetime",
+   "values": [
+    {
+     "value": 33
+    }
+   ]
+  },
+  {
+   "name": "total_interactions",
+   "period": "lifetime",
+   "values": [
+    {
+     "value": 474
+    }
+   ]
+  },
+  {
+   "name": "ig_reels_avg_watch_time",
+   "period": "lifetime",
+   "values": [
+    {
+     "value": 9800
+    }
+   ]
+  },
+  {
+   "name": "ig_reels_video_view_total_time",
+   "period": "lifetime",
+   "values": [
+    {
+     "value": 51940000
+    }
+   ]
+  }
+ ]
+}

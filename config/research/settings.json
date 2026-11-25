@@ -20,7 +20,15 @@
   "_share_note": "false keeps Twitch reports in data/local/research/twitch/reports instead of exports/share until onward transfer is confirmed."
  },
  "trends": {
-  "geos": ["GB", "US", "MX", "ES", "AR", "CO", "CL"],
+  "geos": [
+   "GB",
+   "US",
+   "MX",
+   "ES",
+   "AR",
+   "CO",
+   "CL"
+  ],
   "rss_retention_days": 90
  },
  "wikimedia": {
@@ -29,5 +37,22 @@
  "roblox": {
   "max_experiences": 20,
   "min_minutes_between_runs": 55
+ },
+ "sentiment": {
+  "_note": "Gates for `ss sentiment` (Stage 4.7). See docs/audience-sentiment.md. Owner-controlled.",
+  "manual_sources_enabled": true,
+  "_manual_note": "Comments a person copies from public pages (TikTok, Instagram, Reddit, DevForum, YouTube pages) and pastes in. No scraping or browser automation.",
+  "youtube_api_derived_metrics_accepted": true,
+  "youtube_amendment_accepted_on": "2026-11-25",
+  "youtube_amendment_basis": "Owner confirmed on 2026-11-25 that the YouTube derived-metrics approval was obtained (accepted when the API key was created) and re-confirmed it at Stage 4.7 acceptance.",
+  "youtube_amendment_reference": "",
+  "_youtube_note": "Derived-metrics amendment (YouTube API Services form, Section 5 > Analytics & Reporting): https://developers.google.com/youtube/terms/derived-metrics-policy (last updated 2026-09-14). Allows NLP sentiment on API comments; derived results up to 36 months; comment text still 30 days; no inferring protected attributes. Add Google's confirmation reference above when available. Set false if acceptance is withdrawn.",
+  "derived_retention_months": 36,
+  "comment_text_retention_days": 30,
+  "raw_comment_export_to_ai": false,
+  "_export_note": "false: comment text is never copied to exports/share (ChatGPT/Gemini). Coded summaries without text can be exported. Claude codes comments locally in this workspace.",
+  "manual_text_retention_days": 30,
+  "manual_summary_retention_days": 365,
+  "_youtube_amendment_reference": "Paste the confirmation date or reference from the Google Cloud console here when available; the feature stays on meanwhile on the owner's confirmation."
  }
 }

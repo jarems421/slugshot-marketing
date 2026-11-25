@@ -1,0 +1,41 @@
+{
+ "data": [
+  {
+   "id": "IGFX1",
+   "caption": "FIXTURE reel: Floppy underdog",
+   "media_type": "VIDEO",
+   "media_product_type": "REELS",
+   "permalink": "https://www.instagram.com/reel/FIXTURE1/",
+   "timestamp": "{{DT-4}}"
+  },
+  {
+   "id": "IGFX2",
+   "caption": "FIXTURE reel: rule world",
+   "media_type": "VIDEO",
+   "media_product_type": "REELS",
+   "permalink": "https://www.instagram.com/reel/FIXTURE2/",
+   "timestamp": "{{DT-10}}"
+  },
+  {
+   "id": "IGFX3",
+   "caption": "FIXTURE reel: metric rejected",
+   "media_type": "VIDEO",
+   "media_product_type": "REELS",
+   "permalink": "https://www.instagram.com/reel/FIXTURE3/",
+   "timestamp": "{{DT-15}}"
+  },
+  {
+   "id": "IGFX4",
+   "caption": "FIXTURE photo (ignored)",
+   "media_type": "IMAGE",
+   "media_product_type": "FEED",
+   "permalink": "https://www.instagram.com/p/FIXTURE4/",
+   "timestamp": "{{DT-20}}"
+  }
+ ],
+ "paging": {
+  "cursors": {
+   "after": "x"
+  }
+ }
+}

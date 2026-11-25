@@ -1,0 +1,29 @@
+{
+ "_note": "Experiments seeded into a new dashboard database. Only records that already exist in the research record; no results are invented.",
+ "experiments": [
+  {
+   "experiment_id": "EXP-20261124-OPENER",
+   "title": "Rule-world opener vs tier-skit opener",
+   "status": "proposed",
+   "hypothesis": "With the same footage and payoff, a rule-world opener ('In my world, everyone gets one slug for life', labelled fiction) holds viewers differently from a noob/pro/expert tier-skit opener. Untested hybrid: rule-world and gameplay proof never co-occurred in the pilot sample.",
+   "one_change": "The opener only (first 2-3 s): rule card vs tier-skit framing. Footage, duel and payoff identical.",
+   "primary_metric": "avg_view_pct",
+   "secondary_metrics": ["views", "avg_view_duration_s", "likes", "shares"],
+   "window_hours": 48,
+   "stop_rule": "Read once at 48 h after each upload; no early peeking decisions.",
+   "threshold": "To be set with ChatGPT before posting (research skills v1.1: predefined metric, window, stop rule and threshold).",
+   "design": "One language at a time, on our own channel. Same footage and payoff, two openers. Block by language; randomise posting order.",
+   "platforms": ["youtube"],
+   "language": "en",
+   "source": "docs/stage-4.5.4-report.md decision memo (C15); ledger BRIEF-20261124-RULE-WORLD-PILOT",
+   "limitations": "Pilot evidence is exploratory (single AI coder, n=20). Prerequisite: film a real two-player Cinder Rift 1v1 round. Floppy never transforms and has no abilities; 'underdog' is framing, not a game rule.",
+   "results": "",
+   "decision": "",
+   "next_action": "Capture a real 1v1 round, then produce both 15 s versions (EN first).",
+   "variants": [
+    {"variant_id": "A", "role": "control", "label": "Tier-skit opener", "description": "Same duel framed as an original noob/pro/expert tier skit (status reversal, no rule)."},
+    {"variant_id": "B", "role": "treatment", "label": "Rule-world opener", "description": "Rule card 'In my world, everyone gets one slug for life' (SKIT preset, fiction label), held-back reveal, Floppy underdog duel with real gameplay."}
+   ]
+  }
+ ]
+}

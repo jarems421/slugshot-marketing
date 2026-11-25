@@ -1,0 +1,443 @@
+{
+ "_note": "Metric definitions for the dashboard. One canonical id per measured quantity per platform family. 'kind': count (summable within one account and platform over days), daily (a per-day count of people who recur across days, e.g. daily players: shown per day or as an average per day, never summed), rate (never summed; shown as given), level (a point-in-time total such as followers; never summed over days), money. 'stage' is the funnel measurement stage; stages are separate populations and are never divided into each other.",
+ "stages": [
+  {
+   "id": "discovery",
+   "label": "Discovery",
+   "measures": "Views, impressions and reach"
+  },
+  {
+   "id": "engagement",
+   "label": "Engagement",
+   "measures": "Watch time, completion and interactions"
+  },
+  {
+   "id": "interest",
+   "label": "Interest",
+   "measures": "Profile visits, follows and link activity"
+  },
+  {
+   "id": "acquisition",
+   "label": "Acquisition",
+   "measures": "New players and attributable referral traffic"
+  },
+  {
+   "id": "activation",
+   "label": "Activation",
+   "measures": "Onboarding and first meaningful gameplay"
+  },
+  {
+   "id": "retention",
+   "label": "Retention",
+   "measures": "Returning players, D1/D7 retention and sessions"
+  },
+  {
+   "id": "monetisation",
+   "label": "Monetisation",
+   "measures": "Revenue and payers"
+  }
+ ],
+ "metrics": [
+  {
+   "id": "views",
+   "label": "Views",
+   "kind": "count",
+   "unit": "views",
+   "stage": "discovery",
+   "platforms": [
+    "youtube",
+    "tiktok",
+    "instagram"
+   ],
+   "definition": "Each platform's own view count. Definitions differ (YouTube counts a view differently from TikTok and Instagram), so views are never added across platforms.",
+   "primary": true
+  },
+  {
+   "id": "reach",
+   "label": "Reach",
+   "kind": "count",
+   "unit": "accounts",
+   "stage": "discovery",
+   "platforms": [
+    "instagram",
+    "tiktok"
+   ],
+   "definition": "Instagram: unique accounts that saw the content (estimated by Instagram). Unique within the period and account only.",
+   "primary": true
+  },
+  {
+   "id": "impressions",
+   "label": "Impressions",
+   "kind": "count",
+   "unit": "impressions",
+   "stage": "discovery",
+   "platforms": [
+    "youtube"
+   ],
+   "definition": "YouTube thumbnail impressions (Studio export only; not in the Analytics API)."
+  },
+  {
+   "id": "watch_time_minutes",
+   "label": "Watch time",
+   "kind": "count",
+   "unit": "minutes",
+   "stage": "engagement",
+   "platforms": [
+    "youtube",
+    "instagram",
+    "tiktok"
+   ],
+   "definition": "Total minutes watched. YouTube: estimatedMinutesWatched. Instagram: ig_reels_video_view_total_time converted from ms. Not offered by the TikTok Display API.",
+   "primary": true
+  },
+  {
+   "id": "avg_view_duration_s",
+   "label": "Avg view duration",
+   "kind": "rate",
+   "unit": "seconds",
+   "stage": "engagement",
+   "platforms": [
+    "youtube",
+    "instagram",
+    "tiktok"
+   ],
+   "definition": "Average seconds watched per view (YouTube averageViewDuration; Instagram ig_reels_avg_watch_time; TikTok only by manual import from TikTok Studio)."
+  },
+  {
+   "id": "avg_view_pct",
+   "label": "Avg % viewed",
+   "kind": "rate",
+   "unit": "percent",
+   "stage": "engagement",
+   "platforms": [
+    "youtube"
+   ],
+   "definition": "YouTube averageViewPercentage: average share of the video watched per view. Can exceed 100 on looping Shorts.",
+   "primary": true
+  },
+  {
+   "id": "completion_rate",
+   "label": "Watched full video",
+   "kind": "rate",
+   "unit": "percent",
+   "stage": "engagement",
+   "platforms": [
+    "tiktok"
+   ],
+   "definition": "TikTok Studio 'watched full video' percentage (manual import only)."
+  },
+  {
+   "id": "likes",
+   "label": "Likes",
+   "kind": "count",
+   "unit": "likes",
+   "stage": "engagement",
+   "platforms": [
+    "youtube",
+    "tiktok",
+    "instagram"
+   ],
+   "definition": "Platform like count."
+  },
+  {
+   "id": "comments",
+   "label": "Comments",
+   "kind": "count",
+   "unit": "comments",
+   "stage": "engagement",
+   "platforms": [
+    "youtube",
+    "tiktok",
+    "instagram"
+   ],
+   "definition": "Platform comment count."
+  },
+  {
+   "id": "shares",
+   "label": "Shares",
+   "kind": "count",
+   "unit": "shares",
+   "stage": "engagement",
+   "platforms": [
+    "youtube",
+    "tiktok",
+    "instagram"
+   ],
+   "definition": "Platform share count."
+  },
+  {
+   "id": "saves",
+   "label": "Saves",
+   "kind": "count",
+   "unit": "saves",
+   "stage": "engagement",
+   "platforms": [
+    "tiktok",
+    "instagram"
+   ],
+   "definition": "Saves or favourites (Instagram 'saved'; TikTok favourites by manual import)."
+  },
+  {
+   "id": "profile_visits",
+   "label": "Profile visits",
+   "kind": "count",
+   "unit": "visits",
+   "stage": "interest",
+   "platforms": [
+    "tiktok",
+    "instagram"
+   ],
+   "definition": "Profile views attributed to the item or account, as the platform reports them (manual import where no API metric exists)."
+  },
+  {
+   "id": "link_taps",
+   "label": "Link taps",
+   "kind": "count",
+   "unit": "taps",
+   "stage": "interest",
+   "platforms": [
+    "instagram",
+    "tiktok",
+    "youtube"
+   ],
+   "definition": "Taps on the profile or video link (Instagram profile_links_taps; others by manual import).",
+   "primary": true
+  },
+  {
+   "id": "followers",
+   "label": "Followers",
+   "kind": "level",
+   "unit": "followers",
+   "stage": "interest",
+   "platforms": [
+    "youtube",
+    "tiktok",
+    "instagram"
+   ],
+   "definition": "Followers or subscribers at the observation time. YouTube rounds public subscriber counts. Never added across platforms: one person can follow several accounts.",
+   "primary": true
+  },
+  {
+   "id": "followers_gained",
+   "label": "Followers gained",
+   "kind": "count",
+   "unit": "followers",
+   "stage": "interest",
+   "platforms": [
+    "youtube",
+    "instagram",
+    "tiktok"
+   ],
+   "definition": "New followers in the period (YouTube subscribersGained; Instagram follows; TikTok by manual import).",
+   "primary": true
+  },
+  {
+   "id": "followers_lost",
+   "label": "Followers lost",
+   "kind": "count",
+   "unit": "followers",
+   "stage": "interest",
+   "platforms": [
+    "youtube",
+    "instagram"
+   ],
+   "definition": "Unfollows in the period (YouTube subscribersLost; Instagram unfollows)."
+  },
+  {
+   "id": "link_visits",
+   "label": "Link visits",
+   "kind": "count",
+   "unit": "users",
+   "stage": "acquisition",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox share link: users who reached the experience details page through the link (Creator Dashboard; manual import).",
+   "primary": true
+  },
+  {
+   "id": "link_new_players",
+   "label": "New players via link",
+   "kind": "count",
+   "unit": "users",
+   "stage": "acquisition",
+   "platforms": [
+    "youtube",
+    "tiktok",
+    "instagram"
+   ],
+   "definition": "New players Roblox credits to the tracked share link used for this upload (Creator Dashboard, entered by hand). Only attributable when each upload has its own link.",
+   "primary": true
+  },
+  {
+   "id": "new_users",
+   "label": "New players",
+   "kind": "count",
+   "unit": "users",
+   "stage": "acquisition",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox DailyActiveUsers with IsNewUser = new: players whose first visit was that day. Not attributable to a video unless they arrived through a tracked share link.",
+   "primary": true
+  },
+  {
+   "id": "unique_play_users",
+   "label": "Players with sessions",
+   "kind": "daily",
+   "unit": "users",
+   "stage": "acquisition",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox UniqueUsersWithPlaySessions; broken down by AcquisitionSource where requested."
+  },
+  {
+   "id": "onboarding_step_users",
+   "label": "Onboarding step users",
+   "kind": "count",
+   "unit": "users",
+   "stage": "activation",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox FunnelStepTotalCount for the onboarding funnel. Needs in-game AnalyticsService events (proposal, not implemented).",
+   "primary": true
+  },
+  {
+   "id": "dau",
+   "label": "Daily players",
+   "kind": "daily",
+   "unit": "users",
+   "stage": "retention",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox DailyActiveUsers. Days are not added together (the same player returns on several days); shown per day.",
+   "primary": true
+  },
+  {
+   "id": "d1_retention",
+   "label": "D1 retention",
+   "kind": "rate",
+   "unit": "fraction",
+   "stage": "retention",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox ForwardD1Retention for players whose first day was that date. A cohort rate, never averaged across days without cohort sizes.",
+   "primary": true
+  },
+  {
+   "id": "d7_retention",
+   "label": "D7 retention",
+   "kind": "rate",
+   "unit": "fraction",
+   "stage": "retention",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox ForwardD7Retention for that day's cohort.",
+   "primary": true
+  },
+  {
+   "id": "d30_retention",
+   "label": "D30 retention",
+   "kind": "rate",
+   "unit": "fraction",
+   "stage": "retention",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox ForwardD30Retention for that day's cohort."
+  },
+  {
+   "id": "avg_session_min",
+   "label": "Avg session",
+   "kind": "rate",
+   "unit": "minutes",
+   "stage": "retention",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox AverageSessionLengthMinutes."
+  },
+  {
+   "id": "visits",
+   "label": "Visits",
+   "kind": "count",
+   "unit": "visits",
+   "stage": "retention",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox Visits (Analytics Query API, per day) or the public lifetime visit total (legacy games API, a level)."
+  },
+  {
+   "id": "playing",
+   "label": "Playing now",
+   "kind": "level",
+   "unit": "users",
+   "stage": "retention",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Concurrent players at the observation moment (legacy public games API)."
+  },
+  {
+   "id": "favorites",
+   "label": "Favourites",
+   "kind": "level",
+   "unit": "users",
+   "stage": "interest",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Lifetime favourite count (legacy public games API)."
+  },
+  {
+   "id": "revenue_robux",
+   "label": "Revenue",
+   "kind": "money",
+   "unit": "Robux",
+   "stage": "monetisation",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox DailyRevenue in Robux as reported (all revenue sources). Not converted to currency.",
+   "primary": true
+  },
+  {
+   "id": "paying_users",
+   "label": "Payers",
+   "kind": "daily",
+   "unit": "users",
+   "stage": "monetisation",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox PayingUsers per day. Days are not added together.",
+   "primary": true
+  },
+  {
+   "id": "payer_cvr",
+   "label": "Payer conversion",
+   "kind": "rate",
+   "unit": "fraction",
+   "stage": "monetisation",
+   "platforms": [
+    "roblox"
+   ],
+   "definition": "Roblox PayingUsersCVR: payers divided by players, both in Roblox's own population for that day."
+  },
+  {
+   "id": "production_minutes",
+   "label": "Production time",
+   "kind": "level",
+   "unit": "minutes",
+   "stage": "",
+   "platforms": [],
+   "definition": "Minutes the owner spent producing the asset (entered by hand)."
+  }
+ ]
+}

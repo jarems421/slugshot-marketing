@@ -624,7 +624,10 @@ def cmd_report(a, store):
         dest = rc.export("youtube", "youtube_history", history, HISTORY_COLUMNS, notes=POLICY_NOTES +
                          ["One row per stored snapshot (long format). Compare a video only with its own earlier rows."], **common)
         print(f"{len(history)} snapshots -> {dest}")
-    if a.comments:
+    if a.comments and not rc.settings().get("sentiment", {}).get("raw_comment_export_to_ai", False):
+        print("Comment text is not exported to exports/share: sentiment.raw_comment_export_to_ai is false in "
+              "config/research/settings.json. Use `ss sentiment` to code comments locally and export coded summaries.")
+    elif a.comments:
         rows = rc.read_rows(store.comments)
         cols = [("video_id", "YouTube", "video the comment is on"), ("comment_id", "YouTube", "comment ID"),
                 ("published_at", "YouTube", "when the comment was posted, UTC"),

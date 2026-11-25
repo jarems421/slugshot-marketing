@@ -22,6 +22,12 @@ Policy guards built in: YouTube API rows are never aggregated across different c
 III.E.2.a); `describe`, `sensitivity` and `join-annotations` refuse or fall back to per-item listings for them.
 Blanks are unknown, never 0. Nothing here produces a composite score.
 """
+import os
+
+# numpy/ruptures use OpenBLAS; with its default thread count it can fail to allocate memory on this
+# machine ("OpenBLAS error: Memory allocation still failed"). One thread is plenty for these series.
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+
 import argparse
 import csv
 import json
