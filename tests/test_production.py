@@ -221,3 +221,11 @@ class Review2(unittest.TestCase):
         x, y, w, h = take.calibrate(v)
         self.assertLessEqual(abs(x - 60) + abs(y - 40), 2)
         self.assertLessEqual(abs(w - 200) + abs(h - 120), 4)
+
+
+class ContentOrder(unittest.TestCase):
+    def test_newest_version_first(self):
+        vs = [{"language": "en", "version": "V01", "made_at": "a"}, {"language": "en", "version": "V02", "made_at": "b"}]
+        vs.sort(key=lambda v: (v["version"], v["made_at"] or ""), reverse=True)
+        vs.sort(key=lambda v: v["language"])
+        self.assertEqual(vs[0]["version"], "V02")

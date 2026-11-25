@@ -462,5 +462,40 @@ class ServerRoutes(unittest.TestCase):
         self.assertEqual(st, 400)
 
 
+class DeleteVideo(unittest.TestCase):
+    """Content page Delete (owner, 2026-11-25): Recycle Bin, unsent drafts removed, posted or busy videos refused."""
+
+    def test_deletes_file_sidecars_and_drafts(self):
+        from dashboard import analytics as A
+        s = fresh("delete")
+        v = video("del_a.mp4", 2048)
+        v.with_suffix(".qc.json").write_text("{}")
+        jid = P.create(s, AID, "yt-en", v)
+        binned = []
+        r = A.delete_video(s, P.rel(v), recycle=lambda f: (binned.append(f.name), f.unlink()))
+        self.assertEqual(r["drafts_removed"], 1)
+        self.assertEqual(sorted(binned), ["del_a.mp4", "del_a.qc.json"])
+        self.assertIsNone(P.job(s, jid))
+
+    def test_refuses_approved_or_posted(self):
+        from dashboard import analytics as A
+        s = fresh("delete2")
+        v = video("del_b.mp4", 2048)
+        jid = P.create(s, AID, "yt-en", v)
+        s.x("UPDATE publish_jobs SET state='approved' WHERE job_id=?", (jid,))
+        with self.assertRaises(ValueError):
+            A.delete_video(s, P.rel(v), recycle=lambda f: self.fail("must not delete"))
+        s.x("UPDATE publish_jobs SET state='draft' WHERE job_id=?", (jid,))
+        s.save_upload({"asset_id": AID, "platform": "youtube", "account_id": "yt-en", "platform_video_id": "x1", "url": "https://youtu.be/x1"})
+        with self.assertRaises(ValueError):
+            A.delete_video(s, P.rel(v), recycle=lambda f: self.fail("must not delete"))
+        self.assertTrue(v.exists())
+
+    def test_refuses_outside_exports_and_media(self):
+        from dashboard import analytics as A
+        with self.assertRaises(ValueError):
+            A.delete_video(fresh("delete3"), "config/dashboard/settings.json", recycle=lambda f: self.fail("no"))
+
+
 if __name__ == "__main__":
     unittest.main()

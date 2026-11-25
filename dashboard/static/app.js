@@ -623,11 +623,23 @@ function conceptDrawer(g, index = 0) {
           v.fiction_label ? [h("dt", {}, "Label"), h("dd", {}, v.fiction_label)] : null,
           h("dt", {}, "Posted on"), h("dd", {}, v.posted_on.length ? v.posted_on.map((p) => h("a", { href: p.url || "#", target: "_blank", rel: "noreferrer", style: "margin-right:10px" }, acctLabel(p.account_id))) : "not yet"),
           v.jobs.length ? [h("dt", {}, "In Publish"), h("dd", {}, v.jobs.map((j) => h("a", { href: "#/publish/" + j.job_id, style: "margin-right:10px", onclick: closeDrawer }, acctLabel(j.account_id))))] : null),
-        h("div", { style: "display:flex;gap:8px;margin-top:6px" }, publish),
+        h("div", { style: "display:flex;gap:8px;margin-top:6px" }, publish,
+          v.posted_on.length ? null : h("button", { class: "btn ghost", type: "button", onclick: () => deleteVideo(g, v) }, g.versions.length > 1 ? "Delete this version" : "Delete")),
         v.asset_id ? tagsBlock(g.key) : h("p", { class: "muted small" }, "Creative tags can be added once it's in Publish (that registers the video)."),
         h("details", { class: "more", style: "margin-top:10px" }, h("summary", {}, "File details"),
           h("dl", { class: "kv small" }, h("dt", {}, "File"), h("dd", {}, h("span", { class: "code" }, v.path)), h("dt", {}, "Version"), h("dd", {}, v.version || "—"),
             h("dt", {}, "Quality check"), h("dd", {}, v.qc || "not run"), v.asset_id ? [h("dt", {}, "Record"), h("dd", {}, v.asset_id)] : null)))));
+}
+async function deleteVideo(g, v) {
+  const name = [g.title, v.variant, v.version].filter(Boolean).join(" ");
+  const drafts = v.jobs.length ? ` and its ${v.jobs.length} unsent draft${v.jobs.length > 1 ? "s" : ""}` : "";
+  if (!confirm(`Delete ${name}${drafts}? The file goes to the Recycle Bin, so you can restore it from there.`)) return;
+  try {
+    await post("/api/media/delete", { path: v.path });
+    toast(`Deleted ${name}`);
+    closeDrawer();
+    route();
+  } catch (e) { toast(e.message); }
 }
 async function startPublish(g, v) {
   let assetId = v.asset_id;

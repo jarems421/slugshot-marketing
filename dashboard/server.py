@@ -226,6 +226,8 @@ def make_handler(app):
                     return self._send(200, analytics.save_finding(e) if body.get("save") else e)
                 if path == "/api/assets":
                     return self._send(200, {"asset_id": s.save_asset(body)})
+                if path == "/api/media/delete":  # owner's Delete on the Content page (Recycle Bin, drafts only)
+                    return self._send(200, analytics.delete_video(s, body.get("path", "")))
                 if path == "/api/uploads":
                     return self._send(200, {"upload_id": s.save_upload(body)})
                 if path == "/api/accounts":

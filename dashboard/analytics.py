@@ -403,6 +403,42 @@ def _local(path):
     return None
 
 
+DELETABLE_JOB_STATES = ("draft", "failed")  # nothing approved, on its way, or posted
+
+
+def delete_video(store, path, recycle=None):
+    """Owner's Delete on the Content page: one local video (exports/ or media/ only) goes to the Recycle Bin with
+    its sidecars, and its unsent drafts are removed. Refused while it is posted, approved or uploading."""
+    from . import publish
+    f = publish.resolve_video(path)
+    relp = publish.rel(f)
+    jobs = [j for j in store.q("SELECT job_id, state, video_path, asset_id FROM publish_jobs") if _local(j["video_path"]) == relp]
+    busy = [j for j in jobs if j["state"] not in DELETABLE_JOB_STATES]
+    if busy:
+        raise ValueError(f"it is {busy[0]['state'].replace('_', ' ')} in Publish; finish or remove that first")
+    assets = {a["asset_id"] for a in store.q("SELECT asset_id, edit_file FROM assets") if _local(a["edit_file"]) == relp}
+    assets |= {j["asset_id"] for j in jobs}
+    if assets and store.q(f"SELECT 1 FROM uploads WHERE asset_id IN ({','.join('?' * len(assets))}) LIMIT 1", tuple(assets)):
+        raise ValueError("it has been posted; posted videos stay for their history")
+    for j in jobs:
+        publish.delete(store, j["job_id"])
+    files = [f] + [x for x in (f.with_suffix(".qc.json"), f.with_suffix(".meta.json"), f.with_suffix(".sheet.jpg")) if x.exists()]
+    for x in files:
+        (recycle or _recycle)(x)
+    return {"deleted": relp, "drafts_removed": len(jobs), "files": len(files)}
+
+
+def _recycle(f):
+    """Windows Recycle Bin, so a Delete can be undone from there."""
+    import os
+    import subprocess
+    env = dict(os.environ, SS_RECYCLE=str(f))
+    subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command",
+                    "Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile("
+                    "$env:SS_RECYCLE, 'OnlyErrorDialogs', 'SendToRecycleBin')"], env=env, check=True, capture_output=True,
+                   timeout=60)
+
+
 def _probe(relpath):
     from .publish import ROOT, probe
     p = ROOT / relpath
@@ -458,7 +494,10 @@ def library(store, show_posted=False):
         groups.setdefault(it["key"], {"key": it["key"], "title": it["title"], "versions": []})["versions"].append(it)
     out = []
     for g in groups.values():
-        g["versions"].sort(key=lambda v: (v["language"], v["version"]))
+        # newest first within each language: the card and the drawer open on versions[0] (owner, 2026-11-25:
+        # the card kept playing V01 after V02 was made)
+        g["versions"].sort(key=lambda v: (v["version"], v["made_at"] or ""), reverse=True)
+        g["versions"].sort(key=lambda v: v["language"])
         g["languages"] = sorted({v["language"] for v in g["versions"] if v["language"]})
         g["made_at"] = max((v["made_at"] for v in g["versions"] if v["made_at"]), default="")
         auds = list(dict.fromkeys(v["audience"] for v in g["versions"]))
