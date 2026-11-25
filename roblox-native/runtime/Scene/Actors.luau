@@ -132,8 +132,8 @@ function Actors.spawn(name: string, def: any, parent: Instance): any
 	local lift = model:GetPivot().Position.Y - (box.Position.Y - size.Y / 2)
 	if kind == "slug" then
 		-- Slug imports carry an invisible RootPart block reaching about 1.4 studs below the body (owner, 2026-11-25:
-		-- "all the slugs are floating"). The authored floor is the `root` bone (the body's lowest point, measured
-		-- for every species), and height is the visible meshes' height, for grounding and framing alike.
+		-- "all the slugs are floating"). Use the authored root or the visible sole, whichever sits lower.
+		-- Floppy's front extends about 0.012 studs below the root and lost its ink line against the floor.
 		local root = model:FindFirstChild("root", true)
 		local top, bottom = -math.huge, math.huge
 		for _, p in model:GetDescendants() do
@@ -144,8 +144,8 @@ function Actors.spawn(name: string, def: any, parent: Instance): any
 				p.Transparency = 1
 			end
 		end
-		local floor = if root and root:IsA("Bone") then root.WorldPosition.Y else bottom
-		lift = model:GetPivot().Position.Y - floor
+		local floor = if root and root:IsA("Bone") then math.min(root.WorldPosition.Y, bottom) else bottom
+		lift = model:GetPivot().Position.Y - floor + 0.003 -- keep the contact outline clear of the floor depth test
 		if top > floor then
 			size = Vector3.new(size.X, top - floor, size.Z)
 		end

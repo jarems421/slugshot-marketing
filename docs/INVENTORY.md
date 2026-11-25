@@ -105,7 +105,7 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Take repeatability | `ss roblox compare` | yes (one PASS; one at 56 ms cuts / 80 ms cues vs a 50 ms target) | n/a | n/a |
 | Real slug actors with acting (SlugIdle/FloppyFace, mouths from dialogue, eyelines, size-aware cameras) | scene specs `kind: slug` | **real assets** (Floppy, Rammstone filmed 2026-11-25) | **performance, look** | n/a |
 | Film mode: deterministic, frame-stamped, chunked, native 1080x1920 at 30 fps | `Scene.film`, `ss roblox film` | **real assets**: 4 takes, 0 repeated frames | n/a | n/a |
-| Character dialogue (cast script, per-line voices, script-aligned captions, deviation flags) | `ss dialogue` | yes (Kokoro, Qwen design, Qwen clone) | **voice choice** | n/a |
+| Character dialogue (cast script, per-line voices, script-aligned captions, deviation flags) | `ss dialogue` | yes (Gemini with optional performance auditions, Kokoro, Qwen design and clone) | **voice choice** | n/a |
 | Original procedural SFX set | `ss sfx` | yes (in the benchmark mix) | **sound feel** | n/a |
 | Roblox take into the toolkit | `ss roblox import` | yes (Studio capture) | n/a | first OBS recording of a take |
 | Player-avatar acting, finished set marks, real PvP filming | none | no (production work) | **every animation and set** | production preparation |

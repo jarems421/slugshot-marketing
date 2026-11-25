@@ -1,4 +1,4 @@
-﻿# In My World format sample (owner will write real scripts). Fiction: "Fictional story" label on screen.
+# In My World format sample (owner will write real scripts). Fiction: "Fictional story" label on screen.
 # No species names spoken (naming is an open owner decision). Game truth: no mechanics claimed.
 NARRATOR (calm storytelling): In my world, every slug picks its partner on the day it hatches.
 [beat 0.35]
@@ -10,9 +10,9 @@ NARRATOR (slower, amused): And some... just pick a nap.
 [beat 0.4]
 AQUABEEK (dry, unimpressed): He's been asleep since sunrise.
 [beat 0.3]
-RAMMSTONE (loud, impatient): Hey! Up! Partners are being picked!
+RAMMSTONE (shouting, impatient, bursting with excitement): Hey! Up! Partners are being picked!
 [beat 0.9]
-FLOPPY (half asleep, slow): Ugh... five more minutes.
+FLOPPY (groggy, mumbling into his pillow, a big lazy groan): Ugh... five more minutes.
 [beat 0.6]
 NARRATOR (warm): And that was the day he picked me.
 [beat 1.2]

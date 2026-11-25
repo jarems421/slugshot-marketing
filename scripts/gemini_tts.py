@@ -114,6 +114,8 @@ def style_for(g, direction=""):
     """A line's style: the line's (direction), the character's style, then the shared storytime delivery
     (cast.json gemini_delivery; owner, 2026-11-25: voices should be more engaging)."""
     shared = json.loads((ROOT / "config" / "cast.json").read_text(encoding="utf-8")).get("gemini_delivery", "")
+    if g.get("shared_delivery") is False:  # a character whose own style reads better alone (the narrator)
+        shared = ""
     return ". ".join(x for x in (direction, g.get("style", ""), shared) if x)
 
 

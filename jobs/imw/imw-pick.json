@@ -40,8 +40,8 @@
  "scenes": [
   {
    "kind": "video",
-   "src": "out/takes/imw_pick_q.mp4",
-   "seconds": 30.367,
+   "src": "out/takes/imw_pick_v04_matched.mp4",
+   "seconds": 30.467,
    "fit": "crop",
    "volume": 0
   }

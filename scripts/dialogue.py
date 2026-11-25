@@ -81,7 +81,33 @@ def read_pcm(path):
     return np.frombuffer(raw, dtype=np.float32)
 
 
-def perform(lines, engine, work, only, mode="design"):
+def liveliness(path):
+    """How animated a read is: its pitch range in semitones (10th to 90th percentile of voiced frames) plus how much
+    its loudness moves (dB spread), half weighted. Flat reads score low."""
+    import wave
+    with wave.open(str(path)) as w:
+        sr = w.getframerate()
+        x = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(float) / 32768
+    n, hop = int(0.04 * sr), int(0.01 * sr)
+    f0, db = [], []
+    lo, hi = int(sr / 400), int(sr / 70)
+    for s in range(0, len(x) - n, hop):
+        seg = x[s:s + n] - x[s:s + n].mean()
+        rms = np.sqrt((seg ** 2).mean())
+        if rms < 0.02:
+            continue
+        db.append(20 * np.log10(rms))
+        ac = np.correlate(seg, seg, "full")[n - 1:]
+        k = lo + int(np.argmax(ac[lo:hi]))
+        if ac[k] > 0.5 * ac[0]:
+            f0.append(sr / k)
+    if len(f0) < 5:
+        return 0.0
+    semis = 12 * np.log2(np.percentile(f0, 90) / np.percentile(f0, 10))
+    return float(semis + 0.5 * (np.percentile(db, 90) - np.percentile(db, 10)))
+
+
+def perform(lines, engine, work, only, mode="design", takes=1):
     """Synthesise each line to lines/NN_NAME.wav (48 kHz mono, pitch applied, levelled but not compressed)."""
     jobs = []
     for i, ln in enumerate(lines, 1):
@@ -96,8 +122,24 @@ def perform(lines, engine, work, only, mode="design"):
             if not g.get("voice"):
                 raise SystemExit(f"{ln['speaker']} has no gemini.voice in config/cast.json")
             style = gemini_tts.style_for(g, ln["direction"])
-            print(f"line {i} ({ln['speaker']}, {g['voice']}): {gemini_tts.speak(glossary.tts_text(ln['text']), g['voice'], style, raw):.1f}s", flush=True)
             ln["_raw"], ln["_pitch"] = raw, 0
+            if takes == 1:
+                seconds = gemini_tts.speak(glossary.tts_text(ln["text"]), g["voice"], style, raw)
+                print(f"line {i} ({ln['speaker']}, {g['voice']}): {seconds:.1f}s", flush=True)
+                continue
+            # Several takes, the liveliest kept (owner, 2026-11-25: voices "not engaging"): a TTS read varies a lot
+            # from take to take, and a flat one sinks the line.
+            got = []
+            for k in range(takes):
+                path = raw.with_name(f"{raw.stem}.t{k}.wav")
+                secs = gemini_tts.speak(glossary.tts_text(ln["text"]), g["voice"], style, path)
+                got.append((path, secs, liveliness(path)))
+            mid = sorted(s for _, s, _ in got)[len(got) // 2]
+            sane = [t for t in got if 0.6 * mid <= t[1] <= 1.6 * mid]  # a ramble or a repeated line runs long
+            best = max(sane, key=lambda t: t[2])
+            shutil.copyfile(best[0], raw)
+            print(f"line {i} ({ln['speaker']}, {g['voice']}): {best[1]:.1f}s, take {got.index(best) + 1}/{takes} "
+                  f"(liveliness {', '.join(f'{t[2]:.1f}' for t in got)})", flush=True)
             continue
         if engine == "kokoro":
             k = c.get("kokoro") or {"voice": "am_michael", "speed": 1.0}
@@ -243,14 +285,17 @@ def main():
     ap.add_argument("--only", type=int, nargs="*", help="re-perform only these line numbers (1-based)")
     ap.add_argument("--out", help="output folder (default out/dialogue/<script name>)")
     ap.add_argument("--whisper", default="small.en", help="checker model; small.en caught pronunciation faults base.en missed")
+    ap.add_argument("--takes", type=int, default=1, help="Gemini takes per line; use 3 for a performance audition")
     a = ap.parse_args()
+    if a.takes < 1:
+        ap.error("--takes must be at least 1")
     script = Path(a.script)
     work = (Path(a.out) if a.out else ROOT / "out" / "dialogue" / script.stem).resolve()
     if not a.only and work.exists():
         shutil.rmtree(work)
     work.mkdir(parents=True, exist_ok=True)
     lines = parse(script)
-    perform(lines, a.engine, work, set(a.only or []), a.mode)
+    perform(lines, a.engine, work, set(a.only or []), a.mode, a.takes)
 
     # Place lines on one timeline. Gaps are kept exactly: silence is part of the performance.
     t = 0.0

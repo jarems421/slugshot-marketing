@@ -16,6 +16,7 @@ save the manifest (_G.SlugshotTake.json minus "camera") to roblox-native/capture
 
 - It records only the Studio window whose title names SlugshotMarketing (Windows Graphics Capture, not the screen; never use gdigrab, which records the owner's desktop). It runs without the cursor, at x264 CRF 8 4:4:4, with no 30 s cap.
 - Scene.film shows a magenta calibration card first, so the decoder crops to the viewport.
+- After a close-up diagnostic that controls the camera, restart the isolated marketing play session before the master take. Check two different shot times to make sure the live camera moves with the scene. Frame stamps prove coverage, so stills are also needed to verify the recorded picture.
 - A full take at hold 2 missed about 10% of frames. A second full pass at hold 4 plus one hold-8 patch brought that to 0 repeated (decode passes all recordings; later ones only fill gaps).
 - Masters render at Remotion CRF 14 (about 13 Mbps). The Studio-recorder route below still works as a fallback.
 
@@ -53,6 +54,7 @@ Facts to remember:
 - The player's avatar must stay in the world (the lobby's presentation follows it); the runner hides it and parks it under the set (the game draws a blaster holster on its back outside the character model, which showed as black blobs).
 - The hub's look-only motion (drifting islands and their sun shadows, lamp pulses, lava) follows `workspace.FilmClock`, set by the runner from scene time (a marketing patch to HubMotion), so every pass and patch of a take agrees. Never mix passes from a place built without that patch: moving shadows jump between frames.
 - Scene.film locks Studio's graphics quality at Level21 for the take and restores the owner's setting after (manifest `quality`). At Automatic, Studio dropped lamps, glows and sparkles whenever the frame rate dipped, so two passes of one take were lit differently and the decoded video flickered between them (owner, 2026-11-25). Decode with the most complete pass first, so the other only fills its gaps (particles such as crystal sparkles are random per pass).
+- Film mode keeps the portal surface glow and suspends the extra swirl particles, whose wall-clock emission caused jumps between recordings. The emitters are restored after the take. Inspect the frames at patch boundaries for remaining differences.
 - Lamp shadows stay on; `look.local_shadows: false` turns them off for a scene.
 - Inferno actors stand in a `SlugShots` folder so the game's InfernoTeeth leaves their authored tooth divider alone (its reshape misplaced it on staged actors).
 - Staged slugs' own glow is capped at 2.2 studs, so it doesn't light a neighbour's face in a two-shot.

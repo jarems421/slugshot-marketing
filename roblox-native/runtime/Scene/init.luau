@@ -11,6 +11,7 @@
 --                          for native-resolution vertical video.
 --   Scene.still(id, t)     poses everything at t and leaves the camera there (for a screenshot)
 -- Every take builds its set and actors and destroys them afterwards (the reset).
+local CollectionService = game:GetService("CollectionService")
 local HttpService = game:GetService("HttpService")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
@@ -479,12 +480,26 @@ function Scene.film(id: string, options: any?): any
 
 	-- measure the render rate during the pre-roll to slow the world's particles to scene time
 	local slowed = {}
+	local portalSwirls = {}
 	-- A chunk or patch pass films frames first..last; earlier frames are posed instantly (not filmed) so any
 	-- eased state reaches frame `first` exactly as in a full pass.
 	local first = math.clamp(opts.first or 0, 0, frames - 1)
 	local last = math.clamp(opts.last or frames - 1, first, frames - 1)
 	manifest.first, manifest.last = first, last
 	local ok, err = pcall(function()
+		-- The portal surface pulses on FilmClock. Its extra swirl layers are emitted on real time,
+		-- so their bloom disagrees between a full take and a patch at the same scene frame.
+		for _, swirl in CollectionService:GetTagged("HubPortalSwirl") do
+			if swirl:IsA("ParticleEmitter") and swirl.Parent then
+				portalSwirls[swirl] = swirl.Enabled
+				swirl.Enabled = false
+				swirl:Clear()
+				local startup = swirl.Parent:FindFirstChild(swirl.Name .. "Start")
+				if startup and startup:IsA("ParticleEmitter") then
+					startup:Clear()
+				end
+			end
+		end
 		for i = 0, first do
 			st.frame(i / Scene.FPS)
 			st.cues(i / Scene.FPS, manifest)
@@ -534,6 +549,11 @@ function Scene.film(id: string, options: any?): any
 	for _, s in slowed do
 		if s[1].Parent then
 			s[1].TimeScale = s[2]
+		end
+	end
+	for swirl, enabled in portalSwirls do
+		if swirl.Parent then
+			swirl.Enabled = enabled
 		end
 	end
 	manifest.viewport = { camera.ViewportSize.X, camera.ViewportSize.Y }

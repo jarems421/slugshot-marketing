@@ -1,13 +1,13 @@
 {
- "built_utc": "2026-11-25T21:53:07+00:00",
+ "built_utc": "2026-11-25T23:38:09+00:00",
  "source": "C:\\Users\\runni\\slugshot marketing\\roblox-native\\studio\\SlugshotMarketing.source.rbxlx",
  "source_sha256": "dd6f7f50f30e794157fa2972c1e3a581afc1401d4918f71d17af7e3874db6b5b",
  "game_commit": "08fee46d4ee318c875d3c089115e8ee41c3ad993",
- "output_sha256": "d50ead9df934ac02ee41d6d1378d3c760beb836aa16ba65c2dde9567f5a98bb9",
+ "output_sha256": "281e598e78042e85c2a0612a3f52d88ce9715e743f97efce71ad6bfe6e6f2667",
  "patches": [
   "SettingsStore.connect -> MarketingIsolated (x2)",
   "HubMotion follows workspace.FilmClock during takes",
-  "repaired slug textures: 4 reference(s) swapped (studio/asset-overrides.json)",
+  "repaired slug textures: 18 reference(s) swapped (studio/asset-overrides.json)",
   "ServerStorage marker + provenance",
   "ReplicatedStorage.SlugshotMarketing runtime (Reel 4b810e9, Scene, Library, Scenes)"
  ],

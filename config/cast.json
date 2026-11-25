@@ -23,7 +23,9 @@
           "Fenrir",
           "Sadachbia"
         ],
-        "style": "energetic, charismatic storytime narrator, grinning, building suspense then hitting the punchline hard"
+        "style": "energetic, charismatic storytime narrator, punchy emphasis, dramatic pauses, smiling",
+        "shared_delivery": false,
+        "note": "owner 2026-11-25: the first Gemini version's narrator (this style, no shared delivery) was the best"
       }
     },
     "NARRATOR_F": {
