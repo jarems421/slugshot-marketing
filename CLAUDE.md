@@ -41,6 +41,9 @@ Set up a local, working production toolkit for one Roblox game. Do not build a n
 - Research requests use the `slugshot-research-operations` skill (`ss research collect/bundle`, `ss observe cc-session`). Roles: ChatGPT = methodology, specifications, interpretation, culture, strategy, scripts; Claude = operational research, tooling, files, editing, Roblox-native production; Gemini/Flow = footage analysis and visuals; owner = strategy, creative judgement, approvals.
 - No new agent, orchestration framework, database, dashboard or scheduler for convenience; reuse the toolkit and add small glue only where it removes real friction.
 
+## Infrastructure frozen (owner decision, 2026-11-25)
+- No new infrastructure, dashboard features or redesigns. Priority: reusable Roblox footage and content production. Only small, isolated correctness fixes with regression tests, when the owner asks or a real defect blocks production. Known limits to revisit after real posts are listed in docs/dashboard/README.md ("To revisit after real content is published").
+
 ## Current phase: active research and marketing (owner decision, 2026-11-24)
 - Infrastructure is complete. Don't build more unless a genuine operational need arises for a specific decision; reuse `ss`, the skills, native connectors and Composio (read-only) first.
 - Research methodology: ChatGPT's research skills v1.1 (`docs/chatgpt-research-skills-v1.1.md`). The stricter of it, provider policy and game truth wins. Codebook v1.1 (ten codes, five beats); packets via `ss analyze coding-packet`; a second session of the same model is a repeat check, not independent verification.

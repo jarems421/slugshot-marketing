@@ -416,7 +416,7 @@ async function pageViews() {
   const kpis = h("div", { class: "kpis" },
     kpi("Views", n(T.views.value), delta(T.views.value, T.views.prev, periodLabel()), VIEWS_TIP),
     kpi("Watch time", n(T.watch_time_minutes.value, "minutes"), T.watch_time_minutes.covered.length ? `${T.watch_time_minutes.covered.map(acctLabel).join(", ")}` : "not reported yet"),
-    kpi("Avg view duration", n(T.avg_view_s, "seconds"), T.avg_view_s != null ? "weighted by views, videos that report it" : "not reported yet"),
+    kpi("Avg view duration", n(T.avg_view.value, "seconds"), T.avg_view.basis === "period" ? `in range · ${T.avg_view.covered.map(acctLabel).join(", ")}` : T.avg_view.basis === "lifetime" ? "lifetime average per video (no daily data)" : "not reported yet"),
     kpi("Likes", n(eng("likes"))), kpi("Comments", n(eng("comments"))), kpi("Shares", n(eng("shares"))), kpi("Saves", n(eng("saves"))));
   return [pageHead("Views", { back: ["#/overview", "Overview"], right: filterBar() }), h("div", { class: "stack" }, kpis,
     panel("Views over time", { tip: VIEWS_TIP }, lineChart(trendSeries(d, "views"), { label: "Views over time" })),
@@ -511,7 +511,7 @@ async function pageAccount(id) {
     right: [h("a", { class: "btn ghost small", href: profile, target: "_blank", rel: "noreferrer" }, "Profile ", icon(ICONS.external, 14)), filterBar({ platform: false, account: false, language: false })] }),
   h("div", { class: "stack" },
     h("div", { class: "kpis" }, kpi("Views", n(st.views), delta(st.views, st.views_prev, periodLabel())), kpi("Followers", n(st.followers), st.followers_change != null ? signed(st.followers_change) + " in range" : null),
-      kpi("Watch time", n(st.watch_time_minutes, "minutes"), st.watch_time_minutes == null ? "not reported" : null), kpi("Avg view", n(st.avg_view_s, "seconds")),
+      kpi("Watch time", n(st.watch_time_minutes, "minutes"), st.watch_time_minutes == null ? "not reported" : null), kpi("Avg view", n(st.avg_view_s, "seconds"), st.avg_view_s == null ? null : st.avg_view_basis === "period" ? "in range" : "lifetime, per video"),
       kpi("Engagement", eng.length ? n(eng.reduce((x, y) => x + y, 0)) : "—", "likes, comments, shares, saves")),
     panel(null, { actions: pick }, chartBox),
     videosPanel(d.videos, "views"))];

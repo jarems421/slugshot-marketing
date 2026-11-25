@@ -172,7 +172,9 @@ def account_stats(store, a, start, end, all_time, ups, snaps):
         if ser is not None:
             out["series"][metric] = [{"d": d_, "v": ser.get(d_, 0)} for d_ in (days or sorted(ser))]
         out["basis"][metric], out["partial"][metric] = basis, part
-    out["avg_view_s"] = weighted_avg_view([u for u in mine], snaps)
+    pav = period_avg_view(store, [a], start, end)
+    out["avg_view_s"], out["avg_view_basis"] = (pav[0], "period") if pav[0] is not None else (weighted_avg_view(mine, snaps), "lifetime")
+    out["days_with_data"] = {m: len(_day_series(store, aid, m, start, end)) for m in ("views", "watch_time_minutes")} if out["basis"].get("views") == "daily report" else {}
 
     # Followers: latest level, change over the window, gained/lost where the platform reports them.
     pts = store.q("""SELECT period_start d, value v, observed_at_utc o FROM observations WHERE account_id=? AND metric='followers'
@@ -210,6 +212,52 @@ def account_stats(store, a, start, end, all_time, ups, snaps):
     return out
 
 
+def period_avg_view(store, accounts, start, end):
+    """Average view duration inside the window, where a platform reports it per day (YouTube): each day's average
+    weighted by that day's views. Returns (value, accounts covered); (None, []) when no account reports it per day."""
+    num = den = 0.0
+    covered = []
+    for a in accounts:
+        avg = _day_series(store, a["account_id"], "avg_view_duration_s", start, end)
+        views = _day_series(store, a["account_id"], "views", start, end)
+        both = [(avg[d_], views[d_]) for d_ in avg if d_ in views and views[d_]]
+        if both:
+            covered.append(a["account_id"])
+            num += sum(x * v for x, v in both)
+            den += sum(v for _, v in both)
+    return (round(num / den, 1), covered) if den else (None, [])
+
+
+def comparable(store, account_id, metric, cur, prev, pstart):
+    """True only if the previous period was measured the same way and about as completely as the current one:
+    same basis, neither period partly measured, and for daily reports, data that began before the previous period and
+    at least 80% as many days with data. Anything else suppresses the comparison rather than risk a false change."""
+    if prev is None or cur[metric] is None or prev[metric] is None:
+        return False
+    if cur["basis"].get(metric) != prev["basis"].get(metric) or cur["partial"].get(metric) or prev["partial"].get(metric):
+        return False
+    if cur["basis"].get(metric) == "daily report":
+        first = store.q("""SELECT MIN(period_start) d FROM observations WHERE account_id=? AND metric=? AND period_type='day'
+                           AND breakdown_dim='' AND status='value'""", (account_id, metric))[0]["d"]
+        if not first or first > pstart:
+            return False
+        c, q = cur["days_with_data"].get(metric, 0), prev["days_with_data"].get(metric, 0)
+        if q < 0.8 * c:
+            return False
+    return True
+
+
+def avg_view_total(store, accounts, uploads, snaps, start, end):
+    """Period average where any account reports one per day (only those accounts); otherwise the lifetime per-video
+    average, labelled as such. The two are never blended."""
+    value, covered = period_avg_view(store, accounts, start, end)
+    if value is not None:
+        return {"value": value, "basis": "period", "covered": covered}
+    value = weighted_avg_view(uploads, snaps)
+    return {"value": value, "basis": "lifetime" if value is not None else None,
+            "covered": sorted({u["account_id"] for u in uploads}) if value is not None else []}
+
+
 def weighted_avg_view(uploads, snaps):
     """Average view duration: each video's own reported average, weighted by its views, over the videos that report
     both. Dividing total watch time by total views would mix videos with and without watch-time data."""
@@ -238,8 +286,8 @@ def analytics(store, f):
     for a in accts:
         st = account_stats(store, a, start, end, all_time, ups, snaps)
         prev = None if all_time else account_stats(store, a, pstart, pend, False, ups, snaps)
-        st["views_prev"] = None if prev is None or prev["partial"].get("views") else prev["views"]
-        st["watch_prev"] = None if prev is None else prev["watch_time_minutes"]
+        st["views_prev"] = prev["views"] if comparable(store, a["account_id"], "views", st, prev, pstart) else None
+        st["watch_prev"] = prev["watch_time_minutes"] if comparable(store, a["account_id"], "watch_time_minutes", st, prev, pstart) else None
         rows.append({**{k: a[k] for k in ("account_id", "platform", "language", "label", "handle")}, "stats": st,
                      "videos": sum(1 for u in ups if u["account_id"] == a["account_id"])})
 
@@ -270,7 +318,8 @@ def analytics(store, f):
             continue
         agg = {k: _sum(r["stats"][k] for r in pr) for k in ("views", "watch_time_minutes", "followers", "followers_change", *ENGAGEMENT)}
         agg["views_prev"] = _sum(r["stats"]["views_prev"] for r in pr) if all(r["stats"]["views_prev"] is not None for r in pr if r["stats"]["views"] is not None) else None
-        agg["avg_view_s"] = weighted_avg_view([u for u in ups if u["platform"] == p], snaps)
+        av = avg_view_total(store, [a for a in accts if a["platform"] == p], [u for u in ups if u["platform"] == p], snaps, start, end)
+        agg["avg_view_s"], agg["avg_view_basis"] = av["value"], av["basis"]
         agg["series"] = {m: _merge([r["stats"]["series"].get(m) for r in pr]) for m in ("views", "followers", "watch_time_minutes")}
         platforms.append({"platform": p, "accounts": [r["account_id"] for r in pr], "stats": agg})
 
@@ -291,7 +340,7 @@ def analytics(store, f):
             "filters": {k: f.get(k, "") for k in ("range", "platform", "account", "language")},
             "accounts": rows, "platforms": platforms,
             "totals": {"views": views, "followers": fol, "watch_time_minutes": watch, "engagement": eng,
-                       "avg_view_s": weighted_avg_view(ups, snaps)},
+                       "avg_view": avg_view_total(store, accts, ups, snaps, start, end)},
             "videos": videos, "has_data": bool(store.q("SELECT 1 FROM observations WHERE platform IN ('youtube','tiktok','instagram') LIMIT 1")),
             "generated_at": now_iso()}
 

@@ -83,8 +83,8 @@ Owner screens (`analytics.py`, owner decision 2026-11-25):
 - **Views are added across platforms**, labelled *combined, platform-reported*: not unique viewers, and each platform counts a view differently. **Followers** are combined account counts, not unique people. **Watch time** is added only over accounts that report it, and those accounts are named.
 - YouTube periods come from daily analytics. TikTok and Instagram give lifetime totals per video, so a period's views are the growth between daily snapshots; views a video had before tracking began count only in *all time* (the period is marked partly measured).
 - Each video's metric comes from one source: the native API first, then Buffer, then manual imports. Buffer only writes what the native API lacks, so nothing is counted twice.
-- Missing stays missing (—), never 0. A comparison with the previous period appears only when both periods were measured the same way.
-- Average view duration is each video's own reported average, weighted by its views, over the videos that report it.
+- Missing stays missing (—), never 0. A comparison with the previous period appears only if both periods used the same basis, neither was partly measured, and, for daily reports, data began before the previous period and the previous period has at least 80% as many days with data. Otherwise no comparison is shown.
+- Average view duration for a range uses the platform's daily figures where it reports them (YouTube): each day's average weighted by that day's views. Where only per-video lifetime averages exist (TikTok and Instagram via Buffer), the figure is labelled *lifetime*. The two are never blended.
 - **Measurement windows:** videos are compared at 24 h (±6 h), 48 h (±8 h) and 7 days (±24 h) after posting; a reading outside the window is shown with a flag and left out of comparisons. Accounts with a video under 8 days old refresh every 4 hours so readings land close to those ages.
 - **Comparisons** are within one platform (optionally one language) at one checkpoint, grouped by a creative tag; medians and ranges per group; groups under 3 videos are marked too small. Patterns across groups, not single viral videos.
 - **Creative tags** (per concept): format and objective from the knowledge-bank vocabularies, hook and narrative codes from the creative codebook (`config/research/codebooks/slugshot-creative.json`), characters from the game's names in the caption glossary, humour and mechanism as knowledge-bank entry IDs.
@@ -127,6 +127,15 @@ Loopback only; Host-header check (DNS rebinding); cross-origin requests refused;
 | Activation stage | blocked: needs approved in-game events ([proposal](activation-events-proposal.md)) |
 
 What the owner must do: [credentials-checklist.md](credentials-checklist.md).
+
+## To revisit after real content is published
+
+Known limits, left as they are on purpose (infrastructure is frozen); check them against real data:
+
+- **Background refresh dependency.** The 4-hour refresh for young videos only runs while the dashboard server is running (it has no OS scheduler). If the PC is off or asleep around 24 h or 48 h after posting, that reading lands outside its window and is flagged rather than compared. If this happens often, decide whether to keep the server running after posting.
+- **YouTube reporting delays.** YouTube Analytics usually lags by 1–3 days, and its most recent days fill in later. Ranges ending today undercount YouTube, and comparisons that include the last few days lean low. The 80% days-with-data rule catches large gaps, not this lag.
+- **Small-sample comparisons.** Groups under 3 videos are flagged, but a median of 3–5 videos is still fragile. Treat comparisons as hypotheses for the next video, not conclusions, until groups are larger. Findings are saved as drafts with `exploratory` or `suggestive` strength for this reason.
+- **Buffer pagination costs.** The Buffer sync reads sent posts 50 per request, up to 4 pages per account. With many posts and the 4-hour cadence, that could approach 4 requests × 3 accounts × 6 refreshes a day (about 2,100 a month) against the 3,000 free requests. Analytics pause below 150 left, so posting is protected. Watch the Buffer meter in Settings once posts accumulate.
 
 ## Integrations: adopted, deferred, rejected
 

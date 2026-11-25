@@ -86,12 +86,37 @@ class Totals(unittest.TestCase):
         tt = next(r for r in self.d["accounts"] if r["account_id"] == "tt-en")["stats"]
         self.assertEqual(tt["followers_change_basis"], "since first reading")  # TikTok reports no gains/losses
 
-    def test_avg_view_is_weighted_by_views_of_videos_that_report_it(self):
-        snaps = A.snapshots(self.s, A.uploads_of(self.s, ["yt-en"]))
-        num = sum(A.latest(v["avg_view_duration_s"]["points"]) * A.latest(v["views"]["points"]) for v in snaps.values() if "avg_view_duration_s" in v)
-        den = sum(A.latest(v["views"]["points"]) for v in snaps.values() if "avg_view_duration_s" in v)
+    def test_avg_view_uses_the_range_where_daily_data_exists(self):
+        days = {r["period_start"]: r["value"] for r in self.s.q("""SELECT period_start, value FROM observations WHERE account_id='yt-en'
+                AND metric='avg_view_duration_s' AND period_type='day' AND period_start BETWEEN ? AND ?""", (self.d["start"], self.d["end"]))}
+        views = {r["period_start"]: r["value"] for r in self.s.q("""SELECT period_start, value FROM observations WHERE account_id='yt-en'
+                 AND metric='views' AND period_type='day' AND period_start BETWEEN ? AND ?""", (self.d["start"], self.d["end"]))}
+        want = round(sum(days[d] * views[d] for d in days) / sum(views[d] for d in days), 1)
         yt = next(r for r in self.d["accounts"] if r["account_id"] == "yt-en")["stats"]
-        self.assertAlmostEqual(yt["avg_view_s"], round(num / den, 1))
+        self.assertEqual((yt["avg_view_s"], yt["avg_view_basis"]), (want, "period"))
+        self.assertEqual((self.d["totals"]["avg_view"]["basis"], self.d["totals"]["avg_view"]["covered"]), ("period", ["yt-en"]))
+        week = A.analytics(self.s, {"range": "7", "account": "yt-en"})["accounts"][0]["stats"]
+        self.assertNotEqual(week["avg_view_s"], None)                 # it follows the selected range
+
+    def test_avg_view_without_daily_data_is_labelled_lifetime(self):
+        tt = next(r for r in self.d["accounts"] if r["account_id"] == "tt-en")["stats"]
+        self.assertEqual(tt["avg_view_basis"], "lifetime")
+        only_tt = A.analytics(self.s, {"range": "30", "platform": "tiktok"})["totals"]["avg_view"]
+        self.assertEqual(only_tt["basis"], "lifetime")                # never blended with a period figure
+
+    def test_comparison_needs_equivalent_coverage(self):
+        yt30 = next(r for r in self.d["accounts"] if r["account_id"] == "yt-en")["stats"]
+        self.assertIsNone(yt30["views_prev"])                         # daily data began inside the previous 30 days
+        self.assertIsNone(self.d["totals"]["views"]["prev"])
+        yt7 = A.analytics(self.s, {"range": "7", "account": "yt-en"})["accounts"][0]["stats"]
+        self.assertIsNotNone(yt7["views_prev"])                       # both weeks fully reported
+        cur = {"views": 10, "basis": {"views": "daily report"}, "partial": {"views": False}, "days_with_data": {"views": 7}}
+        thin = {"views": 4, "basis": {"views": "daily report"}, "partial": {"views": False}, "days_with_data": {"views": 3}}
+        self.assertFalse(A.comparable(self.s, "yt-en", "views", cur, thin, "2000-01-01"))   # 3 of 7 days: coverage differs
+        other = {"views": 4, "basis": {"views": "daily snapshots"}, "partial": {"views": False}, "days_with_data": {}}
+        self.assertFalse(A.comparable(self.s, "yt-en", "views", cur, other, "2000-01-01"))  # different basis
+        part = {**cur, "partial": {"views": True}}
+        self.assertFalse(A.comparable(self.s, "yt-en", "views", cur, part, "2000-01-01"))   # partly measured
 
     def test_filters_narrow(self):
         tt = A.analytics(self.s, {"range": "30", "platform": "tiktok"})
