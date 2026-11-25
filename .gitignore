@@ -34,3 +34,4 @@ public/
 
 # Unreviewed third-party research reports (Stage 4.6): keep local until owner review
 research/sources/
+roblox-native/studio/asset-overrides.json

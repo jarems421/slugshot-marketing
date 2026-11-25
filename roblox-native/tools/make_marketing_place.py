@@ -26,9 +26,24 @@ STUDIO = HERE / "studio"
 GAME = HERE.parent.parent / "slugshot"
 DEFAULT_SOURCE = GAME / "build" / "SlugshotLobbyTraining.rbxlx"
 MARKER_FILE = STUDIO / "marker.json"
+OVERRIDES = STUDIO / "asset-overrides.json"
 CONNECT = "function Store.connect(): (any, string?)\n"
 ISOLATE = CONNECT + '\tdo return nil, "MarketingIsolated" end -- slugshot-marketing copy: DataStores disabled\n'
 SERVER_STORAGE = '<Item class="ServerStorage" referent="'
+# The hub's look-only motion (HubMotion: drifting islands and debris, lamp pulses, lava) runs on its own clock. Takes
+# set workspace.FilmClock so it follows scene time instead: every pass and patch of a take then shows the islands, and
+# the shadows they cast, in the same place (owner, 2026-11-25: shadows "jittering, cut" between frames). Storm flashes
+# are random, so they pause while filming.
+HUB_CLOCK = [
+    ("\tlocal t = os.clock() - started\n\tif t >= nextMove then\n\t\tnextMove = t + (if low then MOVE_RATE else 0)\n"
+     "\t\tmoveParts(t)\n\t\tflash(t)\n\t\tpulseStep(t)\n",
+     "\tlocal film = workspace:GetAttribute(\"FilmClock\") :: number? -- slugshot-marketing: takes drive the hub's clock\n"
+     "\tlocal t = film or (os.clock() - started)\n\tif film or t >= nextMove then\n"
+     "\t\tnextMove = t + (if low then MOVE_RATE else 0)\n\t\tmoveParts(t)\n\t\tif not film then\n\t\t\tflash(t)\n\t\tend\n"
+     "\t\tif film then\n\t\t\tnextPulse = 0\n\t\tend\n\t\tpulseStep(t)\n"),
+    ("\tlocal t = os.clock() - gloopStarted\n",
+     "\tlocal t = (workspace:GetAttribute(\"FilmClock\") :: number?) or (os.clock() - gloopStarted) -- slugshot-marketing\n"),
+]
 
 
 def sha256(path):
@@ -113,6 +128,18 @@ def main():
     if n != 2:
         raise SystemExit(f"expected 2 SettingsStore.connect functions, found {n}; review before patching")
     text = text.replace(CONNECT, ISOLATE)
+    for old, new in HUB_CLOCK:
+        if text.count(old) != 1:
+            raise SystemExit(f"expected HubMotion's clock line once, found {text.count(old)}: {old.splitlines()[0].strip()}")
+        text = text.replace(old, new)
+    # Repaired slug textures (the game's tools/slugs/repair_textures.py): {old image id: new id}, kept in an ignored
+    # file, as the IDs are private. Applies until the game's own build carries the new IDs.
+    swapped = 0
+    if OVERRIDES.exists():
+        for old, new in json.loads(OVERRIDES.read_text(encoding="utf-8")).items():
+            n = text.count(f"rbxassetid://{old}<")
+            text = text.replace(f"rbxassetid://{old}<", f"rbxassetid://{new}<")
+            swapped += n
 
     i = text.find(SERVER_STORAGE)
     if i < 0 or text.count(SERVER_STORAGE) != 1:
@@ -139,7 +166,9 @@ def main():
         "built_utc": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "source": str(DEFAULT_SOURCE if not a.source else a.source), "source_sha256": sha256(snap),
         "game_commit": commit, "output_sha256": sha256(out),
-        "patches": ["SettingsStore.connect -> MarketingIsolated (x2)", "ServerStorage marker + provenance",
+        "patches": ["SettingsStore.connect -> MarketingIsolated (x2)", "HubMotion follows workspace.FilmClock during takes",
+                    f"repaired slug textures: {swapped} reference(s) swapped (studio/asset-overrides.json)",
+                    "ServerStorage marker + provenance",
                     "ReplicatedStorage.SlugshotMarketing runtime (Reel 4b810e9, Scene, Library, Scenes)"],
         "scenes": scene_ids,
     }, indent=1), encoding="utf-8")

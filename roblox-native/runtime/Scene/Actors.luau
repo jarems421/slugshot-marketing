@@ -155,6 +155,16 @@ function Actors.spawn(name: string, def: any, parent: Instance): any
 			end
 		end
 	end
+	if def.species == "Inferno" then
+		-- The game's InfernoTeeth reshapes a live Inferno's tooth divider from his lip bones. On a staged actor that
+		-- reshape put the divider behind his teeth, peeking out along the bottom of the grin (owner, 2026-11-25: the
+		-- smile's middle line "pushed below"); the authored divider runs across the middle of the grin. InfernoTeeth
+		-- leaves anything under a "SlugShots" ancestor alone (it skips shot models), so he stands in one.
+		local keep = Instance.new("Folder")
+		keep.Name = "SlugShots"
+		keep.Parent = parent
+		parent = keep
+	end
 	model.Parent = parent
 	local actor = {
 		name = name, def = def, model = model, height = size.Y, size = size, lift = lift,
@@ -184,18 +194,37 @@ function Actors.spawn(name: string, def: any, parent: Instance): any
 			if d:IsA("BasePart") then
 				d.CastShadow = false
 			end
+			-- Rammstone's armour plates are single sheets: from below, their culled undersides showed as gaps (owner,
+			-- 2026-11-25). The game's RammstoneAppearance does the same since then; this covers older game builds.
+			if def.species == "Rammstone" and d:IsA("MeshPart") and not string.find(d.Name, "Eye", 1, true) then
+				d.DoubleSided = true
+			end
 		end
-		local brightness = if def.fill ~= nil then def.fill else 0.7
-		if brightness > 0 and model.PrimaryPart then
+		-- A slug's own glow (the game's SlugGlow) reaches 5-6.5 studs: in a close two-shot Floppy's lit Aquabeek's face
+		-- as a soft green spot (owner, 2026-11-25: her face "looks very weird ... the soft looking cheek"). Staged
+		-- slugs keep their glow on themselves and their patch of floor.
+		for _, d in model:GetDescendants() do
+			if d:IsA("PointLight") and d.Name == "SlugGlow" then
+				d.Range = math.min(d.Range, 2.2)
+			end
+		end
+		-- Aquabeek's skin is glossy: a fill at face height shows as a pale spot between her eyes, so hers comes from
+		-- higher up, where its reflection falls on the top of her head (tested 2026-11-25).
+		local glossy = def.species == "Aquabeek"
+		local brightness = if def.fill ~= nil then def.fill elseif glossy then 0.6 else 0.7
+		-- Some imports set no PrimaryPart (Aquabeek's), and went without a fill: their RootPart carries it.
+		local host = model.PrimaryPart or model:FindFirstChild("RootPart", true)
+		if brightness > 0 and host and host:IsA("BasePart") then
 			-- in front of the face (pivot -Z) at head height, riding with the model as it moves
 			local at = Instance.new("Attachment")
 			at.Name = "SS_fill"
-			at.Parent = model.PrimaryPart
-			at.WorldPosition = model:GetPivot() * Vector3.new(0, size.Y * 0.15, -(size.Z * 0.5 + size.Y * 0.7))
+			at.Parent = host
+			local up, out = if glossy then 1.0 else 0.15, if glossy then 1.0 else 0.7
+			at.WorldPosition = model:GetPivot() * Vector3.new(0, size.Y * up, -(size.Z * 0.5 + size.Y * out))
 			local fill = Instance.new("PointLight")
 			fill.Shadows = false
 			fill.Brightness = brightness
-			fill.Range = math.max(size.Y * 2.2, 5)
+			fill.Range = math.max(size.Y * (if glossy then 3 else 2.2), 5)
 			fill.Color = Color3.fromRGB(255, 244, 232)
 			fill.Parent = at
 		end
@@ -481,6 +510,8 @@ end
 
 -- Lower-lip gains from the game's SlugIdle MOUTH_GAIN (how far each painted mouth may open).
 local LIP_GAIN = { Aquabeek = 0.5, Rammstone = 0.4, Tormato = 0.5, BoonDoc = 0.4 }
+-- Constant outward set of the mouth corners, studs per unit (matches the game's SlugIdle MOUTH_GAIN spread).
+local MOUTH_SPREAD = { Aquabeek = 0.022 }
 
 local function offset(actor: any, name: string, v: Vector3)
 	for _, c in actor.bones[name] or {} do
@@ -625,6 +656,18 @@ function Actors.pose(actor: any, t: number, where: (string, number) -> Vector3, 
 		local u = idle and idle.unit or 1
 		local lip = LIP_GAIN[actor.def.species] or 0.5
 		offset(actor, "mouth_low", Vector3.new(0, -0.018 * lip * mouth * u, 0))
+		-- Aquabeek's mouth is a fifth longer (owner, 2026-11-25: "make the mouth longer"). The game's SlugIdle sets
+		-- this spread itself from then on (it marks that with MOUTH_SPREAD); older game builds get it here.
+		local spread = MOUTH_SPREAD[actor.def.species]
+		if spread and not slugIdle().MOUTH_SPREAD then
+			for _, side in { "mouth_L", "mouth_R" } do
+				for _, c in actor.bones[side] or {} do
+					local sign = if c.rest.Position.X >= 0 then 1 else -1
+					c.bone.Transform = CFrame.new(c.rest:VectorToObjectSpace(Vector3.new(spread * sign * u, 0, 0)))
+						* c.bone.Transform
+				end
+			end
+		end
 	end
 end
 

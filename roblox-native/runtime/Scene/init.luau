@@ -81,10 +81,10 @@ local function applyLook(look: any?): () -> ()
 	-- blocks (owner, 2026-11-25: "rectangular and blocky ... so stiff"). Soften them for the take.
 	table.insert(undo, { Lighting, "ShadowSoftness", Lighting.ShadowSoftness })
 	Lighting.ShadowSoftness = look and look.shadow_softness or 1
-	-- Roblox gives shadow maps to only a few local lights at a time and reassigns them as the camera moves, so
-	-- lamp and crystal shadows popped on and off across the slugs (owner, 2026-11-25: "shadows just flash").
-	-- Takes use shadowless local lights; look.local_shadows = true keeps them.
-	if not (look and look.local_shadows) then
+	-- Lamps and crystals keep their shadows (owner, 2026-11-25: "I still want the shadows"). The flashing first
+	-- blamed on them came from the hub's clock running apart from scene time (see FilmClock); look.local_shadows =
+	-- false still turns them off for a scene that needs it.
+	if look and look.local_shadows == false then
 		for _, e in workspace:GetDescendants() do
 			if (e:IsA("PointLight") or e:IsA("SpotLight") or e:IsA("SurfaceLight")) and e.Shadows then
 				table.insert(undo, { e, "Shadows", true })
@@ -215,7 +215,12 @@ function Scene.prepare(id: string, options: any?): any
 	local portrait = opts.portrait
 	local camera = workspace.CurrentCamera
 	local lock = nil
+	-- The hub's look-only motion (drifting islands and their sun shadows, lamp pulses, lava) follows scene time
+	-- through workspace.FilmClock (a marketing patch to the game's HubMotion), so every pass and patch of a take
+	-- agrees. world.clock picks where in their cycle the take happens.
+	local worldClock = spec.world and spec.world.clock or 60
 	local function frame(t: number): (CFrame, number, number)
+		workspace:SetAttribute("FilmClock", worldClock + t)
 		local speaker = Actors.speakerAt(dialogue, t)
 		for _, a in actors do
 			Actors.pose(a, t, where, speaker)
@@ -322,6 +327,7 @@ function Scene.prepare(id: string, options: any?): any
 	end
 	local function destroy()
 		RunService:UnbindFromRenderStep("SlugshotSceneCamera")
+		workspace:SetAttribute("FilmClock", nil)
 		if grove and groveParent and grove.Parent == nil then
 			grove.Parent = groveParent
 		end
