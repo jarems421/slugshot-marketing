@@ -119,7 +119,7 @@ def main():
     ap.add_argument("--test", action="store_true", help="mark the render as non-production for Remotion")
     ap.add_argument("--out-dir", help="write the video here instead of exports/ (and don't log it)")
     a = ap.parse_args()
-    edit = json.loads(Path(a.edit_file).read_text(encoding="utf-8"))
+    edit = json.loads(Path(a.edit_file).read_text(encoding="utf-8-sig"))
     fmt = edit.get("format", "WORLD").upper()
     preset = {k: v for k, v in FORMATS[fmt].items() if k != "description"}
     name = batch.next_name(date.today().strftime("%Y%m%d"), fmt, edit["concept"], edit.get("hook_id", "Edit"))

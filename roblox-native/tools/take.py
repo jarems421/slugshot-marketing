@@ -156,6 +156,9 @@ def film(take_path, videos, out, crf):
     repeat the previous frame and are listed as ranges to re-film."""
     import numpy as np
     take = load(take_path)
+    if take.get("quality") == "unlocked":
+        print("WARNING: filmed at Studio's Automatic quality: passes can be lit differently and flicker when mixed; "
+              "start takes from Studio MCP so Scene.film can lock the quality level")
     st, (vw, vh) = take["stamp"], take["viewport"]
     frames = take["frames"]
     # Each recording's viewport rectangle: the magenta calibration card (window recordings from tools/rec.py), or

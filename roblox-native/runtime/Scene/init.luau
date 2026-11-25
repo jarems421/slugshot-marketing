@@ -459,9 +459,19 @@ function Scene.film(id: string, options: any?): any
 	local vp = workspace.CurrentCamera.ViewportSize
 	assert(opts.allow_small or (vp.Y >= 1000 and vp.X >= vp.Y * 16 / 9),
 		`viewport {math.floor(vp.X)}x{math.floor(vp.Y)} is too small for native 1080x1920: maximise the Studio window`)
+	-- Studio's Automatic graphics quality drops lamps, glows and sparkles when the frame rate dips, so passes of
+	-- one take lit the slugs differently and the decoded video flickered between them (owner, 2026-11-25:
+	-- shadows "jittering, cut"). Takes render at the top quality level and restore the owner's setting after.
+	-- (Settable when the take is started from Studio MCP; a game script can't, and then this is a no-op.)
+	local quality = nil
+	pcall(function()
+		quality = settings().Rendering.QualityLevel
+		settings().Rendering.QualityLevel = Enum.QualityLevel.Level21
+	end)
 	local st = Scene.prepare(id, { portrait = opts.portrait ~= false, seed = opts.seed })
 	local takeName = opts.take or `{st.spec.id}_{os.date("!%Y%m%dT%H%M%S")}`
 	local manifest = newManifest(st.spec, takeName, "film")
+	manifest.quality = if quality then "Level21" else "unlocked"
 	manifest.silent = true
 	local frames = math.ceil(st.duration * Scene.FPS)
 	local gui, squares = mountStamp()
@@ -531,6 +541,11 @@ function Scene.film(id: string, options: any?): any
 	manifest.frames, manifest.fps, manifest.hold, manifest.portrait = frames, Scene.FPS, hold, opts.portrait ~= false
 	gui:Destroy()
 	st.destroy()
+	if quality then
+		pcall(function()
+			settings().Rendering.QualityLevel = quality
+		end)
+	end
 	manifest.ended_ms = now()
 	manifest.completed = ok
 	manifest.error = if ok then nil else tostring(err)

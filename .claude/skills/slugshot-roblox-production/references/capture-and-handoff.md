@@ -52,6 +52,7 @@ Facts to remember:
 - `screen_capture` without camera arguments didn't show the play viewport; use `video_capture` grabs as the truth.
 - The player's avatar must stay in the world (the lobby's presentation follows it); the runner hides it and parks it under the set (the game draws a blaster holster on its back outside the character model, which showed as black blobs).
 - The hub's look-only motion (drifting islands and their sun shadows, lamp pulses, lava) follows `workspace.FilmClock`, set by the runner from scene time (a marketing patch to HubMotion), so every pass and patch of a take agrees. Never mix passes from a place built without that patch: moving shadows jump between frames.
+- Scene.film locks Studio's graphics quality at Level21 for the take and restores the owner's setting after (manifest `quality`). At Automatic, Studio dropped lamps, glows and sparkles whenever the frame rate dipped, so two passes of one take were lit differently and the decoded video flickered between them (owner, 2026-11-25). Decode with the most complete pass first, so the other only fills its gaps (particles such as crystal sparkles are random per pass).
 - Lamp shadows stay on; `look.local_shadows: false` turns them off for a scene.
 - Inferno actors stand in a `SlugShots` folder so the game's InfernoTeeth leaves their authored tooth divider alone (its reshape misplaced it on staged actors).
 - Staged slugs' own glow is capped at 2.2 studs, so it doesn't light a neighbour's face in a two-shot.
