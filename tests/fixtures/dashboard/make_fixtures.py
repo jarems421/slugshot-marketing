@@ -20,7 +20,7 @@ def wave(i, base, amp, phase=0.0):
 
 
 # YouTube Data API + Analytics API
-w("yt_channels", {"items": [{"id": "UCFIXTURE000000000000001", "snippet": {"title": "FIXTURE channel", "customUrl": "@fixture"},
+w("yt_channels", {"items": [{"id": "UCFIXTURE000000000000001", "snippet": {"title": "FIXTURE channel", "customUrl": "@ronin_jt"},
                              "statistics": {"subscriberCount": "1240", "hiddenSubscriberCount": False},
                              "contentDetails": {"relatedPlaylists": {"uploads": "UUFIXTURE000000000000001"}}}]})
 vids = [("FXyt0000001", "FIXTURE Floppy underdog duel", 3), ("FXyt0000002", "FIXTURE One slug for life (rule world)", 9),

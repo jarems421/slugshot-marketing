@@ -340,6 +340,13 @@ def publish_unit():
     return ("PASS" if r.returncode == 0 else "FAIL"), f"{ran}: {last} (fixture uploads only: chunking, approval binding, reveal lock, game truth, manual fallback, linking)"
 
 
+def analytics_unit():
+    r = run([PY, "-m", "unittest", "tests.test_analytics"])
+    last = (r.stderr.strip().splitlines() or ["?"])[-1]
+    ran = next((l for l in r.stderr.splitlines() if l.startswith("Ran ")), "")
+    return ("PASS" if r.returncode == 0 else "FAIL"), f"{ran}: {last} (combined totals, no double counting, measurement windows, tags, comparisons, learning loop)"
+
+
 def knowledge_live():
     """The real private knowledge banks validate (skipped when they don't exist on this machine)."""
     kbdir = ROOT / "data" / "local" / "research" / "knowledge"
@@ -352,6 +359,7 @@ def knowledge_live():
 
 DASHBOARD = [("Dashboard tests", dashboard_unit), ("Knowledge and sentiment tests", knowledge_unit),
              ("Publishing tests (no network)", publish_unit),
+             ("Analytics tests (owner screens)", analytics_unit),
              ("Knowledge banks validate", knowledge_live), ("Dashboard fixture sync (all connectors)", dashboard_demo),
              ("Dashboard server on loopback", dashboard_live_server)]
 

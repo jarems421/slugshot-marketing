@@ -59,6 +59,15 @@ def health(store):
     return rows
 
 
+def refresh_hours(store, account, cfg):
+    """Daily, but every few hours while the account has a video under young_days old, so 24 h and 48 h readings
+    land close to those ages (analytics.CHECKPOINTS)."""
+    young = (datetime.now(timezone.utc) - timedelta(days=cfg.get("young_days", 8))).isoformat()
+    if store.q("SELECT 1 FROM uploads WHERE account_id=? AND published_at_utc >= ? LIMIT 1", (account["account_id"], young)):
+        return cfg.get("young_refresh_hours", 4)
+    return cfg["refresh_hours"]
+
+
 def run(store=None, only=None, fixture=None, due_only=False, sleep=None):
     """Sync every ready target (or the ones named in `only`). Returns a list of per-target results."""
     if not _running.acquire(blocking=False):
@@ -74,7 +83,7 @@ def run(store=None, only=None, fixture=None, due_only=False, sleep=None):
                 continue
             if due_only:
                 ok_at = store.last_success(con.name, a["account_id"])
-                if ok_at and datetime.now(timezone.utc) - datetime.fromisoformat(ok_at) < timedelta(hours=cfg["refresh_hours"]):
+                if ok_at and datetime.now(timezone.utc) - datetime.fromisoformat(ok_at) < timedelta(hours=refresh_hours(store, a, cfg)):
                     continue
             run_id = f"{con.name}-{a['account_id']}-{datetime.now(timezone.utc):%Y%m%dT%H%M%SZ}-{os.urandom(2).hex()}"
             store.start_run(run_id, con.name, a["account_id"])

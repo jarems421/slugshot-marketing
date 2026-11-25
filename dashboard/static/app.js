@@ -1,6 +1,8 @@
 // Slugshot dashboard front end. No build step, no dependencies. All text goes through text nodes.
+// Principle (owner, 2026-11-25): the minimum useful information by default; detail only when you go looking for it.
 const TOKEN = document.querySelector('meta[name="dash-token"]').content;
 const FIXTURE = document.querySelector('meta[name="dash-fixture"]').content === "true";
+const EXPAND = new URLSearchParams(location.search).get("expand") === "1";  // screenshots: open every section
 const $main = document.getElementById("main");
 const $nav = document.getElementById("nav");
 
@@ -31,7 +33,7 @@ function s(tag, attrs, ...kids) {
   for (const k of kids.flat(9)) if (k != null) el.append(k instanceof Node ? k : document.createTextNode(String(k)));
   return el;
 }
-function icon(d, size = 19) {
+function icon(d, size = 18) {
   return s("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "none", stroke: "currentColor", "stroke-width": 1.8,
     "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true" }, [].concat(d).map((p) => s("path", { d: p })));
 }
@@ -40,7 +42,7 @@ const store = {
   set(k, v) { try { localStorage.setItem("ss-" + k, JSON.stringify(v)); } catch (e) { /* private window */ } },
 };
 async function api(path, params) {
-  const q = params ? "?" + new URLSearchParams(Object.entries(params).filter(([, v]) => v)) : "";
+  const q = params ? "?" + new URLSearchParams(Object.entries(params).filter(([, v]) => v != null && v !== "")) : "";
   const r = await fetch(path + q, { headers: { Accept: "application/json" } });
   const j = await r.json();
   if (!r.ok) throw new Error(j.error || r.statusText);
@@ -61,17 +63,17 @@ function toast(msg) {
 
 // ------------------------------------------------------------------ formatting
 const PLAT = {
-  youtube: { name: "YouTube", color: "var(--series-youtube)" },
-  tiktok: { name: "TikTok", color: "var(--series-tiktok)" },
-  instagram: { name: "Instagram", color: "var(--series-instagram)" },
-  roblox: { name: "Roblox", color: "var(--series-roblox)" },
+  youtube: { name: "YouTube", short: "YT", color: "var(--series-youtube)" },
+  tiktok: { name: "TikTok", short: "TT", color: "var(--series-tiktok)" },
+  instagram: { name: "Instagram", short: "IG", color: "var(--series-instagram)" },
+  roblox: { name: "Roblox", short: "RBX", color: "var(--series-roblox)" },
 };
 function n(v, unit) {
   if (v == null || v === "") return "—";
   if (unit === "fraction") return (v * 100).toFixed(v < 0.1 ? 1 : 0) + "%";
   if (unit === "percent") return v.toFixed(1) + "%";
   if (unit === "seconds") return (v >= 100 ? Math.round(v) : v.toFixed(1)) + " s";
-  if (unit === "minutes") return v >= 600 ? (v / 60).toLocaleString(undefined, { maximumFractionDigits: 0 }) + " h" : Math.round(v) + " min";
+  if (unit === "minutes") return v >= 120 ? (v / 60).toLocaleString(undefined, { maximumFractionDigits: v >= 6000 ? 0 : 1 }) + " h" : Math.round(v) + " min";
   if (unit === "Robux") return compact(v) + " R$";
   return compact(v);
 }
@@ -81,6 +83,7 @@ function compact(v) {
   if (a >= 1e4) return (v / 1e3).toFixed(a >= 1e5 ? 0 : 1) + "K";
   return Number.isInteger(v) || a >= 100 ? Math.round(v).toLocaleString() : v.toLocaleString(undefined, { maximumFractionDigits: 1 });
 }
+const signed = (v, unit) => (v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + n(Math.abs(v), unit));
 function ago(iso) {
   if (!iso) return "never";
   const m = (Date.now() - new Date(iso).getTime()) / 60000;
@@ -89,41 +92,59 @@ function ago(iso) {
   if (m < 48 * 60) return Math.round(m / 60) + " h ago";
   return Math.round(m / 1440) + " days ago";
 }
-function day(iso) {
+function day(iso, year) {
   if (!iso) return "—";
   const d = new Date(iso.length === 10 ? iso + "T00:00:00Z" : iso);
-  return d.toLocaleDateString(undefined, { day: "numeric", month: "short", timeZone: "UTC" });
+  return d.toLocaleDateString(undefined, { day: "numeric", month: "short", ...(year ? { year: "numeric" } : {}), timeZone: "UTC" });
 }
-const plat = (p) => h("span", { class: "plat" }, h("span", { class: "swatch", style: `background:${PLAT[p]?.color}` }), PLAT[p]?.name || p);
+const dot = (p) => h("span", { class: "swatch", style: `background:${PLAT[p]?.color}` });
+const plat = (p) => h("span", { class: "plat" }, dot(p), PLAT[p]?.name || p);
 const lang = (l) => (l ? h("span", { class: "lang" }, l.toUpperCase()) : null);
 const tip = (text) => h("span", { class: "tip", title: text, tabindex: "0", "aria-label": text }, "i");
 const chip = (text, tone) => h("span", { class: "chip " + (tone || "") }, text);
-const eyebrow = (t) => h("div", { class: "eyebrow" }, t);
+const atHandle = (a) => (a && a.handle ? "@" + a.handle.replace(/^@/, "") : "no handle set");
 let META = null;
 const mdef = (id) => META?.metrics.metrics.find((m) => m.id === id) || { id, label: id, unit: "" };
-const FRESH_TONE = { fresh: "ok", due: "warn", stale: "bad", "never synced": "", "not connected": "" };
-
+function delta(cur, prev, periodLabel) {
+  if (cur == null || prev == null) return null;
+  if (prev === 0) return cur === 0 ? h("span", { class: "delta flat" }, "no change") : h("span", { class: "delta up" }, `+${n(cur)} vs ${periodLabel}`);
+  const pct = ((cur - prev) / prev) * 100;
+  const cls = Math.abs(pct) < 0.5 ? "flat" : pct > 0 ? "up" : "down";
+  return h("span", { class: "delta " + cls }, `${pct > 0 ? "+" : pct < 0 ? "−" : ""}${Math.abs(pct).toFixed(Math.abs(pct) < 10 ? 1 : 0)}%`, h("span", { class: "muted", style: "font-weight:500" }, ` vs ${periodLabel}`));
+}
 function panel(title, opts, ...body) {
   opts = opts || {};
-  return h("section", { class: "panel" + (opts.flat ? " flat" : ""), id: opts.id || null, style: opts.delay ? `animation-delay:${opts.delay}ms` : null },
-    title || opts.eyebrow || opts.actions ? h("div", { class: "panel-head" },
-      h("div", { class: "grow" }, opts.eyebrow ? eyebrow(opts.eyebrow) : null, title ? h("h2", {}, title, opts.tip ? tip(opts.tip) : null) : null),
-      opts.actions || null) : null,
-    body);
+  return h("section", { class: "panel", id: opts.id || null },
+    title || opts.actions ? h("div", { class: "panel-head" }, h("h2", {}, title), opts.tip ? tip(opts.tip) : null, opts.hint ? h("span", { class: "hint" }, opts.hint) : null,
+      h("span", { class: "grow" }), opts.actions || null) : null, body);
+}
+function sect(title, sub, opts, ...body) {
+  return h("details", { class: "sect", open: opts?.open || EXPAND || null, id: opts?.id || null },
+    h("summary", {}, h("div", { class: "grow" }, h("h2", {}, title), sub ? h("div", { class: "s" }, sub) : null), opts?.right || null), h("div", { class: "body" }, body));
 }
 function empty(title, text, action) {
   return h("div", { class: "empty" }, h("strong", {}, title), text ? h("span", {}, text) : null, action || null);
 }
+function seg(options, value, onChange, label) {
+  const el = h("div", { class: "seg", role: "group", "aria-label": label }, options.map(([v, t]) =>
+    h("button", { type: "button", "aria-pressed": String(v === value), onclick: (e) => {
+      el.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b === e.currentTarget)));
+      onChange(v);
+    } }, t)));
+  return el;
+}
+function field(label, input, cls) { return h("label", { class: "field " + (cls || "") }, h("span", {}, label), input); }
 
 // ------------------------------------------------------------------ charts
-// Lines for change over time. One y axis; series coloured by platform identity (fixed, never by rank).
+// Lines for change over time; series coloured by platform identity (fixed, never by rank).
+let charts = [];
 function lineChart(series, opts = {}) {
   const box = h("div", { class: "chart" });
-  const live = series.filter((x) => x.points.length);
-  if (!live.length) return empty("No daily data in this range", opts.emptyText || "");
+  const live = series.filter((x) => x.points && x.points.length);
+  if (!live.length) return empty(opts.emptyTitle || "Nothing to chart yet", opts.emptyText || "");
   const legend = live.length > 1 ? h("div", { class: "legend" }, live.map((x) => h("span", {}, h("span", { class: "swatch", style: `background:${x.color}` }), x.label))) : null;
   const tableBtn = h("button", { class: "btn ghost small", type: "button" }, "Table");
-  const wrap = h("div", {}, h("div", { style: "display:flex;align-items:center;gap:10px;margin-bottom:8px" }, legend, h("span", { style: "flex:1" }), tableBtn), box);
+  const wrap = h("div", {}, h("div", { style: "display:flex;align-items:center;gap:10px;margin-bottom:6px;min-height:28px" }, legend, h("span", { style: "flex:1" }), tableBtn), box);
   let showTable = false;
   tableBtn.onclick = () => { showTable = !showTable; tableBtn.textContent = showTable ? "Chart" : "Table"; draw(); };
   const dates = [...new Set(live.flatMap((x) => x.points.map((p) => p.d)))].sort();
@@ -135,14 +156,14 @@ function lineChart(series, opts = {}) {
           live.map((x) => h("td", { class: "n" }, n(x.points.find((p) => p.d === d)?.v, opts.unit)))))))));
       return;
     }
-    const W = Math.max(280, box.clientWidth || 640), H = opts.height || 220;
-    const pad = { l: 46, r: live.length <= 4 ? 92 : 16, t: 10, b: 26 };
+    const W = Math.max(280, box.clientWidth || 640), H = opts.height || 200;
+    const pad = { l: 44, r: live.length <= 4 && live.length > 1 ? 86 : 14, t: 8, b: 24 };
     const vals = live.flatMap((x) => x.points.map((p) => p.v)).filter((v) => v != null);
     const min = Math.min(0, ...vals);
     const step = niceStep((Math.max(...vals) - min) / 4 || 1);
     const ticks = Math.max(1, Math.ceil((Math.max(...vals) - min) / step));
     const max = min + ticks * step;
-    const X = (i) => pad.l + (dates.length < 2 ? 0 : (i / (dates.length - 1)) * (W - pad.l - pad.r));
+    const X = (i) => pad.l + (dates.length < 2 ? (W - pad.l - pad.r) / 2 : (i / (dates.length - 1)) * (W - pad.l - pad.r));
     const Y = (v) => pad.t + (1 - (v - min) / (max - min)) * (H - pad.t - pad.b);
     const svg = s("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img", "aria-label": opts.label || "chart" });
     for (let i = 0; i <= ticks; i++) {
@@ -151,19 +172,19 @@ function lineChart(series, opts = {}) {
         s("g", { class: "axis" }, s("text", { x: pad.l - 8, y: Y(v) + 4, "text-anchor": "end" }, n(v, opts.unit))));
     }
     const xStep = Math.max(1, Math.ceil(dates.length / Math.floor((W - pad.l - pad.r) / 70)));
-    dates.forEach((d, i) => { if (i % xStep === 0) svg.append(s("g", { class: "axis" }, s("text", { x: X(i), y: H - 6, "text-anchor": "middle" }, day(d)))); });
+    dates.forEach((d, i) => { if (i % xStep === 0) svg.append(s("g", { class: "axis" }, s("text", { x: X(i), y: H - 5, "text-anchor": "middle" }, day(d)))); });
     const ends = [];
     for (const x of live) {
       const pts = dates.map((d, i) => [i, x.points.find((p) => p.d === d)?.v]).filter(([, v]) => v != null);
       svg.append(s("path", { class: "line", stroke: x.color, d: pts.map(([i, v], k) => `${k ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("") }));
       if (pts.length === 1) svg.append(s("circle", { cx: X(pts[0][0]), cy: Y(pts[0][1]), r: 4, fill: x.color }));
       const last = pts[pts.length - 1];
-      if (last && live.length <= 4) ends.push({ y: Y(last[1]), x: X(last[0]), label: x.label, color: x.color });
+      if (last && live.length > 1 && live.length <= 4) ends.push({ y: Y(last[1]), x: X(last[0]), label: x.label });
     }
     ends.sort((a, b) => a.y - b.y).forEach((e, i, arr) => { if (i && e.y - arr[i - 1].y < 14) e.y = arr[i - 1].y + 14; });
     ends.forEach((e) => svg.append(s("text", { class: "endlabel", x: e.x + 8, y: e.y + 4 }, e.label)));
     const cross = s("line", { class: "cross", y1: pad.t, y2: H - pad.b, visibility: "hidden" });
-    const hit = s("rect", { class: "hit", x: pad.l, y: 0, width: W - pad.l - pad.r, height: H });
+    const hit = s("rect", { class: "hit", x: pad.l, y: 0, width: Math.max(1, W - pad.l - pad.r), height: H });
     svg.append(cross, hit);
     const tipEl = h("div", { class: "chart-tip hidden" });
     hit.addEventListener("mousemove", (ev) => {
@@ -174,9 +195,8 @@ function lineChart(series, opts = {}) {
       tipEl.replaceChildren(h("div", { class: "d" }, day(dates[i])), live.map((x) => h("div", { class: "r" },
         h("span", { class: "swatch", style: `background:${x.color}` }), x.label, h("b", {}, n(x.points.find((p) => p.d === dates[i])?.v, opts.unit)))));
       tipEl.classList.remove("hidden");
-      const left = (X(i) / W) * r.width;
-      tipEl.style.left = Math.min(left + 14, r.width - 170) + "px";
-      tipEl.style.top = "8px";
+      tipEl.style.left = Math.min((X(i) / W) * r.width + 14, r.width - 160) + "px";
+      tipEl.style.top = "6px";
     });
     hit.addEventListener("mouseleave", () => { cross.setAttribute("visibility", "hidden"); tipEl.classList.add("hidden"); });
     box.append(svg, tipEl);
@@ -190,93 +210,114 @@ function niceStep(raw) {
   const f = raw / p;
   return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
 }
-let charts = [];
 let resizeT;
 window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => charts.forEach((d) => d()), 150); });
-
+// Horizontal bars for a breakdown (one platform colour per row); rows can be clickable.
 function bars(rows, opts = {}) {
-  if (!rows.length) return empty(opts.emptyTitle || "No data", opts.emptyText || "");
-  const max = Math.max(...rows.map((r) => r.v)) || 1;
-  return h("div", { class: "bars" }, rows.map((r) => h("div", { class: "bar-row", title: `${r.label}: ${n(r.v, opts.unit)}` },
-    h("span", { style: "overflow:hidden;text-overflow:ellipsis;white-space:nowrap" }, r.label),
-    h("div", { class: "bar-track" }, h("div", { class: "bar-fill", style: `width:${(100 * r.v) / max}%` })),
-    h("span", { class: "num" }, n(r.v, opts.unit)))));
+  rows = rows.filter((r) => r.v != null);
+  if (!rows.length) return empty(opts.emptyTitle || "Nothing to show yet", opts.emptyText || "");
+  const max = Math.max(...rows.map((r) => Math.abs(r.v))) || 1;
+  const diverging = opts.diverging && rows.some((r) => r.v < 0);
+  return h("div", { class: "bars" }, rows.map((r) => {
+    const w = (100 * Math.abs(r.v)) / max / (diverging ? 2 : 1);
+    const fill = h("div", { class: "bar-fill" + (r.v < 0 ? " neg" : ""), style: diverging ? (r.v < 0 ? `right:50%;width:${w}%` : `left:50%;width:${w}%`) + (r.color && r.v >= 0 ? `;background:${r.color}` : "") : `width:${w}%;background:${r.color || "var(--accent)"}` });
+    const inner = [h("span", { style: "display:flex;align-items:center;gap:7px;overflow:hidden;white-space:nowrap" }, r.prefix || null, h("span", { style: "overflow:hidden;text-overflow:ellipsis" }, r.label)),
+      h("div", { class: "bar-track" + (diverging ? " div" : "") }, fill), h("span", { class: "num", style: "text-align:right" }, opts.signed ? signed(r.v, opts.unit) : n(r.v, opts.unit))];
+    return r.onclick ? h("button", { class: "bar-row", type: "button", onclick: r.onclick, title: r.title || null }, inner) : h("div", { class: "bar-row" }, inner);
+  }));
+}
+
+// ------------------------------------------------------------------ night sky (Jami: NightSkyBackdrop + ShootingStars, ported)
+function seeded(seed) {
+  let t = seed >>> 0;
+  return () => {
+    t += 0x6d2b79f5;
+    let r = Math.imul(t ^ (t >>> 15), 1 | t);
+    r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function hashOf(text) {
+  let x = 2166136261;
+  for (let i = 0; i < text.length; i += 1) { x ^= text.charCodeAt(i); x = Math.imul(x, 16777619); }
+  return x >>> 0;
+}
+const TINTS = [["violet", 0.5], ["ice", 0.3], ["green", 0.12], ["gold", 0.08]];
+function starTimings(count, seed) {
+  const random = seeded(hashOf(`${seed}:timing`));
+  const duration = Math.round((16 + random() * 4) * 10) / 10;
+  const slots = Math.max(1, Math.ceil(count * 0.6));
+  const offsets = Array.from({ length: slots }, (_, k) => (k / slots) * duration + random() * 1.5);
+  return Array.from({ length: count }, (_, i) => ({ duration, delay: Math.round((offsets[i % slots] + random() * 0.6) * 10) / 10 }));
+}
+function starPath(seed, index, pass) {
+  const random = seeded(hashOf(`${seed}:${index}:${pass}`));
+  const top = Math.round(random() * 70 * 10) / 10, left = Math.round((15 + random() * 85) * 10) / 10;
+  const angle = Math.round((14 + random() * 20) * 10) / 10;
+  const base = 90 + random() * 90, fireball = random() < 0.14;
+  const length = Math.round(base * (fireball ? 1.6 : 1));
+  let roll = random(), tint = "violet", acc = 0;
+  for (const [t, w] of TINTS) { acc += w; if (roll < acc) { tint = t; break; } }
+  return { top, left, angle, length, travel: Math.round(length * (1.7 + random() * 0.8)), tint, fireball };
+}
+function nightSky() {
+  const sky = h("div", { class: "sky", "aria-hidden": "true" });
+  const random = seeded(7);
+  for (let i = 0; i < 120; i++) {
+    sky.append(h("span", { class: "dust", style: `left:${random() * 100}%;top:${random() * 100}%;width:${0.6 + random() * 1.9}px;height:${0.6 + random() * 1.9}px;--o:${0.2 + random() * 0.65};--delay:${random() * 8}s;--t:${3 + random() * 6}s` }));
+  }
+  starTimings(4, "first-night").forEach((tm, index) => {
+    const timing = `animation-duration:${tm.duration}s;animation-delay:${tm.delay}s`;
+    const el = h("span", {}, h("span", { class: "shooting-star-tail", style: timing }), h("span", { class: "shooting-star-head", style: timing }));
+    let pass = 0;
+    const place = () => {
+      const p = starPath("first-night", index, pass);
+      el.className = `shooting-star shooting-star--${p.tint}${p.fireball ? " shooting-star--fireball" : ""}`;
+      el.setAttribute("style", `top:${p.top}%;left:${p.left}%;width:${p.length}px;${timing};--shooting-angle:${p.angle}deg;--shooting-travel:${-p.travel}px`);
+    };
+    // A streak lands somewhere new each time its cycle comes round, while it is invisible (as in Jami).
+    el.addEventListener("animationiteration", (e) => { if (e.target === el) { pass += 1; place(); } });
+    place();
+    sky.append(el);
+  });
+  document.body.prepend(sky);
 }
 
 // ------------------------------------------------------------------ shell
 const ICONS = {
   overview: ["M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-3H4zM14 7h6V4h-6z"],
   content: ["M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5z", "M10 9.2v5.6l4.6-2.8z"],
-  research: ["M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z", "M20 20l-4-4", "M8.5 11h5M11 8.5v5"],
-  game: ["M7 9h10a4 4 0 0 1 3.9 4.9l-.8 3.3a2 2 0 0 1-3.4.9L14.6 16H9.4l-2.1 2.1a2 2 0 0 1-3.4-.9l-.8-3.3A4 4 0 0 1 7 9z", "M8 12v2.5M6.8 13.2h2.5", "M15.5 12.5h.01M17.5 14h.01"],
+  roblox: ["M7 9h10a4 4 0 0 1 3.9 4.9l-.8 3.3a2 2 0 0 1-3.4.9L14.6 16H9.4l-2.1 2.1a2 2 0 0 1-3.4-.9l-.8-3.3A4 4 0 0 1 7 9z", "M8 12v2.5M6.8 13.2h2.5", "M15.5 12.5h.01M17.5 14h.01"],
   publish: ["M12 15V4", "M7.5 8.5 12 4l4.5 4.5", "M5 14v3.5A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5V14"],
-  experiments: ["M9.5 3.5h5", "M10.5 3.5v5.2L5.4 17.4A2 2 0 0 0 7.1 20.5h9.8a2 2 0 0 0 1.7-3.1l-5.1-8.7V3.5", "M7.6 14h8.8"],
   settings: ["M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z", "M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.3 3h-4.6l-.3 2.7a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.3 2.7h4.6l.3-2.7a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"],
   refresh: ["M20 11a8 8 0 0 0-14.6-4.5L4 8", "M4 4v4h4", "M4 13a8 8 0 0 0 14.6 4.5L20 16", "M20 20v-4h-4"],
   close: ["M6 6l12 12M18 6L6 18"],
-  sun: ["M12 4V2M12 22v-2M4 12H2M22 12h-2M5.6 5.6 4.2 4.2M19.8 19.8l-1.4-1.4M5.6 18.4l-1.4 1.4M19.8 4.2l-1.4 1.4", "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"],
+  back: ["M15 6l-6 6 6 6"],
+  go: ["M9 6l6 6-6 6"],
+  external: ["M14 4h6v6", "M20 4l-9 9", "M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"],
 };
-const PAGES = [
-  { id: "overview", label: "Overview", desc: "Campaign at a glance" },
-  { id: "content", label: "Content", desc: "Videos and adaptations" },
-  { id: "research", label: "Research", desc: "Signals and evidence" },
-  { id: "game", label: "Game", desc: "Players and revenue" },
-  { id: "experiments", label: "Experiments", desc: "Tests and decisions" },
-  { id: "publish", label: "Publish", desc: "Uploads and approvals" },
-];
+const PAGES = [["overview", "Overview"], ["content", "Content"], ["publish", "Publish"], ["roblox", "Roblox"]];
 let STATUS = null;
 const syncLine = h("div", { class: "sync-line" });
-
 function renderNav(active) {
-  const item = (p) => h("a", { class: "nav-item", href: "#/" + p.id, "aria-current": active === p.id ? "page" : null },
-    h("span", { class: "bubble" }, icon(ICONS[p.id])), h("span", {}, h("span", { class: "nav-label" }, p.label), h("span", { class: "nav-desc" }, p.desc)));
+  const item = ([id, label]) => h("a", { class: "nav-item", href: "#/" + id, "aria-current": active === id ? "page" : null }, icon(ICONS[id]), h("span", {}, label));
   $nav.replaceChildren(
-    h("div", { class: "brand" }, h("span", { class: "brand-mark" }, h("img", { src: "/static/icons/icon.svg", width: 22, height: 22, alt: "" })), h("span", { class: "brand-name" }, "Slugshot")),
-    eyebrow("Marketing"), ...PAGES.map(item),
-    h("div", { class: "nav-foot" }, item({ id: "settings", label: "Settings", desc: "Connections and exports" }), syncLine));
+    h("div", { class: "brand" }, h("img", { src: "/static/icons/icon.svg", width: 26, height: 26, alt: "" }), h("span", { class: "brand-name" }, "Slugshot")),
+    ...PAGES.map(item), h("div", { class: "nav-foot" }, item(["settings", "Settings"]), syncLine));
   paintSync();
 }
 function paintSync() {
   if (!STATUS) return;
   const src = STATUS.sources.filter((x) => x.credential === "ready");
-  const running = STATUS.sync.running;
-  const bad = STATUS.sources.filter((x) => x.last_status === "failed" || x.last_status === "needs_auth" || x.freshness === "stale");
+  const bad = STATUS.sources.filter((x) => x.credential === "ready" && (x.last_status === "failed" || x.last_status === "needs_auth" || x.freshness === "stale"));
   const last = src.map((x) => x.last_success_utc).filter(Boolean).sort().pop();
-  const tone = running ? "ok pulse" : bad.length ? "warn" : src.length ? "ok" : "";
+  const tone = STATUS.sync.running ? "ok pulse" : bad.length ? "warn" : src.length ? "ok" : "";
   syncLine.replaceChildren(h("span", { class: "dot " + tone }),
-    running ? "Refreshing…" : !src.length ? "No accounts connected" : bad.length ? `${bad.length} source${bad.length > 1 ? "s need" : " needs"} attention` : "Updated " + ago(last));
-  syncLine.title = STATUS.sources.map((x) => `${x.account_label} · ${x.label}: ${x.freshness}`).join("\n");
+    STATUS.sync.running ? "Refreshing…" : !src.length ? "No accounts connected" : bad.length ? `${bad.length} source${bad.length > 1 ? "s need" : " needs"} attention` : "Updated " + ago(last));
 }
 async function refreshStatus() {
   try { STATUS = await api("/api/status"); paintSync(); } catch (e) { /* server restarting */ }
   return STATUS;
-}
-
-// Filters shared by Overview, Content and Game
-const F = store.get("filters", { range: "28", platform: "", language: "" });
-function filterParams() {
-  const end = new Date();
-  const start = new Date(end.getTime() - (Number(F.range) - 1) * 86400000);
-  const iso = (d) => d.toISOString().slice(0, 10);
-  return { start: iso(start), end: iso(end), platform: F.platform, language: F.language };
-}
-function seg(options, value, onChange, label) {
-  return h("div", { class: "seg", role: "group", "aria-label": label }, options.map(([v, t]) =>
-    h("button", { type: "button", "aria-pressed": String(v === value), onclick: () => onChange(v) }, t)));
-}
-function filterBar(opts = {}) {
-  const set = (k) => (v) => { F[k] = v; store.set("filters", F); route(); };
-  return h("div", { class: "filters" },
-    opts.range === false ? null : seg([["7", "7 days"], ["28", "28 days"], ["90", "90 days"]], F.range, set("range"), "Date range"),
-    h("select", { "aria-label": "Platform", onchange: (e) => set("platform")(e.target.value) },
-      [["", "All platforms"], ["youtube", "YouTube"], ["tiktok", "TikTok"], ["instagram", "Instagram"]].map(([v, t]) => h("option", { value: v, selected: F.platform === v }, t))),
-    seg([["", "All"], ["en", "EN"], ["es", "ES"]], F.language, set("language"), "Language"));
-}
-function topbar(title, right) {
-  const btn = h("button", { class: "btn icon-btn", type: "button", title: "Refresh data now", "aria-label": "Refresh data now",
-    onclick: async () => { await post("/api/sync"); toast("Refreshing connected sources…"); pollUntilDone(); } }, icon(ICONS.refresh));
-  return [FIXTURE ? h("div", { class: "fixture-banner" }, "Fixture data: test values from tests/fixtures, not real performance.") : null,
-    h("header", { class: "topbar" }, h("div", {}, eyebrow("Slugshot"), h("h1", {}, title)), h("div", { class: "grow" }), right || null, btn)];
 }
 async function pollUntilDone() {
   for (let i = 0; i < 120; i++) {
@@ -285,731 +326,583 @@ async function pollUntilDone() {
     if (st && !st.sync.running) { route(); return; }
   }
 }
+function pageHead(title, opts = {}) {
+  const refresh = h("button", { class: "btn icon-btn ghost", type: "button", title: "Refresh data now", "aria-label": "Refresh data now",
+    onclick: async () => { await post("/api/sync"); toast("Refreshing connected accounts…"); pollUntilDone(); } }, icon(ICONS.refresh));
+  return [FIXTURE ? h("div", { class: "fixture-banner" }, "Fixture data: test values, not real performance.") : null,
+    h("header", { class: "page-head" },
+      h("div", {}, opts.back ? h("a", { class: "back", href: opts.back[0] }, icon(ICONS.back, 14), opts.back[1]) : null,
+        h("h1", {}, title), opts.sub ? h("div", { class: "sub" }, opts.sub) : null),
+      h("div", { class: "grow" }), opts.right || null, opts.noRefresh ? null : refresh)];
+}
+
+// ------------------------------------------------------------------ filters (Overview, drill-downs, account pages)
+const F = Object.assign({ range: "30", start: "", end: "", platform: "", account: "", language: "" }, store.get("filters2", {}));
+const RANGE_LABEL = { 7: "previous 7 days", 30: "previous 30 days", 90: "previous 90 days" };
+function fParams(extra = {}) {
+  const p = { ...F, ...extra };
+  return p.range === "custom" ? { start: p.start, end: p.end, platform: p.platform, account: p.account, language: p.language }
+    : { range: p.range, platform: p.platform, account: p.account, language: p.language };
+}
+function setF(patch) { Object.assign(F, patch); store.set("filters2", F); route(); }
+function filterBar(opts = {}) {
+  const accts = (META?.accounts || []).filter((a) => a.active && ["youtube", "tiktok", "instagram"].includes(a.platform) && (!F.platform || a.platform === F.platform));
+  const from = h("input", { type: "date", value: F.start || "", "aria-label": "From" });
+  const to = h("input", { type: "date", value: F.end || "", "aria-label": "To" });
+  const custom = h("span", { class: "filters", hidden: F.range !== "custom" || null }, from, h("span", { class: "muted small" }, "to"), to,
+    h("button", { class: "btn small", type: "button", onclick: () => from.value && setF({ range: "custom", start: from.value, end: to.value || new Date().toISOString().slice(0, 10) }) }, "Apply"));
+  return h("div", { class: "filters" },
+    seg([["7", "7d"], ["30", "30d"], ["90", "90d"], ["all", "All time"], ["custom", "Custom"]], F.range,
+      (v) => (v === "custom" ? (custom.hidden = false, F.range = "custom") : setF({ range: v })), "Date range"), custom,
+    opts.platform === false ? null : h("select", { "aria-label": "Platform", onchange: (e) => setF({ platform: e.target.value, account: "" }) },
+      [["", "All platforms"], ["youtube", "YouTube"], ["tiktok", "TikTok"], ["instagram", "Instagram"]].map(([v, t]) => h("option", { value: v, selected: F.platform === v }, t))),
+    opts.account === false ? null : h("select", { "aria-label": "Account", onchange: (e) => setF({ account: e.target.value }) },
+      h("option", { value: "" }, "All accounts"), accts.map((a) => h("option", { value: a.account_id, selected: F.account === a.account_id }, a.label))),
+    opts.language === false ? null : seg([["", "All"], ["en", "EN"], ["es", "ES"]], F.language, (v) => setF({ language: v }), "Language"));
+}
+const periodLabel = () => RANGE_LABEL[F.range] || "previous period";
+function rangeDates() {  // explicit dates for endpoints that take start/end (Roblox)
+  const iso = (t) => new Date(t).toISOString().slice(0, 10);
+  if (F.range === "custom") return { start: F.start, end: F.end };
+  if (F.range === "all") return { start: "2020-01-01", end: iso(Date.now()) };
+  return { start: iso(Date.now() - (Number(F.range) - 1) * 86400000), end: iso(Date.now()) };
+}
+const acctLabel = (id) => (META?.accounts || []).find((a) => a.account_id === id)?.label || id;
 
 // ------------------------------------------------------------------ Overview
+const VIEWS_TIP = "Combined platform-reported views: added across YouTube, TikTok and Instagram. Not unique viewers; each platform counts a view its own way. TikTok and Instagram figures for a period come from daily snapshots of each video.";
+const FOLLOW_TIP = "Combined follower and subscriber counts of the selected accounts. Not unique people: one person can follow several accounts.";
 async function pageOverview() {
-  const d = await api("/api/overview", filterParams());
-  const head = topbar("Overview", filterBar());
-  if (!d.has_data) {
-    const connected = (STATUS?.sources || []).filter((x) => x.credential === "ready").length;
-    return [head, h("div", { class: "stack" },
-      panel("No data yet", { eyebrow: "Getting started" },
-        h("p", { class: "muted", style: "margin:0 0 14px;max-width:60ch" }, "Numbers appear here after the first refresh of a connected account or a manual import."),
-        h("div", { style: "display:flex;gap:10px;flex-wrap:wrap" }, h("a", { class: "btn primary", href: "#/settings" }, "Connect accounts"), h("a", { class: "btn", href: "#/settings" }, "Import metrics"))),
-      panel("Accounts", { eyebrow: `${d.accounts.length} set up · ${connected} connected` }, accountsList(d.accounts)))];
+  const d = await api("/api/analytics", fParams());
+  const T = d.totals, v = T.views, f = T.followers, w = T.watch_time_minutes;
+  const watchLine = w.value != null
+    ? [h("span", {}, "Watch time"), h("b", {}, n(w.value, "minutes")), delta(w.value, w.prev, periodLabel()),
+      w.missing.length ? h("span", { class: "muted small", style: "margin-left:auto" }, `${w.covered.length} of ${w.covered.length + w.missing.length} accounts report it`) : null]
+    : [h("span", { class: "muted" }, "Watch time appears once an account reports it")];
+  const hero = h("div", { class: "hero" },
+    h("a", { class: "metric", href: "#/overview/views" },
+      h("div", { class: "label" }, "Views", tip(VIEWS_TIP), h("span", { class: "go" }, icon(ICONS.go, 16))),
+      h("div", { class: "value" + (v.value == null ? " none" : "") }, v.value == null ? "—" : n(v.value)),
+      h("div", { class: "foot" }, v.value == null ? "No views reported in this range yet" : delta(v.value, v.prev, periodLabel()) || h("span", {}, "Platform-reported, combined"),
+        v.partial.length ? h("span", {}, "· partly estimated") : null),
+      h("div", { class: "secondary" }, watchLine)),
+    h("a", { class: "metric", href: "#/overview/followers" },
+      h("div", { class: "label" }, "Followers", tip(FOLLOW_TIP), h("span", { class: "go" }, icon(ICONS.go, 16))),
+      h("div", { class: "value" + (f.value == null ? " none" : "") }, f.value == null ? "—" : n(f.value)),
+      h("div", { class: "foot" }, f.change != null ? h("span", { class: "delta " + (f.change > 0 ? "up" : f.change < 0 ? "down" : "flat") }, signed(f.change) + (f.growth != null ? ` (${f.growth > 0 ? "+" : ""}${f.growth}%)` : "")) : null,
+        h("span", {}, f.change != null ? (d.all_time ? "since the accounts began" : "in this range") : "Combined across accounts")),
+      h("div", { class: "secondary" }, h("span", { class: "muted" }, `${f.covered.length} account${f.covered.length === 1 ? "" : "s"} counted`, f.missing.length ? ` · ${f.missing.map(acctLabel).join(", ")} not reported` : ""))));
+  const series = d.platforms.filter((p) => p.stats.series.views?.length).map((p) => ({ label: PLAT[p.platform].name, color: PLAT[p.platform].color, points: p.stats.series.views }));
+  const chart = series.length ? panel("Views per day", { actions: h("a", { class: "btn ghost small", href: "#/overview/views" }, "Details") }, lineChart(series, { label: "Views per day by platform", height: 180 })) : null;
+  return [pageHead("Overview", { right: filterBar() }), h("div", { class: "stack" }, hero, chart, accountsPanel(d))];
+}
+function accountsPanel(d) {
+  return panel("Accounts", { hint: d.all_time ? "all time" : `${day(d.start)} – ${day(d.end)}` },
+    d.accounts.length ? h("div", { class: "rows" }, d.accounts.map((a) => {
+      const st = a.stats;
+      return h("a", { class: "row", href: "#/account/" + a.account_id },
+        dot(a.platform), h("div", { class: "grow" }, h("div", { class: "t" }, a.label, " ", lang(a.language)), h("div", { class: "s" }, atHandle(a))),
+        h("div", { class: "r" }, h("div", {}, n(st.followers)), h("div", { class: "s" }, "followers")),
+        h("div", { class: "r" }, h("div", {}, n(st.views)), h("div", { class: "s" }, "views")),
+        h("span", { class: "muted" }, icon(ICONS.go, 16)));
+    })) : empty("No accounts match these filters"));
+}
+
+// Views drill-down
+async function pageViews() {
+  const d = await api("/api/analytics", fParams());
+  const T = d.totals;
+  const eng = (m) => T.engagement[m].value;
+  const kpis = h("div", { class: "kpis" },
+    kpi("Views", n(T.views.value), delta(T.views.value, T.views.prev, periodLabel()), VIEWS_TIP),
+    kpi("Watch time", n(T.watch_time_minutes.value, "minutes"), T.watch_time_minutes.covered.length ? `${T.watch_time_minutes.covered.map(acctLabel).join(", ")}` : "not reported yet"),
+    kpi("Avg view duration", n(T.avg_view_s, "seconds"), T.avg_view_s != null ? "weighted by views, videos that report it" : "not reported yet"),
+    kpi("Likes", n(eng("likes"))), kpi("Comments", n(eng("comments"))), kpi("Shares", n(eng("shares"))), kpi("Saves", n(eng("saves"))));
+  return [pageHead("Views", { back: ["#/overview", "Overview"], right: filterBar() }), h("div", { class: "stack" }, kpis,
+    panel("Views over time", { tip: VIEWS_TIP }, lineChart(trendSeries(d, "views"), { label: "Views over time" })),
+    h("div", { class: "grid cols-2" },
+      panel("By platform", { hint: "click to narrow" }, bars(d.platforms.map((p) => ({ label: PLAT[p.platform].name, prefix: dot(p.platform), v: p.stats.views, color: PLAT[p.platform].color,
+        onclick: () => setF({ platform: F.platform === p.platform ? "" : p.platform, account: "" }) })), { emptyTitle: "No views reported yet" })),
+      panel("By account", { hint: "click to open" }, bars(d.accounts.map((a) => ({ label: a.label, prefix: dot(a.platform), v: a.stats.views, color: PLAT[a.platform].color,
+        onclick: () => { location.hash = "#/account/" + a.account_id; } })), { emptyTitle: "No views reported yet" }))),
+    videosPanel(d.videos, "views"), compareSection(d), countingNote(d))];
+}
+function kpi(label, value, sub, tipText, onclick) {
+  const kids = [h("div", { class: "l" }, label, tipText ? tip(tipText) : null), h("div", { class: "v" + (value === "—" ? " none" : "") }, value), sub ? h("div", { class: "s" }, sub) : null];
+  return onclick ? h("button", { class: "kpi", type: "button", onclick }, kids) : h("div", { class: "kpi" }, kids);
+}
+function trendSeries(d, metric) {
+  if (F.account) return d.accounts.map((a) => ({ label: a.label, color: PLAT[a.platform].color, points: a.stats.series[metric] || [] }));
+  if (F.platform) {
+    const shades = ["1", "0.6"];
+    return d.accounts.map((a, i) => ({ label: a.label, color: `color-mix(in srgb, ${PLAT[a.platform].color} ${Math.round(Number(shades[i % 2]) * 100)}%, var(--muted))`, points: a.stats.series[metric] || [] }));
   }
-  const P = d.platforms;
-  const rowsOf = (key, unit) => P.filter((p) => p[key] != null).map((p) => h("div", { class: "row" }, h("span", { class: "swatch", style: `background:${PLAT[p.platform].color}` }), PLAT[p.platform].name,
-    key === "views" && p.views_basis === "lifetime" ? h("span", { class: "basis" }, "lifetime") : null, h("span", { class: "v" }, n(p[key], unit))));
-  const single = (key) => (P.length === 1 ? P[0][key] : null);
-  const tile = (label, value, unit, sub, tipText, delay) => h("div", { class: "panel tile flat", style: `animation-delay:${delay}ms` },
-    h("div", { class: "eyebrow" }, label, tipText ? tip(tipText) : null),
-    h("div", { class: "value" + (value == null ? " none" : "") }, value == null ? (sub && sub.length ? "" : "—") : n(value, unit)),
-    sub && sub.length ? h("div", { class: "sub" }, sub) : null);
-  const g = d.game;
-  const tiles = h("div", { class: "tiles" },
-    tile("Views", single("views"), "", P.length > 1 ? rowsOf("views") : [], "Each platform counts a view differently, so platforms are listed, not added. 'lifetime' = total so far (TikTok gives no daily views).", 0),
-    tile("Followers", single("followers"), "", P.length > 1 ? rowsOf("followers") : [], "Latest count per platform. Not added: one person can follow several accounts.", 40),
-    tile("Watch time", single("watch_time_minutes"), "minutes", P.length > 1 ? rowsOf("watch_time_minutes", "minutes") : [], "YouTube and Instagram only. TikTok's API doesn't offer it.", 80),
-    tile("New players", g?.new_users, "", [], "Roblox: players whose first visit was in this range. Not attributable to a video without a tracked share link.", 120),
-    tile("D1 retention", g?.d1_latest?.v, "fraction", g?.d1_latest ? [h("div", { class: "row muted" }, "Cohort of " + day(g.d1_latest.d))] : [], "Share of a day's new players who came back the next day (latest complete cohort).", 160),
-    tile("Revenue", g?.revenue_robux, "Robux", [], "Roblox revenue in Robux in this range, as reported. Not converted to money.", 200));
-  const viewSeries = P.filter((p) => p.views_series.length).map((p) => ({ label: PLAT[p.platform].name, color: PLAT[p.platform].color, points: p.views_series }));
-  const noDaily = P.filter((p) => !p.views_series.length).map((p) => PLAT[p.platform].name);
-  return [head, h("div", { class: "stack" }, tiles,
+  return d.platforms.map((p) => ({ label: PLAT[p.platform].name, color: PLAT[p.platform].color, points: p.stats.series[metric] || [] }));
+}
+function countingNote(d) {
+  const est = d.totals.views.estimated.map(acctLabel), part = d.totals.views.partial.map(acctLabel);
+  return h("details", { class: "more" }, h("summary", {}, "How these numbers are counted"),
+    h("div", { class: "small muted", style: "display:grid;gap:6px;max-width:80ch" },
+      h("div", {}, "Views are added across platforms as reported. They are not unique viewers, and each platform counts a view differently."),
+      h("div", {}, "YouTube gives daily analytics. TikTok and Instagram give lifetime totals per video, so a period's views are the growth between daily snapshots."),
+      est.length ? h("div", {}, "From snapshots: " + est.join(", ") + ".") : null,
+      part.length ? h("div", {}, "Partly measured (tracking began inside this range): " + part.join(", ") + ".") : null,
+      h("div", {}, "Each video's figure comes from one source, the platform's own API first, then Buffer, so nothing is counted twice. Missing figures stay blank, never zero.")));
+}
+function videosPanel(videos, mode) {
+  let sort = store.get("videoSort", "period");
+  const box = h("div", {});
+  const paint = () => {
+    const key = (v) => mode === "followers" ? v.metrics.followers_gained : sort === "period" ? v.views_in_period : v.metrics.views;
+    const rows = videos.filter((v) => key(v) != null).sort((a, b) => key(b) - key(a)).slice(0, 25);
+    box.replaceChildren(rows.length ? h("div", { class: "rows" }, rows.map((v) => h("button", { class: "row", type: "button", onclick: () => openPublication(v.upload_id) },
+      dot(v.platform), h("div", { class: "grow" }, h("div", { class: "t" }, v.title), h("div", { class: "s" }, v.account_label, " · ", day(v.published_at_utc))),
+      mode === "followers" ? h("div", { class: "r" }, h("div", {}, signed(v.metrics.followers_gained)), h("div", { class: "s" }, "subscribers"))
+        : [h("div", { class: "r" }, h("div", {}, n(v.views_in_period)), h("div", { class: "s" }, "in range")),
+          h("div", { class: "r" }, h("div", {}, n(v.metrics.views)), h("div", { class: "s" }, "to date")),
+          h("div", { class: "r" }, h("div", {}, n(v.metrics.avg_view_duration_s, "seconds")), h("div", { class: "s" }, "avg view"))])))
+      : empty(mode === "followers" ? "No video-level follower attribution" : "No videos with views yet",
+        mode === "followers" ? "Only YouTube reports subscribers gained per video. TikTok and Instagram don't, so their follower changes aren't split by video." : "Published videos appear after the next refresh."));
+  };
+  paint();
+  return panel(mode === "followers" ? "Videos that brought subscribers" : "Videos", {
+    actions: mode === "followers" ? null : seg([["period", "Views in range"], ["total", "Views to date"]], sort, (v) => { sort = v; store.set("videoSort", v); paint(); }, "Sort videos") }, box);
+}
+
+// Followers drill-down
+async function pageFollowers() {
+  const d = await api("/api/analytics", fParams());
+  const f = d.totals.followers;
+  const gained = d.accounts.map((a) => a.stats.followers_gained).filter((x) => x != null);
+  const lost = d.accounts.map((a) => a.stats.followers_lost).filter((x) => x != null);
+  const kpis = h("div", { class: "kpis" },
+    kpi("Followers", n(f.value), "combined, not unique people", FOLLOW_TIP),
+    kpi("Net change", signed(f.change), f.growth != null ? `${f.growth > 0 ? "+" : ""}${f.growth}% growth` : d.all_time ? "since the accounts began" : "in this range"),
+    kpi("Gained", gained.length ? n(gained.reduce((a, b) => a + b, 0)) : "—", gained.length ? "where the platform reports it" : "not reported"),
+    kpi("Lost", lost.length ? n(lost.reduce((a, b) => a + b, 0)) : "—", lost.length ? "where the platform reports it" : "not reported"));
+  const levels = trendSeries(d, "followers");
+  return [pageHead("Followers", { back: ["#/overview", "Overview"], right: filterBar() }), h("div", { class: "stack" }, kpis,
+    panel("Followers over time", { tip: "Each account's count on each day it was read, carried forward between readings." }, lineChart(levels, { label: "Followers over time" })),
     h("div", { class: "grid cols-2" },
-      panel("Views per day", { eyebrow: "Social", delay: 80 }, lineChart(viewSeries, { label: "Views per day by platform" }),
-        noDaily.length ? h("p", { class: "muted small", style: "margin:10px 0 0" }, `${noDaily.join(", ")}: lifetime totals only, so no daily line.`) : null),
-      panel("Players per day", { eyebrow: "Roblox", delay: 120 }, g ? lineChart([
-        { label: "Daily players", color: "var(--series-roblox)", points: g.dau_series },
-        { label: "New players", color: "var(--series-youtube)", points: g.new_users_series }], { label: "Players per day" })
-        : empty("Not connected", "Add the universe ID and an Analytics API key in Settings."))),
-    h("div", { class: "grid cols-2" },
-      panel("Accounts", { delay: 160 }, accountsList(d.accounts)),
-      panel("Recent content", { delay: 200, actions: h("a", { class: "btn ghost small", href: "#/content" }, "All") }, recentList(d.recent))))];
+      panel("Change by account", { hint: "gains and losses" }, bars(d.accounts.map((a) => ({ label: a.label, prefix: dot(a.platform), v: a.stats.followers_change, color: PLAT[a.platform].color,
+        onclick: () => { location.hash = "#/account/" + a.account_id; } })), { signed: true, diverging: true, emptyTitle: "No change measured yet", emptyText: "Needs two readings, or a platform that reports gains and losses." })),
+      panel("Gains and losses", {}, h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Account"), h("th", { class: "n" }, "Now"), h("th", { class: "n" }, "Change"), h("th", { class: "n" }, "Gained"), h("th", { class: "n" }, "Lost"))),
+        h("tbody", {}, d.accounts.map((a) => h("tr", { class: "click", onclick: () => { location.hash = "#/account/" + a.account_id; } },
+          h("td", {}, plat(a.platform), " ", lang(a.language)), h("td", { class: "n" }, n(a.stats.followers)), h("td", { class: "n" }, signed(a.stats.followers_change)),
+          h("td", { class: "n" }, n(a.stats.followers_gained)), h("td", { class: "n" }, n(a.stats.followers_lost))))))))),
+    videosPanel(d.videos.filter((v) => v.platform === "youtube"), "followers"))];
 }
-function freshChip(accountId) {
-  const src = (STATUS?.sources || []).filter((x) => x.account_id === accountId);
-  if (!src.length) return null;
-  const order = ["stale", "due", "never synced", "not connected", "fresh"];
-  const worst = src.map((x) => x.freshness).sort((a, b) => order.indexOf(a) - order.indexOf(b))[0];
-  return chip(worst, FRESH_TONE[worst]);
+
+// Account page
+async function pageAccount(id) {
+  const d = await api("/api/analytics", fParams({ account: id, platform: "", language: "" }));
+  const a = d.accounts[0];
+  if (!a) return [pageHead("Account", { back: ["#/overview", "Overview"] }), panel(null, {}, empty("Account not found or inactive"))];
+  const st = a.stats, eng = ["likes", "comments", "shares", "saves"].map((m) => st[m]).filter((x) => x != null);
+  const profile = { youtube: `https://www.youtube.com/@${(a.handle || "").replace(/^@/, "")}`, tiktok: `https://www.tiktok.com/@${(a.handle || "").replace(/^@/, "")}`, instagram: `https://www.instagram.com/${(a.handle || "").replace(/^@/, "")}/` }[a.platform];
+  const src = (STATUS?.sources || []).filter((x) => x.account_id === id && x.credential === "ready");
+  let metric = store.get("acctMetric", "views");
+  const chartBox = h("div", {});
+  const paint = () => chartBox.replaceChildren(lineChart([{ label: { views: "Views", followers: "Followers", watch_time_minutes: "Watch time" }[metric], color: PLAT[a.platform].color, points: st.series[metric] || [] }],
+    { unit: metric === "watch_time_minutes" ? "minutes" : "", emptyTitle: "Not reported for this account yet" }));
+  paint();
+  const pick = seg([["views", "Views"], ["followers", "Followers"], ["watch_time_minutes", "Watch time"]], metric, (v) => { metric = v; store.set("acctMetric", v); paint(); }, "Metric");
+  return [pageHead(a.label, { back: ["#/overview", "Overview"], sub: [plat(a.platform), " · ", atHandle(a), " · ", (a.language || "").toUpperCase(), src.length ? ` · updated ${ago(src.map((x) => x.last_success_utc).filter(Boolean).sort().pop())}` : ""],
+    right: [h("a", { class: "btn ghost small", href: profile, target: "_blank", rel: "noreferrer" }, "Profile ", icon(ICONS.external, 14)), filterBar({ platform: false, account: false, language: false })] }),
+  h("div", { class: "stack" },
+    h("div", { class: "kpis" }, kpi("Views", n(st.views), delta(st.views, st.views_prev, periodLabel())), kpi("Followers", n(st.followers), st.followers_change != null ? signed(st.followers_change) + " in range" : null),
+      kpi("Watch time", n(st.watch_time_minutes, "minutes"), st.watch_time_minutes == null ? "not reported" : null), kpi("Avg view", n(st.avg_view_s, "seconds")),
+      kpi("Engagement", eng.length ? n(eng.reduce((x, y) => x + y, 0)) : "—", "likes, comments, shares, saves")),
+    panel(null, { actions: pick }, chartBox),
+    videosPanel(d.videos, "views"))];
 }
-function accountsList(accounts) {
-  if (!accounts.length) return empty("No accounts", "Add them in Settings.");
-  return h("div", { class: "list" }, accounts.map((a) => h("div", { class: "list-row" },
-    h("span", { class: "swatch", style: `background:${PLAT[a.platform].color}` }),
-    h("div", { class: "grow" }, h("div", { class: "t" }, a.label, " ", lang(a.language)), h("div", { class: "s" }, a.handle ? "@" + a.handle.replace(/^@/, "") : "no handle yet")),
-    a.platform !== "roblox" ? h("div", { class: "num", style: "text-align:right" }, h("div", {}, n(a.followers)), h("div", { class: "s" }, "followers")) : null,
-    freshChip(a.account_id))));
+
+// Like-for-like comparison: one platform, one checkpoint, grouped by a creative tag. Collapsed by default.
+function compareSection(d) {
+  const box = h("div", {});
+  const plats = d.platforms.map((p) => p.platform);
+  const state = { platform: F.platform || plats[0] || "tiktok", language: F.language, checkpoint: "48h", by: "format" };
+  const run = async () => {
+    box.replaceChildren(h("p", { class: "muted small" }, "Comparing…"));
+    try {
+      const r = await api("/api/compare", state);
+      box.replaceChildren(
+        h("p", { class: "small muted", style: "margin:4px 0 10px" }, `${r.all.n} comparable video${r.all.n === 1 ? "" : "s"} read at ${r.checkpoint} (±${r.tolerance_h} h).`,
+          r.excluded.outside_window ? ` ${r.excluded.outside_window} read outside that window, left out.` : "", r.excluded.no_reading ? ` ${r.excluded.no_reading} without a reading yet.` : "",
+          r.excluded.untagged ? ` ${r.excluded.untagged} not tagged.` : "", r.multi_label ? " A video with several tags counts in each." : ""),
+        r.groups.length ? h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Group"), h("th", { class: "n" }, "Videos"), h("th", { class: "n" }, "Median"), h("th", { class: "n" }, "Range"), h("th", {}, ""))),
+          h("tbody", {}, r.groups.map((g) => h("tr", {}, h("td", {}, g.key, g.enough ? null : [" ", chip("too few", "warn")]), h("td", { class: "n" }, g.n), h("td", { class: "n" }, n(g.median)),
+            h("td", { class: "n" }, `${n(g.low)}–${n(g.high)}`),
+            h("td", { class: "n" }, h("button", { class: "btn ghost small", type: "button", onclick: () => findingDrawer(state, g, r) }, "Record finding")))))))
+          : empty("Nothing to compare yet", "Needs published videos read at this age, with their concepts tagged (Content → video → Creative tags)."),
+        h("p", { class: "small muted" }, r.note));
+    } catch (e) { box.replaceChildren(empty("Couldn't compare", e.message)); }
+  };
+  const controls = h("div", { class: "filters", style: "margin-bottom:6px" },
+    h("select", { "aria-label": "Platform", onchange: (e) => { state.platform = e.target.value; run(); } }, ["youtube", "tiktok", "instagram"].map((p) => h("option", { value: p, selected: state.platform === p }, PLAT[p].name))),
+    h("select", { "aria-label": "Language", onchange: (e) => { state.language = e.target.value; run(); } }, [["", "Both languages"], ["en", "English"], ["es", "Spanish"]].map(([v, t]) => h("option", { value: v, selected: state.language === v }, t))),
+    h("select", { "aria-label": "Age", onchange: (e) => { state.checkpoint = e.target.value; run(); } }, [["24h", "at 24 hours"], ["48h", "at 48 hours"], ["7d", "at 7 days"]].map(([v, t]) => h("option", { value: v, selected: state.checkpoint === v }, t))),
+    h("select", { "aria-label": "Group by", onchange: (e) => { state.by = e.target.value; run(); } },
+      [["format", "by format"], ["hook", "by hook"], ["codes", "by narrative code"], ["character", "by character"], ["humour", "by humour style"], ["objective", "by objective"], ["mechanism", "by mechanism"]].map(([v, t]) => h("option", { value: v, selected: state.by === v }, t))));
+  const det = h("details", { class: "sect" }, h("summary", {}, h("div", { class: "grow" }, h("h2", {}, "Compare similar videos"), h("div", { class: "s" }, "Same platform, same age after posting, grouped by creative tags"))),
+    h("div", { class: "body" }, controls, box));
+  det.addEventListener("toggle", () => { if (det.open && !box.childNodes.length) run(); });
+  return det;
 }
-function recentList(items) {
-  if (!items.length) return empty("Nothing published yet", "Uploads appear after a refresh or an import.");
-  return h("div", { class: "list" }, items.map((u) => h("div", { class: "list-row", style: "cursor:pointer", onclick: () => openUpload(u.upload_id) },
-    h("span", { class: "swatch", style: `background:${PLAT[u.platform].color}` }),
-    h("div", { class: "grow" }, h("div", { class: "t" }, u.title || u.concept_title || u.platform_video_id), h("div", { class: "s" }, PLAT[u.platform].name, " · ", day(u.published_at_utc), " · ", (u.language || "").toUpperCase())),
-    h("div", { class: "num", style: "text-align:right" }, h("div", {}, n(u.metrics.views)), h("div", { class: "s" }, "views")))));
+async function findingDrawer(state, g, r) {
+  const statement = h("textarea", {}, "");
+  const link = h("input", { type: "text", placeholder: "e.g. HOOK-003 or MECH-002 (optional)" });
+  const type = h("select", {}, ["supports", "conflicts_with", "refines", "moderates"].map((t) => h("option", { value: t }, t.replace("_", " "))));
+  const preview = await post("/api/finding", { ...state, group: g.key }).catch((e) => ({ error: e.message }));
+  statement.value = preview.statement || "";
+  drawer(h("div", { class: "eyebrow" }, "Learning loop"), h("h2", {}, "Record a finding"),
+    h("p", { class: "muted small" }, `${r.platform}, ${r.checkpoint}, ${r.by}: ${g.key} (${g.n} videos). Saved as a draft in the knowledge bank (own result, observational). It appears in "ss kb brief" for the next creative brief; it's only marked approved when you approve it.`),
+    preview.error ? h("p", { class: "check-row bad" }, preview.error) : null,
+    h("div", { class: "form-grid" }, field("What you saw", statement, "wide"), field("Link to an existing entry", link), field("Relationship", type)),
+    h("div", { style: "margin-top:14px;display:flex;gap:8px" }, h("button", { class: "btn primary", type: "button", onclick: async () => {
+      try { const res = await post("/api/finding", { ...state, group: g.key, statement: statement.value, link_to: link.value.trim(), link_type: type.value, save: true }); toast("Saved draft " + res.id); closeDrawer(); }
+      catch (e) { toast(e.message); }
+    } }, "Save draft finding")));
 }
 
 // ------------------------------------------------------------------ Content
-let contentTab = store.get("contentTab", "published");
-async function pageContent() {
-  const p = filterParams();
-  const sort = store.get("contentSort", "published");
-  const [d, renders] = await Promise.all([api("/api/content", { ...p, sort }), contentTab === "renders" ? api("/api/renders") : null]);
-  const tabs = seg([["published", "Published"], ["concepts", "Concepts"], ["renders", "Local renders"]], contentTab, (v) => { contentTab = v; store.set("contentTab", v); route(); }, "Content view");
-  const head = topbar("Content", filterBar({ range: false }));
-  let body;
-  if (contentTab === "published") {
-    const oneplat = new Set(d.uploads.map((u) => u.platform)).size <= 1;
-    const sortSel = h("select", { "aria-label": "Sort", onchange: (e) => { store.set("contentSort", e.target.value); route(); } },
-      h("option", { value: "published", selected: d.sort_applied === "published" }, "Newest"),
-      h("option", { value: "views", selected: d.sort_applied === "views", disabled: !oneplat }, "Most views (one platform)"));
-    body = panel(null, { actions: null },
-      h("div", { style: "display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap" }, tabs, h("span", { style: "flex:1" }), sortSel,
-        !oneplat ? tip("Views can only be ranked within one platform. Pick a platform to sort by views.") : null),
-      d.uploads.length ? h("div", { class: "table-wrap" }, h("table", {},
-        h("thead", {}, h("tr", {}, h("th", {}, "Video"), h("th", {}, "Platform"), h("th", {}, "Published"), h("th", { class: "n" }, "Views"),
-          h("th", { class: "n" }, "Likes"), h("th", { class: "n" }, "Avg view", tip("Average seconds watched per view")), h("th", { class: "n" }, "% viewed", tip("YouTube: average percentage of the video viewed. TikTok rows marked 'full' show 'watched full video' instead (a different measure, from Studio imports). Compare within one platform only.")), h("th", {}, "Updated"))),
-        h("tbody", {}, d.uploads.map((u) => h("tr", { class: "click", onclick: () => openUpload(u.upload_id), tabindex: "0", onkeydown: (e) => e.key === "Enter" && openUpload(u.upload_id) },
-          h("td", { class: "title-cell" }, u.title || u.concept_title || u.platform_video_id, h("span", { class: "muted" }, [u.concept_id ? u.concept_id : "not linked to a concept", u.format].filter(Boolean).join(" · "))),
-          h("td", {}, plat(u.platform), " ", lang(u.language)), h("td", {}, day(u.published_at_utc)),
-          h("td", { class: "n" }, n(u.metrics.views)), h("td", { class: "n" }, n(u.metrics.likes)),
-          h("td", { class: "n" }, n(u.metrics.avg_view_duration_s, "seconds")),
-          h("td", { class: "n" }, u.metrics.avg_view_pct != null ? n(u.metrics.avg_view_pct, "percent")
-            : u.metrics.completion_rate != null ? [n(u.metrics.completion_rate, "percent"), h("span", { class: "basis" }, " full")] : "—"),
-          h("td", { class: "muted small" }, ago(u.observed_at)))))))
-        : empty("No uploads", "Connected accounts list their uploads after a refresh; manual imports add the rest."));
-  } else if (contentTab === "concepts") {
-    body = panel(null, {},
-      h("div", { style: "display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap" }, tabs, h("span", { style: "flex:1" }),
-        h("button", { class: "btn primary small", type: "button", onclick: () => conceptForm() }, "New concept")),
-      d.concepts.length ? h("div", { class: "list" }, d.concepts.map((c) => {
-        const ups = d.uploads.filter((u) => u.concept_id === c.concept_id);
-        return h("div", { class: "list-row" },
-          h("div", { class: "grow" }, h("div", { class: "t" }, c.title), h("div", { class: "s" }, [c.concept_id, c.format, c.hook_type, c.slug].filter(Boolean).join(" · "))),
-          h("div", { style: "display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end" }, c.assets.map((a) => chip(`${(a.language || "xx").toUpperCase()} ${a.version}`, "accent"))),
-          h("span", { class: "muted small num" }, `${ups.length} upload${ups.length === 1 ? "" : "s"}`),
-          h("button", { class: "btn ghost small", type: "button", onclick: () => assetForm({ concept_id: c.concept_id }, d.concepts) }, "Add version"));
-      })) : empty("No concepts yet", "A concept is one creative idea; its EN and ES edits are versions of it, and each upload belongs to one version. Uploading the same version to three platforms is still one experiment unit."));
-  } else {
-    body = panel(null, {},
-      h("div", { style: "display:flex;gap:10px;align-items:center;margin-bottom:12px" }, tabs),
-      renders.length ? h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "File"), h("th", {}, "Format"), h("th", { class: "n" }, "Length"), h("th", {}, "QC"), h("th", {}, ""))),
-        h("tbody", {}, renders.map((r) => h("tr", {}, h("td", { class: "title-cell" }, r.concept, h("span", { class: "muted" }, r.file)),
-          h("td", {}, r.format, r.test ? h("span", { class: "muted small" }, " (test)") : null), h("td", { class: "n" }, r.duration_s ? r.duration_s + " s" : "—"),
-          h("td", {}, r.qc ? chip(r.qc, r.qc === "PASS" ? "ok" : "warn") : "—"),
-          h("td", { class: "n" }, h("button", { class: "btn ghost small", type: "button", onclick: () => assetForm({ edit_file: r.file, concept_title: r.concept, format: r.format }, d.concepts) }, "Register")))))))
-        : empty("No renders in exports/", "Edited videos named SS_<date>_<FORMAT>_<Concept>_..._V01_MASTER.mp4 show here."));
-  }
-  return [head, body];
+async function pageContent(tab) {
+  tab = tab || "concepts";
+  const tabs = seg([["concepts", "Concepts"], ["published", "Published"]], tab, (v) => { location.hash = v === "concepts" ? "#/content" : "#/content/published"; }, "Content");
+  return tab === "published" ? publishedView(tabs) : conceptsView(tabs);
 }
-
-// ------------------------------------------------------------------ drawers
-function drawer(...content) {
+function thumb(path, opts = {}) {
+  const box = h("div", { class: "thumb" });
+  if (path) {
+    const img = h("img", { src: "/api/thumb?path=" + encodeURIComponent(path), alt: "", loading: "lazy" });
+    img.addEventListener("error", () => img.replaceWith(placeholder(opts.platform)));
+    box.append(img);
+  } else box.append(placeholder(opts.platform));
+  if (opts.badge) box.append(h("span", { class: "badge" }, opts.badge));
+  if (opts.chips?.length) box.append(h("div", { class: "tl" }, opts.chips));
+  return box;
+}
+function placeholder(p) {
+  return h("div", { class: "ph", style: p ? `background:linear-gradient(180deg, color-mix(in srgb, ${PLAT[p].color} 22%, var(--surface-2)), var(--surface-2))` : "" },
+    h("span", { class: "plat" }, p ? [dot(p), PLAT[p].name] : "No preview"));
+}
+const dur = (s) => (s == null ? null : s >= 60 ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}` : `0:${String(Math.round(s)).padStart(2, "0")}`);
+const STATUS_CHIP = { ready: ["Ready", "ok"], publishing: ["In Publish", "accent"], posted: ["Posted", ""] };
+async function conceptsView(tabs) {
+  const showPosted = store.get("showPosted", false);
+  const groups = await api("/api/library", { posted: showPosted ? "1" : "" });
+  const toggle = h("label", { class: "check small", style: "align-items:center" }, h("input", { type: "checkbox", class: "switch", checked: showPosted || null, onchange: (e) => { store.set("showPosted", e.target.checked); route(); } }), "Show posted");
+  return [pageHead("Content", { right: [tabs], noRefresh: true }),
+    panel(null, { actions: null },
+      h("div", { style: "display:flex;align-items:center;gap:10px;margin-bottom:14px" }, h("div", { class: "muted small" }, "Videos on this PC that are ready to publish."), h("span", { style: "flex:1" }), toggle),
+      groups.length ? h("div", { class: "gallery" }, groups.map((g) => {
+        const v = g.versions[0];
+        const [st, tone] = STATUS_CHIP[g.status];
+        return h("button", { class: "card", type: "button", onclick: () => conceptDrawer(g) },
+          thumb(v.path, { badge: dur(v.duration_s), chips: g.languages.map((l) => chip(l.toUpperCase())) }),
+          h("div", { class: "t" }, g.title), h("div", { class: "s" }, chip(st, tone), g.versions.length > 1 ? `${g.versions.length} versions` : null));
+      })) : empty("No videos waiting", showPosted ? "Finished edits in exports/ appear here." : "Finished edits in exports/ appear here. Posted ones are hidden; switch on Show posted to see them."))];
+}
+function conceptDrawer(g, index = 0) {
+  const v = g.versions[index];
+  const versionPick = g.versions.length > 1 ? seg(g.versions.map((x, i) => [String(i), `${(x.language || "?").toUpperCase()} ${x.version}`]), String(index), (i) => conceptDrawer(g, Number(i)), "Version") : null;
+  const [st, tone] = STATUS_CHIP[v.status];
+  const publish = h("button", { class: "btn primary", type: "button", onclick: () => startPublish(g, v) }, "Publish…");
+  drawer(h("div", { class: "eyebrow" }, "Concept"), h("h2", {}, g.title), h("div", { style: "display:flex;gap:8px;flex-wrap:wrap;align-items:center" }, chip(st, tone), versionPick),
+    h("div", { class: "media-grid" }, h("div", { class: "phone" }, h("video", { src: "/api/media?path=" + encodeURIComponent(v.path), controls: true, playsinline: true, preload: "metadata" })),
+      h("div", {},
+        h("dl", { class: "kv" }, h("dt", {}, "Length"), h("dd", {}, dur(v.duration_s) || "—"), h("dt", {}, "Size"), h("dd", {}, v.width ? `${v.width}×${v.height}` : "—"),
+          h("dt", {}, "Language"), h("dd", {}, v.language ? v.language.toUpperCase() : "not set"),
+          v.fiction_label ? [h("dt", {}, "Label"), h("dd", {}, v.fiction_label)] : null,
+          h("dt", {}, "Posted on"), h("dd", {}, v.posted_on.length ? v.posted_on.map((p) => h("a", { href: p.url || "#", target: "_blank", rel: "noreferrer", style: "margin-right:10px" }, acctLabel(p.account_id))) : "not yet"),
+          v.jobs.length ? [h("dt", {}, "In Publish"), h("dd", {}, v.jobs.map((j) => h("a", { href: "#/publish/" + j.job_id, style: "margin-right:10px", onclick: closeDrawer }, acctLabel(j.account_id))))] : null),
+        h("div", { style: "display:flex;gap:8px;margin-top:6px" }, publish),
+        v.asset_id ? tagsBlock(g.key) : h("p", { class: "muted small" }, "Creative tags can be added once it's in Publish (that registers the video)."),
+        h("details", { class: "more", style: "margin-top:10px" }, h("summary", {}, "File details"),
+          h("dl", { class: "kv small" }, h("dt", {}, "File"), h("dd", {}, h("span", { class: "code" }, v.path)), h("dt", {}, "Version"), h("dd", {}, v.version || "—"),
+            h("dt", {}, "Quality check"), h("dd", {}, v.qc || "not run"), v.asset_id ? [h("dt", {}, "Record"), h("dd", {}, v.asset_id)] : null)))));
+}
+async function startPublish(g, v) {
+  let assetId = v.asset_id;
+  if (!assetId) {  // an unregistered render: register it (concept + version) the first time it's published
+    const lg = await chooseLanguage();
+    if (!lg) return;
+    try {
+      const cid = (await post("/api/concepts", { title: g.title.replace(/([a-z])([A-Z])/g, "$1 $2") })).concept_id;
+      assetId = (await post("/api/assets", { concept_id: cid, language: lg, version: v.version || "V01", edit_file: v.path })).asset_id;
+    } catch (e) { toast(e.message); return; }
+  }
   closeDrawer();
-  const scrim = h("div", { class: "scrim", onclick: closeDrawer });
-  const d = h("aside", { class: "drawer", role: "dialog", "aria-modal": "true" },
-    h("button", { class: "btn ghost icon-btn close", type: "button", "aria-label": "Close", onclick: closeDrawer }, icon(ICONS.close)), content);
-  document.body.append(scrim, d);
-  d.querySelector("input,select,textarea,button:not(.close)")?.focus();
-  return d;
+  location.hash = `#/publish/new?asset=${encodeURIComponent(assetId)}&path=${encodeURIComponent(v.path)}`;
 }
-function closeDrawer() { document.querySelectorAll(".scrim,.drawer").forEach((x) => x.remove()); }
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
-
-async function openUpload(id) {
-  const [d, content] = await Promise.all([api("/api/upload/" + encodeURIComponent(id)), api("/api/content", {})]);
-  const u = d.upload;
-  const caps = d.capabilities;
-  const metricRows = Object.keys(caps).filter((m) => mdef(m).platforms?.includes(u.platform) || d.latest[m]).map((m) => {
-    const L = d.latest[m];
-    const how = caps[m];
-    const val = L ? (L.status === "value" ? n(L.value, mdef(m).unit) : "unavailable") : how === "api" ? "no data yet" : how === "manual" ? "manual import" : how;
-    return h("tr", {}, h("td", {}, mdef(m).label, tip(mdef(m).definition)), h("td", { class: "n" + (L?.status === "value" ? "" : " muted") }, val),
-      h("td", { class: "muted small" }, L ? L.source.replace("manual:", "import · ") : ""));
+function chooseLanguage() {
+  return new Promise((resolve) => {
+    drawer(h("div", { class: "eyebrow" }, "Publish"), h("h2", {}, "Which language is this video?"),
+      h("p", { class: "muted small" }, "Captions and on-screen text are made per language, so each version belongs to one."),
+      h("div", { style: "display:flex;gap:8px;margin-top:12px" }, h("button", { class: "btn primary", type: "button", onclick: () => resolve("en") }, "English"),
+        h("button", { class: "btn primary", type: "button", onclick: () => resolve("es") }, "Spanish"), h("button", { class: "btn ghost", type: "button", onclick: () => { closeDrawer(); resolve(null); } }, "Cancel")));
   });
-  const views = d.history.filter((x) => x.metric === "views" && x.status === "value").map((x) => ({ d: x.observed_at_utc.slice(0, 10), v: x.value }));
-  const assets = content.concepts.flatMap((c) => c.assets.map((a) => ({ ...a, title: c.title })));
-  const link = h("select", { "aria-label": "Version" }, h("option", { value: "" }, "Not linked"), assets.map((a) => h("option", { value: a.asset_id, selected: a.asset_id === u.asset_id }, `${a.title} · ${(a.language || "").toUpperCase()} ${a.version}`)));
-  drawer(eyebrow(`${PLAT[u.platform].name} upload`), h("h2", {}, u.title || u.platform_video_id),
-    h("dl", { class: "kv" },
-      h("dt", {}, "Account"), h("dd", {}, u.account_id), h("dt", {}, "Published"), h("dd", {}, u.published_at_utc ? new Date(u.published_at_utc).toLocaleString() : "—"),
-      h("dt", {}, "Link"), h("dd", {}, u.url ? h("a", { href: u.url, target: "_blank", rel: "noreferrer" }, u.url) : "—"),
-      h("dt", {}, "Concept"), h("dd", {}, d.concept ? `${d.concept.title} (${d.concept.concept_id})` : "—"),
-      d.concept ? [h("dt", {}, "Format · hook · slug"), h("dd", {}, [d.concept.format, d.concept.hook_type, d.concept.slug].filter(Boolean).join(" · ") || "—")] : null,
-      d.asset ? [h("dt", {}, "Version"), h("dd", {}, `${(d.asset.language || "").toUpperCase()} ${d.asset.version}`), h("dt", {}, "Production time"), h("dd", {}, d.asset.production_minutes != null ? d.asset.production_minutes + " min" : "—"),
-        h("dt", {}, "Edit file"), h("dd", {}, d.asset.edit_file ? h("span", { class: "code" }, d.asset.edit_file) : "—")] : null,
-      d.siblings.length ? [h("dt", {}, "Same version on"), h("dd", {}, d.siblings.map((x) => h("a", { href: "#", onclick: (e) => { e.preventDefault(); openUpload(x.upload_id); }, style: "margin-right:10px" }, PLAT[x.platform].name)))] : null,
-      d.experiments.length ? [h("dt", {}, "Experiments"), h("dd", {}, d.experiments.map((x) => `${x.experiment_id} (${x.status})`).join(", "))] : null),
-    h("div", { style: "display:flex;gap:8px;align-items:center" }, link, h("button", { class: "btn small", type: "button", onclick: async () => {
-      await post("/api/uploads", { platform: u.platform, platform_video_id: u.platform_video_id, asset_id: link.value || null });
-      toast("Saved"); openUpload(id);
-    } }, "Link version")),
-    h("h3", { class: "eyebrow section-title" }, "Latest metrics"),
-    h("div", { class: "table-wrap" }, h("table", {}, h("tbody", {}, metricRows))),
-    views.length > 1 ? [h("h3", { class: "eyebrow section-title" }, "Views over time"), lineChart([{ label: "Views (lifetime)", color: PLAT[u.platform].color, points: views }], { height: 160 })] : null,
-    h("details", { class: "more", style: "margin-top:14px" }, h("summary", {}, `All observations (${d.history.length})`),
-      h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Metric"), h("th", { class: "n" }, "Value"), h("th", {}, "Observed"), h("th", {}, "Source"))),
-        h("tbody", {}, d.history.slice().reverse().map((x) => h("tr", {}, h("td", {}, mdef(x.metric).label), h("td", { class: "n" }, x.status === "value" ? n(x.value, mdef(x.metric).unit) : x.status),
-          h("td", { class: "small" }, new Date(x.observed_at_utc).toLocaleString()), h("td", { class: "small muted" }, x.source, x.note ? " · " + x.note : ""))))))));
 }
-
-function field(label, input, cls) { return h("label", { class: "field " + (cls || "") }, h("span", {}, label), input); }
-function form(fields) {
-  const els = {};
-  const grid = h("div", { class: "form-grid" }, fields.map(([key, label, type, value, opts]) => {
-    let el;
-    if (type === "textarea") el = h("textarea", { name: key }, value || "");
-    else if (type === "select") el = h("select", { name: key }, opts.map(([v, t]) => h("option", { value: v, selected: String(v) === String(value ?? "") }, t)));
-    else el = h("input", { name: key, type: type || "text", value: value ?? "" });
-    els[key] = el;
-    return field(label, el, type === "textarea" ? "wide" : "");
-  }));
-  return { grid, values: () => Object.fromEntries(Object.entries(els).map(([k, el]) => [k, el.value.trim()])) };
-}
-function conceptForm(c = {}) {
-  const f = form([["title", "Title", "text", c.title], ["format", "Format", "text", c.format], ["hook_type", "Hook type", "text", c.hook_type],
-    ["slug", "Featured slug", "text", c.slug], ["hook_text", "Hook line", "textarea", c.hook_text], ["notes", "Notes", "textarea", c.notes]]);
-  drawer(eyebrow("Concept"), h("h2", {}, c.concept_id ? "Edit concept" : "New concept"),
-    h("p", { class: "muted small" }, "One creative idea. Language versions and platform uploads hang off it."), f.grid,
-    h("div", { style: "margin-top:16px" }, h("button", { class: "btn primary", type: "button", onclick: async () => {
-      try { const r = await post("/api/concepts", { ...c, ...f.values() }); toast("Saved " + r.concept_id); closeDrawer(); route(); } catch (e) { toast(e.message); }
-    } }, "Save")));
-}
-function assetForm(a, concepts) {
-  const opts = concepts.map((c) => [c.concept_id, c.title]);
-  const newConcept = !a.concept_id && a.concept_title;
-  const f = form([
-    ["concept_id", "Concept", "select", a.concept_id || "", [["", newConcept ? `New: ${a.concept_title}` : "Choose…"], ...opts]],
-    ["language", "Language", "select", a.language || "en", [["en", "English"], ["es", "Spanish"]]],
-    ["version", "Version", "text", a.version || "V01"], ["production_minutes", "Production time (min)", "number", a.production_minutes],
-    ["edit_file", "Edit file", "text", a.edit_file], ["fiction_label", "Fiction / AI label", "text", a.fiction_label]]);
-  drawer(eyebrow("Version"), h("h2", {}, "Add a language version"), f.grid,
-    h("div", { style: "margin-top:16px" }, h("button", { class: "btn primary", type: "button", onclick: async () => {
-      const v = f.values();
-      try {
-        if (!v.concept_id && newConcept) v.concept_id = (await post("/api/concepts", { title: a.concept_title, format: a.format || "" })).concept_id;
-        const r = await post("/api/assets", v); toast("Saved " + r.asset_id); closeDrawer(); route();
-      } catch (e) { toast(e.message); }
-    } }, "Save")));
-}
-
-// ------------------------------------------------------------------ Research
-let claimLevel = "";
-async function pageResearch() {
-  const d = await api("/api/research");
-  const head = topbar("Research");
-  const tone = (st) => (st === "ok" ? "ok" : st === "partial" ? "warn" : "bad");
-  const ledgers = d.ledgers.slice().sort((a, b) => a.example - b.example);
-  const levelSeg = seg([["", "All"], ...Object.entries({ O: "Observed", D: "Derived", P: "Pattern", I: "Interpretation", C: "Causal", R: "Recommendation" })], claimLevel, (v) => { claimLevel = v; route(); }, "Evidence level");
-  const claimEl = (c) => h("div", { class: "claim" }, h("span", { class: "lvl", title: c.level_label }, c.level),
-    h("div", {}, c.text, h("div", { style: "display:flex;gap:6px;margin-top:6px;flex-wrap:wrap" },
-      chip(c.support, c.support === "supported" ? "ok" : c.support === "contradicted" ? "bad" : "warn"), chip(c.strength), c.reviewed ? null : chip("unreviewed", "warn"))));
-  const findings = ledgers.length ? ledgers.map((l) => {
-    const claims = l.claims.filter((c) => !claimLevel || c.level === claimLevel);
-    // Interpretations and recommendations first when unfiltered: they say what the observations mean for a decision.
-    const order = { R: 0, I: 1, P: 2, C: 3, D: 4, O: 5 };
-    const sorted = claimLevel ? claims : claims.slice().sort((a, b) => (order[a.level] ?? 9) - (order[b.level] ?? 9));
-    const head = sorted.slice(0, l.example ? 0 : 4), tail = sorted.slice(l.example ? 0 : 4);
-    return h("div", { style: "margin-bottom:12px" },
-      h("div", { style: "display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0" }, h("strong", {}, l.ledger_id), l.example ? chip("worked example") : null, h("span", { class: "muted small" }, day(l.updated_at))),
-      l.decision ? h("p", { class: "muted small", style: "margin:0 0 6px" }, l.decision) : null,
-      head.map(claimEl),
-      tail.length ? h("details", { class: "more" }, h("summary", {}, l.example ? `${tail.length} claims` : `${tail.length} more claims`), tail.map(claimEl)) : null,
-      !claims.length ? h("p", { class: "muted small" }, "No claims at this level.") : null);
-  }) : empty("No evidence ledgers", "Findings appear when `ss evidence` writes a ledger.");
-  const memo = ledgers.filter((l) => !l.example && l.memo && Object.keys(l.memo).length).map((l) => h("div", { class: "list-row", style: "align-items:flex-start" },
-    h("div", { class: "grow" }, h("div", { class: "t" }, l.ledger_id), h("div", { class: "small", style: "margin-top:4px;white-space:normal" },
-      typeof l.memo === "string" ? l.memo : Object.entries(l.memo).slice(0, 4).map(([k, v]) => h("div", { style: "margin-bottom:4px" }, h("span", { class: "muted" }, k.replace(/_/g, " ") + ": "), typeof v === "string" ? v : Array.isArray(v) ? v.join("; ") : JSON.stringify(v)))))));
-  return [head, h("div", { class: "stack" },
-    h("div", { class: "grid cols-3" },
-      panel("Findings", { eyebrow: "Evidence ledgers", tip: "Each claim keeps its level (O observation, D derived, P pattern, I interpretation, C causal, R recommendation), support status and verbal strength. No scores." }, h("div", { style: "margin-bottom:6px;overflow-x:auto" }, levelSeg), findings),
-      h("div", { class: "stack" },
-        panel("Collection", { eyebrow: "Research runs" }, d.collection.length ? h("div", { class: "list" }, d.collection.map((c) => h("div", { class: "list-row" },
-          h("div", { class: "grow" }, h("div", { class: "t" }, c.provider.replace(/_/g, " ")), h("div", { class: "s" }, `${c.command} · ${ago(c.at)} · ${c.rows} rows`)), chip(c.status, tone(c.status)))))
-          : empty("No runs yet", "Run `ss research collect`.")),
-        kbSidePanel(d.kb))),
-    knowledgePanel(),
-    memo.length ? panel("Decisions and opportunities", { eyebrow: "From decision memos" }, h("div", { class: "list" }, memo)) : null,
-    h("div", { class: "grid cols-2" },
-      panel("Trending searches", { eyebrow: `Google Trending Now · ${day(d.trends.observed_day)}`, tip: "Raw P2 observation: feed order is not a rank, and these are all searches in each country, not gaming." },
-        Object.keys(d.trends.by_geo).length ? h("div", { class: "table-wrap" }, h("table", {}, h("tbody", {}, Object.entries(d.trends.by_geo).map(([geo, terms]) =>
-          h("tr", {}, h("td", { style: "width:52px" }, h("span", { class: "lang" }, geo)), h("td", { class: "small" }, terms.map((t) => t.term).join(" · "))))))) : empty("No trends collected", "")),
-      panel("Watchlists", { eyebrow: "Creators and topics" }, h("div", { class: "list" },
-        [["YouTube creators", d.watchlists.youtube_creators.map((x) => x.label)], ["Twitch broadcasters", d.watchlists.twitch_broadcasters.map((x) => x.label)],
-          ["Wikipedia topics", d.watchlists.wiki_entities], ["Roblox experiences", d.watchlists.roblox_experiences]].map(([t, items]) =>
-          h("details", { class: "more list-row", style: "display:block" }, h("summary", {}, `${t} · ${items.length}`), h("div", { class: "small muted", style: "padding:4px 0 6px" }, items.join(", ") || "none")))))),
-    panel("Recent observations", { eyebrow: "Manual and tool observations", tip: "Values as seen on TikTok, Instagram, Creative Center or third-party tools, with provenance (P1 platform count, P2 index or rank, P3 third-party estimate, P4 interpretation)." },
-      d.observations.length ? h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Item"), h("th", {}, "Metric"), h("th", { class: "n" }, "Value"), h("th", {}, "Source"), h("th", {}, "Scope"), h("th", {}, "Seen"))),
-        h("tbody", {}, d.observations.map((o) => h("tr", {}, h("td", { class: "title-cell" }, o.name, h("span", { class: "muted" }, o.platform)), h("td", {}, o.metric), h("td", { class: "n" }, o.value || "—"),
-          h("td", {}, o.source, " ", chip(o.provenance)), h("td", { class: "small muted" }, [o.region, o.period].filter(Boolean).join(" · ")), h("td", { class: "small" }, day(o.observed_at)))))))
-        : empty("No observations", "`ss observe import` adds them.")))];
-}
-
-// ------------------------------------------------------------------ Knowledge banks
-const KB_TONE = { fresh: "ok", evergreen: "", due: "warn", stale: "bad", undated: "warn" };
-const EV_LABEL = { established: "established", adjacent: "adjacent domain", verified_platform: "verified platform", owned_result: "our result",
-  application: "application", untested: "untested", owner_hypothesis: "owner hypothesis", inventory: "report inventory", observed: "observed sample" };
-let kbState = { q: "", bank: "", evidence: "", status: "", format: "", lang: "", due: false };
-function kbRow(r) {
-  return h("div", { class: "list-row", style: "align-items:flex-start;cursor:pointer", onclick: () => openKnowledge(r.id) },
-    h("div", { class: "grow" },
-      h("div", { class: "t" }, r.title, " ", h("span", { class: "muted small" }, r.id)),
-      r.statement ? h("div", { class: "s", style: "white-space:normal;margin-top:3px" }, r.statement.length > 220 ? r.statement.slice(0, 220) + "…" : r.statement) : null,
-      h("div", { style: "display:flex;gap:6px;margin-top:6px;flex-wrap:wrap" },
-        chip(EV_LABEL[r.evidence_label] || r.evidence_label), chip(r.review_status, r.review_status === "approved" ? "ok" : r.review_status === "draft" ? "warn" : ""),
-        r.support_status ? chip(r.support_status, r.support_status === "supported" ? "ok" : r.support_status === "unsupported" ? "bad" : "warn") : null,
-        r.strength ? chip(r.strength) : null,
-        r.freshness !== "evergreen" ? chip(r.freshness + (r.review_by ? " · " + r.review_by : ""), KB_TONE[r.freshness]) : null,
-        ...r.formats.slice(0, 3).map((f) => chip(f)), ...r.languages.map((l) => h("span", { class: "lang" }, l)))));
-}
-function knowledgePanel() {
-  const list = h("div", { class: "list" }, h("div", { class: "muted small" }, "Loading…"));
-  const count = h("span", { class: "muted small" }, "");
-  let built = false, timer = null;
-  const sel = (key, label, opts) => field(label, h("select", { onchange: (ev) => { kbState[key] = ev.target.value; load(); } },
-    [["", "Any"], ...opts].map(([v, t]) => h("option", { value: v, selected: kbState[key] === v }, t))));
-  const filters = h("div", { class: "form-grid", style: "margin-bottom:10px" });
-  async function load() {
-    const params = Object.fromEntries(Object.entries({ ...kbState, due: kbState.due ? "1" : "", inventory: kbState.bank === "inventory" ? "1" : "" }).filter(([, v]) => v));
-    const d = await api("/api/knowledge", params);
-    if (!built) {
-      built = true;
-      filters.replaceChildren(
-        field("Search", h("input", { type: "search", value: kbState.q, placeholder: "e.g. floppy, payoff, spanish, RFY", oninput: (ev) => { clearTimeout(timer); timer = setTimeout(() => { kbState.q = ev.target.value; load(); }, 220); } }), "wide"),
-        sel("bank", "Bank", d.banks.filter((b) => b.bank !== "inventory").map((b) => [b.bank, `${b.bank} (${b.n})`]).concat([["inventory", "inventory (raw reports)"]])),
-        sel("evidence", "Evidence", d.facets.evidence.map((x) => [x, EV_LABEL[x] || x])),
-        sel("status", "Review", d.facets.status.map((x) => [x, x])),
-        sel("format", "Format", d.facets.format.map((x) => [x, x])),
-        sel("lang", "Language", [["en", "EN"], ["es", "ES"]]),
-        field("Freshness", h("label", { class: "small", style: "display:flex;gap:6px;align-items:center" }, h("input", { type: "checkbox", checked: kbState.due, onchange: (ev) => { kbState.due = ev.target.checked; load(); } }), "Due or stale only")));
-    }
-    count.textContent = `${d.total} entries${d.total > d.rows.length ? ` · showing ${d.rows.length}` : ""}`;
-    const anyFilter = Object.values(kbState).some(Boolean);
-    list.replaceChildren(...(d.rows.length ? d.rows.map(kbRow) : [empty("Nothing matches", !anyFilter ? "No knowledge banks yet. Run `ss kb migrate` and add curated entries." : "Try fewer filters.")]));
-  }
-  load().catch((e) => list.replaceChildren(empty("Knowledge banks unavailable", e.message)));
-  return panel("Knowledge", { eyebrow: "Knowledge banks", tip: "Evidence label, review status and freshness are separate. Review is not evidence; support comes from ledgers. The raw report inventory is hidden unless you pick it. No scores.", actions: count }, filters, list);
-}
-function kbSidePanel(k) {
-  if (!k || !k.available) return panel("Knowledge banks", { eyebrow: "Not built yet" }, empty("None yet", "Run `ss kb migrate --audit …` and `ss kb validate`."));
-  const opp = k.opportunities.map((o) => h("div", { class: "list-row", style: "align-items:flex-start;cursor:pointer", onclick: () => openKnowledge(o.id) },
-    h("div", { class: "grow" }, h("div", { class: "t" }, o.title), h("div", { class: "s", style: "white-space:normal" }, o.target),
-      h("div", { style: "display:flex;gap:4px;flex-wrap:wrap;margin-top:5px" }, Object.entries(o.dimensions).map(([dim, v]) => chip(`${dim.replace(/_/g, " ")}: ${v.rating}`, v.rating === "unknown" ? "" : "ok")))),
-    chip(EV_LABEL[o.evidence_label] || o.evidence_label, "warn")));
-  const sent = k.sentiment.map((x) => h("div", { class: "list-row", style: "cursor:pointer", onclick: () => openKnowledge(x.id) }, h("div", { class: "grow" }, h("div", { class: "t" }, x.title), h("div", { class: "s" }, `${x.denominators.coded || 0} of ${x.denominators.items || 0} coded · ${x.source}`)), chip(x.freshness, KB_TONE[x.freshness])));
-  return h("div", { class: "stack" },
-    panel("Opportunities", { eyebrow: "Cultural openings", tip: "Popularity, velocity, persistence, saturation, sentiment, fatigue and Slugshot fit are kept separate; an opportunity is a written judgement, never a score." },
-      opp.length ? h("div", { class: "list" }, opp) : empty("None yet", "Opportunity cards come from audience samples or owner ideas.")),
-    panel("Audience sentiment", { eyebrow: "Coded comment samples", tip: "Each sample is one read of one target with its own denominators. Commenters are self-selected; no demographics are inferred and no comment text is shown here." },
-      sent.length ? h("div", { class: "list" }, sent) : empty("No samples yet", "`ss sentiment packet` then `ss sentiment join`.")),
-    panel("Due for review", { eyebrow: `${k.n} entries · ${k.errors} validation errors` },
-      k.due.length ? h("div", { class: "list" }, k.due.map((r) => h("div", { class: "list-row", style: "cursor:pointer", onclick: () => openKnowledge(r.id) }, h("div", { class: "grow" }, h("div", { class: "t" }, r.title), h("div", { class: "s" }, r.id)), chip(r.freshness + " · " + r.review_by, KB_TONE[r.freshness]))))
-        : empty("Nothing due", "Cultural and platform entries list here before their review date.")));
-}
-async function openKnowledge(id) {
-  const e = await api("/api/knowledge/" + encodeURIComponent(id)).catch(() => null);
-  if (!e) return toast("Not found: " + id);
-  const dl = (pairs) => h("dl", { class: "kv" }, pairs.filter(([, v]) => v && (!Array.isArray(v) || v.length)).flatMap(([k, v]) => [h("dt", {}, k), h("dd", {}, Array.isArray(v) ? v.join(", ") : String(v))]));
-  const t = e.tags || {};
-  const sec = (title) => h("h3", { class: "eyebrow section-title" }, title);
-  drawer(eyebrow(`${e.bank} · ${e.id}`), h("h2", {}, e.title),
-    h("div", { style: "display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" }, chip(EV_LABEL[e.evidence_label] || e.evidence_label), chip(e.review_status),
-      e.support_status ? chip(e.support_status) : null, e.strength ? chip(e.strength) : null, chip(e.status_freshness + (e.review_by ? " · " + e.review_by : ""), KB_TONE[e.status_freshness])),
-    e.statement ? h("p", { style: "max-width:70ch" }, e.statement) : null,
-    e.original_text && e.bank !== "inventory" ? h("details", { class: "more" }, h("summary", {}, "Original report wording"), h("p", { class: "small muted", style: "white-space:pre-wrap" }, e.original_text)) : null,
-    e.bank === "inventory" ? h("pre", { class: "small", style: "white-space:pre-wrap;max-height:40vh;overflow:auto" }, e.original_text) : null,
-    dl([["Boundaries", e.boundaries], ["Transfer assumption", e.transfer_assumption], ["Rival explanations", e.rivals], ["Risks", e.risks],
-      ["Bibliographic", e.bibliographic_verification || e.bibliographic_status], ["Figures found", e.figure_presence], ["Context review", e.contextual_verification],
-      ["Design", e.design], ["Access", e.access], ["Report self-assessment", e.report_self_support ? `${e.report_self_support} · ${e.report_self_strength}` : ""],
-      ["Audit flags", e.audit_flags], ["When / gate", e.gate], ["Comparator", e.comparator], ["Scope", e.scope], ["Linked experiments", e.experiment_refs],
-      ["Report IDs", e.report_aliases], ["Formats", t.format], ["Languages", t.language], ["Characters", t.character], ["Stages", t.funnel_stage], ["Journey", t.journey],
-      ["Locator", e.locator], ["DOI", e.doi], ["DOI as cited", e.doi_as_cited], ["Next check", e.next_check]]),
-    (e.game_truth || []).length ? [sec("Game truth"), h("div", { class: "list" }, e.game_truth.map((g) => h("div", { class: "list-row" }, h("div", { class: "grow small", style: "white-space:normal" }, g.row), chip(g.label, g.label === "OK" ? "ok" : g.label === "NO" || g.label === "AVOID" ? "bad" : "warn"))))] : null,
-    e.dimensions ? [sec("Dimensions (separate; no score)"), dl(Object.entries(e.dimensions).map(([k, v]) => [k.replace(/_/g, " "), `${v.rating}${v.note ? " · " + v.note : ""}`]))] : null,
-    e.units ? [sec("Per unit (video or thread)"), h("div", { class: "list" }, Object.entries(e.units).map(([u, v]) => h("div", { class: "list-row", style: "align-items:flex-start" }, h("div", { class: "grow" }, h("div", { class: "t" }, u),
-      h("div", { class: "s", style: "white-space:normal" }, `${v.n_coded} of ${v.n_items} coded · ` + (Object.entries(v.codes).filter(([, st]) => st.present).map(([c, st]) => `${c} ${st.present}`).join(" · ") || "no codes present"))))))] : null,
-    (e.caveats || []).length ? h("ul", { class: "small muted" }, e.caveats.map((c) => h("li", {}, c))) : null,
-    e.claims_resolved.length ? [sec("Evidence (ledger claims)"), e.claims_resolved.map((c) => h("div", { class: "claim" }, h("span", { class: "lvl" }, c.level), h("div", {}, c.claim_text, h("div", { style: "display:flex;gap:6px;margin-top:6px" }, chip(c.support_status), chip(c.strength)), h("div", { class: "muted small" }, c.ref))))] : null,
-    e.links_resolved.length ? [sec("Links"), h("div", { class: "list" }, e.links_resolved.map((l) => h("div", { class: "list-row", style: "cursor:pointer", onclick: () => openKnowledge(l.to) }, h("div", { class: "grow" }, h("div", { class: "t" }, l.title || l.to), h("div", { class: "s" }, l.to)), chip(l.type.replace(/_/g, " ")))))] : null,
-    e.inbound.length ? [sec("Referenced by"), h("div", { class: "small muted" }, e.inbound.map((x) => x.id).join(", "))] : null,
-    (e.history || []).length ? h("details", { class: "more" }, h("summary", {}, "History"), e.history.map((x) => h("div", { class: "small" }, `${x.date} · ${x.by}: ${x.note}`))) : null);
-}
-
-// ------------------------------------------------------------------ Game
-async function pageGame() {
-  const d = await api("/api/game", filterParams());
-  const head = topbar("Game", filterBar());
-  const connected = d.roblox_accounts.some((a) => (STATUS?.sources || []).some((x) => x.account_id === a.account_id && x.credential === "ready"));
-  const howChip = (how) => (how === "api" ? null : chip(how === "manual" ? "import" : how, how === "manual" ? "" : "warn"));
-  const basis = (b) => (b ? b.replace(/(cohort|day) (\d{4}-\d{2}-\d{2})/, (_m, w, d_) => `${w} ${day(d_)}`) : null);
-  const metricCell = (m, v) => h("div", { class: "sm", title: m.definition },
-    h("div", { class: "l" }, m.label, " · ", PLAT[v.platform].name, " ", howChip(v.how)),
-    h("div", { class: "v" + (v.value == null ? " muted" : "") }, n(v.value, m.unit), v.basis && v.value != null ? h("span", { class: "p" }, basis(v.basis)) : null));
-  // Progressive disclosure: primary metrics with data first; everything else (and every gap) behind "More".
-  const stages = h("div", { class: "stages" }, d.stages.map((st, i) => {
-    const cells = st.metrics.flatMap((m) => m.values.map((v) => ({ m, v })));
-    const main = cells.filter(({ m, v }) => m.primary && v.value != null);
-    const rest = cells.filter((c) => !main.includes(c));
-    return h("div", { class: "stage", style: `animation:slide-up var(--duration-slow) var(--ease-standard) ${i * 30}ms backwards` },
-      h("div", {}, h("div", { class: "name" }, st.label), h("div", { class: "what" }, st.measures)),
-      h("div", {}, main.length ? h("div", { class: "stage-metrics" }, main.map(({ m, v }) => metricCell(m, v)))
-        : h("div", { class: "muted small" }, cells.length ? "No data yet." : "No source for this stage yet."),
-        rest.length ? h("details", { class: "more", style: "margin-top:6px" }, h("summary", {}, `More (${rest.length})`),
-          h("div", { class: "stage-metrics", style: "margin-top:6px" }, rest.map(({ m, v }) => metricCell(m, v)))) : null));
-  }));
-  const S = d.series;
-  return [head, h("div", { class: "stack" },
-    !connected && !FIXTURE ? panel("Roblox analytics not connected", { flat: true },
-      h("p", { class: "muted", style: "margin:0 0 12px" }, "Slugshot isn't published yet. When it is, add the universe ID and an Open Cloud key with universe.analytics:read."), h("a", { class: "btn", href: "#/settings" }, "Settings")) : null,
-    panel("Measurement stages", { eyebrow: "Commercial funnel", tip: "Each stage is measured in its own population and window. Stages are never divided into each other: a viewer can't be followed into the game except through a tracked share link." }, stages),
-    h("div", { class: "grid cols-2" },
-      panel("Players per day", { eyebrow: "Retention" }, lineChart([{ label: "Daily players", color: "var(--series-roblox)", points: S.dau }, { label: "New players", color: "var(--series-youtube)", points: S.new_users }], { label: "Players per day" })),
-      panel("D1 retention by cohort", { eyebrow: "Retention", tip: "Each point is the share of that day's new players who returned the next day. The newest day has no value until its cohort completes." }, lineChart([{ label: "D1", color: "var(--series-roblox)", points: S.d1_retention }], { unit: "fraction" }))),
-    h("div", { class: "grid cols-2" },
-      panel("Revenue per day", { eyebrow: "Monetisation" }, lineChart([{ label: "Revenue (Robux)", color: "var(--series-roblox)", points: S.revenue_robux }], { unit: "Robux" })),
-      panel("Acquisition sources", { eyebrow: "Acquisition · average per day", tip: "Average daily unique players with sessions, by Roblox's acquisition source, over the selected range. Days aren't added: the same player returns on several days." },
-        bars(d.acquisition.map((r) => ({ label: r.source, v: r.v })), { emptyTitle: "No acquisition data" }))),
-    h("div", { class: "grid cols-2" },
-      panel("Share links", { eyebrow: "Tracked links", tip: "From Creator Dashboard > Share Links, imported by hand. Use one link per account or campaign so arrivals can be attributed." },
-        d.share_links.length ? h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Link"), h("th", {}, "Metric"), h("th", { class: "n" }, "Value"))),
-          h("tbody", {}, d.share_links.map((r) => h("tr", {}, h("td", {}, r.link), h("td", {}, mdef(r.metric).label), h("td", { class: "n" }, n(r.v)))))))
-          : empty("No share-link data", "Import the Share Links numbers (long template, breakdown_dim ShareLink).")),
-      panel("Cohorts", { eyebrow: "New players by first day" }, d.cohorts.length ? h("div", { class: "table-wrap" }, h("table", {},
-        h("thead", {}, h("tr", {}, h("th", {}, "First day"), h("th", { class: "n" }, "New"), h("th", { class: "n" }, "D1"), h("th", { class: "n" }, "D7"), h("th", { class: "n" }, "D30"))),
-        h("tbody", {}, d.cohorts.slice(0, 14).map((c) => h("tr", {}, h("td", {}, day(c.d)), h("td", { class: "n" }, n(c.new_users)), h("td", { class: "n" }, n(c.d1, "fraction")), h("td", { class: "n" }, n(c.d7, "fraction")), h("td", { class: "n" }, n(c.d30, "fraction")))))))
-        : empty("No cohorts yet", ""))),
-    h("p", { class: "muted small" }, "Activation: " + d.activation_note))];
-}
-
-// ------------------------------------------------------------------ Experiments
-const STATUS_TONE = { proposed: "", planned: "accent", running: "ok", analysing: "warn", decided: "ok", abandoned: "" };
-async function familiesPanel() {
-  const fams = await api("/api/hypotheses").catch(() => []);
-  if (!fams.length) return null;
-  return panel("Hypothesis families", { eyebrow: "Knowledge bank · learning portfolio", tip: "The 51 report hypotheses merged into 17 families (original IDs kept). A family becomes an experiment here when scheduled. Options, not gates: unrelated concepts are always allowed." },
-    h("div", { class: "list" }, fams.map((f) => h("div", { class: "list-row", style: "align-items:flex-start;cursor:pointer", onclick: () => openKnowledge(f.id) },
-      h("div", { class: "grow" }, h("div", { class: "t" }, f.title), h("div", { class: "s", style: "white-space:normal" }, f.question),
-        h("div", { class: "s", style: "white-space:normal;margin-top:3px" }, "When: " + f.gate + (f.experiments.length ? " · linked: " + f.experiments.join(", ") : ""))),
-      chip(f.aliases.length + (f.aliases.length === 1 ? " report hypothesis" : " report hypotheses"))))));
-}
-async function pageExperiments() {
-  const [exps, content] = await Promise.all([api("/api/experiments"), api("/api/content", {})]);
-  const head = topbar("Experiments", h("button", { class: "btn primary", type: "button", onclick: () => experimentForm({}, content) }, "New experiment"));
-  return [head, exps.length ? h("div", { class: "stack" }, exps.map((e, i) => panel(e.title, {
-    eyebrow: e.experiment_id, delay: i * 40,
-    actions: h("div", { style: "display:flex;gap:8px;align-items:center" }, chip(e.status, STATUS_TONE[e.status]), h("button", { class: "btn small", type: "button", onclick: () => experimentForm(e, content) }, "Open")) },
-    h("p", { style: "margin:0 0 12px;max-width:80ch" }, e.hypothesis),
-    (e.hypothesis_families || []).length ? h("div", { style: "display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 12px" }, e.hypothesis_families.map((f) => h("button", { class: "chip linkish", type: "button", title: f.gate, onclick: () => openKnowledge(f.id) }, f.id + " · " + f.title))) : null,
-    h("div", { class: "stage-metrics", style: "margin-bottom:12px" },
-      h("div", { class: "sm" }, h("div", { class: "l" }, "Primary metric"), h("div", { class: "v" }, mdef(e.primary_metric).label, h("span", { class: "p" }, e.window_hours ? `at ${e.window_hours} h` : ""))),
-      h("div", { class: "sm" }, h("div", { class: "l" }, "One change"), h("div", { class: "small", style: "max-width:46ch" }, e.one_change || "—")),
-      h("div", { class: "sm" }, h("div", { class: "l" }, "Next action"), h("div", { class: "small", style: "max-width:46ch" }, e.next_action || "—"))),
-    h("div", { class: "grid cols-2" }, e.variants.map((v) => h("div", { class: "stage", style: "grid-template-columns:1fr" },
-      h("div", {}, h("div", { class: "name" }, `${v.variant_id} · ${v.label}`, " ", chip(v.role)), h("div", { class: "what" }, v.description)),
-      v.uploads.length ? h("div", { class: "stage-metrics" }, v.uploads.map((u) => {
-        const at = u.at_window[e.primary_metric];
-        return h("div", { class: "sm" }, h("div", { class: "l" }, PLAT[u.platform].name, " ", u.account_id),
-          h("div", { class: "v" + (at ? "" : " muted") }, at ? n(at.value, mdef(e.primary_metric).unit) : "no reading", at ? h("span", { class: "p" }, `${at.hours_from_window >= 0 ? "+" : ""}${at.hours_from_window} h from read time`) : null));
-      })) : h("div", { class: "muted small" }, "No uploads linked yet."))))))) : panel(null, {}, empty("No experiments", "Record one with New experiment.")),
-    await familiesPanel()];
-}
-function experimentForm(e, content) {
-  const metrics = META.metrics.metrics.filter((m) => m.platforms.length && m.platforms[0] !== "roblox").map((m) => [m.id, m.label]);
-  const f = form([
-    ["title", "Title", "text", e.title], ["status", "Status", "select", e.status || "proposed", ["proposed", "planned", "running", "analysing", "decided", "abandoned"].map((x) => [x, x])],
-    ["hypothesis", "Hypothesis", "textarea", e.hypothesis], ["one_change", "The one change", "textarea", e.one_change],
-    ["primary_metric", "Primary metric", "select", e.primary_metric || "avg_view_pct", metrics], ["window_hours", "Read at (hours after posting)", "number", e.window_hours ?? 48],
-    ["language", "Language", "select", e.language || "", [["", "Both"], ["en", "EN"], ["es", "ES"]]], ["campaign", "Campaign", "text", e.campaign],
-    ["stop_rule", "Stop rule", "textarea", e.stop_rule], ["threshold", "Decision threshold", "textarea", e.threshold],
-    ["design", "Design", "textarea", e.design], ["results", "Results", "textarea", e.results], ["limitations", "Limitations", "textarea", e.limitations],
-    ["decision", "Decision", "textarea", e.decision], ["next_action", "Next action", "textarea", e.next_action]]);
-  const assets = content.concepts.flatMap((c) => c.assets.map((a) => [a.asset_id, `${c.title} · ${(a.language || "").toUpperCase()} ${a.version}`]));
-  const variants = (e.variants?.length ? e.variants : [{ variant_id: "A", role: "control", label: "", description: "", asset_ids: [] }, { variant_id: "B", role: "treatment", label: "", description: "", asset_ids: [] }]).map((v) => ({ ...v }));
-  const vbox = h("div", { class: "stack" });
-  const paintVariants = () => vbox.replaceChildren(...variants.map((v) => h("div", { class: "stage", style: "grid-template-columns:1fr" },
-    h("div", { class: "form-grid" },
-      field("Variant", h("input", { type: "text", value: v.variant_id, oninput: (ev) => (v.variant_id = ev.target.value) })),
-      field("Role", h("select", { onchange: (ev) => (v.role = ev.target.value) }, ["control", "treatment"].map((r) => h("option", { value: r, selected: v.role === r }, r)))),
-      field("Label", h("input", { type: "text", value: v.label, oninput: (ev) => (v.label = ev.target.value) }), "wide"),
-      field("Description", h("textarea", { oninput: (ev) => (v.description = ev.target.value) }, v.description), "wide"),
-      field("Versions", h("select", { multiple: true, size: Math.min(4, Math.max(2, assets.length)), onchange: (ev) => (v.asset_ids = [...ev.target.selectedOptions].map((o) => o.value)) },
-        assets.length ? assets.map(([id, t]) => h("option", { value: id, selected: v.asset_ids.includes(id) }, t)) : h("option", { disabled: true }, "No versions yet (Content > Concepts)")), "wide")))));
-  paintVariants();
-  drawer(eyebrow(e.experiment_id || "New experiment"), h("h2", {}, e.title || "New experiment"),
-    h("p", { class: "muted small" }, "One main change, a metric and read time fixed in advance. Variants link to versions, so one version on three platforms stays one unit."),
-    f.grid, h("h3", { class: "eyebrow section-title" }, "Variants"), vbox,
-    h("button", { class: "btn ghost small", type: "button", style: "margin-top:8px", onclick: () => { variants.push({ variant_id: String.fromCharCode(65 + variants.length), role: "treatment", label: "", description: "", asset_ids: [] }); paintVariants(); } }, "Add variant"),
-    h("div", { style: "margin-top:18px;display:flex;gap:10px" }, h("button", { class: "btn primary", type: "button", onclick: async () => {
-      try {
-        const v = f.values();
-        const r = await post("/api/experiments", { ...e, ...v, window_hours: v.window_hours || null, secondary_metrics: e.secondary_metrics || [], platforms: e.platforms || [], variants });
-        toast("Saved " + r.experiment_id); closeDrawer(); route();
-      } catch (err) { toast(err.message); }
-    } }, "Save")));
-}
-
-// ------------------------------------------------------------------ Settings
-async function pageSettings() {
-  const st = await refreshStatus();
-  const accounts = (await api("/api/meta")).accounts;
-  const head = topbar("Settings");
-  const credTone = (c) => (c === "ready" ? "ok" : "");
-  const conn = h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Account"), h("th", {}, "Source"), h("th", {}, "Status"), h("th", {}, "Last refresh"), h("th", {}, ""))),
-    h("tbody", {}, st.sources.map((x) => h("tr", {},
-      h("td", {}, plat(x.platform), " ", lang(x.language), h("div", { class: "muted small" }, x.account_label)),
-      h("td", { class: "small" }, x.label),
-      h("td", {}, ["failed", "needs_auth"].includes(x.last_status) && x.credential === "ready" ? chip(x.last_status === "failed" ? "failed" : "reconnect", "bad")
-        : chip(x.credential === "ready" ? x.freshness : x.credential, x.credential === "ready" ? FRESH_TONE[x.freshness] : credTone(x.credential)),
-        x.last_status && x.last_status !== "ok" ? h("div", { class: "small muted", style: "margin-top:4px;max-width:34ch" }, `${x.last_status}: ${x.last_message}`) : null),
-      h("td", { class: "small" }, x.last_success_utc ? ago(x.last_success_utc) : "—"),
-      h("td", { class: "n" }, connectAction(x)))))));
-  const creds = [["YOUTUBE_OAUTH_CLIENT_ID", "Google OAuth client ID"], ["YOUTUBE_OAUTH_CLIENT_SECRET", "Google OAuth client secret"],
-    ["TIKTOK_CLIENT_KEY", "TikTok client key"], ["TIKTOK_CLIENT_SECRET", "TikTok client secret"], ["ROBLOX_ANALYTICS_API_KEY", "Roblox Open Cloud key"],
-    ["BUFFER_API_KEY", "Buffer API key"], ["CLOUDINARY_CLOUD_NAME", "Cloudinary cloud name"], ["CLOUDINARY_API_KEY", "Cloudinary API key"],
-    ["CLOUDINARY_API_SECRET", "Cloudinary API secret"]];
-  const credRows = h("div", { class: "list" }, creds.map(([k, t]) => {
-    const inp = h("input", { type: "password", autocomplete: "off", placeholder: st.credentials[k] ? "saved · paste to replace" : "paste value", "aria-label": t, style: "flex:1;min-width:0" });
-    return h("div", { class: "list-row" }, h("div", { style: "width:220px;flex:none" }, h("div", { class: "t" }, t), h("div", { class: "s" }, k)), inp,
-      st.credentials[k] ? chip("saved", "ok") : chip("not set"),
-      h("button", { class: "btn small", type: "button", onclick: async () => {
-        if (!inp.value.trim()) return;
-        await post("/api/credentials", { name: k, value: inp.value }); inp.value = ""; toast("Saved to the encrypted local vault"); route();
-      } }, "Save"));
-  }));
-  const acctRows = h("div", { class: "list" }, accounts.map((a) => {
-    const label = h("input", { type: "text", value: a.label, "aria-label": "Label" });
-    const handle = h("input", { type: "text", value: a.handle, placeholder: "handle", "aria-label": "Handle" });
-    const ext = h("input", { type: "text", value: a.external_id, placeholder: a.platform === "roblox" ? "universe ID" : "channel / user ID (filled on connect)", "aria-label": "External ID" });
-    const active = h("input", { type: "checkbox", checked: !!a.active, "aria-label": "Active" });
-    return h("div", { class: "list-row", style: "flex-wrap:wrap" }, h("span", { style: "width:120px" }, plat(a.platform), " ", lang(a.language)), label, handle, ext,
-      h("label", { class: "small muted", style: "display:flex;gap:6px;align-items:center" }, active, "active"),
-      h("button", { class: "btn small", type: "button", onclick: async () => {
-        try { await post("/api/accounts", { ...a, label: label.value, handle: handle.value, external_id: ext.value.trim(), active: active.checked }); toast("Saved"); } catch (e) { toast(e.message); }
-      } }, "Save"));
-  }));
-  const auto = h("input", { type: "checkbox", checked: st.auto_refresh, onchange: async (e) => { await post("/api/prefs", { auto_refresh: e.target.checked }); toast(e.target.checked ? "Daily refresh on" : "Daily refresh off"); } });
-  const theme = store.get("theme-choice", "system");
-  const setTheme = (v) => {
-    store.set("theme-choice", v);
-    try { v === "system" ? localStorage.removeItem("ss-theme") : localStorage.setItem("ss-theme", v); } catch (e) { /* ignore */ }
-    const t = v === "system" ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark") : v;
-    document.documentElement.setAttribute("data-theme", t);
-    route();
+let VOCAB = null;
+function tagsBlock(conceptId) {
+  const box = h("div", { style: "margin-top:12px" });
+  const NAMES = { format: "Format", hook: "Hook", codes: "Narrative", character: "Characters", humour: "Humour", objective: "Objective", mechanism: "Mechanism" };
+  const paint = async () => {
+    VOCAB = VOCAB || await api("/api/vocab");
+    const c = (await api("/api/content", {})).concepts.find((x) => x.concept_id === conceptId);
+    let tags = {};
+    try { tags = JSON.parse(c?.tags || "{}"); } catch (e) { tags = {}; }
+    if (!tags.format?.length && c?.format) tags.format = [c.format];
+    const label = (k, id) => (VOCAB[k].find((x) => x.id === id)?.label || id);
+    const chips = Object.entries(NAMES).flatMap(([k]) => (tags[k] || []).map((id) => chip(`${NAMES[k]}: ${label(k, id)}`)));
+    box.replaceChildren(h("div", { class: "eyebrow", style: "margin-bottom:6px" }, "Creative tags"),
+      h("div", { style: "display:flex;gap:5px;flex-wrap:wrap;align-items:center" }, chips.length ? chips : h("span", { class: "muted small" }, "Not tagged yet."),
+        h("button", { class: "btn ghost small", type: "button", onclick: () => editTags(conceptId, tags, NAMES, paint) }, chips.length ? "Edit" : "Tag it")));
   };
-  return [head, h("div", { class: "stack" },
-    panel("Connections", { eyebrow: "Sources", tip: "Each account is refreshed on its own. A failure in one never stops the others." }, conn,
-      h("p", { class: "muted small", style: "margin:12px 0 0" }, "OAuth redirect URI to register: ", h("span", { class: "code" }, st.redirect_uri))),
-    h("div", { class: "grid cols-2" },
-      panel("Refresh", { eyebrow: "Sync" }, h("div", { style: "display:flex;gap:12px;align-items:center;flex-wrap:wrap" },
-        h("button", { class: "btn primary", type: "button", onclick: async () => { await post("/api/sync"); toast("Refreshing…"); pollUntilDone(); } }, "Refresh now"),
-        h("label", { style: "display:flex;gap:8px;align-items:center" }, auto, "Daily, and when the app opens"))),
-      panel("Appearance", { eyebrow: "Theme" }, seg([["system", "System"], ["light", "Light"], ["dark", "Dark"]], theme, setTheme, "Theme"))),
-    hostingPanel(),
-    h("div", { class: "grid cols-2" }, importPanel(st), exportPanel()),
-    panel("App credentials", { eyebrow: "Stored encrypted on this PC (Windows DPAPI)", tip: "Never shown again, never exported. .env values also work." }, credRows),
-    panel("Accounts", { eyebrow: "English and Spanish accounts", id: "accounts-panel" }, acctRows))];
-}
-// Free-tier watch: Cloudinary (video hosting for Buffer) and Buffer's API window. Figures come from the providers.
-function hostingPanel() {
-  const body = h("div", {}, h("p", { class: "muted small" }, "Loading…"));
-  const pct = (x) => (x && x.used_percent != null ? `${Number(x.used_percent).toFixed(1)}%` : "—");
-  const mb = (b) => (b == null ? "—" : `${(b / 1e6).toFixed(1)} MB`);
-  const render = (d) => {
-    const u = d.usage || {}, q = d.buffer_quota, L = d.limits;
-    body.replaceChildren(
-      h("dl", { class: "kv tight" },
-        h("dt", {}, "Cloudinary"), h("dd", {}, d.configured ? `${u.plan || "plan unknown"} plan` : chip("not set up"), d.error ? h("span", { class: "chip bad" }, d.error) : null),
-        h("dt", {}, "Credits (30 days)"), h("dd", {}, u.credits && u.credits.usage != null ? `${u.credits.usage} of ${u.credits.limit} · ${pct(u.credits)}` : "—", ` · uploads stop at ${L.max_credit_pct}%`),
-        h("dt", {}, "Storage"), h("dd", {}, u.storage ? `${mb(u.storage.usage)} ${u.storage.used_percent != null ? "· " + pct(u.storage) : ""}` : "—"),
-        h("dt", {}, "Bandwidth"), h("dd", {}, u.bandwidth ? `${mb(u.bandwidth.usage)} ${u.bandwidth.used_percent != null ? "· " + pct(u.bandwidth) : ""}` : "—"),
-        h("dt", {}, "Limits"), h("dd", {}, `${L.max_file_mb} MB per video · ${L.max_hosted_files} hosted at once · abandoned after ${L.abandon_hours} h`),
-        h("dt", {}, "Buffer API"), h("dd", {}, q ? `${q.remaining} of ${q.limit} requests left this 30-day window` : "—", " · analytics pause below 150"),
-        h("dt", {}, "Checked"), h("dd", {}, u.fetched_at ? ago(u.fetched_at) : "—")),
-      d.hosted.length ? h("div", { class: "table-wrap", style: "margin-top:10px" }, h("table", {}, h("thead", {}, h("tr", {}, ["Hosted file", "State", "Size", "Updated"].map((t) => h("th", {}, t)))),
-        h("tbody", {}, d.hosted.map((r) => h("tr", {}, h("td", { class: "small code" }, r.public_id.split("/").pop().slice(0, 12)), h("td", {}, chip(r.state, r.state === "deleted" ? "" : r.state === "failed" ? "bad" : "accent")),
-          h("td", { class: "small" }, mb(r.bytes)), h("td", { class: "small muted" }, ago(r.updated_at_utc))))))) : h("p", { class: "muted small" }, "Nothing hosted."),
-      h("div", { style: "display:flex;gap:8px;margin-top:10px" },
-        h("button", { class: "btn small", type: "button", onclick: async () => { body.replaceChildren(h("p", { class: "muted small" }, "Checking…")); render(await api("/api/hosting?refresh=1")); } }, "Check usage now"),
-        h("button", { class: "btn ghost small", type: "button", onclick: async () => { const r = await post("/api/hosting/cleanup", {}); toast(`${r.deleted.length} abandoned file(s) deleted`); render(await api("/api/hosting")); } }, "Clean up abandoned files")));
-  };
-  api("/api/hosting").then(render).catch((e) => body.replaceChildren(h("p", { class: "muted small" }, e.message)));
-  return panel("Hosting and quotas", { eyebrow: "Free plans", tip: "Videos for Buffer are hosted on Cloudinary behind a private signed link, only after you approve, and deleted once every post of them has finished. No transformations are ever requested." }, body);
-}
-function connectAction(x) {
-  if (x.connector === "youtube_analytics" || x.connector === "tiktok") {
-    const prov = x.connector === "tiktok" ? "tiktok" : "youtube";
-    const blocked = x.credential.startsWith("needs");
-    return h("div", { style: "display:flex;gap:6px;justify-content:flex-end" },
-      h("button", { class: "btn small", type: "button", disabled: blocked, title: blocked ? "Save the app credentials below first" : null, onclick: async () => {
-        try { const r = await post("/api/oauth/start", { provider: prov, account_id: x.account_id }); window.open(r.url, "_blank", "noopener"); toast("Finish signing in in the browser window"); } catch (e) { toast(e.message); }
-      } }, x.credential === "ready" ? "Reconnect" : "Connect"),
-      x.credential === "ready" ? disconnectBtn(x) : null);
-  }
-  if (x.connector === "instagram") {
-    return h("div", { style: "display:flex;gap:6px;justify-content:flex-end" }, h("button", { class: "btn small", type: "button", onclick: () => {
-      const inp = h("input", { type: "password", autocomplete: "off", style: "width:100%" });
-      drawer(eyebrow("Instagram"), h("h2", {}, "Paste access token"), h("p", { class: "muted small" }, "Meta app dashboard > Instagram > API setup with Instagram login > Generate token, for this account. Stored encrypted; refreshed automatically before it expires."),
-        field("Long-lived token", inp), h("div", { style: "margin-top:14px" }, h("button", { class: "btn primary", type: "button", onclick: async () => {
-          await post("/api/credentials", { name: "INSTAGRAM_TOKEN", account_id: x.account_id, value: inp.value }); closeDrawer(); toast("Saved"); route();
-        } }, "Save")));
-    } }, x.credential === "ready" ? "Replace token" : "Add token"), x.credential === "ready" ? disconnectBtn(x) : null);
-  }
-  return h("button", { class: "btn ghost small", type: "button", onclick: () => document.getElementById("accounts-panel")?.scrollIntoView({ behavior: "smooth" }) },
-    x.credential === "ready" ? "Ready" : "Set ID below");
-}
-function disconnectBtn(x) {
-  return h("button", { class: "btn ghost small", type: "button", onclick: async () => {
-    if (!confirm(`Disconnect ${x.account_label} (${x.label})?`)) return;
-    const forget = confirm("Also delete the data already collected from it?\n\nOK deletes it. Cancel keeps it.");
-    await post("/api/disconnect", { connector: x.connector, account_id: x.account_id, forget_data: forget });
-    toast(forget ? "Disconnected and data removed" : "Disconnected"); route();
-  } }, "Disconnect");
-}
-function importPanel(st) {
-  const out = h("div", {});
-  let text = "", name = "";
-  const fileIn = h("input", { type: "file", accept: ".csv,text/csv", class: "hidden", onchange: (e) => read(e.target.files[0]) });
-  const drop = h("div", { class: "drop", tabindex: "0", role: "button", onclick: () => fileIn.click(), onkeydown: (e) => e.key === "Enter" && fileIn.click() },
-    "Drop a CSV here or click to choose");
-  drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
-  drop.addEventListener("dragleave", () => drop.classList.remove("over"));
-  drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); read(e.dataTransfer.files[0]); });
-  async function read(file) {
-    if (!file) return;
-    text = await file.text(); name = file.name;
-    show(await post("/api/import", { text, file_name: name, dry_run: true }), true);
-  }
-  function show(r, check) {
-    out.replaceChildren(
-      r.ok ? h("p", { class: "small" }, `${name}: ${r.kind}, ${r.rows_ok} rows ok${r.rows_rejected ? `, ${r.rows_rejected} rejected` : ""}${check ? " (checked, not imported yet)" : " imported"}.`) : h("p", { class: "small" }, `${name}: not imported.`),
-      r.errors?.length ? h("pre", { class: "errors" }, r.errors.join("\n")) : null,
-      check && r.ok ? h("button", { class: "btn primary small", type: "button", onclick: async () => { show(await post("/api/import", { text, file_name: name, skip_bad: true }), false); route(); } }, "Import") : null);
-  }
-  return panel("Import metrics", { eyebrow: "Manual", tip: "For numbers no API gives us: TikTok Studio, Instagram app, YouTube Studio exports, Roblox share links. Files are checked first; nothing is stored until you press Import." },
-    drop, fileIn, out,
-    h("p", { class: "muted small", style: "margin:10px 0 0" }, "Templates: ", h("span", { class: "code" }, "data/templates/platform_metrics_template.csv"), " ", h("span", { class: "code" }, "data/templates/dashboard_metrics_long_template.csv")),
-    st.imports.length ? h("details", { class: "more", style: "margin-top:8px" }, h("summary", {}, "Recent imports"), st.imports.map((i) => h("div", { class: "small muted" }, `${day(i.imported_at_utc)} · ${i.file_name} · ${i.rows_ok} rows`))) : null);
-}
-function exportPanel() {
-  let detail = "overview";
-  const safe = h("input", { type: "checkbox", checked: true });
-  const out = h("div", {});
-  const segEl = h("span", {});
-  const paint = () => segEl.replaceChildren(seg([["overview", "Overview"], ["detailed", "Detailed"]], detail, (v) => { detail = v; paint(); }, "Detail"));
   paint();
-  return panel("Export snapshot", { eyebrow: "For ChatGPT, Claude and Gemini", tip: "Markdown summary plus CSV/JSON files, readable one by one. Safe-to-share applies the sharing rules, removes local paths and checks for credentials." },
-    h("div", { style: "display:flex;gap:12px;align-items:center;flex-wrap:wrap" }, segEl, h("label", { style: "display:flex;gap:8px;align-items:center" }, safe, "Safe to share"),
-      h("button", { class: "btn primary", type: "button", onclick: async () => {
-        try {
-          const r = await post("/api/export", { detail, share: safe.checked, filters: filterParams() });
-          out.replaceChildren(h("p", { class: "small" }, `${r.files.length} files in `, h("span", { class: "code" }, r.folder)),
-            r.excluded.length ? h("p", { class: "small muted" }, "Excluded: " + r.excluded.join("; ")) : null,
-            h("button", { class: "btn small", type: "button", onclick: () => post("/api/open-folder", { folder: r.folder }) }, "Open folder"));
-        } catch (e) { toast(e.message); }
-      } }, "Export")), out);
+  return box;
+}
+function editTags(conceptId, tags, NAMES, done) {
+  const sel = {};
+  const grid = h("div", { class: "form-grid" }, Object.entries(NAMES).map(([k, name]) => {
+    const multi = k !== "hook" && k !== "format";
+    sel[k] = h("select", multi ? { multiple: true, size: Math.min(6, VOCAB[k].length || 2) } : {},
+      multi ? null : h("option", { value: "" }, "—"), VOCAB[k].map((x) => h("option", { value: x.id, selected: (tags[k] || []).includes(x.id) || null, title: x.hint || x.label }, x.label)));
+    return field(name + (multi ? " (several)" : ""), sel[k], k === "mechanism" || k === "humour" ? "wide" : "");
+  }));
+  drawer(h("div", { class: "eyebrow" }, "Creative tags"), h("h2", {}, "What this video does"),
+    h("p", { class: "muted small" }, `Codes from the creative codebook (v${VOCAB.codebook_version}) and entries from the knowledge banks, so results link straight back to them. Tags belong to the concept, so every language version shares them.`),
+    grid, h("div", { style: "margin-top:14px" }, h("button", { class: "btn primary", type: "button", onclick: async () => {
+      const out = Object.fromEntries(Object.entries(sel).map(([k, el]) => [k, [...el.selectedOptions].map((o) => o.value).filter(Boolean)]));
+      try { await post("/api/concept-tags", { concept_id: conceptId, tags: out }); toast("Tags saved"); closeDrawer(); } catch (e) { toast(e.message); }
+    } }, "Save tags")));
+}
+async function publishedView(tabs) {
+  const PF = Object.assign({ platform: "", account: "", language: "", range: "all", sort: "new" }, store.get("pubFilters", {}));
+  const setP = (patch) => { Object.assign(PF, patch); store.set("pubFilters", PF); route(); };
+  const d = await api("/api/analytics", { range: "all", platform: PF.platform, account: PF.account, language: PF.language });
+  const cutoff = PF.range === "all" ? "" : new Date(Date.now() - Number(PF.range) * 86400000).toISOString();
+  const vids = d.videos.filter((v) => !cutoff || (v.published_at_utc || "") >= cutoff);
+  const groups = {};
+  for (const v of vids) (groups[v.asset_id || v.upload_id] = groups[v.asset_id || v.upload_id] || []).push(v);
+  const score = (g) => PF.sort === "views" ? g.reduce((a, v) => a + (v.metrics.views || 0), 0) : PF.sort === "watch" ? g.reduce((a, v) => a + (v.metrics.watch_time_minutes || 0), 0) : Math.max(...g.map((v) => Date.parse(v.published_at_utc || 0) || 0));
+  const list = Object.values(groups).sort((a, b) => score(b) - score(a));
+  const accts = (META?.accounts || []).filter((a) => a.active && ["youtube", "tiktok", "instagram"].includes(a.platform) && (!PF.platform || a.platform === PF.platform));
+  const controls = h("div", { class: "filters", style: "margin-bottom:14px" },
+    h("select", { "aria-label": "Platform", onchange: (e) => setP({ platform: e.target.value, account: "" }) }, [["", "All platforms"], ["youtube", "YouTube"], ["tiktok", "TikTok"], ["instagram", "Instagram"]].map(([v, t]) => h("option", { value: v, selected: PF.platform === v }, t))),
+    h("select", { "aria-label": "Account", onchange: (e) => setP({ account: e.target.value }) }, h("option", { value: "" }, "All accounts"), accts.map((a) => h("option", { value: a.account_id, selected: PF.account === a.account_id }, a.label))),
+    seg([["", "All"], ["en", "EN"], ["es", "ES"]], PF.language, (v) => setP({ language: v }), "Language"),
+    seg([["30", "30d"], ["90", "90d"], ["all", "All time"]], PF.range, (v) => setP({ range: v }), "Published"),
+    h("span", { style: "flex:1" }),
+    h("select", { "aria-label": "Sort", onchange: (e) => setP({ sort: e.target.value }) }, [["new", "Newest"], ["views", "Most views (combined)"], ["watch", "Most watch time"]].map(([v, t]) => h("option", { value: v, selected: PF.sort === v }, t))));
+  return [pageHead("Content", { right: [tabs], noRefresh: true }),
+    panel(null, {}, controls, list.length ? h("div", { class: "gallery" }, list.map((g) => {
+      const first = g[0], local = g.find((v) => v.local_path)?.local_path;
+      return h("button", { class: "card", type: "button", onclick: () => (g.length > 1 ? originalDrawer(g) : openPublication(first.upload_id)) },
+        thumb(local, { platform: first.platform, chips: g.length > 1 ? [chip(`${g.length} posts`)] : [] }),
+        h("div", { class: "t" }, first.title),
+        h("div", { class: "pubs" }, g.map((v) => chip([dot(v.platform), ` ${(v.language || "").toUpperCase()} ${n(v.metrics.views)}`]))),
+        h("div", { class: "s" }, day(first.published_at_utc, true)));
+    })) : empty("Nothing published yet", "Posts appear here after they go out and the next refresh picks them up."))];
+}
+function originalDrawer(g) {
+  const local = g.find((v) => v.local_path)?.local_path;
+  drawer(h("div", { class: "eyebrow" }, "One video, several posts"), h("h2", {}, g[0].title),
+    h("div", { class: "media-grid" }, local ? h("div", { class: "phone" }, h("video", { src: "/api/media?path=" + encodeURIComponent(local), controls: true, playsinline: true, preload: "metadata" })) : thumb(null, { platform: g[0].platform }),
+      h("div", {}, h("p", { class: "muted small", style: "margin-top:0" }, "Each post keeps its own numbers: platforms count differently, so open a post for its full analytics."),
+        h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Post"), h("th", { class: "n" }, "Views"), h("th", { class: "n" }, "Avg view"), h("th", { class: "n" }, "Likes"))),
+          h("tbody", {}, g.map((v) => h("tr", { class: "click", onclick: () => openPublication(v.upload_id) }, h("td", {}, plat(v.platform), " ", lang(v.language), h("div", { class: "muted small" }, day(v.published_at_utc, true))),
+            h("td", { class: "n" }, n(v.metrics.views)), h("td", { class: "n" }, n(v.metrics.avg_view_duration_s, "seconds")), h("td", { class: "n" }, n(v.metrics.likes))))))))));
+}
+async function openPublication(id) {
+  let d;
+  try { d = await api("/api/video/" + encodeURIComponent(id)); } catch (e) { toast(e.message); return; }
+  const u = d.upload, p = PLAT[u.platform].name, L = d.latest;
+  const metricNames = { views: "Views", watch_time_minutes: "Watch time", avg_view_duration_s: "Avg view", likes: "Likes", comments: "Comments", shares: "Shares", saves: "Saves", reach: "Reach", followers_gained: "Subscribers gained" };
+  const unit = { watch_time_minutes: "minutes", avg_view_duration_s: "seconds" };
+  const present = Object.keys(metricNames).filter((m) => L[m] != null);
+  let hm = present.includes("views") ? "views" : present[0];
+  const histBox = h("div", {});
+  const paintHist = () => histBox.replaceChildren(hm ? lineChart([{ label: metricNames[hm], color: PLAT[u.platform].color, points: d.history[hm] || [] }], { unit: unit[hm], height: 150, emptyTitle: "One reading so far" }) : empty("No readings yet"));
+  paintHist();
+  const histPick = present.length > 1 ? h("select", { "aria-label": "Metric", onchange: (e) => { hm = e.target.value; paintHist(); } }, present.map((m) => h("option", { value: m }, metricNames[m]))) : null;
+  const cps = ["24h", "48h", "7d"].filter((c) => d.checkpoints[c]?.views);
+  const median = d.account_median_views;
+  drawer(h("div", { class: "eyebrow" }, `${p} · ${d.account.label}`), h("h2", {}, u.title || u.platform_video_id),
+    h("div", { class: "media-grid" },
+      d.local_path ? h("div", { class: "phone" }, h("video", { src: "/api/media?path=" + encodeURIComponent(d.local_path), controls: true, playsinline: true, preload: "metadata" })) : thumb(null, { platform: u.platform }),
+      h("div", {},
+        u.url ? h("a", { class: "btn small", href: u.url, target: "_blank", rel: "noreferrer" }, `Open on ${p} `, icon(ICONS.external, 14)) : null,
+        h("dl", { class: "kv" }, h("dt", {}, "Published"), h("dd", {}, u.published_at_utc ? new Date(u.published_at_utc).toLocaleString() : "—"),
+          h("dt", {}, "Account"), h("dd", {}, h("a", { href: "#/account/" + u.account_id, onclick: closeDrawer }, d.account.label), " ", atHandle(d.account)),
+          d.asset ? [h("dt", {}, "Video"), h("dd", {}, d.asset.concept_title, " · ", (d.asset.language || "").toUpperCase(), " ", d.asset.version)] : null,
+          d.siblings.length ? [h("dt", {}, "Also posted on"), h("dd", {}, d.siblings.map((x) => h("a", { href: "#", style: "margin-right:10px", onclick: (e) => { e.preventDefault(); openPublication(x.upload_id); } }, x.account_label)))] : null,
+          d.experiments.length ? [h("dt", {}, "Experiment"), h("dd", {}, d.experiments.map((x) => chip(`${x.title} (${x.status})`, "accent")))] : null))),
+    h("div", { class: "kpis", style: "margin-top:14px" }, (present.length ? present : ["views"]).slice(0, 6).map((m) => kpi(metricNames[m], n(L[m], unit[m]), m === "views" && median != null && L.views != null ? `account median ${n(median)}` : null))),
+    h("h3", {}, "At the same age as other videos"),
+    cps.length ? h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Age"), h("th", { class: "n" }, "Views"), h("th", {}, "Read at"))),
+      h("tbody", {}, cps.map((c) => { const r = d.checkpoints[c].views; return h("tr", {}, h("td", {}, c), h("td", { class: "n" }, n(r.value)),
+        h("td", {}, `${r.age_h} h after posting `, r.within ? chip("comparable", "ok") : chip("outside the window", "warn"))); }))))
+      : h("p", { class: "muted small" }, "Readings at 24 h, 48 h and 7 days appear as the video ages. Young videos are refreshed every few hours so these land close to time."),
+    h("h3", {}, "Over time"), histPick ? h("div", { style: "margin-bottom:6px" }, histPick) : null, histBox,
+    d.siblings.length ? [h("h3", {}, "Same video, other posts"), h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Post"), h("th", { class: "n" }, "Views"), h("th", { class: "n" }, "Likes"))),
+      h("tbody", {}, [{ ...d.siblings[0], account_label: d.account.label + " (this)", metrics: L, platform: u.platform }, ...d.siblings].map((x) => h("tr", {}, h("td", {}, plat(x.platform), " · ", x.account_label),
+        h("td", { class: "n" }, n(x.metrics.views)), h("td", { class: "n" }, n(x.metrics.likes)))))))] : null,
+    d.concept_id ? tagsBlock(d.concept_id) : null,
+    h("details", { class: "more", style: "margin-top:12px" }, h("summary", {}, "Sources"), h("div", { class: "small muted" }, Object.entries(d.sources).map(([m, s_]) => `${metricNames[m] || m}: ${s_}`).join(" · ") || "—")))
+    .classList.add("wide");
+}
+
+// ------------------------------------------------------------------ Roblox
+async function pageRoblox() {
+  const d = await api("/api/game", rangeDates());
+  const val = (id) => { for (const st of d.stages) for (const m of st.metrics) if (m.metric === id) { const v = m.values.find((x) => x.platform === "roblox"); if (v) return v; } return null; };
+  const hasData = d.series.dau.length || d.stages.some((st) => st.metrics.some((m) => m.values.some((v) => v.platform === "roblox" && v.value != null)));
+  const head = pageHead("Roblox", { right: hasData ? filterBar({ platform: false, account: false, language: false }) : null, noRefresh: !hasData });
+  if (!hasData) {
+    return [head, h("section", { class: "panel empty-page" }, h("h2", {}, "Slugshot isn't live yet"),
+      h("p", {}, "Player analytics start when the game is published and connected. Nothing is shown until then: no empty charts and no made-up numbers."),
+      h("div", { class: "eyebrow", style: "margin-bottom:6px" }, "What will appear here"),
+      h("div", { class: "soon" }, ["Players now", "Daily players", "New players", "Returning players", "Playtime", "Session length", "Retention", "Acquisition", "Revenue", "Payer conversion", "Activation"].map((t) => chip(t))),
+      h("a", { class: "btn", href: "#/settings" }, "Connect at launch (Settings)"))];
+  }
+  const avg = (pts) => (pts.length ? pts.reduce((a, p) => a + p.v, 0) / pts.length : null);
+  const newBy = Object.fromEntries(d.series.new_users.map((p) => [p.d, p.v]));
+  const returning = d.series.dau.filter((p) => newBy[p.d] != null).map((p) => ({ d: p.d, v: p.v - newBy[p.d] }));
+  const d1 = val("d1_retention");
+  const kpis = h("div", { class: "kpis" },
+    kpi("Players now", n(val("playing")?.value), "concurrent, latest reading"),
+    kpi("Daily players", n(avg(d.series.dau)), "average per day"),
+    kpi("New players", n(val("new_users")?.value), "in range"),
+    kpi("Returning", n(avg(returning)), "average per day", "Daily players minus that day's new players."),
+    kpi("Avg session", n(val("avg_session_min")?.value, "minutes")),
+    kpi("D1 retention", n(d1?.value, "fraction"), d1?.basis ? d1.basis.replace(/cohort (\d{4}-\d{2}-\d{2})/, (_m, x) => "cohort " + day(x)) : null),
+    kpi("Revenue", n(val("revenue_robux")?.value, "Robux"), "in range"));
+  const stageList = h("div", { class: "rows" }, d.stages.map((st) => {
+    const cells = st.metrics.flatMap((m) => m.values.filter((v) => v.platform === "roblox").map((v) => ({ m, v })));
+    return h("div", { class: "row", style: "align-items:flex-start" }, h("div", { style: "width:150px;flex:none" }, h("div", { class: "t" }, st.label), h("div", { class: "s", style: "white-space:normal" }, st.measures)),
+      h("div", { class: "grow", style: "display:flex;flex-wrap:wrap;gap:6px 18px" }, cells.length ? cells.map(({ m, v }) => h("div", { class: "small" }, h("span", { class: "muted" }, m.label + " "), h("b", {}, n(v.value, m.unit))))
+        : h("span", { class: "muted small" }, "No Roblox source for this stage")));
+  }));
+  return [head, h("div", { class: "stack" }, kpis,
+    panel("Players per day", {}, lineChart([{ label: "Daily players", color: "var(--series-roblox)", points: d.series.dau }, { label: "New", color: "var(--series-youtube)", points: d.series.new_users }, { label: "Returning", color: "var(--series-instagram)", points: returning }], { label: "Players per day" })),
+    sect("Retention", "Day 1, 7 and 30 return rates by first-day cohort", {},
+      lineChart([{ label: "D1", color: "var(--series-roblox)", points: d.series.d1_retention }], { unit: "fraction", height: 160 }),
+      d.cohorts.length ? h("div", { class: "table-wrap", style: "margin-top:10px" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "First day"), h("th", { class: "n" }, "New"), h("th", { class: "n" }, "D1"), h("th", { class: "n" }, "D7"), h("th", { class: "n" }, "D30"))),
+        h("tbody", {}, d.cohorts.slice(0, 14).map((c) => h("tr", {}, h("td", {}, day(c.d)), h("td", { class: "n" }, n(c.new_users)), h("td", { class: "n" }, n(c.d1, "fraction")), h("td", { class: "n" }, n(c.d7, "fraction")), h("td", { class: "n" }, n(c.d30, "fraction")))))))
+        : null),
+    sect("Acquisition", "Where players come from, and tracked share links", {},
+      bars(d.acquisition.map((r) => ({ label: r.source, v: r.v, color: "var(--series-roblox)" })), { emptyTitle: "No acquisition data" }),
+      d.share_links.length ? h("div", { class: "table-wrap", style: "margin-top:10px" }, h("table", {}, h("tbody", {}, d.share_links.map((r) => h("tr", {}, h("td", {}, r.link), h("td", {}, mdef(r.metric).label), h("td", { class: "n" }, n(r.v))))))) : null),
+    sect("Monetisation", "Revenue, payers and payer conversion", {},
+      lineChart([{ label: "Revenue (Robux)", color: "var(--series-roblox)", points: d.series.revenue_robux }], { unit: "Robux", height: 160 }),
+      h("div", { class: "small", style: "margin-top:8px;display:flex;gap:18px;flex-wrap:wrap" }, h("span", {}, h("span", { class: "muted" }, "Payers per day "), h("b", {}, n(val("paying_users")?.value))),
+        h("span", {}, h("span", { class: "muted" }, "Payer conversion "), h("b", {}, n(val("payer_cvr")?.value, "fraction"))))),
+    sect("Funnel", "Each stage measured in its own population; stages are never divided into each other", {}, stageList,
+      h("p", { class: "muted small" }, "Activation: " + d.activation_note)))];
 }
 
 // ------------------------------------------------------------------ Publish
-// Drafts -> preview and checks -> the owner types the handle to approve -> official-API upload or manual package.
 const PUB_STATE = { draft: ["Draft", ""], approved: ["Approved", "accent"], uploading: ["Uploading…", "accent"], processing: ["Processing", "accent"],
-  sent_to_inbox: ["In TikTok inbox", "warn"], in_buffer_drafts: ["In Buffer drafts", "warn"], done: ["Posted", "ok"], failed: ["Failed", "bad"], manual_pending: ["Manual", "warn"] };
-const ROUTE_LABEL = { buffer: "Via Buffer (needs a public video link)", api: "Direct upload (API)", inbox: "Upload to TikTok inbox (you finish in the app)", direct: "Direct Post (API)", manual: "Manual: I post it myself" };
-const CRED_TONE = { ready: "ok", "needs upload permission": "warn", "not connected": "", unsupported: "" };
+  sent_to_inbox: ["In TikTok inbox", "warn"], in_buffer_drafts: ["In Buffer drafts", "warn"], done: ["Posted", "ok"], failed: ["Failed", "bad"], manual_pending: ["Post by hand", "warn"] };
+const ROUTE_LABEL = { buffer: "Via Buffer", api: "Direct upload", inbox: "TikTok inbox (you finish in the app)", direct: "TikTok Direct Post", manual: "I post it myself" };
+const CRED_TONE = { ready: "ok", "needs upload permission": "warn" };
 const TT_PRIVACY = { PUBLIC_TO_EVERYONE: "Everyone", MUTUAL_FOLLOW_FRIENDS: "Friends", FOLLOWER_OF_CREATOR: "Followers", SELF_ONLY: "Only me" };
-const atHandle = (a) => (a.handle ? "@" + a.handle.replace(/^@/, "") : "no handle set");
-
-async function pagePublish() {
+async function pagePublish(sub) {
   const d = await api("/api/publish");
-  const lockChip = [d.reveal_lock ? chip("Reveal lock: game unnamed", "warn") : chip("Reveal lock off", "bad"),
-    chip(d.public_posting ? "Public posts allowed" : "Private posts only", d.public_posting ? "" : "warn")];
-  const head = topbar("Publish", h("div", { style: "display:flex;gap:10px;align-items:center" }, lockChip,
-    h("button", { class: "btn primary", type: "button", onclick: () => composer(d) }, "New post")));
-  const accounts = panel("Accounts", { eyebrow: "Where videos can go", tip: "Uploads reuse the analytics connection. Connecting for uploads adds the upload permission; nothing is posted until you approve a job." },
-    h("div", { class: "list" }, d.accounts.filter((a) => a.active).map((a) => h("div", { class: "list-row" },
-      h("span", { class: "dot", style: `background:${PLAT[a.platform].color}` }),
-      h("div", { class: "grow" }, h("div", { class: "t" }, a.label, " ", lang(a.language)),
-        h("div", { class: "s" }, atHandle(a), a.buffer ? " · Buffer ready" : "", " · ", a.routes.filter((r) => r !== "manual").map((r) => ROUTE_LABEL[r].split(" (")[0]).join(", "), " or manual")),
-      chip(a.credential === "ready" ? "Ready to upload" : a.credential, CRED_TONE[a.credential]),
-      a.credential !== "ready" ? (a.platform === "instagram"
-        ? h("a", { class: "btn ghost small", href: "#/settings" }, "Add token")
-        : h("button", { class: "btn small", type: "button", onclick: async () => {
-            try { const r = await post("/api/oauth/start", { provider: a.platform, account_id: a.account_id, purpose: "publish" }); window.open(r.url, "_blank", "noopener"); toast("Finish signing in the new tab, choosing " + atHandle(a)); }
-            catch (e) { toast(e.message); } } }, "Connect for uploads")) : null))),
-    d.accounts.some((a) => !a.active) ? h("p", { class: "muted small" }, "Not active yet: ", d.accounts.filter((a) => !a.active).map((a) => a.label).join(", "), ".") : null);
-  const rows = d.jobs.map((j) => {
-    const a = d.accounts.find((x) => x.account_id === j.account_id) || { label: j.account_id };
-    const asset = d.assets.find((x) => x.asset_id === j.asset_id);
+  const needs = d.jobs.filter((j) => ["draft", "failed", "manual_pending", "sent_to_inbox", "in_buffer_drafts"].includes(j.state));
+  const moving = d.jobs.filter((j) => ["approved", "uploading", "processing"].includes(j.state));
+  const done = d.jobs.filter((j) => j.state === "done");
+  const assetTitle = (j) => d.assets.find((x) => x.asset_id === j.asset_id)?.title || j.asset_id;
+  const jobRow = (j) => {
+    const a = d.accounts.find((x) => x.account_id === j.account_id) || { label: j.account_id, platform: j.platform };
     const [label, tone] = PUB_STATE[j.state] || [j.state, ""];
-    return h("tr", { class: "clickable", tabindex: "0", onclick: () => openJob(j.job_id), onkeydown: (e) => { if (e.key === "Enter") openJob(j.job_id); } },
-      h("td", {}, h("div", { class: "t" }, asset ? asset.title : j.asset_id), h("div", { class: "s muted small" }, j.video_path.split("/").pop())),
-      h("td", {}, a.label), h("td", { class: "small" }, ROUTE_LABEL[j.route].split(" (")[0].split(":")[0]),
-      h("td", {}, chip(label, tone)), h("td", { class: "small muted" }, j.experiment_id ? [j.experiment_id, j.variant_id].filter(Boolean).join(" · ") : "—"),
-      h("td", { class: "small muted" }, ago(j.updated_at_utc)));
-  });
-  const queue = panel("Queue", { eyebrow: "Drafts and uploads" }, rows.length
-    ? h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["Video", "Account", "Route", "State", "Experiment", "Updated"].map((t) => h("th", {}, t)))), h("tbody", {}, rows)))
-    : empty("Nothing queued", "Pick a registered version and a video, then the accounts. Every job waits for your approval.",
-      h("button", { class: "btn small", type: "button", onclick: () => composer(d) }, "New post")));
-  const how = panel("How publishing works", { flat: true },
-    h("ol", { class: "steps small" },
-      h("li", {}, "Choose the video, its version and any experiment, then the accounts. Each account gets its own draft and its own captions."),
-      h("li", {}, "Open a draft: watch the preview, edit the platform's text, and fix anything the checks flag."),
-      h("li", {}, "Approve by typing the account's handle. That approval covers this exact file and text; editing either cancels it."),
-      h("li", {}, "The upload runs through the platform's official API. Where the API can't do it, the draft becomes a manual package you post yourself, then paste the link back."),
-      h("li", {}, "Successful posts appear under Content, linked to the version and experiment.")),
-    d.reveal_lock ? h("p", { class: "muted small" }, "Reveal lock: posts can be public, but nothing may name or show the game yet. Text that names it blocks any post others can see, and you confirm the video itself when you approve.") : null,
-    d.public_posting ? null : h("p", { class: "muted small" }, "Public posting is off: YouTube uploads stay private and TikTok Direct Post stays 'Only me'."));
-  const deep = location.hash.split("/")[2];  // #/publish/<job id> opens that job
-  if (deep) setTimeout(() => openJob(decodeURIComponent(deep)), 0);
-  return [head, h("div", { class: "grid cols-3" }, h("div", { class: "stack" }, queue, how), accounts)];
+    return h("button", { class: "row", type: "button", onclick: () => openJob(j.job_id) },
+      dot(j.platform), h("div", { class: "grow" }, h("div", { class: "t" }, assetTitle(j)), h("div", { class: "s" }, a.label, " · ", ago(j.updated_at_utc))), chip(label, tone));
+  };
+  const ready = d.accounts.filter((a) => a.active && a.credential === "ready");
+  const blocked = d.accounts.filter((a) => a.active && a.credential !== "ready");
+  if (sub && sub.startsWith("new")) setTimeout(() => composer(Object.fromEntries(new URLSearchParams(sub.split("?")[1] || ""))), 0);
+  else if (sub) setTimeout(() => openJob(decodeURIComponent(sub)), 0);
+  return [pageHead("Publish", { noRefresh: true, right: h("button", { class: "btn primary", type: "button", onclick: () => composer({}) }, "New post") }),
+    h("div", { class: "stack" },
+      panel("Needs you", { hint: needs.length ? `${needs.length}` : "" }, needs.length ? h("div", { class: "rows" }, needs.map(jobRow))
+        : empty("Nothing waiting", "Pick a video with New post, or from Content.", h("button", { class: "btn small", type: "button", onclick: () => composer({}) }, "New post"))),
+      moving.length ? panel("Uploading", {}, h("div", { class: "rows" }, moving.map(jobRow))) : null,
+      done.length ? sect("Posted", `${done.length} post${done.length === 1 ? "" : "s"}`, {}, h("div", { class: "rows" }, done.map(jobRow))) : null,
+      sect("Accounts", `${ready.length} ready to post${blocked.length ? ` · ${blocked.length} need attention` : ""}`, {},
+        h("div", { class: "rows" }, d.accounts.filter((a) => a.active).map((a) => h("div", { class: "row" }, dot(a.platform),
+          h("div", { class: "grow" }, h("div", { class: "t" }, a.label, " ", lang(a.language)), h("div", { class: "s" }, atHandle(a), a.credential_note === "via Buffer" ? " · via Buffer" : "")),
+          chip(a.credential === "ready" ? "Ready" : a.credential, CRED_TONE[a.credential] || ""),
+          a.credential !== "ready" && a.platform !== "instagram" ? h("button", { class: "btn small", type: "button", onclick: async () => {
+            try { const r = await post("/api/oauth/start", { provider: a.platform, account_id: a.account_id, purpose: "publish" }); window.open(r.url, "_blank", "noopener"); toast("Finish signing in the new tab, choosing " + atHandle(a)); } catch (e) { toast(e.message); } } }, "Connect") : null))),
+        h("p", { class: "muted small" }, d.reveal_lock ? "Reveal lock on: posts can be public, but nothing may name or show the game. You confirm each public video when you approve it." : "Reveal lock off.",
+          d.public_posting ? "" : " Public posting is off: uploads stay private.")))];
 }
-
-function composer(d) {
-  const videoSel = h("select", { name: "video" }, h("option", { value: "" }, "Choose a video…"), d.videos.map((v) => h("option", { value: v.path }, `${v.file}${v.qc ? " · QC " + v.qc : ""}`)));
-  const assetSel = h("select", { name: "asset" }, h("option", { value: "" }, "Choose a version…"), d.assets.map((a) => h("option", { value: a.asset_id }, `${a.title} · ${(a.language || "").toUpperCase()} ${a.version}`)));
-  const expSel = h("select", { name: "exp" }, h("option", { value: "" }, "No experiment"), d.experiments.flatMap((e) => e.variants.map((v) => h("option", { value: `${e.experiment_id}|${v.variant_id}` }, `${e.title} · ${v.label || v.variant_id} (${v.role})`))));
-  assetSel.addEventListener("change", () => {
-    const a = d.assets.find((x) => x.asset_id === assetSel.value);
-    const ef = a?.edit_file?.split(/[\\/]/).pop();
-    const match = ef && d.videos.find((v) => v.file === ef);
-    if (match) videoSel.value = match.path;
-  });
+async function composer(pre) {
+  const [d, lib] = await Promise.all([api("/api/publish"), api("/api/library", { posted: "1" })]);
+  const versions = lib.flatMap((g) => g.versions.map((v) => ({ ...v, title: g.title, key: g.key })));
+  let pick = versions.find((v) => pre.path && v.path === pre.path) || null;
+  const previewBox = h("div", {});
+  const langBox = h("div", {});
+  const assetFor = () => pre.asset && pick && pick.path === pre.path ? pre.asset : pick?.asset_id;
+  const paintPick = () => {
+    gallery.querySelectorAll(".card").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.path === pick?.path)));
+    previewBox.replaceChildren(pick ? h("div", { class: "media-grid" }, h("div", { class: "phone" }, h("video", { src: "/api/media?path=" + encodeURIComponent(pick.path), controls: true, playsinline: true, preload: "metadata" })),
+      h("div", {}, h("div", { class: "t", style: "font-weight:700" }, pick.title), h("div", { class: "muted small" }, [(pick.language || "language not set").toUpperCase(), dur(pick.duration_s), pick.version].filter(Boolean).join(" · ")),
+        pick.posted_on.length ? h("p", { class: "small" }, "Already posted on ", pick.posted_on.map((p) => acctLabel(p.account_id)).join(", "), ".") : null)) : h("p", { class: "muted small" }, "Choose a video above."));
+    langBox.replaceChildren(pick && !assetFor() ? field("Language of this video", h("select", { id: "newlang" }, h("option", { value: "en" }, "English"), h("option", { value: "es" }, "Spanish"))) : null);
+  };
+  const gallery = h("div", { class: "pick" }, versions.length ? versions.map((v) => h("button", { class: "card", type: "button", "data-path": v.path, "aria-pressed": "false", onclick: () => { pick = v; paintPick(); } },
+    thumb(v.path, { badge: dur(v.duration_s), chips: v.language ? [chip(v.language.toUpperCase())] : [] }), h("div", { class: "t" }, v.title))) : empty("No videos on this PC yet", "Finished edits in exports/ appear here."));
+  const exps = d.experiments.filter((e) => ["planned", "running"].includes(e.status));
+  const expSel = exps.length ? h("select", {}, h("option", { value: "" }, "No experiment"), exps.flatMap((e) => e.variants.map((v) => h("option", { value: `${e.experiment_id}|${v.variant_id}` }, `${e.title} · ${v.label || v.variant_id}`)))) : null;
   const picks = d.accounts.filter((a) => a.active).map((a) => {
     const box = h("input", { type: "checkbox", value: a.account_id });
-    const route = h("select", { "aria-label": "Route for " + a.label }, a.routes.map((r) => h("option", { value: r, selected: a.credential !== "ready" ? r === "manual" : null }, ROUTE_LABEL[r])));
-    return { a, box, route, el: h("div", { class: "list-row" }, h("label", { class: "check grow" }, box, h("span", {}, a.label, " ", h("span", { class: "muted small" }, atHandle(a)))), route) };
+    const routeSel = h("select", { "aria-label": "Route for " + a.label }, a.routes.map((r) => h("option", { value: r, selected: a.credential !== "ready" ? r === "manual" : null }, ROUTE_LABEL[r])));
+    return { a, box, routeSel, el: h("label", { class: "acct-pick check" }, box, dot(a.platform), h("span", { class: "grow" }, a.label, " ", h("span", { class: "muted small" }, atHandle(a))),
+      chip(a.credential === "ready" ? "Ready" : a.credential, CRED_TONE[a.credential] || "")) };
   });
-  drawer(eyebrow("New post"), h("h2", {}, "What goes where"),
-    h("p", { class: "muted small" }, "Creates one draft per account. Nothing uploads until you approve each one."),
-    d.assets.length ? null : h("p", { class: "chip warn" }, "Register a version on the Content page first (Local renders → Register)."),
-    h("div", { class: "form-grid" }, field("Version", assetSel, "wide"), field("Video file", videoSel, "wide"), field("Experiment variant (optional)", expSel, "wide")),
-    h("h3", { class: "eyebrow section-title" }, "Accounts"), h("div", { class: "list" }, picks.map((p) => p.el)),
-    h("div", { style: "margin-top:16px" }, h("button", { class: "btn primary", type: "button", onclick: async () => {
+  drawer(h("div", { class: "eyebrow" }, "New post"), h("h2", {}, "Publish a video"),
+    h("h3", {}, "1 · Video"), gallery, h("div", { style: "margin-top:12px" }, previewBox, langBox),
+    h("h3", {}, "2 · Accounts"), h("div", { class: "rows" }, picks.map((p) => p.el)),
+    h("details", { class: "more", style: "margin-top:8px" }, h("summary", {}, "Advanced: route per account" + (expSel ? ", experiment" : "")),
+      h("div", { class: "rows" }, picks.map((p) => h("div", { class: "row" }, h("span", { class: "grow small" }, p.a.label), p.routeSel))), expSel ? field("Experiment variant", expSel) : null),
+    h("p", { class: "muted small" }, "Each account gets its own draft. You review its text and approve it; nothing goes out before that."),
+    h("div", { style: "margin-top:8px" }, h("button", { class: "btn primary", type: "button", onclick: async () => {
       const chosen = picks.filter((p) => p.box.checked);
-      const [experiment_id, variant_id] = (expSel.value || "|").split("|");
+      if (!pick) return toast("Choose a video first");
+      if (!chosen.length) return toast("Choose at least one account");
+      const [experiment_id, variant_id] = ((expSel && expSel.value) || "|").split("|");
       try {
-        const r = await post("/api/publish/jobs", { asset_id: assetSel.value, video: videoSel.value, experiment_id, variant_id,
-          account_ids: chosen.map((p) => p.a.account_id), routes: Object.fromEntries(chosen.map((p) => [p.a.account_id, p.route.value])) });
-        toast(`${r.job_ids.length} draft${r.job_ids.length > 1 ? "s" : ""} created`); route(); openJob(r.job_ids[0]);
+        let asset_id = assetFor();
+        if (!asset_id) {
+          const cid = pick.key.startsWith("CON-") ? pick.key : (await post("/api/concepts", { title: pick.title.replace(/([a-z])([A-Z])/g, "$1 $2") })).concept_id;
+          asset_id = (await post("/api/assets", { concept_id: cid, language: document.getElementById("newlang")?.value || "en", version: pick.version || "V01", edit_file: pick.path })).asset_id;
+        }
+        const r = await post("/api/publish/jobs", { asset_id, video: pick.path, experiment_id, variant_id,
+          account_ids: chosen.map((p) => p.a.account_id), routes: Object.fromEntries(chosen.map((p) => [p.a.account_id, p.routeSel.value])) });
+        toast(`${r.job_ids.length} draft${r.job_ids.length > 1 ? "s" : ""} created`);
+        location.hash = "#/publish"; setTimeout(() => openJob(r.job_ids[0]), 300);
       } catch (e) { toast(e.message); }
-    } }, "Create drafts")));
+    } }, "Create drafts"))).classList.add("wide");
+  paintPick();
 }
-
 function toggle(label, value, opts = {}) {
   const el = h("input", { type: "checkbox", checked: value ? true : null, disabled: opts.disabled ? true : null });
   return { el, row: h("label", { class: "check" + (opts.disabled ? " muted" : "") }, el, h("span", {}, label, opts.note ? h("span", { class: "muted small" }, " · " + opts.note) : null)) };
 }
-
+// The approval drawer. Safety rules live on the server (publish.py): typed handle, file and text binding, account
+// identity, reveal lock, duplicate guard. This only presents them.
 async function openJob(id) {
   let d;
   try { d = await api("/api/publish/job/" + encodeURIComponent(id)); } catch (e) { toast(e.message); return; }
-  const j = d.job, a = d.account, f = j.fields, plat = PLAT[j.platform].name;
+  const j = d.job, a = d.account, f = j.fields, plat_ = PLAT[j.platform].name;
   const editable = ["draft", "manual_pending", "failed"].includes(j.state);
   const [stLabel, stTone] = PUB_STATE[j.state] || [j.state, ""];
   const ctl = {};
   const inp = (k, type, v) => (ctl[k] = type === "textarea" ? h("textarea", { name: k, disabled: !editable || null }, v || "") : h("input", { name: k, type: type || "text", value: v ?? "", disabled: !editable || null }));
+  const advanced = [];
   let fieldsEl;
   if (j.platform === "youtube") {
     ctl.privacy = h("select", { disabled: !editable || null }, [["private", "Private"], ["unlisted", "Unlisted"], ["public", "Public"]].map(([v, t]) => h("option", { value: v, selected: f.privacy === v || null, disabled: !d.check.public_posting && v !== "private" ? true : null }, t)));
@@ -1027,8 +920,8 @@ async function openJob(id) {
     if (j.route === "buffer") {
       const dr = toggle("Save as a Buffer draft instead of posting", f.buffer_draft, { note: "you post it from Buffer" });
       ctl.buffer_draft = dr.el;
-      parts.push(field("Public https link to the video file", inp("video_url", "text", f.video_url), "wide"),
-        h("div", { class: "wide" }, h("p", { class: "muted small" }, "Buffer posts it with the account's own privacy (Buffer's TikTok app is audited, so posts can be public). Buffer's API can't take a file, only a link."), dr.row, aigc.row));
+      parts.push(h("div", { class: "wide" }, h("p", { class: "muted small" }, "Buffer posts it with the account's own privacy, normally public."), dr.row, aigc.row));
+      advanced.push(field("Video link (leave empty: the dashboard hosts it privately on Cloudinary)", inp("video_url", "text", f.video_url), "wide"));
     } else if (j.route === "direct") {
       ctl.privacy = h("select", { disabled: !editable || null }, h("option", { value: "" }, "Choose who can view…"),
         (c.privacy_level_options || []).map((v) => h("option", { value: v, selected: f.privacy === v || null, disabled: (!d.check.public_posting || !d.check.tiktok_app_audited) && v !== "SELF_ONLY" ? true : null }, TT_PRIVACY[v] || v)));
@@ -1041,10 +934,10 @@ async function openJob(id) {
       Object.assign(ctl, { allow_comment: cm.el, allow_duet: du.el, allow_stitch: stt.el, commercial: com.el, your_brand: yb.el, branded_content: bc.el });
       const sub = h("div", { class: "indent", hidden: !f.commercial || null }, yb.row, bc.row);
       com.el.addEventListener("change", () => { sub.hidden = !com.el.checked; });
-      parts.unshift(h("div", { class: "wide creator" }, d.creator ? ["Posting to ", h("strong", {}, c.creator_nickname || "—"), " (@", c.creator_username || "", ")"] : h("span", { class: "chip bad" }, "Can't read this TikTok account: " + (d.creator_error || "connect it for uploads"))));
+      parts.unshift(h("div", { class: "wide" }, d.creator ? ["Posting to ", h("strong", {}, c.creator_nickname || "—"), " (@", c.creator_username || "", ")"] : h("span", { class: "chip bad" }, "Can't read this TikTok account: " + (d.creator_error || "connect it for uploads"))));
       parts.push(field("Who can view this video", ctl.privacy), h("div", { class: "wide" }, cm.row, du.row, stt.row, com.row, sub, aigc.row));
     } else {
-      parts.push(h("div", { class: "wide" }, h("p", { class: "muted small" }, "The video goes to your TikTok inbox as a draft. Open the TikTok app's notification to finish the caption, privacy and AI label and post it. Copy the caption from here."), aigc.row));
+      parts.push(h("div", { class: "wide" }, h("p", { class: "muted small" }, "The video goes to your TikTok inbox as a draft. Open the TikTok app's notification to finish the caption, privacy and AI label and post it."), aigc.row));
     }
     fieldsEl = h("div", { class: "form-grid" }, parts);
   } else {
@@ -1052,8 +945,9 @@ async function openJob(id) {
     ctl.share_to_feed = feed.el;
     const dr = j.route === "buffer" ? toggle("Save as a Buffer draft instead of posting", f.buffer_draft, { note: "you post it from Buffer" }) : null;
     if (dr) ctl.buffer_draft = dr.el;
-    fieldsEl = h("div", { class: "form-grid" }, field("Caption", inp("caption", "textarea", f.caption), "wide"),
-      ["api", "buffer"].includes(j.route) ? field("Public https link to the video file", inp("video_url", "text", f.video_url), "wide") : null, h("div", { class: "wide" }, feed.row, dr ? dr.row : null));
+    const urlField = field(j.route === "api" ? "Public https link to the video file" : "Video link (leave empty: the dashboard hosts it privately on Cloudinary)", inp("video_url", "text", f.video_url), "wide");
+    if (j.route === "buffer") advanced.push(urlField);
+    fieldsEl = h("div", { class: "form-grid" }, field("Caption", inp("caption", "textarea", f.caption), "wide"), j.route === "api" ? urlField : null, h("div", { class: "wide" }, feed.row, dr ? dr.row : null));
   }
   const routeSel = h("select", { disabled: !editable || null }, d.routes.map((r) => h("option", { value: r, selected: r === j.route || null }, ROUTE_LABEL[r])));
   const collect = () => {
@@ -1071,14 +965,13 @@ async function openJob(id) {
     h("div", { class: "phone-cap" }, h("strong", {}, atHandle(a)), " ", (f.caption || f.title || "").slice(0, 140)));
   const errors = d.check.errors, warns = d.check.warnings, pr = d.check.probe || {};
   const facts = [pr.width ? `${pr.width}×${pr.height}` : null, pr.duration_s ? pr.duration_s.toFixed(1) + " s" : null, pr.fps ? pr.fps + " fps" : null,
-    pr.bytes ? (pr.bytes / 1e6).toFixed(1) + " MB" : null, pr.video_codec, pr.audio_codec].filter(Boolean).join(" · ");
+    pr.bytes ? (pr.bytes / 1e6).toFixed(1) + " MB" : null].filter(Boolean).join(" · ");
   const checks = h("div", { class: "checks" },
     errors.map((e) => h("div", { class: "check-row bad" }, "✕ ", e)), warns.map((w) => h("div", { class: "check-row warn" }, "! ", w)),
     !errors.length ? h("div", { class: "check-row ok" }, j.route === "manual" ? "✓ Checks pass. You post this one yourself." : "✓ Ready for approval") : null);
-
   let action = null;
   if (j.route === "manual" || ["sent_to_inbox", "in_buffer_drafts", "processing"].includes(j.state)) {
-    const urlIn = h("input", { type: "text", placeholder: `Paste the ${plat} link once it's posted` });
+    const urlIn = h("input", { type: "text", placeholder: `Paste the ${plat_} link once it's posted` });
     action = h("div", { class: "approve" },
       j.route === "manual" ? h("button", { class: "btn", type: "button", onclick: async () => {
         try { await save(); const r = await post("/api/publish/package", { job_id: j.job_id }); toast("Package in " + r.folder);
@@ -1096,9 +989,8 @@ async function openJob(id) {
       catch (e) { toast(e.message); } } }, "Approve and upload");
     const visibility = j.route === "buffer" ? (f.buffer_draft ? "a draft in Buffer (you post it from there)" : "a post via Buffer, with the account's own privacy (normally public)") : j.platform === "youtube" ? (f.privacy || "private") : j.platform === "tiktok" ? (j.route === "inbox" ? "a draft in your TikTok inbox (you choose who can view in the app)" : TT_PRIVACY[f.privacy] || "(choose who can view first)") : "public (Instagram has no private posts)";
     action = h("div", { class: "approve" },
-      h("p", {}, "Uploads ", h("strong", {}, j.video_path.split("/").pop()), " to ", h("strong", {}, `${a.label} (${atHandle(a)})`), " as ", h("strong", {}, visibility), "."),
-      j.platform === "tiktok" ? [h("p", { class: "muted small" }, "After you approve, TikTok can take a few minutes to process the video."),
-        h("label", { class: "check" }, consent, h("span", {}, d.tiktok_declaration))] : null,
+      h("p", {}, "Uploads this video to ", h("strong", {}, `${a.label} (${atHandle(a)})`), " as ", h("strong", {}, visibility), "."),
+      j.platform === "tiktok" ? [h("p", { class: "muted small" }, "After you approve, TikTok can take a few minutes to process the video."), h("label", { class: "check" }, consent, h("span", {}, d.tiktok_declaration))] : null,
       revealOk ? h("label", { class: "check" }, revealOk, h("span", {}, "Reveal lock: I've watched this video and checked its text. Nothing names or shows the game (title, logo, place link or anything that identifies it).")) : null,
       h("div", { style: "display:flex;gap:8px;margin-top:10px;flex-wrap:wrap" }, typed, go),
       errors.length ? h("p", { class: "muted small" }, "Fix the checks above first. Save your edits to re-check.") : null);
@@ -1106,51 +998,254 @@ async function openJob(id) {
     action = h("div", { class: "approve" }, h("p", { class: "small" }, "The approved upload failed (see the log). Retry uses the same approval if nothing changed."),
       h("button", { class: "btn", type: "button", onclick: async () => { try { await post("/api/publish/retry", { job_id: j.job_id }); toast("Retrying…"); setTimeout(() => openJob(j.job_id), 1200); } catch (e) { toast(e.message); } } }, "Retry upload"));
   }
-  const dr = drawer(eyebrow(`${plat} · ${a.label}`), h("h2", {}, d.asset ? d.asset.title : j.asset_id), h("div", { style: "display:flex;gap:8px;flex-wrap:wrap" }, chip(stLabel, stTone), d.check.reveal_lock ? chip("Reveal lock", "warn") : null, chip({ private: "Private", in_app: "Visibility set in TikTok", visible: "Others can see it" }[d.check.visibility] || d.check.visibility, d.check.visibility === "visible" ? "accent" : ""),
+  const dr = drawer(h("div", { class: "eyebrow" }, `${plat_} · ${a.label}`), h("h2", {}, d.asset ? d.asset.title : j.asset_id),
+    h("div", { style: "display:flex;gap:6px;flex-wrap:wrap" }, chip(stLabel, stTone), d.check.reveal_lock ? chip("Reveal lock", "warn") : null,
+      chip({ private: "Private", in_app: "Visibility set in the app", visible: "Others can see it" }[d.check.visibility] || d.check.visibility, d.check.visibility === "visible" ? "accent" : ""),
       j.experiment_id ? chip([j.experiment_id, j.variant_id].filter(Boolean).join(" · "), "accent") : null),
-    h("div", { class: "pub-grid" }, preview, h("div", {},
-      h("dl", { class: "kv tight" }, h("dt", {}, "Version"), h("dd", {}, j.asset_id), h("dt", {}, "File"), h("dd", {}, h("span", { class: "code" }, j.video_path)),
-        h("dt", {}, "Video"), h("dd", {}, facts || "—"), j.result?.url ? [h("dt", {}, "Link"), h("dd", {}, h("a", { href: j.result.url, target: "_blank", rel: "noreferrer" }, j.result.url))] : null,
-        j.approval ? [h("dt", {}, "Approved"), h("dd", {}, new Date(j.approval.at).toLocaleString())] : null),
-      field("Route", routeSel))),
-    h("h3", { class: "eyebrow section-title" }, `${plat} text and settings`), fieldsEl,
-    editable ? h("div", { style: "margin-top:12px;display:flex;gap:8px" }, h("button", { class: "btn small", type: "button", onclick: async () => { try { await save(); toast("Saved"); openJob(j.job_id); } catch (e) { toast(e.message); } } }, "Save and re-check"),
-      h("button", { class: "btn ghost small", type: "button", onclick: async () => { if (!confirm("Delete this draft?")) return; await post("/api/publish/delete", { job_id: j.job_id }); closeDrawer(); route(); } }, "Delete draft")) : null,
-    h("h3", { class: "eyebrow section-title" }, "Checks"), checks,
-    action ? [h("h3", { class: "eyebrow section-title" }, j.route === "manual" ? "Post it yourself" : "Approve"), action] : null,
-    j.log?.length ? h("details", { class: "more", style: "margin-top:14px" }, h("summary", {}, `Log (${j.log.length})`),
-      h("ul", { class: "small muted" }, j.log.slice().reverse().map((x) => h("li", {}, new Date(x.at).toLocaleString(), " · ", x.msg)))) : null);
+    h("div", { class: "media-grid" }, preview, h("div", {},
+      h("h3", { style: "margin-top:0" }, `${plat_} text and settings`), fieldsEl,
+      editable ? h("div", { style: "margin-top:12px;display:flex;gap:8px" }, h("button", { class: "btn small", type: "button", onclick: async () => { try { await save(); toast("Saved"); openJob(j.job_id); } catch (e) { toast(e.message); } } }, "Save and re-check"),
+        h("button", { class: "btn ghost small", type: "button", onclick: async () => { if (!confirm("Delete this draft?")) return; await post("/api/publish/delete", { job_id: j.job_id }); closeDrawer(); route(); } }, "Delete draft")) : null)),
+    h("h3", {}, "Checks"), checks,
+    action ? [h("h3", {}, j.route === "manual" ? "Post it yourself" : "Approve"), action] : null,
+    j.result?.url ? h("p", { class: "small" }, h("a", { href: j.result.url, target: "_blank", rel: "noreferrer" }, "Open the post ", icon(ICONS.external, 13))) : null,
+    h("details", { class: "more", style: "margin-top:12px" }, h("summary", {}, "Advanced"),
+      h("div", { class: "form-grid", style: "margin:6px 0" }, field("Route", routeSel), advanced),
+      h("dl", { class: "kv small" }, h("dt", {}, "Version"), h("dd", {}, j.asset_id), h("dt", {}, "File"), h("dd", {}, h("span", { class: "code" }, j.video_path)),
+        h("dt", {}, "Video"), h("dd", {}, facts || "—"), j.approval ? [h("dt", {}, "Approved"), h("dd", {}, new Date(j.approval.at).toLocaleString())] : null),
+      j.log?.length ? h("ul", { class: "small muted" }, j.log.slice().reverse().map((x) => h("li", {}, new Date(x.at).toLocaleString(), " · ", x.msg))) : null));
   dr.classList.add("wide");
   if (["uploading", "processing", "approved"].includes(j.state)) setTimeout(() => { if (document.querySelector(".drawer")) openJob(j.job_id); }, 3000);
 }
 
+// ------------------------------------------------------------------ Settings
+async function pageSettings() {
+  const st = await refreshStatus();
+  const accounts = (await api("/api/meta")).accounts;
+  const choice = store.get("theme-choice", "system");
+  const setTheme = (v) => {
+    store.set("theme-choice", v);
+    document.documentElement.setAttribute("data-theme", v === "light" || v === "dark" ? v : "blue");
+    route();
+  };
+  let starsOn = !document.documentElement.classList.contains("no-stars");
+  const starSwitch = h("input", { type: "checkbox", class: "switch", checked: starsOn || null, "aria-label": "Shooting stars", onchange: (e) => {
+    starsOn = e.target.checked;
+    try { localStorage.setItem("ss-stars", String(starsOn)); } catch (err) { /* ignore */ }
+    document.documentElement.classList.toggle("no-stars", !starsOn);
+  } });
+  const appearance = sect("Appearance", { system: "System · blue night", light: "Light", dark: "Dark" }[choice] + (starsOn ? " · stars on" : ""), { open: true },
+    h("div", { style: "display:flex;gap:18px;align-items:center;flex-wrap:wrap" }, seg([["system", "System"], ["light", "Light"], ["dark", "Dark"]], choice, setTheme, "Theme"),
+      h("label", { class: "check", style: "align-items:center" }, starSwitch, "Shooting stars")),
+    h("p", { class: "muted small", style: "margin:8px 0 0" }, "System uses Slugshot's blue night theme. Stars stay still when your device asks for reduced motion."));
+
+  // Connected accounts: one row per account, its sources and actions inside.
+  const byAcct = {};
+  for (const x of st.sources) (byAcct[x.account_id] = byAcct[x.account_id] || []).push(x);
+  const acctRows = h("div", { class: "rows" }, Object.entries(byAcct).map(([id, srcs]) => {
+    const a = accounts.find((x) => x.account_id === id) || { label: id, platform: srcs[0].platform };
+    const ready = srcs.filter((x) => x.credential === "ready");
+    const bad = ready.filter((x) => ["failed", "needs_auth"].includes(x.last_status));
+    const tone = bad.length ? "bad" : ready.length ? "ok" : "";
+    const label = bad.length ? "needs attention" : ready.length ? `connected · ${ago(ready.map((x) => x.last_success_utc).filter(Boolean).sort().pop())}` : "not connected";
+    return h("details", { class: "more", style: "border-bottom:1px solid var(--line);padding:4px 0" },
+      h("summary", { style: "display:flex;align-items:center;gap:10px" }, dot(a.platform), h("span", { style: "font-weight:650;color:var(--text)" }, a.label), lang(a.language), h("span", { style: "flex:1" }), chip(label, tone)),
+      h("div", { style: "padding:4px 0 10px 18px" }, srcs.map((x) => h("div", { class: "row" }, h("div", { class: "grow" }, h("div", { class: "t", style: "font-weight:600" }, x.label),
+        h("div", { class: "s" }, x.credential === "ready" ? `${x.freshness}${x.last_success_utc ? " · " + ago(x.last_success_utc) : ""}` : x.credential, x.last_status && x.last_status !== "ok" ? ` · ${x.last_status}: ${x.last_message}` : "")),
+        connectAction(x)))));
+  }));
+  const auto = h("input", { type: "checkbox", class: "switch", checked: st.auto_refresh || null, onchange: async (e) => { await post("/api/prefs", { auto_refresh: e.target.checked }); toast(e.target.checked ? "Automatic refresh on" : "Automatic refresh off"); } });
+  const connected = sect("Connected accounts", `${Object.values(byAcct).filter((s_) => s_.some((x) => x.credential === "ready")).length} of ${Object.keys(byAcct).length} connected`, {},
+    acctRows, h("div", { style: "display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap" },
+      h("button", { class: "btn small", type: "button", onclick: async () => { await post("/api/sync"); toast("Refreshing…"); pollUntilDone(); } }, "Refresh now"),
+      h("label", { class: "check small", style: "align-items:center" }, auto, "Refresh automatically (daily; every 4 h while a video is under 8 days old)")));
+
+  const pub = await api("/api/publish");
+  const hostingLimits = (await api("/api/hosting")).limits;
+  const publishing = sect("Publishing", `${pub.public_posting ? "Public posts allowed" : "Private only"} · reveal lock ${pub.reveal_lock ? "on" : "off"}`, {},
+    h("dl", { class: "kv" }, h("dt", {}, "Public posts"), h("dd", {}, pub.public_posting ? "Allowed. Every upload still needs your approval." : "Off: uploads stay private."),
+      h("dt", {}, "Reveal lock"), h("dd", {}, pub.reveal_lock ? "On: nothing may name or show the game. You confirm each public video." : "Off."),
+      h("dt", {}, "TikTok and Instagram"), h("dd", {}, "Via Buffer. The video is hosted privately on Cloudinary only after you approve, and deleted once posted."),
+      h("dt", {}, "Hosting limits"), h("dd", {}, `${hostingLimits.max_file_mb} MB per video · ${hostingLimits.max_hosted_files} at once · uploads stop at ${hostingLimits.max_credit_pct}% of the free plan`)),
+    h("p", { class: "muted small", style: "margin:0" }, "Ask Claude to change these. Only you can turn the reveal lock off."));
+
+  const credsList = [["YOUTUBE_OAUTH_CLIENT_ID", "Google OAuth client ID"], ["YOUTUBE_OAUTH_CLIENT_SECRET", "Google OAuth client secret"],
+    ["TIKTOK_CLIENT_KEY", "TikTok client key"], ["TIKTOK_CLIENT_SECRET", "TikTok client secret"], ["ROBLOX_ANALYTICS_API_KEY", "Roblox Open Cloud key"],
+    ["BUFFER_API_KEY", "Buffer API key"], ["CLOUDINARY_CLOUD_NAME", "Cloudinary cloud name"], ["CLOUDINARY_API_KEY", "Cloudinary API key"], ["CLOUDINARY_API_SECRET", "Cloudinary API secret"]];
+  const credRows = h("div", { class: "rows" }, credsList.map(([k, t]) => {
+    const inp = h("input", { type: "password", autocomplete: "off", placeholder: st.credentials[k] ? "saved · paste to replace" : "paste value", "aria-label": t, style: "flex:1;min-width:0" });
+    return h("div", { class: "row" }, h("div", { style: "width:200px;flex:none" }, h("div", { class: "t", style: "font-weight:600" }, t)), inp,
+      st.credentials[k] ? chip("saved", "ok") : chip("not set"),
+      h("button", { class: "btn small", type: "button", onclick: async () => { if (!inp.value.trim()) return; await post("/api/credentials", { name: k, value: inp.value }); inp.value = ""; toast("Saved to the encrypted vault"); route(); } }, "Save"));
+  }));
+  const creds = sect("Credentials", `${credsList.filter(([k]) => st.credentials[k]).length} of ${credsList.length} saved · encrypted on this PC`, {}, credRows,
+    h("p", { class: "muted small", style: "margin:8px 0 0" }, "Never shown again and never exported. Values in .env also work."));
+
+  const accEdit = h("div", { class: "rows" }, accounts.map((a) => {
+    const label = h("input", { type: "text", value: a.label, "aria-label": "Label" });
+    const handle = h("input", { type: "text", value: a.handle, placeholder: "handle", "aria-label": "Handle" });
+    const ext = h("input", { type: "text", value: a.external_id, placeholder: a.platform === "roblox" ? "universe ID" : "filled on connect", "aria-label": "External ID" });
+    const active = h("input", { type: "checkbox", checked: !!a.active, "aria-label": "Active" });
+    return h("div", { class: "row", style: "flex-wrap:wrap" }, h("span", { style: "width:110px" }, plat(a.platform), " ", lang(a.language)), label, handle, ext,
+      h("label", { class: "small muted", style: "display:flex;gap:6px;align-items:center" }, active, "active"),
+      h("button", { class: "btn small", type: "button", onclick: async () => { try { await post("/api/accounts", { ...a, label: label.value, handle: handle.value, external_id: ext.value.trim(), active: active.checked }); toast("Saved"); } catch (e) { toast(e.message); } } }, "Save"));
+  }));
+  const advanced = sect("Advanced and diagnostics", "Imports, exports, account details, hosted files", {},
+    h("div", { class: "grid cols-2" }, importPanel(st), exportPanel()),
+    h("h3", { class: "eyebrow", style: "margin:16px 0 6px" }, "Accounts"), accEdit,
+    h("h3", { class: "eyebrow", style: "margin:16px 0 6px" }, "Hosted videos"), hostedList(),
+    h("p", { class: "muted small", style: "margin:14px 0 0" }, "OAuth redirect URI: ", h("span", { class: "code" }, st.redirect_uri)));
+  return [pageHead("Settings", { noRefresh: true }), h("div", { class: "stack" }, appearance, connected, usageSection(), publishing, creds, advanced)];
+}
+function usageSection() {
+  const body = h("div", {}, h("p", { class: "muted small" }, "Loading…"));
+  const HOW = { live: ["Live", "live"], "local estimate": ["Estimate", ""], documented: ["Limit only", ""] };
+  const paint = (d) => body.replaceChildren(...d.services.map((svc) => h("div", { class: "svc" },
+    h("div", { class: "svc-head" }, h("span", { class: "name" }, svc.service), svc.status === "error" ? chip("check failed", "bad") : null, h("span", { style: "flex:1" }),
+      svc.link ? h("a", { class: "small", href: svc.link, target: "_blank", rel: "noreferrer" }, "Console ", icon(ICONS.external, 12)) : null),
+    svc.rows.map((r) => {
+      const [hl, hc] = HOW[r.how] || [r.how, ""];
+      const tone = r.pct == null ? "" : r.pct >= 80 ? "bad" : r.pct >= 50 ? "warn" : "";
+      const val = r.used != null && r.limit != null ? `${n(r.used)} / ${n(r.limit)} ${r.unit}` : r.limit != null ? `limit ${n(r.limit)} ${r.unit}` : "";
+      return h("div", { class: "meter" }, h("div", {}, h("div", { style: "font-weight:600" }, r.label), h("div", { class: "muted", style: "font-size:11.5px" }, [r.period, r.detail].filter(Boolean).join(" · "))),
+        r.pct != null ? h("div", { class: "track" }, h("div", { class: "fill " + tone, style: `width:${Math.min(100, Math.max(1, r.pct))}%` })) : h("div", {}),
+        h("div", { class: "val" }, val, " ", h("span", { class: "how " + hc }, hl)));
+    }),
+    svc.note ? h("details", { class: "more" }, h("summary", {}, "About this"), h("p", { class: "muted small", style: "margin:0" }, svc.note)) : null)));
+  api("/api/services").then(paint).catch((e) => body.replaceChildren(empty("Couldn't read usage", e.message)));
+  return sect("Service usage and quotas", "Free plans: what's used and what's left", {}, body,
+    h("div", { style: "display:flex;gap:8px;margin-top:8px" }, h("button", { class: "btn small", type: "button", onclick: async () => {
+      body.replaceChildren(h("p", { class: "muted small" }, "Checking…")); await api("/api/hosting", { refresh: "1" }).catch(() => {}); paint(await api("/api/services")); } }, "Check Cloudinary now")),
+    h("p", { class: "muted small", style: "margin:8px 0 0" }, "Live = reported by the provider. Estimate = counted from our own logs. Limit only = the published allowance; that provider doesn't report current usage."));
+}
+function hostedList() {
+  const box = h("div", {});
+  const paint = (d) => box.replaceChildren(d.hosted.filter((r) => r.state !== "deleted").length ? h("div", { class: "rows" }, d.hosted.filter((r) => r.state !== "deleted").map((r) => h("div", { class: "row" },
+    h("span", { class: "code" }, r.public_id.split("/").pop().slice(0, 12)), chip(r.state, r.state === "failed" ? "bad" : "accent"), h("span", { class: "muted small" }, `${(r.bytes / 1e6).toFixed(1)} MB · ${ago(r.updated_at_utc)}`))))
+    : h("p", { class: "muted small", style: "margin:0" }, "Nothing hosted. Videos are only hosted while a Buffer post needs them."),
+    h("button", { class: "btn ghost small", type: "button", style: "margin-top:6px", onclick: async () => { const r = await post("/api/hosting/cleanup", {}); toast(`${r.deleted.length} abandoned file(s) deleted`); paint(await api("/api/hosting")); } }, "Clean up abandoned files"));
+  api("/api/hosting").then(paint).catch(() => {});
+  return box;
+}
+function connectAction(x) {
+  if (x.connector === "youtube_analytics" || x.connector === "tiktok") {
+    const prov = x.connector === "tiktok" ? "tiktok" : "youtube";
+    const blocked = x.credential.startsWith("needs");
+    return h("div", { style: "display:flex;gap:6px" },
+      h("button", { class: "btn small", type: "button", disabled: blocked, title: blocked ? "Save the app credentials first" : null, onclick: async () => {
+        try { const r = await post("/api/oauth/start", { provider: prov, account_id: x.account_id }); window.open(r.url, "_blank", "noopener"); toast("Finish signing in in the browser window"); } catch (e) { toast(e.message); }
+      } }, x.credential === "ready" ? "Reconnect" : "Connect"),
+      x.credential === "ready" ? disconnectBtn(x) : null);
+  }
+  if (x.connector === "instagram") {
+    return h("button", { class: "btn small", type: "button", onclick: () => {
+      const inp = h("input", { type: "password", autocomplete: "off", style: "width:100%" });
+      drawer(h("div", { class: "eyebrow" }, "Instagram"), h("h2", {}, "Paste access token"), h("p", { class: "muted small" }, "Meta app dashboard > Instagram > API setup with Instagram login > Generate token. Stored encrypted; refreshed automatically."),
+        field("Long-lived token", inp), h("div", { style: "margin-top:14px" }, h("button", { class: "btn primary", type: "button", onclick: async () => {
+          await post("/api/credentials", { name: "INSTAGRAM_TOKEN", account_id: x.account_id, value: inp.value }); closeDrawer(); toast("Saved"); route();
+        } }, "Save")));
+    } }, x.credential === "ready" ? "Replace token" : "Add token");
+  }
+  return null;
+}
+function disconnectBtn(x) {
+  return h("button", { class: "btn ghost small", type: "button", onclick: async () => {
+    if (!confirm(`Disconnect ${x.account_label} (${x.label})?`)) return;
+    const forget = confirm("Also delete the data already collected from it?\n\nOK deletes it. Cancel keeps it.");
+    await post("/api/disconnect", { connector: x.connector, account_id: x.account_id, forget_data: forget });
+    toast(forget ? "Disconnected and data removed" : "Disconnected"); route();
+  } }, "Disconnect");
+}
+function importPanel(st) {
+  const out = h("div", {});
+  let text = "", name = "";
+  const fileIn = h("input", { type: "file", accept: ".csv,text/csv", class: "hidden", onchange: (e) => read(e.target.files[0]) });
+  const drop = h("div", { class: "drop", tabindex: "0", role: "button", onclick: () => fileIn.click(), onkeydown: (e) => e.key === "Enter" && fileIn.click() }, "Drop a CSV here or click to choose");
+  drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
+  drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+  drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); read(e.dataTransfer.files[0]); });
+  async function read(file) {
+    if (!file) return;
+    text = await file.text(); name = file.name;
+    show(await post("/api/import", { text, file_name: name, dry_run: true }), true);
+  }
+  function show(r, check) {
+    out.replaceChildren(
+      r.ok ? h("p", { class: "small" }, `${name}: ${r.kind}, ${r.rows_ok} rows ok${r.rows_rejected ? `, ${r.rows_rejected} rejected` : ""}${check ? " (checked, not imported yet)" : " imported"}.`) : h("p", { class: "small" }, `${name}: not imported.`),
+      r.errors?.length ? h("pre", { class: "errors" }, r.errors.join("\n")) : null,
+      check && r.ok ? h("button", { class: "btn primary small", type: "button", onclick: async () => { show(await post("/api/import", { text, file_name: name, skip_bad: true }), false); route(); } }, "Import") : null);
+  }
+  return panel("Import metrics", { tip: "For numbers no API gives: TikTok Studio, Instagram app, YouTube Studio exports, Roblox share links. Checked first; nothing is stored until you press Import." },
+    drop, fileIn, out, st.imports.length ? h("details", { class: "more", style: "margin-top:8px" }, h("summary", {}, "Recent imports"), st.imports.map((i) => h("div", { class: "small muted" }, `${day(i.imported_at_utc)} · ${i.file_name} · ${i.rows_ok} rows`))) : null);
+}
+function exportPanel() {
+  let detail = "overview";
+  const safe = h("input", { type: "checkbox", checked: true });
+  const out = h("div", {});
+  const segEl = h("span", {});
+  const paint = () => segEl.replaceChildren(seg([["overview", "Overview"], ["detailed", "Detailed"]], detail, (v) => { detail = v; paint(); }, "Detail"));
+  paint();
+  return panel("Export for AI tools", { tip: "A snapshot for ChatGPT, Claude and Gemini: Markdown summary plus CSV/JSON files. Safe-to-share applies the sharing rules, removes local paths and checks for credentials." },
+    h("div", { style: "display:flex;gap:10px;align-items:center;flex-wrap:wrap" }, segEl, h("label", { class: "check small", style: "align-items:center" }, safe, "Safe to share"),
+      h("button", { class: "btn primary small", type: "button", onclick: async () => {
+        try {
+          const r = await post("/api/export", { detail, share: safe.checked, filters: fParams() });
+          out.replaceChildren(h("p", { class: "small" }, `${r.files.length} files in `, h("span", { class: "code" }, r.folder)),
+            r.excluded.length ? h("p", { class: "small muted" }, "Left out: " + r.excluded.join("; ")) : null,
+            h("button", { class: "btn small", type: "button", onclick: () => post("/api/open-folder", { folder: r.folder }) }, "Open folder"));
+        } catch (e) { toast(e.message); }
+      } }, "Export")), out);
+}
+
+// ------------------------------------------------------------------ drawers
+function drawer(...content) {
+  closeDrawer();
+  const scrim = h("div", { class: "scrim", onclick: closeDrawer });
+  const d = h("aside", { class: "drawer", role: "dialog", "aria-modal": "true" },
+    h("button", { class: "btn ghost icon-btn close", type: "button", "aria-label": "Close", onclick: closeDrawer }, icon(ICONS.close)), content);
+  document.body.append(scrim, d);
+  d.querySelector("input,select,textarea,button:not(.close)")?.focus({ preventScroll: true });
+  return d;
+}
+function closeDrawer() { document.querySelectorAll(".scrim,.drawer").forEach((x) => { x.querySelectorAll?.("video").forEach((v) => v.pause()); x.remove(); }); }
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+
 // ------------------------------------------------------------------ router
-const ROUTES = { overview: pageOverview, content: pageContent, research: pageResearch, game: pageGame, experiments: pageExperiments, publish: pagePublish, settings: pageSettings };
 let routeSeq = 0;
 async function route() {
-  const id = (location.hash.replace(/^#\/?/, "").split(/[/?#]/)[0]) || "overview";
-  const page = ROUTES[id] ? id : "overview";
+  const raw = location.hash.replace(/^#\/?/, "");
+  const [page0, ...rest] = raw.split("/");
+  const page = { game: "roblox", research: "overview", experiments: "overview" }[page0] || page0 || "overview";
+  const sub = rest.join("/");
+  const pages = {
+    overview: () => (sub === "views" ? pageViews() : sub === "followers" ? pageFollowers() : pageOverview()),
+    account: () => pageAccount(decodeURIComponent(sub)),
+    content: () => pageContent(sub || "concepts"),
+    roblox: pageRoblox, publish: () => pagePublish(sub), settings: pageSettings,
+  };
+  const fn = pages[page] || pages.overview;
   const seq = ++routeSeq;
-  renderNav(page);
-  document.title = `${page[0].toUpperCase() + page.slice(1)} · Slugshot`;
+  renderNav(page === "account" ? "overview" : pages[page] ? page : "overview");
+  document.title = `${(page[0] || "o").toUpperCase() + page.slice(1)} · Slugshot`;
   try {
-    const nodes = await ROUTES[page]();
+    const nodes = await fn();
     if (seq !== routeSeq) return;
     charts = [];
     $main.replaceChildren(...[].concat(nodes).flat(3).filter(Boolean));
     requestAnimationFrame(() => charts.forEach((d) => d()));
   } catch (e) {
     if (seq !== routeSeq) return;
-    $main.replaceChildren(...topbar(page), panel("Couldn't load this page", {}, h("p", { class: "muted" }, e.message)));
+    $main.replaceChildren(...pageHead(page[0].toUpperCase() + page.slice(1), { noRefresh: true }), panel("Couldn't load this page", {}, h("p", { class: "muted" }, e.message)));
   }
 }
-window.addEventListener("hashchange", route);
+window.addEventListener("hashchange", () => { closeDrawer(); route(); });
 
 (async function start() {
+  nightSky();
   META = await api("/api/meta");
   await refreshStatus();
   route();
-  // Refresh stale sources when the app opens (if daily refresh is on), then keep the status line current.
+  // Refresh stale sources when the app opens (if automatic refresh is on), then keep the status line current.
   if (STATUS && STATUS.auto_refresh && !STATUS.sync.running && !FIXTURE &&
       STATUS.sources.some((x) => x.credential === "ready" && ["due", "stale", "never synced"].includes(x.freshness))) {
     post("/api/sync").then(pollUntilDone).catch(() => {});

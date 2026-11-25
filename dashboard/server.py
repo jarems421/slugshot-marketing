@@ -14,7 +14,7 @@ import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from . import imports, oauth, publish, reports, sync, vault, views
+from . import analytics, imports, oauth, publish, reports, sync, vault, views
 from .connectors import CONNECTORS
 from .store import DATA, ROOT, Store, is_fixture_db, metric_defs, settings
 
@@ -111,6 +111,11 @@ def make_handler(app):
                     "/api/experiments": lambda: views.experiments(s),
                     "/api/knowledge": lambda: views.knowledge(p),
                     "/api/hypotheses": lambda: views.hypothesis_families(),
+                    "/api/analytics": lambda: analytics.analytics(s, p),
+                    "/api/library": lambda: analytics.library(s, p.get("posted") == "1"),
+                    "/api/services": lambda: views.service_usage(s),
+                    "/api/vocab": lambda: analytics.vocab(),
+                    "/api/compare": lambda: analytics.compare(s, p),
                 }
                 if path in api:
                     return self._send(200, api[path]())
@@ -128,10 +133,20 @@ def make_handler(app):
                 if path.startswith("/api/publish/media/"):
                     j = publish.job(s, urllib.parse.unquote(path.rsplit("/", 1)[1]))
                     return self._media(publish.resolve_video(j["video_path"])) if j else self._send(404, {"error": "not found"})
+                if path == "/api/media":  # local videos for the Content gallery: exports/ and media/ only
+                    return self._media(publish.resolve_video(p.get("path", "")))
+                if path == "/api/thumb":
+                    t = analytics.thumbnail(p.get("path", ""))
+                    return self._send(200, t.read_bytes(), "image/jpeg") if t else self._send(404, {"error": "no thumbnail"})
+                if path.startswith("/api/video/"):
+                    d = analytics.video_detail(s, urllib.parse.unquote(path.rsplit("/", 1)[1]))
+                    return self._send(200 if d else 404, d or {"error": "not found"})
                 if path.startswith("/api/upload/"):
                     d = views.upload_detail(s, urllib.parse.unquote(path.rsplit("/", 1)[1]))
                     return self._send(200 if d else 404, d or {"error": "not found"})
                 self._send(404, {"error": "not found"})
+            except ValueError as e:  # e.g. a media path outside exports/ and media/
+                self._send(400, {"error": str(e)[:200]})
             except Exception as e:
                 traceback.print_exc()
                 self._send(500, {"error": f"{type(e).__name__}: {e}"[:300]})
@@ -197,7 +212,18 @@ def make_handler(app):
                 if path == "/api/experiments":
                     return self._send(200, {"experiment_id": s.save_experiment(body)})
                 if path == "/api/concepts":
+                    if "tags" in body:
+                        body["tags"] = analytics.clean_tags(body["tags"])
                     return self._send(200, {"concept_id": s.save_concept(body)})
+                if path == "/api/concept-tags":  # tags only, so the rest of the concept is untouched
+                    c = s.q("SELECT * FROM concepts WHERE concept_id=?", (body["concept_id"],))
+                    if not c:
+                        raise ValueError("unknown concept")
+                    return self._send(200, {"concept_id": s.save_concept({**c[0], "tags": analytics.clean_tags(body.get("tags") or {})})})
+                if path == "/api/finding":  # learning loop: a comparison group -> a draft knowledge-bank entry
+                    res = analytics.compare(s, body)
+                    e = analytics.finding_draft(res, body["group"], body.get("statement", ""), body.get("link_to", ""), body.get("link_type", "supports"))
+                    return self._send(200, analytics.save_finding(e) if body.get("save") else e)
                 if path == "/api/assets":
                     return self._send(200, {"asset_id": s.save_asset(body)})
                 if path == "/api/uploads":

@@ -145,6 +145,11 @@ def cmd_demo(a):
     from . import imports, sync
     from .store import Store
     if DEMO_DB.exists():
+        try:  # a running demo server holds the database open: stop it first (the live server is never touched)
+            cmd_stop(argparse.Namespace(demo=True))
+            time.sleep(1.5)
+        except (SystemExit, OSError):
+            pass
         for f in DEMO_DB.parent.glob("demo.db*"):
             f.unlink()
     s = Store()
@@ -156,6 +161,11 @@ def cmd_demo(a):
         from .connectors import fixture_text
         res = imports.run(s, fixture_text((fx / name).read_text(encoding="utf-8")), name)
         print(f"fixture import {name}: {res.get('rows_ok')} ok {res.get('errors', '')}")
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("fixture_history", fx / "history.py")
+    hist = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(hist)
+    print(f"fixture history: {hist.backfill(s)} back-filled snapshots")
     if not a.no_open:
         a.demo = True
         cmd_open(a)

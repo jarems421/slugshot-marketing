@@ -9,7 +9,7 @@ This repository is the working machinery behind Slugshot's short-form video mark
 
 It is built to be **operated by an AI agent**. [Claude Code](https://code.claude.com/docs/en/overview) runs the toolkit from short natural-language instructions ("collect today's research", "is this meme still growing?", "make the Floppy duel edit"). ChatGPT designs research and writes scripts; Gemini/Flow analyses footage and generates visuals; the owner makes decisions and approves anything consequential.
 
-> Status (25 Nov 2026): infrastructure is complete. That covers research collection and intelligence, knowledge banks, the dashboard with its commercial funnel, and publishing. All five social accounts are connected and live-validated. Publishing waits only on the owner approving the first test posts ([validation report](reports/live-integration-validation-2026-11-25.md)). The research feature freeze is in place: only account setup, live validation and small fixes. Next: a dashboard usability and design pass, then content production. The game is unreleased, so player analytics wait for launch. See [docs/INVENTORY.md](docs/INVENTORY.md) for the status of every capability.
+> Status (25 Nov 2026): infrastructure is complete, and the dashboard has had its final usability and design pass. That covers research collection and intelligence, knowledge banks, the dashboard with its commercial funnel, and publishing. All five social accounts are connected and live-validated. Publishing waits only on the owner approving the first test posts ([validation report](reports/live-integration-validation-2026-11-25.md)). The research feature freeze is in place: only account setup, live validation and small fixes. Next: content production. The game is unreleased, so player analytics wait for launch. See [docs/INVENTORY.md](docs/INVENTORY.md) for the status of every capability.
 
 ---
 
@@ -83,14 +83,15 @@ Turning data into findings that can be checked:
 Commands: `ss analyze`, `ss evidence`. Guides: [research methods](docs/research-methods.md), [evidence ledger](docs/research-evidence.md).
 
 ### Personal dashboard
-A local app (Desktop shortcut or `ss dash`) with Overview, Content, Research, Game, Experiments, Publish and Settings pages, styled after Jami. Standard-library Python + SQLite, loopback only, credentials encrypted with Windows DPAPI. Guide: [docs/dashboard/README.md](docs/dashboard/README.md).
+A local app (Desktop shortcut or `ss dash`) with five pages (Overview, Content, Publish, Roblox, Settings), styled after Jami with its night sky, in System (blue), Dark and Light. Minimum information by default; click a metric, account or video for detail. Standard-library Python + SQLite, loopback only, credentials encrypted with Windows DPAPI. Guide: [docs/dashboard/README.md](docs/dashboard/README.md).
 
 - **Analytics** for our own accounts, from official owner-authorised APIs. Metric rules keep platforms separate and never invent zeros.
   - YouTube Analytics (EN, ES).
   - TikTok Display API (EN, ES).
   - Buffer (TikTok and Instagram post metrics; it only adds what the native APIs lack, so nothing is double-counted).
   - Roblox (after launch).
-- **Research and knowledge:** evidence ledgers, knowledge banks (`ss kb`), audience sentiment (`ss sentiment`), experiments, and a portable snapshot export for ChatGPT, Claude and Gemini.
+- **Content:** a gallery of produced videos waiting to post (play them in the app) and a gallery of published posts with their analytics, readings at 24 h / 48 h / 7 days, and creative tags from the codebook and knowledge banks.
+- **Learning loop:** compare similar videos (one platform, same age, grouped by tag), record a finding as a draft knowledge-bank entry, and `ss kb brief` brings it into the next brief. Research, knowledge banks, sentiment and experiments run through `ss kb`, `ss evidence`, `ss analyze` and `ss sentiment` rather than dashboard pages; a snapshot exports for ChatGPT, Claude and Gemini.
 - **Publishing** (`ss publish`, [docs/dashboard/publishing.md](docs/dashboard/publishing.md)):
   - YouTube uploads directly through its API. TikTok and Instagram go through Buffer, and Cloudinary's free plan briefly hosts the approved file behind a private signed link. Manual packages cover everything else.
   - **Only the owner approves an upload**, by typing the account handle. The approval binds the exact file and text.
@@ -201,10 +202,10 @@ Not in git: `.env`, `media/`, `exports/`, `data/local/`, `models/`, `out/`, `ven
 
 ## Testing
 
-- `ss smoke` runs every capability once and writes a PASS / WARN / FAIL / BLOCKED report. Latest: 28/28 PASS ([reports/smoke-test.md](reports/smoke-test.md)).
-- `ss smoke --research` runs only the research checks (10/10, about 30 s); `ss smoke --dashboard` the dashboard checks (6/6, about 10 s).
-- Offline suites (131 tests on fake fixtures, no network; the publishing tests never upload or post):
-  `.venv\Scripts\python -m unittest tests.test_publish tests.test_dashboard tests.test_knowledge tests.test_analysis tests.test_research`
+- `ss smoke` runs every capability once and writes a PASS / WARN / FAIL / BLOCKED report. Latest: 30/30 PASS ([reports/smoke-test.md](reports/smoke-test.md)).
+- `ss smoke --research` runs only the research checks (10/10, about 30 s); `ss smoke --dashboard` the dashboard checks (7/7, about 15 s).
+- Offline suites (145 tests on fake fixtures, no network; the publishing tests never upload or post):
+  `.venv\Scripts\python -m unittest tests.test_publish tests.test_dashboard tests.test_knowledge tests.test_analysis tests.test_research tests.test_analytics`
 - Test environment: numpy/ruptures use OpenBLAS, which on this machine can fail with "OpenBLAS error: Memory allocation still failed" at its default thread count. `scripts/research_analysis.py` sets `OPENBLAS_NUM_THREADS=1` by default; if another numpy script hits it, set `$env:OPENBLAS_NUM_THREADS = '1'` before running tests.
 
 ## Third-party components

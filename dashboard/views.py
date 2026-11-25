@@ -554,3 +554,86 @@ def publish_job(store, job_id):
     return {"job": j, "account": acct, "check": res, "creator": creator, "creator_error": creator_error,
             "asset": asset[0] if asset else None, "routes": list(P.ROUTES[j["platform"]]),
             "tiktok_declaration": P.TIKTOK_BRANDED if j["fields"].get("branded_content") else P.TIKTOK_MUSIC}
+
+
+# ------------------------------------------------------------------ service usage (Settings)
+def service_usage(store):
+    """Every external service with a free allowance. Each figure says how it's known: 'live' (the provider reports
+    it), 'local estimate' (counted from our own logs) or 'documented' (the published limit; no usage API we can read).
+    Credential expiry comes from stored token metadata, never the token itself."""
+    import time as _time
+    from . import hosting, vault
+    from .store import now_iso
+    sys_path = str(ROOT / "scripts")
+    import sys as _sys
+    if sys_path not in _sys.path:
+        _sys.path.insert(0, sys_path)
+    import research_common as rc
+    now = datetime.now(timezone.utc)
+    out = []
+
+    def svc(name, rows, note="", link="", status=""):
+        out.append({"service": name, "rows": rows, "note": note, "link": link, "status": status})
+
+    def row(label, used=None, limit=None, unit="", how="documented", period="", detail=""):
+        pct = round(100 * used / limit, 1) if used is not None and limit else None
+        return {"label": label, "used": used, "limit": limit, "remaining": (limit - used) if used is not None and limit else None,
+                "pct": pct, "unit": unit, "how": how, "period": period, "detail": detail}
+
+    u = store.pref("cloudinary_usage") or {}
+    cr = u.get("credits") or {}
+    svc("Cloudinary", [row("Credits", cr.get("usage"), cr.get("limit") or 25, "credits", "live" if cr else "documented",
+                           "rolling 30 days", f"checked {u.get('fetched_at', 'never')[:16].replace('T', ' ')}" if u else "not checked yet"),
+                       row("Video size", None, round((u.get("video_max_bytes") or 104857600) / 1048576), "MB per file", "live" if u else "documented"),
+                       row("Hosted now", len(hosting.hosted(store)), hosting.cfg()["max_hosted_files"], "files", "local estimate", "", "our limit")],
+        "1 credit = 1 GB stored, 1 GB of video delivered or 1,000 transformations. Uploads stop at "
+        f"{hosting.cfg()['max_credit_pct']}% of credits. The free plan is disabled at its limit, never billed.",
+        "https://console.cloudinary.com/", "error" if store.pref("cloudinary_error") else "")
+    q = store.pref("buffer_quota") or {}
+    reset = datetime.fromtimestamp(q["reset_unix"], timezone.utc).strftime("%d %b %Y") if q.get("reset_unix") else ""
+    svc("Buffer", [row("API requests", (q["limit"] - q["remaining"]) if q else None, q.get("limit") or 3000, "requests",
+                       "live" if q else "documented", "30-day window", f"resets {reset}" if reset else ""),
+                   row("Scheduled posts", None, 10, "posts", "documented", "at any time"),
+                   row("API key", None, None, "", "documented", "", "expiry set when the key was made; check Buffer → Settings → API")],
+        "Analytics pause below 150 requests left so posting always has room. Insights cover the last 31 days on the free plan.",
+        "https://publish.buffer.com/settings/api")
+    day = rc.pacific_day(rc.now())
+    research = sum(int(r.get("units") or 0) for r in _rows(RESEARCH / "youtube" / "quota_log.csv")
+                   if r.get("quota_day_pt") == day and r.get("bucket") == "default")
+    dash = store.q("""SELECT COALESCE(SUM(requests_ok + requests_failed), 0) n FROM sync_runs WHERE connector='youtube_analytics'
+                      AND fixture=0 AND started_at_utc >= ?""", ((now - timedelta(hours=24)).isoformat(),))[0]["n"]
+    uploads = store.q("""SELECT COUNT(*) n FROM publish_jobs WHERE platform='youtube' AND route='api' AND state IN ('done','processing')
+                         AND updated_at_utc >= ?""", ((now - timedelta(hours=24)).isoformat(),))[0]["n"]
+    svc("YouTube Data API", [row("Research collector", research, 10000, "units", "local estimate", "per day (resets midnight US Pacific)",
+                                 "logged per request; our own budget is 3,000"),
+                             row("Dashboard refresh", None, None, "", "local estimate", "last 24 h",
+                                 f"about {dash} requests (channels, uploads list and Analytics reports)"),
+                             row("Uploads", uploads, 100, "videos", "local estimate", "per day")],
+        "Google doesn't expose current consumption through the API. Exact figures: Google Cloud console → APIs → Quotas.",
+        "https://console.cloud.google.com/apis/dashboard")
+    tt_rows = []
+    for a in store.accounts():
+        if a["platform"] == "tiktok" and a["active"]:
+            t = vault.get(f"oauth_tiktok_{a['account_id']}") or {}
+            if t.get("refresh_expires_at"):
+                days = int((t["refresh_expires_at"] - _time.time()) // 86400)
+                tt_rows.append(row(f"{a['label']} sign-in", None, None, "", "live", "", f"renews automatically; re-sign-in needed in {days} days"))
+            elif t:
+                tt_rows.append(row(f"{a['label']} sign-in", None, None, "", "documented", "", "renews automatically; sign-in lasts up to a year"))
+    inbox = store.q("""SELECT COUNT(*) n FROM publish_jobs WHERE platform='tiktok' AND route='inbox' AND state IN ('sent_to_inbox','done')
+                       AND updated_at_utc >= ?""", ((now - timedelta(hours=24)).isoformat(),))[0]["n"]
+    svc("TikTok API", [row("Inbox uploads", inbox, 5, "pending drafts", "local estimate", "per 24 h"), *tt_rows],
+        "Sandbox app: posts through our own app stay private until TikTok audits it; public TikTok posts go via Buffer.",
+        "https://developers.tiktok.com/apps")
+    g_rows = [row(f"{a['label']} sign-in", None, None, "", "documented", "",
+                  "lasts until revoked if the Google consent screen is In production; 7 days in Testing")
+              for a in store.accounts() if a["platform"] == "youtube" and a["active"] and vault.has(f"oauth_youtube_{a['account_id']}")]
+    if g_rows:
+        svc("Google sign-in", g_rows, "", "https://console.cloud.google.com/auth/audience")
+    twitch_ready = bool(rc.env_value("TWITCH_CLIENT_ID"))
+    svc("Twitch API", [row("Rate limit", None, 800, "points per minute", "documented")],
+        "No monthly allowance; research data is kept 24 hours." + ("" if twitch_ready else " Not set up."),
+        "https://dev.twitch.tv/console")
+    svc("Composio", [row("Tool calls", None, 100000, "calls", "documented", "per month", "Hobby plan; pauses at the cap, can't bill")],
+        "Read-only add-on. Usage is shown only in the Composio dashboard.", "https://platform.composio.dev/")
+    return {"services": out, "generated_at": now_iso()}

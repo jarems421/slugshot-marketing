@@ -560,9 +560,10 @@ class Buffer(Connector):
                 vid = next((m.group(1) for rx in VIDEO_ID[account["platform"]] for m in [re.search(rx, p.get("externalLink") or "")] if m), None)
                 if not vid or not p.get("metricsUpdatedAt"):
                     continue  # no platform link to join on, or Buffer hasn't computed metrics yet (it would say 0)
+                known = store.q("SELECT 1 FROM uploads WHERE platform=? AND platform_video_id=?", (account["platform"], vid))
                 uid = store.save_upload({"platform": account["platform"], "platform_video_id": vid, "account_id": account["account_id"],
-                                         "url": p["externalLink"], "title": (p.get("text") or "")[:120],
-                                         "published_at_utc": p.get("sentAt") or "", "source": self.name})
+                                         "url": "" if known else p["externalLink"], "title": "" if known else (p.get("text") or "")[:120],
+                                         "published_at_utc": "" if known else p.get("sentAt") or "", "source": self.name})  # never overwrite the native record
                 for m in p.get("metrics") or []:
                     metric, scale = self.MAP.get(m.get("type"), (None, 1))
                     if not metric or (allowed is not None and metric not in allowed):

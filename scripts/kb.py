@@ -326,7 +326,7 @@ def brief(entries, text, character=None, fmt=None, lang=None):
     words = {w for w in re.findall(r"[a-záéíóúñü]{4,}", text.lower())}
     scored = []
     for e in entries:
-        if e.get("_error") or e.get("bank") in ("inventory", "sources", "claims", "amendments") or e.get("review_status") == "retired":
+        if e.get("_error") or e.get("review_status") == "retired" or e.get("bank") in ("inventory", "sources", "amendments")                 or (e.get("bank") == "claims" and e.get("evidence_label") != "owned_result"):  # our own results do reach briefs
             continue
         t = e.get("tags") or {}
         hits = len(words & {w for w in re.findall(r"[a-záéíóúñü]{4,}", text_of(e).lower())})

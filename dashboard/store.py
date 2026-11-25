@@ -123,6 +123,10 @@ class Store:
         self.conn.execute("PRAGMA journal_mode = WAL")
         with _lock:
             self.conn.executescript(SCHEMA)
+            cols = {r[1] for r in self.conn.execute("PRAGMA table_info(concepts)")}
+            if "tags" not in cols:  # creative tags (codebook codes, knowledge-bank ids), added 2026-11-25
+                self.conn.execute("ALTER TABLE concepts ADD COLUMN tags TEXT NOT NULL DEFAULT '{}'")
+                self.conn.commit()
             self._seed()
 
     # ---- basics
@@ -194,6 +198,8 @@ class Store:
                   slug=excluded.slug, notes=excluded.notes""",
                (cid, c.get("title") or cid, c.get("format", ""), c.get("hook_type", ""), c.get("hook_text", ""),
                 c.get("slug", ""), c.get("notes", ""), now_iso()))
+        if "tags" in c:  # validated by analytics.clean_tags before it gets here
+            self.x("UPDATE concepts SET tags=? WHERE concept_id=?", (json.dumps(c["tags"]), cid))
         return cid
 
     def save_asset(self, a):

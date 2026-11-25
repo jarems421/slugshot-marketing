@@ -4,6 +4,8 @@
  "auto_refresh": true,
  "refresh_hours": 24,
  "stale_hours": 36,
+ "young_refresh_hours": 4,
+ "young_days": 8,
  "accounts": [
   {
    "account_id": "yt-en",

@@ -1,6 +1,8 @@
 # Slugshot dashboard
 
-A personal marketing dashboard that runs on this PC: Overview, Content, Research, Game and Experiments, plus Settings. It reads the toolkit's existing research outputs, our own accounts' analytics (through official APIs once authorised) and manual imports. It never posts, never runs in the cloud and is only reachable from this computer. Built 2026-11-25.
+A personal marketing dashboard that runs on this PC: **Overview, Content, Publish, Roblox and Settings**. It shows our own accounts' analytics (official APIs and Buffer), our videos, and publishing. It runs only on this computer and never posts without the owner's approval. Built 2026-11-25; redesigned the same day for a simpler daily view.
+
+**Principle (owner, 2026-11-25): show the minimum useful information by default; detail appears only when you click into a metric, account, video or section.** Research, knowledge banks, evidence ledgers, sentiment and experiments are still fully available to Claude (`ss kb`, `ss evidence`, `ss analyze`, `ss sentiment`, `/api/knowledge`, `/api/experiments`), but they are not pages any more.
 
 ## Open it
 
@@ -27,24 +29,26 @@ The server listens on `http://127.0.0.1:47615/` only. If that port is taken it s
 | `serve` | run the server in the foreground (debugging) |
 | `publish …` (also `.\ss publish …`) | publishing drafts, checks, manual packages, recording hand-made posts; approval only in the app ([publishing.md](publishing.md)) |
 
-Tests: `.\ss smoke --dashboard` (writes `reports/smoke-test-dashboard.md`) or `.venv\Scripts\python -m unittest tests.test_dashboard tests.test_publish`.
+Tests: `.\ss smoke --dashboard` (writes `reports/smoke-test-dashboard.md`) or `.venv\Scripts\python -m unittest tests.test_dashboard tests.test_publish tests.test_analytics`. Also `hosting status|test|cleanup` (Cloudinary).
 
 ## Pages
 
-- **Overview**: views, followers and watch time **per platform** (never added together), new players, latest complete D1 cohort, revenue; views per day by platform; players per day; accounts with freshness; recent uploads. Filters: 7/28/90 days, platform, EN/ES.
-- **Content**: published uploads with views, likes, average view duration and % viewed; concepts with their EN/ES versions; local renders from `exports/` (with QC) that can be registered as versions. Sorting by views is only offered within one platform. Click an upload for its detail: every metric with its source, metrics the platform doesn't offer marked as such, snapshots over time, the same version on other platforms, linked experiments.
-- **Research**: findings from the evidence ledgers (level O/D/P/I/C/R, support status, verbal strength; recommendations and interpretations first), research collection runs, decision memos, Google Trending Now, watchlists, recent public observations with provenance, and the **knowledge banks** (Stage 4.7; [docs/knowledge-banks.md](../knowledge-banks.md)): a Knowledge browser with search and filters (bank, evidence label, review status, format, language, due or stale) and an entry drawer (statement, boundaries, transfer assumption, game truth, ledger claims, links, history); Opportunities with separate dimensions; coded Audience sentiment samples; Due for review. The demo (fixture) dashboard reads `tests/fixtures/knowledge/` only.
-- **Game**: the seven measurement stages (Discovery, Engagement, Interest, Acquisition, Activation, Retention, Monetisation), each in its own population and window, primary metrics first and the rest behind "More"; players per day, D1 by cohort, revenue per day, acquisition sources (average per day), share links, cohort table.
-- **Experiments**: hypothesis, the one change, primary metric and read time, stop rule and threshold, variants linked to versions, each linked upload's reading nearest the read time, results, limitations, decision, next action. Seeded with `EXP-20261124-OPENER` (rule-world vs tier-skit opener) from the Stage 4.5.4 decision memo, status *proposed*, no results. Each experiment shows the hypothesis family that links to it, and a **Hypothesis families** panel lists the 17 families (T01–T17) with their gates; experiments stay the single source of truth here.
-- **Publish**: our accounts (five active; Spanish Instagram later) with their upload readiness and **Connect for uploads**; a queue of drafts and uploads; **New post** (version, video file, optional experiment variant, accounts and route per account). A draft shows a 9:16 preview, that platform's text and settings (YouTube title, description, tags, visibility, made-for-kids, synthetic content; TikTok caption, TikTok's required posting controls, AI label; Instagram caption, feed sharing), the checks, and the approval box (type the handle). Manual drafts make a package and take the link back. Details: [publishing.md](publishing.md).
-- **Settings**: connections and their health, connect/disconnect (optionally deleting that source's data), refresh now and the daily-refresh switch, manual import (checked before anything is stored), export, theme, app credentials (write-only), accounts (EN/ES, handles, IDs).
+| Page | Shows by default | Click into |
+|---|---|---|
+| **Overview** | Total views (combined, platform-reported) with the change against the previous period; total followers (combined account counts) with the change; watch time as a secondary line; views per day; the accounts list. Filters: 7/30/90 days, all time or a custom range; platform; account; EN/ES. | **Views**: views over time, by platform (click to narrow), by account, watch time, average view duration, engagement, videos (views in range or to date), a collapsed *Compare similar videos*. **Followers**: growth over time, net change, gains and losses per account (where reported), videos that brought subscribers (YouTube only; others don't attribute). **An account**: its views, followers, watch time, engagement, trend and videos. |
+| **Content** | **Concepts**: a gallery of produced videos on this PC that are waiting to be posted (thumbnails, length, language, status); language versions of one concept are grouped. **Published**: a gallery of posts, filterable by platform, account, language and date, sortable by newest, views or watch time; one video posted on several accounts is one card. | A concept: play it, see its file details, creative tags, where it's posted or queued, **Publish…**. A post: play it (if the edit is on this PC), open it on the platform, its numbers, readings at 24 h / 48 h / 7 d, history, the same video's other posts, the account's median, creative tags. |
+| **Publish** | What needs you (drafts, failures, inbox and Buffer drafts), uploads in progress, posted jobs (collapsed), accounts (collapsed). | **New post**: pick a video from the gallery, preview, tick accounts (route per account under Advanced), create drafts. A draft: text and settings per platform, checks, approval (typed handle, TikTok declaration, reveal-lock confirmation). Route, file path and log are under Advanced. |
+| **Roblox** | Before launch: one clean empty state listing what will appear. After: players now, daily, new and returning players, session length, D1 retention, revenue; players per day. | Retention (D1 line, cohort table), Acquisition (sources, share links), Monetisation (revenue, payers, payer conversion), Funnel (the seven stages, never divided into each other). |
+| **Settings** | Collapsible sections: Appearance, Connected accounts, Service usage and quotas, Publishing, Credentials, Advanced and diagnostics. | Usage meters per service, labelled **Live** (provider-reported), **Estimate** (counted from our logs) or **Limit only** (published allowance; no usage API), with reset period, sign-in lifetimes and console links. |
+
+Appearance: **System** is Jami's blue night (the owner's choice), **Dark** is black, **Light** is paper white. Jami's twinkling sky and shooting stars sit behind every page (ported from `components/constellation/NightSkyBackdrop.tsx`, `ShootingStars.tsx` and `lib/constellation/shooting-stars.ts`, read only); they can be switched off and stay still under reduced motion. Light mode uses opaque surfaces only: text on translucent layers lost ClearType antialiasing on Windows and looked grainy.
 
 ## Architecture
 
 ```
 Edge app window / PWA ──HTTP (127.0.0.1 only, per-start token on writes)──► dashboard/server.py (Python standard library)
                                                                               │
-     views.py (all metric rules) ◄── store.py: SQLite data/local/dashboard/slugshot.db (git-ignored)
+     analytics.py (owner screens) · views.py (exports, Roblox, publishing) ◄── store.py: SQLite data/local/dashboard/slugshot.db (git-ignored)
                                                                               ▲
  sync.py ── connectors.py: YouTube Analytics · Instagram · TikTok Display · Roblox Analytics Query · Roblox public
  imports.py ── platform_metrics template (shared with `ss export`) · long template
@@ -53,7 +57,7 @@ Edge app window / PWA ──HTTP (127.0.0.1 only, per-start token on writes)─�
  vault.py ── DPAPI-encrypted tokens and keys in data/local/dashboard/vault/
 ```
 
-**Why this stack:** the toolkit is Python standard library plus Node for Remotion. A standard-library server, SQLite and a build-free front end (one JS file, one CSS file, the Urbanist font vendored under SIL OFL) add **no new dependencies**, no build step and nothing to update. The design follows Jami (`jarems421/jami-flashcards`, read only): its night-navy and paper-white token sets, Urbanist, 1.5 px bordered panels at the 28 px shell radius, icon-bubble sidebar with label and description, tracked uppercase eyebrows, the four-step elevation scale and 160/260/430 ms motion. Chart colours for platform identity passed the dataviz palette validator on both surfaces.
+**Why this stack:** the toolkit is Python standard library plus Node for Remotion. A standard-library server, SQLite and a build-free front end (one JS file, one CSS file, the Urbanist font vendored under SIL OFL) add **no new dependencies**, no build step and nothing to update. The design follows Jami (`jarems421/jami-flashcards`, read only): Urbanist, the violet accent, rounded panels and its night sky; the redesign uses 1 px borders, smaller radii and fewer nested containers. Thumbnails are cut locally with FFmpeg and cached in `data/local/dashboard/thumbs/`; videos play from `exports/` and `media/` only.
 
 ### Identifiers
 
@@ -75,15 +79,22 @@ Edge app window / PWA ──HTTP (127.0.0.1 only, per-start token on writes)─�
 
 ### Rules the code enforces
 
-- No sums across platforms, anywhere. EN + ES accounts of one platform may be added (same owner, same platform).
-- No conversion rates between funnel stages; viewers can only be followed into the game through a tracked share link.
-- Views are ranked only within one platform; YouTube "% viewed" and TikTok "watched full video" are labelled as different measures.
-- TikTok has no daily views through its API: its totals are shown as *lifetime*, never mixed with period counts.
-- Player acquisition is never inferred from views and player numbers moving together.
+Owner screens (`analytics.py`, owner decision 2026-11-25):
+- **Views are added across platforms**, labelled *combined, platform-reported*: not unique viewers, and each platform counts a view differently. **Followers** are combined account counts, not unique people. **Watch time** is added only over accounts that report it, and those accounts are named.
+- YouTube periods come from daily analytics. TikTok and Instagram give lifetime totals per video, so a period's views are the growth between daily snapshots; views a video had before tracking began count only in *all time* (the period is marked partly measured).
+- Each video's metric comes from one source: the native API first, then Buffer, then manual imports. Buffer only writes what the native API lacks, so nothing is counted twice.
+- Missing stays missing (—), never 0. A comparison with the previous period appears only when both periods were measured the same way.
+- Average view duration is each video's own reported average, weighted by its views, over the videos that report it.
+- **Measurement windows:** videos are compared at 24 h (±6 h), 48 h (±8 h) and 7 days (±24 h) after posting; a reading outside the window is shown with a flag and left out of comparisons. Accounts with a video under 8 days old refresh every 4 hours so readings land close to those ages.
+- **Comparisons** are within one platform (optionally one language) at one checkpoint, grouped by a creative tag; medians and ranges per group; groups under 3 videos are marked too small. Patterns across groups, not single viral videos.
+- **Creative tags** (per concept): format and objective from the knowledge-bank vocabularies, hook and narrative codes from the creative codebook (`config/research/codebooks/slugshot-creative.json`), characters from the game's names in the caption glossary, humour and mechanism as knowledge-bank entry IDs.
+- **Learning loop:** *Compare similar videos → Record finding* saves a **draft** knowledge-bank entry (bank `claims`, kind `observation`, evidence `owned_result`, linked to the concepts and optionally to an existing entry) in `data/local/research/knowledge/curated/owned_findings.jsonl`, checked by the bank's validator. `ss kb brief` then includes it for the next creative brief. Only the owner marks it approved.
+
+Exports for AI tools (`views.py`, `reports.py`) keep platforms in separate files and never add across them; no conversion rates between funnel stages; player acquisition is never inferred from views and player numbers moving together.
 
 ## Synchronisation
 
-Daily by default, and when the app opens if anything is due (Settings switch; `refresh_hours` 24, `stale_hours` 36). While the server runs it checks hourly; there is no OS scheduler. Manual: the refresh button or `ss dash sync`. Each connector × account runs separately: a failure is recorded with its message and the rest carry on. Requests retry with backoff on 429/5xx/network errors (never on 401/403, which mark the source "reconnect"); Roblox analytics queries that answer asynchronously are polled. Day-level data is re-read over the last 3 days and backfilled on first run (YouTube from `history_start`, Roblox 90 days, Instagram 7 days).
+Daily by default, every 4 hours for an account with a video under 8 days old (`young_refresh_hours`, `young_days`), and when the app opens if anything is due (Settings switch; `refresh_hours` 24, `stale_hours` 36). While the server runs it checks hourly; there is no OS scheduler. Manual: the refresh button or `ss dash sync`. Each connector × account runs separately: a failure is recorded with its message and the rest carry on. Requests retry with backoff on 429/5xx/network errors (never on 401/403, which mark the source "reconnect"); Roblox analytics queries that answer asynchronously are polled. Day-level data is re-read over the last 3 days and backfilled on first run (YouTube from `history_start`, Roblox 90 days, Instagram 7 days).
 
 ## Imports
 
@@ -106,13 +117,13 @@ Loopback only; Host-header check (DNS rebinding); cross-origin requests refused;
 
 | Part | Status |
 |---|---|
-| All seven pages, filters, drawers, themes, phone layout | implemented, visually reviewed (dark, light, 600 px) |
-| Store, metric rules, imports, exports, vault, server security | implemented, 30 unit tests pass |
-| YouTube Analytics, Instagram, TikTok, Roblox Analytics connectors | **fixture-tested** (documented response shapes); live use waits on the checklist |
-| Roblox public games connector | **live-validated** (2026-11-25, read a public experience into a throwaway database); our own game isn't published |
-| Research page | live on the real research store |
-| Launcher, background start, exclusive port | tested |
-| Publishing (Publish page, `ss publish`) | built; **fixture-tested** (14 tests); live uploads wait on the upload permissions and the owner's approval of each job |
+| Five pages, drill-downs, account pages, galleries, three appearances, star sky, phone layout | implemented; reviewed in screenshots with fixture data (populated) and the live database (empty states), `docs/dashboard/screens/` |
+| Analytics rules, measurement windows, tags, comparisons, learning loop | implemented; 14 tests (`tests.test_analytics`) |
+| Store, imports, exports, vault, server security; publishing | 33 and 23 tests |
+| YouTube (EN, ES), TikTok (EN, ES), Buffer (TikTok EN/ES, Instagram EN) | **live-validated** 2026-11-25 (no posts yet, so only follower counts are live values) |
+| Cloudinary hosting, Buffer draft creation from a hosted link | **live-validated** 2026-11-25 |
+| Instagram API connector, Roblox Analytics | fixture-tested; Instagram deferred (Buffer covers it), Roblox waits for launch |
+| Buffer post metrics, checkpoints, comparisons on real videos | need real posts |
 | Activation stage | blocked: needs approved in-game events ([proposal](activation-events-proposal.md)) |
 
 What the owner must do: [credentials-checklist.md](credentials-checklist.md).
