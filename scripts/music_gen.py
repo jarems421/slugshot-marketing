@@ -3,7 +3,7 @@ r"""Generate Slugshot music beds with Google Lyria (Gemini API, paid; owner appr
   python scripts/music_gen.py [M1 M2 ...]      default: all tracks in docs/creative/music-brief.md
 
 Writes assets\music\<ID>-<name>.<ext>, logs each in assets\LICENSES.csv and a cost line in
-data\local\spend\lyria.jsonl. Outputs carry Google's SynthID watermark. Check Google's terms before publishing.
+data\local\spend\lyria.jsonl. Outputs carry Google's SynthID watermark; the owner confirmed Google allows commercial use (2026-11-26).
 """
 import base64, csv, json, sys, time, urllib.error, urllib.request
 from datetime import date, datetime, timezone
@@ -105,7 +105,7 @@ def generate(tid):
     if rel not in {r["file"] for r in rows}:
         rows.append({"file": rel, "kind": "music", "source_url": f"Google Lyria ({model}) via Gemini API; prompt in scripts/music_gen.py",
                      "licence": "AI-generated for the owner (Google Gemini API terms; SynthID watermark)", "attribution_required": "no",
-                     "allowed_platforms": "check Google terms before publishing", "commercial_ok": "check", "added": date.today().isoformat(),
+                     "allowed_platforms": "all", "commercial_ok": "yes", "added": date.today().isoformat(),
                      "notes": f"{tid} {name}; owner-approved paid generation"})
         with log.open("w", newline="", encoding="utf-8") as fh:
             w = csv.DictWriter(fh, list(rows[0].keys())); w.writeheader(); w.writerows(rows)

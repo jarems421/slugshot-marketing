@@ -1,0 +1,25 @@
+{
+ "postURLs": [
+  "https://www.tiktok.com/@clippedbyz_/video/7699973249374981407",
+  "https://www.tiktok.com/@uppoffyarts/video/7706979303384272159",
+  "https://www.tiktok.com/@thelineagewillcontinue/video/7693688436716358942",
+  "https://www.tiktok.com/@manmadeai/video/7699885106680417549",
+  "https://www.tiktok.com/@overtime/video/7698804240399060238",
+  "https://www.tiktok.com/@ynf_trey/video/7701156594846797070",
+  "https://www.tiktok.com/@clipppityy/video/7688960109225004302",
+  "https://www.tiktok.com/@ridingthehigh00/video/7687946076287929613",
+  "https://www.tiktok.com/@clippedbytrap/video/7708700713479638303",
+  "https://www.tiktok.com/@liloson15/video/7688220181713128718",
+  "https://www.tiktok.com/@clipzbyheem/video/7692546071515467039",
+  "https://www.tiktok.com/@clipppityy/video/7692916398988758286",
+  "https://www.tiktok.com/@manmadeai/video/7700578517095828750"
+ ],
+ "shouldDownloadVideos": true,
+ "downloadSubtitlesOptions": "DOWNLOAD_SUBTITLES",
+ "shouldDownloadCovers": false,
+ "shouldDownloadSlideshowImages": false,
+ "shouldDownloadAvatars": false,
+ "shouldDownloadMusicCovers": false,
+ "commentsPerPost": 0,
+ "proxyCountryCode": "None"
+}

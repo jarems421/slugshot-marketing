@@ -4,7 +4,7 @@
     "NARRATOR": {
       "actor": null,
       "caption": "#ffffff",
-      "status": "owner-picked (Gemini Algieba, 2026-11-26)",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Algieba)",
       "gender": "male",
       "persona": "In My World storyteller: deep, dry and deadpan with a hint of a smile; calm but quick, never shouting; the voice that carries the story.",
       "qwen": {
@@ -31,7 +31,7 @@
     "NARRATOR_F": {
       "actor": null,
       "caption": "#ffffff",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Zephyr)",
       "gender": "female",
       "persona": "Alternative storyteller: bright, friendly, expressive; for stories told by a girl character or variety.",
       "qwen": {
@@ -51,7 +51,7 @@
     "FLOPPY": {
       "actor": "floppy",
       "caption": "#c8e66a",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Umbriel)",
       "gender": "male",
       "persona": "The weakest slug and proud of it: drowsy, slow, a little out of it (owner: 'weak, drowsy, slightly drunk/stoned'), unbothered, with stubborn, dead-serious dignity. Never powerful; his wins are attitude.",
       "qwen": {
@@ -78,7 +78,7 @@
     "RAMMSTONE": {
       "actor": "rammstone",
       "caption": "#ff8a5c",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Charon)",
       "gender": "male",
       "persona": "Rock-armoured bruiser: loud, cocky, short fuse (his angry face is a grimace); a show-off who is secretly easy to rattle.",
       "qwen": {
@@ -106,7 +106,7 @@
     "AQUABEEK": {
       "actor": "aquabeek",
       "caption": "#7fd6ff",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Despina)",
       "gender": "female",
       "persona": "Cool, unimpressed, half-lidded (the only slug who blinks fully); says little, every word lands; quietly the smartest in the room.",
       "qwen": {
@@ -137,7 +137,7 @@
     "INFERNO": {
       "actor": "inferno",
       "caption": "#ffb347",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Fenrir)",
       "gender": "male",
       "persona": "Playful flame with a temper: quick, excitable, cocky, flares up fast and cools down just as fast.",
       "qwen": {
@@ -157,7 +157,7 @@
     "TORMATO": {
       "actor": "tormato",
       "caption": "#ff6f91",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Sadachbia)",
       "gender": "male",
       "persona": "A walking storm: bouncy, chaotic, spinning eyes, never stays on one thought for long.",
       "qwen": {
@@ -177,7 +177,7 @@
     "BOONDOC": {
       "actor": "boondoc",
       "caption": "#8ff0c8",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Sadaltager)",
       "gender": "male",
       "persona": "The healer with a halo: gentle, kind, a bit fussy, nods while he listens; the grown-up of the group.",
       "qwen": {
@@ -197,7 +197,7 @@
     "PHOSPHORO": {
       "actor": "phosphoro",
       "caption": "#ffe066",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Leda)",
       "gender": "male",
       "persona": "Small and curious: tilts his head at everything, lights up when he learns something, eager to help.",
       "qwen": {
@@ -217,7 +217,7 @@
     "KAI": {
       "actor": "kai",
       "caption": "#7fb8ff",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Fenrir)",
       "gender": "male",
       "persona": "Human slugslinger (marketing character, not game canon): Floppy's proud, overconfident partner; talks fast, loves a big reveal.",
       "kokoro": {
@@ -238,7 +238,7 @@
     "MIRA": {
       "actor": "mira",
       "caption": "#ffb3e6",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Kore)",
       "gender": "female",
       "persona": "Human slugslinger (marketing character): Kai's sceptical friend; dry, deadpan, quick with a comeback.",
       "kokoro": {
@@ -259,7 +259,7 @@
     "JUNO": {
       "actor": "juno",
       "caption": "#9dffb0",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Aoede)",
       "gender": "female",
       "persona": "Human slugslinger (marketing character): cool, confident blaster ace; few words, big entrance.",
       "kokoro": {
@@ -280,7 +280,7 @@
     "RAF": {
       "actor": "raf",
       "caption": "#ffd36b",
-      "status": "draft",
+      "status": "approved (owner by ear, 2026-11-26; Gemini Orus)",
       "gender": "male",
       "persona": "Human slugslinger (marketing character): loud hype-man friend who always arrives running.",
       "kokoro": {

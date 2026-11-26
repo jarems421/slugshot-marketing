@@ -292,6 +292,33 @@ def hype_horn():
     return 0.25 * np.tanh(1.5 * tone) * np.minimum(1, t / 0.02) * np.minimum(1, (t[-1] - t) / 0.08) * (1 + 0.1 * np.sin(2 * math.pi * 7 * t))
 
 
+def whistle_swipe_fart():
+    # owner's favourite soundboard gag, rebuilt (not sampled): a Looney Tunes slide-whistle build-up, a quick swipe,
+    # then straight into a fart, no gap. Whistle measured from a reference clip: about 800 Hz to 2.5 kHz in 1.1 s.
+    total = clock(2.25)
+    out = np.zeros_like(total)
+    w = clock(1.15)
+    f = 780 * (2500 / 780) ** ((w / w[-1]) ** 1.3) * (1 + 0.025 * np.sin(2 * math.pi * 7 * w))
+    whistle = np.sin(2 * math.pi * np.cumsum(f) / RATE) + 0.08 * np.sin(4 * math.pi * np.cumsum(f) / RATE)
+    whistle = (whistle + 0.05 * noise(w, 600, 6000)) * np.minimum(1, w / 0.06) * np.minimum(1, (w[-1] - w) / 0.02)
+    place(out, 0.0, whistle, 0.45)
+    s = clock(0.18)
+    swipe = noise(s, 1500, 9000) * np.sin(math.pi * s / s[-1]) ** 2 * (0.6 + 0.4 * sweep(s, 3000, 800, 0.05))
+    place(out, 1.12, swipe, 0.55)
+    p = clock(0.9)
+    f0 = 82 + 60 * np.exp(-p / 0.3) + 14 * np.sin(2 * math.pi * 11 * p)
+    phase = np.cumsum(f0 * (1 + 0.08 * noise(p, 2, 30))) / RATE
+    duty = 0.22 + 0.12 * np.sin(2 * math.pi * 3 * p)
+    buzz = (np.mod(phase, 1) < duty).astype(float) - duty            # the lip-buzz: a rich pulse train
+    sputter = np.clip(0.55 + 0.6 * noise(p, 4, 22), 0, 1)              # wet, uneven flutter
+    wet = noise(p, 120, 2500) * np.clip(np.mod(phase, 1) < duty + 0.1, 0, 1)
+    fart = (1.6 * buzz + 0.7 * wet) * sputter * np.minimum(1, p / 0.006) * np.exp(-np.maximum(0, p - 0.65) / 0.07)
+    fart = np.fft.irfft(np.fft.rfft(fart) / np.sqrt(1 + (np.fft.rfftfreq(len(p), 1 / RATE) / 1900) ** 4), n=len(p))
+    fart = np.tanh(2.5 * fart / max(np.max(np.abs(fart)), 1e-9))
+    place(out, 1.26, fart, 1.0)
+    return out
+
+
 def master(signal, peak):
     signal = signal - signal.mean()
     signal = np.tanh(signal * 1.2)
@@ -322,7 +349,8 @@ SOUNDS = {"cavern_bed": (cavern_bed, 0.5), "slug_land": (slug_land, 0.9), "flopp
           "deep_thud": (deep_thud, 0.9), "reverse_swell": (reverse_swell, 0.6), "bass_drop": (bass_drop, 0.9),
           "glitch_stutter": (glitch_stutter, 0.55), "fail_horn": (fail_horn, 0.6), "dramatic_hits": (dramatic_hits, 0.85),
           "heartbeat": (heartbeat, 0.8), "correct_ding": (correct_ding, 0.55), "cartoon_gulp": (cartoon_gulp, 0.6),
-          "awkward_crickets": (awkward_crickets, 0.45), "hype_horn": (hype_horn, 0.6)}
+          "awkward_crickets": (awkward_crickets, 0.45), "hype_horn": (hype_horn, 0.6),
+          "whistle_swipe_fart": (whistle_swipe_fart, 0.85)}
 
 
 def main():

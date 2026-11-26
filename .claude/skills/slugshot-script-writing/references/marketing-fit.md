@@ -19,6 +19,13 @@ Entertainment first, but every script should do at least one job for Slugshot. T
 - **Cast-led:** a universal premise performed by our slugs and slugslingers, so the characters carry the brand.
 - **Light touch:** a story that stands alone, with slugs as recognisable background or a closing beat.
 
+**Before the reveal (owner, 26 Nov 2026), MUST:** every video stays unnamed (no "Slugshot" in speech, captions, on-screen text or post text; the reveal lock enforces this), but it should still feel like an advert for an upcoming game. Plug the fact that it's a game without naming it:
+- real gameplay or game-world shots;
+- lines like "this game", "when it drops" or "coming soon";
+- a closing beat that points to the bio. The owner's bio will say the game releases in about two weeks.
+
+Never invent a release date or feature in the script. Point to the bio.
+
 ## Calls to action
 
 - **Not every video needs one.** Never "like and subscribe".
