@@ -20,7 +20,9 @@ MODES = {"authentic_gameplay", "staged_gameplay", "staged_fiction", "hybrid_brid
 MECHANICS = {"real", "none", "fictional"}
 OUTCOMES = {"organic", "scripted", "n/a"}
 PRESETS = {"static_wide", "two_shot", "orbit_reveal", "dolly_in", "slug_low_angle", "reaction_closeup",
-           "follow", "snap_zoom", "whip_pan", "close_up", "push_in", "over_shoulder", "slug_shot"}
+           "follow", "snap_zoom", "whip_pan", "close_up", "push_in", "over_shoulder", "slug_shot", "slug_cam", "split"}
+FX = {"flash", "shake"}
+CLOCKS = {"scene", "output"}
 ACTIONS = {"move_to", "face", "hop", "animate", "express", "look", "blink",
            "gesture", "aim", "point", "shoot", "hold", "equip", "holster"}
 ACTOR_KINDS = {"standin_humanoid", "standin_slug", "clone", "slug", "human"}
@@ -59,6 +61,13 @@ def resolve_anchors(spec, dialogue):
     for b in spec.get("timeline", []):
         if "time" in b:
             b["time"] = when(b["time"], f"beat {b['time']}")
+    for i, w in enumerate(spec.get("slowmo", []), 1):
+        for key in ("from", "until"):
+            if key in w:
+                w[key] = when(w[key], f"slowmo {i}")
+    for f in spec.get("fx", []):
+        if "at" in f:
+            f["at"] = when(f["at"], f"fx {f.get('type')}")
     start = 0.0
     for i, sh in enumerate(spec.get("shots", []), 1):
         if "until" in sh:
@@ -131,6 +140,41 @@ def validate(spec):
         for name in s.get("targets", []):
             if name not in named:
                 e.append(f"shot {i}: target {name} is not an actor or mark")
+    for i, s in enumerate(spec["shots"], 1):
+        if s.get("clock", "scene") not in CLOCKS:
+            e.append(f"shot {i}: clock is 'scene' or 'output'")
+        if s.get("preset") == "split":
+            views = s.get("views")
+            if not isinstance(views, list) or len(views) != 2:
+                e.append(f"shot {i}: split needs two views (top, bottom)")
+                continue
+            for k, v in enumerate(views, 1):
+                if v.get("preset") not in PRESETS - {"split"}:
+                    e.append(f"shot {i} view {k}: unknown preset {v.get('preset')}")
+                if "until" in v or "duration" in v:
+                    e.append(f"shot {i} view {k}: views last as long as their split shot")
+                for key in ("target", "from", "to"):
+                    if key in v and v[key] not in named:
+                        e.append(f"shot {i} view {k}: {key} {v[key]} is not an actor or mark")
+        if s.get("preset") in ("slug_cam", "slug_shot") and s.get("target") not in actors:
+            e.append(f"shot {i}: {s.get('preset')} target is the shooter (a human actor)")
+    words = []
+    if spec.get("dialogue"):
+        wp = (REPO / spec["dialogue"]).with_name("dialogue.words.json")
+        if wp.exists():
+            words = json.loads(wp.read_text(encoding="utf-8"))
+    for i, w in enumerate(spec.get("slowmo", []), 1):
+        a, b, rate = w.get("from"), w.get("until"), w.get("rate")
+        if not all(isinstance(x, (int, float)) for x in (a, b, rate)) or not (0 < a < b) or not (0.02 <= rate < 1):
+            e.append(f"slowmo {i}: needs from < until (seconds or line anchors) and 0.02 <= rate < 1")
+            continue
+        # The edit lengthens the video by inserting silence; a spoken word inside the segment would be cut.
+        spoken = [x["text"].strip() for x in words if x["startMs"] / 1000 < b and x["endMs"] / 1000 > a]
+        if spoken:
+            e.append(f"slowmo {i}: {a}-{b}s overlaps spoken words {spoken}; slow motion goes in a dialogue gap")
+    for f in spec.get("fx", []):
+        if f.get("type") not in FX or not isinstance(f.get("at"), (int, float)):
+            e.append(f"fx: type one of {sorted(FX)} with an 'at' time")
     if dialogue and dialogue["duration"] > total + 0.05:
         e.append(f"shots last {total:.2f}s but the dialogue lasts {dialogue['duration']:.2f}s")
     for b in spec.get("timeline", []):
@@ -167,8 +211,11 @@ def validate(spec):
         human = actors[actor].get("kind") == "human"
         if action in HUMAN_ACTIONS and not human:
             e.append(f"{where}: {action} is for human actors")
-        if action == "move_to" and "gait" in b and (not human or b["gait"] not in GAITS):
-            e.append(f"{where}: gait is for human actors, one of {sorted(GAITS)}")
+        slug = actors[actor].get("kind") == "slug"
+        if action == "move_to" and "gait" in b and not (human and b["gait"] in GAITS or slug and b["gait"] == "hop"):
+            e.append(f"{where}: gait is {sorted(GAITS)} for humans or hop for slugs")
+        if action == "move_to" and b.get("gait") == "hop" and "duration" in b:
+            e.append(f"{where}: a hopping move's length comes from hops, hop_time and gap, not duration")
         if action == "gesture":
             move = LIBRARY.get("human_moves", {}).get(b.get("move"))
             if not move:

@@ -4,6 +4,11 @@
 -- Positions are read when the take's shots are built (after actors spawn); targets follow actors.
 local Cameras = {}
 
+local function ease(u: number): number
+	u = math.clamp(u, 0, 1)
+	return u * u * (3 - 2 * u)
+end
+
 local function behind(pos: Vector3, facing: Vector3, distance: number, height: number): Vector3
 	local flat = Vector3.new(facing.X, 0, facing.Z)
 	flat = if flat.Magnitude > 1e-3 then flat.Unit else Vector3.new(0, 0, -1)
@@ -117,6 +122,45 @@ Cameras.presets = {
 			end,
 		}
 	end,
+	-- The slug-shot cutscene camera (owner, 2026-11-26: the ride-along was "too zoomed in" with "no emphasis"). Frames
+	-- the shooter's `shot` (`target` = the shooter) wide enough to read the twirl, the transformation and the world:
+	--   mode "orbit": circles the slug in flight through `sweep` {from, to} degrees (0 = its right side, 90 = ahead),
+	--                 `distance` and `height` in studs, aiming `lead` studs ahead; pair with clock "output" and a
+	--                 slowmo segment for a bullet-time sweep.
+	--   mode "pan":   locked off beside the path, `along` (0 muzzle .. 1 target), `distance` to its `side` (1 right,
+	--                 -1 left), and turns to follow the slug.
+	slug_cam = function(s, ctx)
+		local k = s.shot or 1
+		local function slugAt(lt)
+			return ctx.slug(s.target, k, ctx.start + lt) or ctx.frame(s.target)
+		end
+		local first = slugAt(0)
+		local way = Vector3.new(first.LookVector.X, 0, first.LookVector.Z).Unit
+		local right = way:Cross(Vector3.yAxis)
+		local fov, dist, up = s.fov or 40, s.distance or 7, s.height or 1
+		local fixed = nil
+		if s.mode == "pan" then
+			local path = ctx.slug(s.target, k, math.huge)
+			local from, to = first.Position, if path then path.Position else first.Position + way * 10
+			fixed = from:Lerp(to, s.along or 0.3) + right * dist * (s.side or 1) + Vector3.new(0, up, 0)
+		end
+		return {
+			duration = s.duration,
+			pose = function(lt)
+				local cf = slugAt(lt)
+				local p = cf.Position
+				if fixed then
+					return CFrame.lookAt(fixed, p + way * (s.lead or 0)), fov, nil
+				end
+				local u = if s.duration > 0 then ease(lt / s.duration) else 0
+				local sweep = s.sweep or { 20, 70 }
+				local angle = math.rad(sweep[1] + (sweep[2] - sweep[1]) * u)
+				local dir = right * math.cos(angle) + way * math.sin(angle)
+				local at = p + dir * dist + Vector3.new(0, up, 0)
+				return CFrame.lookAt(at, p + way * (s.lead or 0.8)), fov, nil
+			end,
+		}
+	end,
 	whip_pan = function(s, ctx)
 		local a, b = ctx.frame(s.from).Position, ctx.frame(s.to).Position
 		local at = (a + b) / 2 + Vector3.new(0, s.height or 3, 0) + (b - a).Unit:Cross(Vector3.yAxis) * (s.distance or 10)
@@ -127,13 +171,23 @@ Cameras.presets = {
 -- `ctx.at(start)` returns a context whose frame/head/position read actors as they stand at the shot's start,
 -- so fixed framings use where actors are at that cut, and a still posed mid-shot frames it the same way as
 -- the filmed take. After that the shot is a pure function of its local time.
+-- A `split` shot (owner, 2026-11-26: "your screen gets split in half ... then your screen comes together") holds two
+-- views of the same moment. A take films view 1; a second pass with layer "b" films view 2, and take.py split
+-- composites them, top and bottom, behind a slanted divider that opens and closes. Each view is any shot entry.
 function Cameras.build(shotSpec: any, ctx: any, start: number)
+	if shotSpec.preset == "split" then
+		local view = table.clone(shotSpec.views[if ctx.layer == "b" then 2 else 1])
+		view.duration = shotSpec.duration
+		view.clock = view.clock or shotSpec.clock
+		return Cameras.build(view, ctx, start)
+	end
 	local preset = Cameras.presets[shotSpec.preset]
 	assert(preset, `unknown camera preset {shotSpec.preset}`)
 	local inner
 	return {
 		duration = shotSpec.duration,
 		start = start,
+		clock = shotSpec.clock, -- "output": moves at the video's pace through slow motion
 		pose = function(t: number)
 			if not inner then
 				inner = preset(shotSpec, ctx.at(start))

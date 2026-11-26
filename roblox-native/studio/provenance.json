@@ -1,9 +1,9 @@
 {
- "built_utc": "2026-11-26T03:10:08+00:00",
+ "built_utc": "2026-11-26T06:37:57+00:00",
  "source": "C:\\Users\\runni\\slugshot marketing\\roblox-native\\studio\\SlugshotMarketing.source.rbxlx",
  "source_sha256": "dd6f7f50f30e794157fa2972c1e3a581afc1401d4918f71d17af7e3874db6b5b",
  "game_commit": "08fee46d4ee318c875d3c089115e8ee41c3ad993",
- "output_sha256": "76466930abb347951d1c3a515d0ee4990d94365050ee9544e359d502523ec16c",
+ "output_sha256": "c2bb1f5f221074316e5345feae163e1b4da032c3c1b68736f4ed2735d8b5e931",
  "patches": [
   "SettingsStore.connect -> MarketingIsolated (x2)",
   "HubMotion follows workspace.FilmClock during takes",

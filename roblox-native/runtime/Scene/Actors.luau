@@ -312,6 +312,82 @@ local function hopShape(u: number, d: number): (number, number, number)
 	return 0, 0.7 * smooth(k / 0.08) * (1 - k) ^ 2, math.sin(TAU * 1.4 * k) * settle * (1 - k)
 end
 
+-- Soft hop (owner, 2026-11-26: hops looked "like a compressed spring", the bottom "too stiff", and travelling hops slid
+-- along the ground). The body is a damped spring: it crouches before take-off, stretches tall leaving the ground (the
+-- top leads, the base peels off last), stretches again as it falls, splats on landing and jiggles out, with the head
+-- on a second, looser spring behind the body (follow-through). Integrated at a fixed step from the start of the run
+-- of hops that t is in, so it stays a pure function of scene time.
+local SPRING_STEP, SETTLE, PRE, PUSH, IMPACT = 1 / 240, 1.4, WIND + 0.06, 0.07, 30
+local function hopTarget(hops: { any }, t: number): number
+	local target = 0
+	for _, h in hops do
+		local a = math.clamp(h.h / 0.35, 0.6, 1.4)
+		local u = t - h.t
+		if u >= -PRE and u < -PUSH then
+			target = -0.55 * a * smooth((u + PRE) / (PRE - PUSH))
+		elseif u >= -PUSH and u < 0 then
+			target = 0.6 * a -- push-off: the body extends while the base is still on the ground
+		elseif u >= 0 and u < h.d then
+			-- tall on the way up, nearly round at the top, a little stretched again coming down
+			local k = u / h.d
+			target = (0.05 + 0.4 * math.max(0, 1 - 2 * k) + 0.12 * math.max(0, 2 * k - 1)) * a
+		end
+	end
+	return target
+end
+
+-- Returns body (stretch +, squash -), its rate, and the head's lagging value, in units of a full squash.
+local function softHop(hops: { any }, t: number): (number, number, number)
+	if #hops == 0 then
+		return 0, 0, 0
+	end
+	local start = nil
+	for _, h in hops do
+		if h.t - PRE > t then
+			break
+		end
+		if start == nil or h.t - PRE > start.last + SETTLE then
+			start = { t = h.t - PRE, last = h.t + h.d }
+		else
+			start.last = math.max(start.last, h.t + h.d)
+		end
+	end
+	if start == nil or t > start.last + SETTLE then
+		return 0, 0, 0
+	end
+	local w1, z1 = TAU * 3.6, 0.3 -- body: soft jelly, about one and a half visible wobbles
+	local w2, z2 = TAU * 2.8, 0.26 -- head: looser, so it arrives late and overshoots
+	local s, v, hd, hv = 0, 0, 0, 0
+	local now = start.t
+	while now < t do
+		local dt = math.min(SPRING_STEP, t - now)
+		local goal = hopTarget(hops, now)
+		-- Landing is an impact, not a target: the body's momentum splats it the instant it touches down (a target
+		-- squash arrived a tenth of a second late, still tall on the ground).
+		for _, h in hops do
+			local land = h.t + h.d
+			if now < land and now + dt >= land then
+				v -= IMPACT * math.clamp(h.h / 0.35, 0.6, 1.4)
+			end
+		end
+		v += (-w1 * w1 * (s - goal) - 2 * z1 * w1 * v) * dt
+		s += v * dt
+		hv += (-w2 * w2 * (hd - s) - 2 * z2 * w2 * hv) * dt
+		hd += hv * dt
+		now += dt
+	end
+	return s, v / w1, hd
+end
+
+-- Travelling hops: forward progress only while airborne (constant speed in the air, still on the ground).
+local function hopProgress(m: any, t: number): number
+	local done = 0
+	for _, h in m.hops do
+		done += math.clamp((t - h.t) / h.d, 0, 1)
+	end
+	return done / #m.hops
+end
+
 -- The eyeline at t: explicit `look` beats hold until the next explicit look ("auto" hands back to the dialogue);
 -- otherwise the actor looks at whoever speaks (from just before each line). Returns the current and previous
 -- target and how far the turn between them has eased.
@@ -367,7 +443,21 @@ function Actors.compile(actor: any, beats: { any }, place: (string, any) -> CFra
 			continue
 		end
 		local a = b.action
-		if a == "move_to" then
+		if a == "move_to" and b.gait == "hop" then
+			-- A slug crossing ground in hops: `hops` (or one per `stride`, default 1.4 heights), each `hop_time` in
+			-- the air with `gap` on the ground between them, `height` as for a hop beat.
+			local from = tr.moves[#tr.moves] and tr.moves[#tr.moves].to or tr.home.Position
+			local to = place(b.mark, actor).Position
+			local n = b.hops or math.max(1, math.floor((to - from).Magnitude / ((b.stride or 1.4) * actor.height) + 0.5))
+			local air, gap = b.hop_time or 0.42, b.gap or 0.2
+			local m = { t = b.time, d = n * air + (n - 1) * gap, to = to, turn = b.turn ~= false, hops = {} }
+			for i = 0, n - 1 do
+				local h = { t = b.time + i * (air + gap), d = air, h = b.height or 0.35 }
+				table.insert(m.hops, h)
+				table.insert(tr.hops, h)
+			end
+			table.insert(tr.moves, m)
+		elseif a == "move_to" then
 			table.insert(tr.moves, { t = b.time, d = b.duration or 1, to = place(b.mark, actor).Position, turn = b.turn ~= false })
 		elseif a == "face" then
 			table.insert(tr.faces, { t = b.time, d = b.duration or 0.35, target = b.target })
@@ -420,7 +510,7 @@ function Actors.frameAt(actor: any, t: number, where: (string, number) -> Vector
 		if t < m.t then
 			break
 		end
-		local u = smooth((t - m.t) / m.d)
+		local u = if m.hops then hopProgress(m, t) else smooth((t - m.t) / m.d)
 		if m.turn and (m.to - pos).Magnitude > 0.2 then
 			yaw += shortest(yaw, yawTo(pos, m.to)) * smooth((t - m.t) / math.min(0.3, m.d))
 		end
@@ -560,6 +650,13 @@ local FACE = {
 	},
 }
 
+-- A model-space pose reflected across the model's x = 0 (position x flips; a rotation's axis keeps x, flips y and z).
+local function mirrorX(cf: CFrame): CFrame
+	local axis, angle = cf:ToAxisAngle()
+	local p = cf.Position
+	return CFrame.new(-p.X, p.Y, p.Z) * CFrame.fromAxisAngle(Vector3.new(axis.X, -axis.Y, -axis.Z), angle)
+end
+
 function Actors.floppyFaceSetup(actor: any): any?
 	local b = actor.bones
 	local first = function(n)
@@ -581,9 +678,20 @@ function Actors.floppyFaceSetup(actor: any): any?
 			for _, c in b[n] or {} do
 				local f = c.bone.WorldCFrame
 				table.insert(face[group], { bone = c.bone, side = f:VectorToObjectSpace(sideways), up = f:VectorToObjectSpace(up),
-					front = f:VectorToObjectSpace(front), sign = if string.sub(n, -2) == "_L" then 1 else -1 })
+					front = f:VectorToObjectSpace(front), sign = if string.sub(n, -2) == "_L" then 1 else -1, rest = c.rest })
 			end
 		end
+	end
+	-- Since his right eye region became a mirror image of the left (model 2026-11-26), the right lid is posed as the
+	-- exact mirror of the left one. Driven on its own it closed less (the game's per-side depths were set for the old,
+	-- uneven mesh) and turned about a pivot that isn't the left's mirror, so it sat higher with a dip at its inner
+	-- corner (owner, 2026-11-26: the left lid "lower", a "triangle" in the right lid's bottom-left corner).
+	local lefts, rights = {}, {}
+	for _, it in face.lids do
+		table.insert(if it.sign == 1 then lefts else rights, it)
+	end
+	for i, it in rights do
+		it.twin = lefts[i]
 	end
 	return face
 end
@@ -614,9 +722,18 @@ local function floppyFace(face: any, t: number, smile: number, squint: number, b
 			- it.front * FACE.GAZE_BACK * math.max(math.abs(lookX), math.abs(lookY))) * s)
 	end
 	for _, it in face.lids do
-		local l = rest + (FACE.CLOSED_DEPTH[it.sign] - rest) * blink
-		it.bone.Transform = CFrame.new((it.up * -l + it.front * math.max(l, 0) * 0.15) * s)
-			* CFrame.fromAxisAngle(it.front, droop * it.sign)
+		if not it.twin then
+			local l = rest + (FACE.CLOSED_DEPTH[it.sign] - rest) * blink
+			it.bone.Transform = CFrame.new((it.up * -l + it.front * math.max(l, 0) * 0.15) * s)
+				* CFrame.fromAxisAngle(it.front, droop * it.sign)
+		end
+	end
+	for _, it in face.lids do
+		local twin = it.twin
+		if twin then
+			local moved = mirrorX(twin.rest * twin.bone.Transform * twin.rest:Inverse())
+			it.bone.Transform = it.rest:Inverse() * moved * it.rest
+		end
 	end
 	for _, it in face.left do
 		it.bone.Transform = CFrame.new((it.up * (low + lift) - it.side * wide) * s)
@@ -652,12 +769,7 @@ function Actors.pose(actor: any, t: number, where: (string, number) -> Vector3, 
 	end
 
 	local open, nod = speech(tr, t)
-	local press, wobble = 0, 0
-	for _, h in tr.hops do
-		local _, p, w = hopShape(t - h.t, h.d)
-		press += p
-		wobble += w
-	end
+	local stretch, rate, lag = softHop(tr.hops, t)
 	local ch = tr.ch
 	local smile = channel(ch.smile, t, 0)
 	local idle = actor.idle
@@ -665,9 +777,31 @@ function Actors.pose(actor: any, t: number, where: (string, number) -> Vector3, 
 		idle.react = math.clamp(channel(ch.react, t, 0) + math.max(smile, 0) * 0.6, 0, 1)
 		idle.angry = channel(ch.angry, t, 0)
 		idle.lookUp = channel(ch.look_up, t, 0)
-		idle.press = press
-		idle.wobble = wobble
+		idle.press, idle.wobble = 0, 0 -- hops are the soft spring below, not the game's rigid squash
 		slugIdle().pose(idle, t + (actor.def.phase or 0))
+	end
+	if stretch ~= 0 or lag ~= 0 then
+		-- Up the chain: the base flattens and spreads, the middle carries most of the stretch, the head rides its
+		-- own lagging spring and nods through on the landing; a travelling hop leans into its direction.
+		local hgt = actor.height
+		offset(actor, "body_lower", Vector3.yAxis * 0.05 * stretch * hgt)
+		offset(actor, "body_upper", Vector3.yAxis * 0.13 * stretch * hgt)
+		offset(actor, "head", Vector3.yAxis * 0.07 * lag * hgt)
+		rotate(actor, "head", Vector3.xAxis, 0.22 * (lag - stretch))
+		local travelling = false
+		for _, m in tr.moves do
+			if m.hops and t >= m.t - WIND and t <= m.t + m.d + LAND then
+				travelling = true
+			end
+		end
+		if travelling then
+			rotate(actor, "body_upper", Vector3.xAxis, -0.14 * math.clamp(math.abs(rate), 0, 1)) -- the top leads off and carries on over the landing
+		end
+		local spread = -0.06 * stretch * hgt
+		offset(actor, "jelly_L", Vector3.xAxis * -spread)
+		offset(actor, "jelly_R", Vector3.xAxis * spread)
+		offset(actor, "jelly_F", Vector3.zAxis * -spread)
+		offset(actor, "jelly_B", Vector3.zAxis * spread)
 	end
 
 	local lean = channel(ch.lean, t, 0)

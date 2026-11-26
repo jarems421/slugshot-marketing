@@ -58,3 +58,24 @@ built into the marketing place only). Demo: `roblox-native/scenes/humans/humans_
 - Whether R6 humans with drawn faces fit the brand (an R15 / dynamic-head route would need its own decision).
 - Character looks, names and voices (KAI, MIRA, RAF, JUNO in `config/cast.json` are drafts; not game canon).
 - Walk feel, gesture timing and comedy beats are first passes.
+
+## Slug-shot cutscenes (owner, 2026-11-26: the V04 shot was "too zoomed in ... not slowed down ... no emphasis")
+- `slowmo` in a spec: `[{from, until, rate, ramp}]` (scene seconds or line anchors). Scene.film films video time and maps it
+  back to scene time; the world's particles and the game's transformation slow with it. Segments must sit in a dialogue
+  gap (scene.py refuses spoken words inside one). After decoding, `take.py warp <take.json> <dialogue.json>` writes a
+  dialogue with that much silence inserted; point the edit's `dialogue` at it. SFX `at` numbers are video seconds.
+- `split` shot: `views: [top, bottom]` (any shot entries). The take films view 1; a second `Scene.film` pass with
+  `layer = "b"` and `first/last` round the split (manifest `splits`) films view 2 under its own take name; then
+  `take.py split <take.json> <take.mp4> <layer_b.mp4>` composites them behind a slanted divider that rises in and
+  carries on off the top. Built for the owner's duel idea (two shooters, two slugs, faces side by side, screens rejoin).
+- `slug_cam` preset (`target` = shooter): `mode "orbit"` sweeps `sweep {from,to}` degrees round the flying slug (90 =
+  head-on; head-on fits a 9:16 frame, a profile of a transformed form doesn't), best with `clock: "output"` so it keeps
+  moving through slow motion; `mode "pan"` is locked off beside the path and turns to follow (`lead` negative aims
+  short of the target, where the hit throws the form back).
+- `fx`: `flash` (a lit ColorCorrection, warm tint) and `shake`, at the impact (impact = launch + flight; check it in a
+  still). Find a clear firing lane first: in the lobby the plaza north of the group is open floor.
+- Floppy's right lid is driven as the mirror of his left (Actors.floppyFaceSetup twins); the old per-side depths left it
+  higher with a dip at its inner corner.
+- Slug hops: a damped spring (crouch, push-off stretch, airborne stretch, an impact splat on landing, head on a looser
+  spring behind). `move_to` with `gait: "hop"` (`hops`, `hop_time`, `gap`, `height`) moves only while airborne.
+- Hair check: fluffy cuts with long fringes hide the painted eyes; test in a still at close-up size before filming.

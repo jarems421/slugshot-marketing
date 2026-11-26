@@ -28,6 +28,79 @@ local Humans = require(script.Humans)
 local Scene = {}
 Scene.FPS = 30
 
+-- Slow motion (owner, 2026-11-26: the slug shot had "no emphasis ... not slowed down"). `slowmo` segments in a spec
+-- ({from, until, rate, ramp}, scene seconds) play scene time at `rate`, easing in and out over `ramp`. The scene stays
+-- written in scene time; the video's time is out(t) = t + the extra seconds the segments before t add, and frames
+-- are filmed at out-times mapped back to scene time. Segments sit in dialogue gaps (tools/scene.py checks), so the
+-- edit only adds silence there (take.py warp).
+local function buildWarp(segments: { any }?, duration: number): any
+	local list = {}
+	for _, s in segments or {} do
+		local a, b, rate = s.from, s["until"], s.rate
+		local ramp = math.min(s.ramp or 0.08, (b - a) / 2)
+		local function rateAt(t: number): number
+			if t <= a or t >= b then
+				return 1
+			end
+			local e = if t < a + ramp then Actors.smooth((t - a) / ramp)
+				elseif t > b - ramp then Actors.smooth((b - t) / ramp)
+				else 1
+			return 1 - (1 - rate) * e
+		end
+		local n, h = 2000, (b - a) / 2000
+		local cum = table.create(n + 1, 0)
+		for i = 1, n do
+			cum[i + 1] = cum[i] + (1 / rateAt(a + (i - 0.5) * h) - 1) * h
+		end
+		table.insert(list, { from = a, ["until"] = b, rate = rate, ramp = ramp, rateAt = rateAt, cum = cum, h = h, n = n,
+			extra = cum[n + 1] })
+	end
+	table.sort(list, function(x, y)
+		return x.from < y.from
+	end)
+	local total = 0
+	for _, s in list do
+		total += s.extra
+	end
+	local function outAt(t: number): number
+		local out = t
+		for _, s in list do
+			if t >= s["until"] then
+				out += s.extra
+			elseif t > s.from then
+				local x = (t - s.from) / s.h
+				local i = math.floor(x)
+				out += s.cum[i + 1] + (s.cum[math.min(i + 2, s.n + 1)] - s.cum[i + 1]) * (x - i)
+			end
+		end
+		return out
+	end
+	local function sceneAt(out: number): number
+		if total == 0 then
+			return out
+		end
+		local lo, hi = math.max(0, out - total), out
+		for _ = 1, 48 do
+			local mid = (lo + hi) / 2
+			if outAt(mid) < out then
+				lo = mid
+			else
+				hi = mid
+			end
+		end
+		return (lo + hi) / 2
+	end
+	local function rateAt(t: number): number
+		for _, s in list do
+			if t > s.from and t < s["until"] then
+				return s.rateAt(t)
+			end
+		end
+		return 1
+	end
+	return { segments = list, outAt = outAt, sceneAt = sceneAt, rateAt = rateAt, duration = outAt(duration) }
+end
+
 local function decode(module: Instance): any
 	return HttpService:JSONDecode(require(module :: ModuleScript))
 end
@@ -212,12 +285,42 @@ function Scene.prepare(id: string, options: any?): any
 			end,
 		}
 	end
-	local ctx = { Shot = Reel.Shot, Curve = Reel.Curve, seed = opts.seed or 1, at = ctxAt }
+	-- layer "b" films the second view of every split shot (a second pass; take.py split composites the two)
+	local ctx = { Shot = Reel.Shot, Curve = Reel.Curve, seed = opts.seed or 1, at = ctxAt, layer = opts.layer or "a" }
 
 	local shots, total = {}, 0
 	for _, s in spec.shots do
 		table.insert(shots, Cameras.build(s, ctx, total))
 		total += s.duration
+	end
+	local warp = buildWarp(spec.slowmo, total)
+
+	-- Impact accents (spec `fx`, scene seconds): a "flash" brightens the whole image and fades (a ColorCorrection,
+	-- so it is lit like the world, not a white card); a "shake" jolts the camera and settles. Both are pure in t.
+	local grade = Instance.new("ColorCorrectionEffect")
+	grade.Name = "SS_fx"
+	grade.Parent = Lighting
+	local function accents(t: number, cf: CFrame): CFrame
+		local bright, contrast, tint = 0, 0, Color3.new(1, 1, 1)
+		for i, f in spec.fx or {} do
+			local u = (t - f.at) / (f.duration or 0.3)
+			if u < 0 or u >= 1 then
+				continue
+			end
+			local k = (1 - u) ^ 2
+			if f.type == "flash" then
+				bright += (f.strength or 0.45) * k
+				contrast += 0.25 * k
+				local c = f.tint or { 255, 236, 205 }
+				tint = Color3.new(1, 1, 1):Lerp(Color3.fromRGB(c[1], c[2], c[3]), k)
+			elseif f.type == "shake" then
+				local a, w = (f.amplitude or 0.25) * k, (f.rate or 22) * (t - f.at)
+				cf = cf * CFrame.new(a * math.noise(w, i, 0.5), a * math.noise(w, i, 7.5), 0)
+					* CFrame.Angles(0, 0, a * 0.12 * math.noise(w, i, 13.5))
+			end
+		end
+		grade.Brightness, grade.Contrast, grade.TintColor = bright, contrast, tint
+		return cf
 	end
 
 	local events = {}
@@ -250,7 +353,14 @@ function Scene.prepare(id: string, options: any?): any
 				break
 			end
 		end
-		local cf, fov = shot.pose(math.clamp(t - shot.start, 0, shot.duration))
+		local lt = math.clamp(t - shot.start, 0, shot.duration)
+		if shot.clock == "output" and shot.duration > 0 then
+			-- a camera that keeps moving at the video's pace through slow motion (bullet-time orbits)
+			local a, b = warp.outAt(shot.start), warp.outAt(shot.start + shot.duration)
+			lt = math.clamp((warp.outAt(t) - a) / math.max(b - a, 1e-6), 0, 1) * shot.duration
+		end
+		local cf, fov = shot.pose(lt)
+		cf = accents(t, cf)
 		fov = fov or 50
 		local plain = cf
 		if portrait then
@@ -365,6 +475,7 @@ function Scene.prepare(id: string, options: any?): any
 			character:PivotTo(parkedAt)
 		end
 		destroySet()
+		grade:Destroy()
 		stage:Destroy()
 		camera.CameraType = Enum.CameraType.Custom
 		camera.FieldOfView = 70
@@ -372,7 +483,7 @@ function Scene.prepare(id: string, options: any?): any
 
 	return {
 		spec = spec, duration = total, frame = frame, cues = cues, destroy = destroy, shots = shots,
-		dialogue = dialogue, actors = actors,
+		dialogue = dialogue, actors = actors, warp = warp,
 	}
 end
 
@@ -391,7 +502,7 @@ end
 -- Real-time preview: wall clock x speed. Frame drops skip time but never change what any moment looks like.
 function Scene.run(id: string, options: any?): any
 	local opts = options or {}
-	local st = Scene.prepare(id, { portrait = opts.portrait, seed = opts.seed })
+	local st = Scene.prepare(id, { portrait = opts.portrait, seed = opts.seed, layer = opts.layer })
 	local takeName = opts.take or `{st.spec.id}_{os.date("!%Y%m%dT%H%M%S")}`
 	local manifest = newManifest(st.spec, takeName, "realtime")
 	manifest.silent = opts.silent
@@ -401,10 +512,11 @@ function Scene.run(id: string, options: any?): any
 		local lastShot, nextSample = 0, 0
 		table.insert(manifest.marks, { kind = "start", shot = 1, elapsed = 0, at = now() })
 		while true do
-			local t = (os.clock() - t0) * speed
-			if t >= st.duration then
+			local out = (os.clock() - t0) * speed
+			if out >= st.warp.duration then
 				break
 			end
+			local t = st.warp.sceneAt(out)
 			local cf, _, shot = st.frame(t)
 			if shot ~= lastShot and lastShot ~= 0 then
 				table.insert(manifest.marks, { kind = "cut", shot = shot, elapsed = st.shots[shot].start, at = now() })
@@ -487,12 +599,13 @@ function Scene.film(id: string, options: any?): any
 		quality = settings().Rendering.QualityLevel
 		settings().Rendering.QualityLevel = Enum.QualityLevel.Level21
 	end)
-	local st = Scene.prepare(id, { portrait = opts.portrait ~= false, seed = opts.seed })
+	local st = Scene.prepare(id, { portrait = opts.portrait ~= false, seed = opts.seed, layer = opts.layer })
 	local takeName = opts.take or `{st.spec.id}_{os.date("!%Y%m%dT%H%M%S")}`
 	local manifest = newManifest(st.spec, takeName, "film")
 	manifest.quality = if quality then "Level21" else "unlocked"
 	manifest.silent = true
-	local frames = math.ceil(st.duration * Scene.FPS)
+	local warp = st.warp
+	local frames = math.ceil(warp.duration * Scene.FPS)
 	local gui, squares = mountStamp()
 	local camera = workspace.CurrentCamera
 
@@ -547,8 +660,8 @@ function Scene.film(id: string, options: any?): any
 		end
 		manifest.warmup_s = math.floor((os.clock() - warm) * 10) / 10
 		for i = 0, first do
-			st.frame(i / Scene.FPS)
-			st.cues(i / Scene.FPS, manifest)
+			st.frame(warp.sceneAt(i / Scene.FPS))
+			st.cues(warp.sceneAt(i / Scene.FPS), manifest)
 		end
 		local card = gui:FindFirstChild("Calibration")
 		if card then
@@ -573,10 +686,24 @@ function Scene.film(id: string, options: any?): any
 				e.TimeScale = e.TimeScale * scale
 			end
 		end
+		-- In slow motion the world's real-time motion slows by the same rate.
+		local rate = 1
+		local function slowTo(r: number)
+			if r ~= rate then
+				rate = r
+				workspace:SetAttribute("FilmTimeScale", scale * r)
+				for _, s in slowed do
+					if s[1].Parent then
+						s[1].TimeScale = s[2] * scale * r
+					end
+				end
+			end
+		end
 		table.insert(manifest.marks, { kind = "start", shot = 1, elapsed = 0, at = now() })
 		local lastShot = 1
 		for i = first, last do
-			local t = i / Scene.FPS
+			local t = warp.sceneAt(i / Scene.FPS)
+			slowTo(warp.rateAt(t))
 			local cf, _, shot = st.frame(t)
 			st.cues(t, manifest)
 			stamp(squares, i)
@@ -607,6 +734,24 @@ function Scene.film(id: string, options: any?): any
 	manifest.viewport = { camera.ViewportSize.X, camera.ViewportSize.Y }
 	manifest.stamp = STAMP
 	manifest.frames, manifest.fps, manifest.hold, manifest.portrait = frames, Scene.FPS, hold, opts.portrait ~= false
+	manifest.layer = opts.layer
+	-- Video time: the slow segments (take.py warp adds their extra seconds of silence to the dialogue) and the
+	-- split shots' frame ranges (take.py split composites the "b" pass into them).
+	manifest.duration_out = warp.duration
+	manifest.warp = {}
+	for _, w in warp.segments do
+		table.insert(manifest.warp, { from = w.from, ["until"] = w["until"], rate = w.rate, ramp = w.ramp, extra = w.extra,
+			out_from = warp.outAt(w.from) })
+	end
+	manifest.splits = {}
+	for i, s in st.spec.shots do
+		if s.preset == "split" then
+			local sh = st.shots[i]
+			table.insert(manifest.splits, { shot = i, first = math.floor(warp.outAt(sh.start) * Scene.FPS + 0.5),
+				last = math.floor(warp.outAt(sh.start + sh.duration) * Scene.FPS + 0.5) - 1,
+				open = s.open or 0.3, close = s.close or 0.3, slant = s.slant or 0.05, divider = s.divider })
+		end
+	end
 	gui:Destroy()
 	st.destroy()
 	if quality then
@@ -626,7 +771,7 @@ local standing = nil
 function Scene.still(id: string, t: number, options: any?): string
 	Scene.clear()
 	local opts = options or {}
-	standing = Scene.prepare(id, { portrait = opts.portrait, seed = opts.seed })
+	standing = Scene.prepare(id, { portrait = opts.portrait, seed = opts.seed, layer = opts.layer })
 	local cf, fov
 	for i = 0, math.floor(t * Scene.FPS) do
 		cf, fov = standing.frame(i / Scene.FPS)

@@ -6,13 +6,15 @@
 -- (docs/game-truth.md): he flies as himself and tumbles.
 --
 -- The game's module keeps a little state per shot (the swap, its ending clock). To stay a function of scene time, a
--- shot is rebuilt and replayed in 1/30 s steps from its launch whenever time runs backwards (a still, a patch pass).
+-- shot is rebuilt and replayed in 1/480 s steps from its launch whenever time runs backwards (a still, a patch pass).
+-- Steps that fine keep the twirl and transformation smooth in slow motion (a 1/30 s step showed each pose for
+-- several frames at a quarter speed).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shots = {}
 
-local STEP = 1 / 30
+local STEP = 1 / 480
 local SPEED = 42 -- studs per second of flight (the game's shots are faster; staged shots are slowed to read)
 local END_POP = 0.3
 
@@ -171,6 +173,20 @@ function Shots.pose(list: { any }, t: number, parent: Instance)
 			advance(s, next)
 			live.clock = next
 			next += STEP
+		end
+		-- The forms' particles run on real time: in a film take (and its slow motion) they follow scene time.
+		local scale = workspace:GetAttribute("FilmTimeScale")
+		if scale then
+			for _, root in { live.base, live.state and live.state.form } do
+				for _, e in if root then root:GetDescendants() else {} do
+					if e:IsA("ParticleEmitter") then
+						if e:GetAttribute("SS_TimeScale") == nil then
+							e:SetAttribute("SS_TimeScale", e.TimeScale)
+						end
+						e.TimeScale = e:GetAttribute("SS_TimeScale") * scale
+					end
+				end
+			end
 		end
 	end
 end

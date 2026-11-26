@@ -8,6 +8,11 @@ r"""Bridge Roblox-native takes into the marketing toolkit.
 
   python roblox-native/tools/take.py film <take.json> <video.mp4> [more.mp4 ...] [--out file.mp4]
       a Scene.film take (frame-stepped, index-stamped) -> exact 30 fps upright 1080x1920 from native pixels
+  python roblox-native/tools/take.py split <take.json> <take.mp4> <layer_b.mp4> [--out file.mp4]
+      composites a take's split shots: its own view on top, the decoded layer "b" pass below a slanted divider
+  python roblox-native/tools/take.py warp <take.json> <dialogue.json> [--out-dir DIR]
+      a take with slow motion: the dialogue (audio, lines, caption words) with each segment's extra seconds of
+      silence inserted, so it lines up with the video (point the edit's "dialogue" at the result)
 
 Clock: Reel marker `at` and Studio video_capture's creation_timestamp_ms are both Unix ms on this
 machine. For an OBS recording, pass --video-start-ms (when OBS started recording), or trim by hand.
@@ -224,7 +229,9 @@ def film(take_path, videos, out, crf):
         filled = set(best)
         total += n
 
-    missing = [i for i in range(frames) if i not in best]
+    # a layer pass ("b" views of split shots) films only its own range
+    expected = range(take.get("first", 0), take.get("last", frames - 1) + 1) if take.get("layer") else range(frames)
+    missing = [i for i in expected if i not in best]
     if not best:
         raise SystemExit("no stamped frames found: was the frame stamp hidden?")
 
@@ -306,6 +313,110 @@ def film(take_path, videos, out, crf):
     return 0 if not missing else 2
 
 
+def split(take_path, main, layer, out):
+    """Split shots (Cameras.luau): the take's view on top and the "b" pass's view below a slanted ink divider. The
+    divider rises from the bottom edge as the split opens and carries on up off the top as it closes, so the bottom
+    view (the slug) fills the frame for the next shot. Each view is shifted so its middle stays centred in its panel."""
+    import numpy as np
+    take = load(take_path)
+    splits = take.get("splits") or []
+    if not splits:
+        raise SystemExit(f"{take_path}: no split shots")
+    fps, W, H = take.get("fps", 30), 1080, 1920
+    size = W * H * 3
+
+    def reader(v):
+        return subprocess.Popen(["ffmpeg", "-v", "error", "-i", str(v), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                                stdout=subprocess.PIPE)
+
+    ra, rb = reader(main), reader(layer)
+    enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
+                            "-r", str(fps), "-i", "-", "-c:v", "libx264", "-preset", "slow", "-crf", "14",
+                            "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(out)], stdin=subprocess.PIPE)
+    rows, cols = np.mgrid[0:H, 0:W]
+    ink, light = np.array([24, 22, 28], np.uint8), np.array([255, 240, 220], np.uint8)
+
+    def ease(u):
+        u = min(max(u, 0.0), 1.0)
+        return u * u * (3 - 2 * u)
+
+    n, done = 0, 0
+    while True:
+        a, b = ra.stdout.read(size), rb.stdout.read(size)
+        if len(a) < size:
+            break
+        sp = next((x for x in splits if x["first"] <= n <= x["last"]), None)
+        if sp and len(b) == size:
+            A = np.frombuffer(a, np.uint8).reshape(H, W, 3)
+            B = np.frombuffer(b, np.uint8).reshape(H, W, 3)
+            tau, span = (n - sp["first"]) / fps, (sp["last"] - sp["first"] + 1) / fps
+            p = 1 - 0.5 * ease(tau / sp["open"]) - 0.5 * ease((tau - (span - sp["close"])) / sp["close"])
+            line = p * H - sp["slant"] * H * (cols / W - 0.5)  # the divider's row at each column
+            ya = np.clip(rows - round((p * H - H) / 2), 0, H - 1)  # top view, its middle centred above the line
+            yb = np.clip(rows - round(p * H / 2), 0, H - 1)  # bottom view, its middle centred below it
+            frame = np.where((rows < line)[..., None], A[ya, cols], B[yb, cols])
+            if 0 < p < 1:
+                d = np.abs(rows - line)
+                frame[d < 8] = ink
+                frame[d < 2.5] = light
+            a = frame.astype(np.uint8).tobytes()
+            done += 1
+        enc.stdin.write(a)
+        n += 1
+    enc.stdin.close()
+    enc.wait()
+    for r in (ra, rb):
+        r.stdout.close()
+        r.kill()
+    print(f"{out}: {n} frames, {done} composited from {len(splits)} split shot(s)")
+    return 0
+
+
+def warp(take_path, dialogue_path, out_dir):
+    """Slow motion lengthens the video by each segment's `extra` seconds (Scene.film records them). Segments sit in
+    dialogue gaps (scene.py checks), so the dialogue only needs that much silence inserted at each segment's start."""
+    import numpy as np
+    take, dlg = load(take_path), load(dialogue_path)
+    segs = sorted(take.get("warp") or [], key=lambda w: w["from"])
+    if not segs:
+        raise SystemExit(f"{take_path}: no slow motion")
+
+    def shift(t):
+        return t + sum(w["extra"] for w in segs if t >= w["from"] - 1e-6)
+
+    src = ROOT / dlg["audio"]
+    out_dir.mkdir(parents=True, exist_ok=True)
+    rate = 48000
+    pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", str(src), "-ac", "1", "-ar", str(rate), "-f", "f32le", "-"],
+                         capture_output=True, check=True).stdout
+    audio = np.frombuffer(pcm, np.float32)
+    parts, at = [], 0
+    for w in segs:
+        cut = int(round(w["from"] * rate))
+        parts += [audio[at:cut], np.zeros(int(round(w["extra"] * rate)), np.float32)]
+        at = cut
+    parts.append(audio[at:])
+    wav = out_dir / "dialogue.wav"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(rate), "-ac", "1", "-i", "-",
+                    "-c:a", "pcm_s16le", str(wav)], input=np.concatenate(parts).tobytes(), check=True)
+    for ln in dlg["lines"]:
+        ln["start"], ln["end"] = round(shift(ln["start"]), 3), round(shift(ln["end"]), 3)
+    dlg["duration"] = round(shift(dlg["duration"]), 3)
+    dlg["audio"] = wav.resolve().relative_to(ROOT).as_posix()
+    dlg["warped_by"] = take["take"]
+    (out_dir / "dialogue.json").write_text(json.dumps(dlg, indent=1), encoding="utf-8")
+    words = load(Path(dialogue_path).with_name("dialogue.words.json"))
+    for x in words:
+        k = shift(x["startMs"] / 1000) - x["startMs"] / 1000
+        for key in ("startMs", "endMs", "timestampMs"):
+            if key in x:
+                x[key] = int(round(x[key] + k * 1000))
+    (out_dir / "dialogue.words.json").write_text(json.dumps(words, indent=1), encoding="utf-8")
+    print(f"{out_dir / 'dialogue.json'}: {len(segs)} slow segment(s), +{sum(w['extra'] for w in segs):.2f}s "
+          f"of silence; duration {dlg['duration']}s")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -317,6 +428,15 @@ def main():
     c = sub.add_parser("compare")
     c.add_argument("a")
     c.add_argument("b")
+    s = sub.add_parser("split", help="composite a take's split shots with its layer b pass")
+    s.add_argument("take")
+    s.add_argument("main")
+    s.add_argument("layer")
+    s.add_argument("--out")
+    w = sub.add_parser("warp", help="dialogue for a take with slow motion")
+    w.add_argument("take")
+    w.add_argument("dialogue")
+    w.add_argument("--out-dir")
     i = sub.add_parser("import")
     i.add_argument("take")
     i.add_argument("video")
@@ -325,6 +445,13 @@ def main():
     a = ap.parse_args()
     if a.cmd == "compare":
         sys.exit(compare(a.a, a.b))
+    if a.cmd == "split":
+        t = load(a.take)
+        sys.exit(split(a.take, a.main, a.layer, Path(a.out) if a.out else ROOT / "out" / "takes" / f"{t['take']}_split.mp4"))
+    if a.cmd == "warp":
+        t = load(a.take)
+        d = Path(a.dialogue)
+        sys.exit(warp(a.take, d, Path(a.out_dir) if a.out_dir else d.parent / "warped" / t["take"]))
     if a.cmd == "film":
         t = load(a.take)
         sys.exit(film(a.take, [Path(v) for v in a.video], Path(a.out) if a.out else ROOT / "out" / "takes" / f"{t['take']}.mp4", a.crf))

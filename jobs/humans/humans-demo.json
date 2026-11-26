@@ -5,7 +5,7 @@
  "format": "WORLD",
  "label": "Fictional story",
  "language": "en",
- "dialogue": "out/dialogue/humans-demo/dialogue.json",
+ "dialogue": "out/dialogue/humans-demo/warped/humans_demo_v06/dialogue.json",
  "music": "assets/sfx/cavern_bed.wav",
  "music_db": -30,
  "sfx": [
@@ -36,18 +36,28 @@
   },
   {
    "src": "assets/sfx/blaster_shot.wav",
-   "at": 20.53,
+   "at": 21.06,
    "db": -14
   },
   {
    "src": "assets/sfx/whoosh.wav",
-   "at": 20.6,
+   "at": 21.3,
    "db": -12
   },
   {
+   "src": "assets/sfx/whoosh.wav",
+   "at": 22.55,
+   "db": -10
+  },
+  {
+   "src": "assets/sfx/slug_land.wav",
+   "at": 24.55,
+   "db": -8
+  },
+  {
    "src": "assets/sfx/crystal_tick.wav",
-   "at": 20.95,
-   "db": -16
+   "at": 24.6,
+   "db": -14
   },
   {
    "src": "assets/sfx/crystal_tick.wav",
@@ -65,8 +75,8 @@
  "scenes": [
   {
    "kind": "video",
-   "src": "out/takes/humans_demo_v04.mp4",
-   "seconds": 29.033,
+   "src": "out/takes/humans_demo_v06_split.mp4",
+   "seconds": 31.8,
    "fit": "crop",
    "volume": 0
   }

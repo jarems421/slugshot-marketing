@@ -84,9 +84,9 @@
    180
   ],
   "target": [
-   14,
+   2,
    0.4,
-   -15,
+   -24,
    0
   ]
  },
@@ -271,21 +271,11 @@
    "actor": "floppy",
    "action": "move_to",
    "mark": "floppy_b",
-   "duration": 1.0
-  },
-  {
-   "time": "L3.start+1.9",
-   "actor": "floppy",
-   "action": "hop",
-   "height": 0.35,
-   "duration": 0.4
-  },
-  {
-   "time": "L3.start+2.45",
-   "actor": "floppy",
-   "action": "hop",
-   "height": 0.35,
-   "duration": 0.4
+   "gait": "hop",
+   "hops": 2,
+   "height": 0.38,
+   "hop_time": 0.4,
+   "gap": 0.16
   },
   {
    "time": "L3.end+0.95",
@@ -455,25 +445,25 @@
    "actor": "juno",
    "action": "aim",
    "target": "target",
-   "duration": 1.6
+   "duration": 2.7
   },
   {
-   "time": "L6.start+0.98",
+   "time": "L6.start+1.5",
    "actor": "juno",
    "action": "shoot",
    "slug": "Inferno",
    "target": "target",
-   "speed": 11
+   "speed": 24
   },
   {
-   "time": "L6.start+1.05",
+   "time": "L6.start+1.6",
    "actor": "raf",
    "action": "gesture",
    "move": "flinch",
    "weight": 0.8
   },
   {
-   "time": "L6.start+1.0",
+   "time": "L6.start+1.55",
    "actor": "raf",
    "action": "express",
    "set": {
@@ -483,7 +473,7 @@
    "ease": 0.1
   },
   {
-   "time": "L6.start+1.0",
+   "time": "L6.start+1.55",
    "actor": "kai",
    "action": "express",
    "set": {
@@ -493,12 +483,12 @@
    "ease": 0.1
   },
   {
-   "time": "L6.start+3.0",
+   "time": "L6.start+3.3",
    "actor": "juno",
    "action": "holster"
   },
   {
-   "time": "L6.start+2.4",
+   "time": "L6.start+2.6",
    "actor": "raf",
    "action": "gesture",
    "move": "applaud",
@@ -605,6 +595,17 @@
    "action": "look",
    "target": "mira",
    "ease": 0.3
+  },
+  {
+   "time": "L6.start+1.15",
+   "actor": "juno",
+   "action": "express",
+   "set": {
+    "smirk": 1,
+    "squint": 0.5,
+    "smile": 0.4
+   },
+   "ease": 0.25
   }
  ],
  "shots": [
@@ -666,21 +667,65 @@
   {
    "preset": "close_up",
    "target": "juno",
-   "until": "L6.start+0.95",
+   "until": "L6.start+1.4",
    "size": 1.5,
    "side": 55,
    "fov": 34,
    "headroom": 0.1
   },
   {
-   "preset": "slug_shot",
+   "preset": "split",
+   "until": "L6.start+1.72",
+   "open": 0.35,
+   "close": 0.35,
+   "slant": 0.05,
+   "views": [
+    {
+     "preset": "close_up",
+     "target": "juno",
+     "size": 1.05,
+     "side": 28,
+     "fov": 30,
+     "headroom": 0.06
+    },
+    {
+     "preset": "slug_cam",
+     "target": "juno",
+     "mode": "pan",
+     "along": 0.3,
+     "distance": 2.6,
+     "side": -1,
+     "height": 0.35,
+     "fov": 50,
+     "lead": 0
+    }
+   ]
+  },
+  {
+   "preset": "slug_cam",
    "target": "juno",
-   "until": "L6.start+2.05",
-   "side": -3.5,
-   "back": 6,
+   "mode": "orbit",
+   "until": "L6.start+2.03",
+   "distance": 9,
    "height": 1.4,
    "fov": 50,
-   "lead": 2
+   "clock": "output",
+   "sweep": [
+    25,
+    80
+   ]
+  },
+  {
+   "preset": "slug_cam",
+   "target": "juno",
+   "mode": "pan",
+   "until": "L6.start+2.9",
+   "along": 0.75,
+   "distance": 9,
+   "side": -1,
+   "height": 2.2,
+   "fov": 50,
+   "lead": -1.2
   },
   {
    "preset": "close_up",
@@ -699,6 +744,33 @@
    "side": 20,
    "fov": 32,
    "headroom": 0.1
+  }
+ ],
+ "slowmo": [
+  {
+   "from": "L6.start+1.47",
+   "until": "L6.start+2.02",
+   "rate": 0.14,
+   "ramp": 0.07
+  }
+ ],
+ "fx": [
+  {
+   "type": "flash",
+   "at": "L6.start+2.22",
+   "duration": 0.35,
+   "strength": 0.5,
+   "tint": [
+    255,
+    170,
+    90
+   ]
+  },
+  {
+   "type": "shake",
+   "at": "L6.start+2.22",
+   "duration": 0.45,
+   "amplitude": 0.3
   }
  ]
 }

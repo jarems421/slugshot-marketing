@@ -5,16 +5,16 @@
  "_humans": "Human actors (kind 'human', runtime/Scene/Humans.luau). humans: reusable characters; clothing and hair are Roblox catalog items applied by ID in Studio (nothing bought; other creators' designs, so no brand logos); face_style picks the painted face kit (boy|girl, tools/faces.py). human_moves: {clip} = the game's own movement clips; {animation} = a Roblox-owned default animation; {catalog} = a free Roblox emote; {keys} = an authored pose in the game's R15 pose terms, degrees (Shoulder/Hip +X swings forward, right limbs abduct +Z, left -Z; Waist/Neck -X leans forward, +Y turns left, +Z tilts left). Options: mask (full|upper|arms|right_arm|left_arm|head), loop, rate, speed (studs/s a locomotion cycle covers at rate 1). approved: false until the owner has seen them in a video.",
  "humans": {
   "kai": {
-   "note": "'86' jersey, baggy black jeans, side-shave fade (keeps the face clear)",
+   "note": "black-and-white Y2K star hoodie, baggy black jeans, fluffy messy blonde hair (owner 2026-11-26: fluffy hair, no cropped girls' tops on guys; the brown fluffy cuts hid his eyes)",
    "skin": [
     224,
     172,
     132
    ],
-   "shirt": 107788293618309,
+   "shirt": 16120904520,
    "pants": 86318051157475,
    "hair": [
-    3814474927
+    118417075004064
    ],
    "face_style": "boy",
    "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
@@ -35,16 +35,16 @@
    "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
   },
   "mira": {
-   "note": "'28' crop jersey, baggy cargo jeans, brown braid",
+   "note": "pale blue off-shoulder crop top, black cargos, long straight brown hair (flat-colour top: photo-textured tops look low-res in close-ups; the braid hair hung across the torso)",
    "skin": [
     234,
     184,
     146
    ],
-   "shirt": 70587456021388,
-   "pants": 7235326918,
+   "shirt": 17804563788,
+   "pants": 136010317768242,
    "hair": [
-    13251161977
+    70735083646704
    ],
    "face_style": "girl",
    "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
