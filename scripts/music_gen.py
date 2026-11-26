@@ -1,4 +1,4 @@
-r"""Generate Slugshot music beds with Google Lyria (Gemini API, paid; owner approved 2026-11-26, cap $0.50).
+r"""Generate Slugshot music beds with Google Lyria (Gemini API, paid; owner approved 2026-11-26, cap $1.50).
 
   python scripts/music_gen.py [M1 M2 ...]      default: all tracks in docs/creative/music-brief.md
 
@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "assets" / "music"
 LEDGER = ROOT / "data" / "local" / "spend" / "lyria.jsonl"
 URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
-CAP_USD = 0.50
+CAP_USD = 1.50  # owner 2026-11-26: "spend more as long as it improves the quality"
 COMMON = ("Instrumental only, no vocals, no choir. Leave the 1-4 kHz speech range sparse: short motifs with space between them, "
           "melody in plucks and bells, warmth below. Key of D. Loop-friendly start and end. A bed to sit under a fast spoken story narration.")
 TRACKS = {
@@ -30,6 +30,17 @@ TRACKS = {
     "M7": ("full-arc", "lyria-3.5", 0.08, "A 2-minute instrumental story bed in D. 0:00-1:10 whimsical and playful at 108 BPM (pizzicato, marimba, celesta, water-drip percussion, warm cave hum); "
            "around 1:10 shift into a sneaky, suspenseful version in D minor (low pizzicato, ticking woodblock, cave drone); final 25 seconds resolve into warm, tender felt piano and strings with a crystal shimmer."),
 }
+# Owner picks 2026-11-26: M2 favourite, M6 and M7 promising, all "slightly too upbeat; upbeat but more chill". Two takes each.
+CHILL = ("Laid-back and chill, mellow and unhurried, soft dynamics, gentle swing, nothing busy or bouncy; "
+         "still a light forward groove so the story keeps moving. ")
+for _take in ("a", "b"):
+    TRACKS[f"M2{_take}"] = ("cavern-sneak-chill", "lyria-3-clip-preview", 0.04, CHILL + "92 BPM in D minor, the playful cavern world turned quietly sneaky: "
+                            "soft low pizzicato strings and a muted upright bass, a gentle ticking woodblock, a warm cave drone underneath, an occasional glassy crystal shimmer. Curious, a little mischievous.")
+    TRACKS[f"M6{_take}"] = ("nature-doc-chill", "lyria-3-clip-preview", 0.04, CHILL + "84 BPM gentle orchestral wonder in D major, calm nature-documentary feel: "
+                            "soft strings and woodwinds, a slow harp, a quiet sense of awe a little too majestic for its tiny subject.")
+    TRACKS[f"M7{_take}"] = ("full-arc-chill", "lyria-3.5", 0.08, CHILL + "A 2-minute instrumental story bed in D. 0:00-1:10 relaxed and quietly playful at 92 BPM "
+                            "(soft pizzicato, mellow marimba, celesta, water-drip percussion, warm cave hum); around 1:10 ease into a sneaky, low version in D minor "
+                            "(low pizzicato, muted bass, ticking woodblock, cave drone); final 25 seconds resolve into warm, tender felt piano and strings with a crystal shimmer.")
 
 
 def spent():
