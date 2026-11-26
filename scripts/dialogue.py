@@ -22,6 +22,9 @@ Writes to out/dialogue/<id>/:
 Captions use the approved script's words; Whisper only supplies their timing and flags lines where the
 performance differs from the script (dropped, added or changed words). Nothing is force-matched.
 `--only N` re-performs one line and keeps the others (revision without redoing everything).
+Gemini, one take, full run: consecutive lines with the same speaker and identical (direction), with no [overlap]
+between them, share one request (100 a day on Tier 1) and are cut back into per-line files at the measured pauses;
+a read that doesn't match the script falls back to one request per line.
 """
 import argparse
 import difflib
@@ -107,12 +110,81 @@ def liveliness(path):
     return float(semis + 0.5 * (np.percentile(db, 90) - np.percentile(db, 10)))
 
 
+def gemini_groups(lines):
+    """Runs of consecutive lines one Gemini request can perform: same speaker, identical (direction), no
+    [overlap] between them. Keeps every line's direction exact while saving requests (100 a day on Tier 1)."""
+    groups = []
+    for i, ln in enumerate(lines):
+        prev = lines[i - 1] if i else None
+        if (prev and groups and prev["speaker"] == ln["speaker"] and prev["direction"] == ln["direction"]
+                and prev["gap_after"] >= 0):
+            groups[-1].append(i)
+        else:
+            groups.append([i])
+    return groups
+
+
+def split_points(words, counts):
+    """Cut times between the lines of one performed passage: the middle of the pause after each line's last
+    word. `words` are the passage's aligned script words; None when a boundary has no audible pause."""
+    cuts, k = [], 0
+    for n in counts[:-1]:
+        k += n
+        end, start = words[k - 1]["end"], words[k]["start"]
+        if start - end < 0.04:
+            return None
+        cuts.append(round((end + start) / 2, 3))
+    return cuts
+
+
+def perform_passage(group, lines, voice, style, work):
+    """One request for several lines, cut back into per-line raw files at the pauses Whisper measures.
+    False (nothing kept) when the read doesn't match the script, so the caller performs line by line."""
+    import gemini_tts
+    raw = work / "lines" / f"passage_{group[0] + 1:02}-{group[-1] + 1:02}.raw.wav"
+    text = " ".join(lines[i]["text"] for i in group)
+    seconds = gemini_tts.speak(glossary.tts_text(text), voice, style, raw)
+    heard = transcribe([raw], [text], "small.en")[0]
+    words, dev = align(text, heard, 0.0)
+    cuts = None if dev else split_points(words, [len(lines[i]["text"].split()) for i in group])
+    if cuts is None:
+        print(f"lines {group[0] + 1}-{group[-1] + 1}: passage read didn't split cleanly ({'; '.join(dev) or 'no pause'}); "
+              f"performing line by line", flush=True)
+        raw.unlink(missing_ok=True)
+        return False
+    edges = [0.0, *cuts, seconds]
+    for i, a, b in zip(group, edges, edges[1:]):
+        ffmpeg("-i", raw, "-ss", f"{a:.3f}", "-to", f"{b:.3f}", lines[i]["_raw"])
+    raw.unlink()
+    print(f"lines {group[0] + 1}-{group[-1] + 1} ({lines[group[0]]['speaker']}, {voice}): one request, {seconds:.1f}s", flush=True)
+    return True
+
+
 def perform(lines, engine, work, only, mode="design", takes=1):
-    """Synthesise each line to lines/NN_NAME.wav (48 kHz mono, pitch applied, levelled but not compressed)."""
+    """Synthesise each line to lines/NN_NAME.wav (48 kHz mono, pitch applied, levelled but not compressed).
+    Gemini, one take, full run: consecutive same-speaker, same-direction lines share one request."""
     jobs = []
+    done = set()
+    if engine == "gemini" and takes == 1 and not only:
+        import gemini_tts
+        (work / "lines").mkdir(parents=True, exist_ok=True)
+        for group in (g for g in gemini_groups(lines) if len(g) > 1):
+            first = lines[group[0]]
+            g = CAST[first["speaker"]].get("gemini") or {}
+            if not g.get("voice"):
+                raise SystemExit(f"{first['speaker']} has no gemini.voice in config/cast.json")
+            for i in group:
+                lines[i]["file"] = work / "lines" / f"{i + 1:02}_{lines[i]['speaker']}.wav"
+                lines[i]["_raw"] = work / "lines" / f"{i + 1:02}_{lines[i]['speaker']}.raw.wav"
+                lines[i]["_pitch"] = 0
+            if perform_passage(group, lines, g["voice"], gemini_tts.style_for(g, first["direction"]), work):
+                done.update(i + 1 for i in group)
+            else:
+                for i in group:
+                    del lines[i]["_raw"]
     for i, ln in enumerate(lines, 1):
         ln["file"] = work / "lines" / f"{i:02}_{ln['speaker']}.wav"
-        if only and i not in only and ln["file"].exists():
+        if i in done or (only and i not in only and ln["file"].exists()):
             continue
         c = CAST[ln["speaker"]]
         raw = work / "lines" / f"{i:02}_{ln['speaker']}.raw.wav"

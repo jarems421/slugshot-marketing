@@ -78,6 +78,21 @@ class Dialogue(unittest.TestCase):
         self.assertGreater(len(groups), 1)
         self.assertTrue(all(len(g) >= 2 for g in groups))
 
+    def test_gemini_groups_keep_directions_and_overlaps(self):
+        with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False, encoding="utf-8") as f:
+            f.write("NARRATOR (calm): One.\nNARRATOR: Two.\nNARRATOR: Three.\nNARRATOR (amused): Four.\n"
+                    "FLOPPY: Five.\n[overlap 0.2]\nFLOPPY: Six.\nNARRATOR: Seven.\n")
+        groups = dialogue.gemini_groups(dialogue.parse(f.name))
+        # directions never merge or spread; an [overlap] (interruption) stays its own request
+        self.assertEqual(groups, [[0], [1, 2], [3], [4], [5], [6]])
+
+    def test_split_points_cut_in_the_pause(self):
+        w = [{"text": t, "start": s, "end": e} for t, s, e in
+             (("Some", 0, .2), ("pick", .2, .4), ("fire.", .4, .7), ("Some", 1.1, 1.3), ("pick", 1.3, 1.5), ("water.", 1.5, 1.9))]
+        self.assertEqual(dialogue.split_points(w, [3, 3]), [0.9])
+        w[3]["start"] = 0.72  # no audible pause at the boundary: refuse to cut (caller performs line by line)
+        self.assertIsNone(dialogue.split_points(w, [3, 3]))
+
     def test_mouth_envelope(self):
         rate = dialogue.RATE
         t = np.arange(rate) / rate
