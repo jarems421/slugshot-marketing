@@ -1,6 +1,6 @@
 ---
 name: slugshot-video-editing
-description: Creative editing judgement for Slugshot short-form videos (TikTok, Shorts, Reels). Use when planning, assembling, editing, reviewing or critiquing any Slugshot video or script; deciding hooks, pacing, cuts, zooms, transitions, caption emphasis, comedy timing, SFX, music and narration balance; choosing between PvP gameplay, promo, fiction, meme, character and AI-scene approaches; or judging whether an edit works. Complements remotion-best-practices, which covers the Remotion API itself.
+description: Creative editing judgement for Slugshot short-form videos (TikTok, Shorts, Reels). Use when planning, assembling, editing, reviewing or critiquing any Slugshot video or turning an approved script into an edit (writing or critiquing the script itself is slugshot-script-writing); deciding hooks, pacing, cuts, zooms, transitions, caption emphasis, comedy timing, SFX, music and narration balance; choosing between PvP gameplay, promo, fiction, meme, character and AI-scene approaches; or judging whether an edit works. Complements remotion-best-practices, which covers the Remotion API itself.
 ---
 
 # Slugshot video editing and production

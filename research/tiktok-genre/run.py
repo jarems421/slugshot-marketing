@@ -2,7 +2,7 @@
 import json, sys, time
 sys.path.insert(0, __import__("os").path.dirname(__import__("os").path.abspath(__file__)))
 import apify, research_common as rc
-ACTOR = "clockworks~tiktok-scraper"
+ACTOR = __import__("os").environ.get("APIFY_ACTOR", "clockworks~tiktok-scraper")
 BASIS = ("Owner-asserted TikTok permission (owner message 2026-11-26) covering Apify Actors on this key for "
          "public posts: metadata, captions, transcripts, permitted downloads. Original email not seen by Claude.")
 def run(label, payload, cap):
