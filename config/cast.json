@@ -4,9 +4,9 @@
     "NARRATOR": {
       "actor": null,
       "caption": "#ffffff",
-      "status": "draft",
+      "status": "owner-picked (Gemini Algieba, 2026-11-26)",
       "gender": "male",
-      "persona": "In My World storyteller: calm, warm, confident, a hint of drama; the voice that carries the story.",
+      "persona": "In My World storyteller: deep, dry and deadpan with a hint of a smile; calm but quick, never shouting; the voice that carries the story.",
       "qwen": {
         "design": "A young adult male storyteller with an energetic, charismatic, punchy delivery in the style of viral TikTok storytime videos. Expressive and dramatic, leaning into suspense then breaking into a grin, clear and close to the microphone. High energy and full of life, like a viral short-form storytime voice: punchy emphasis on key words, big emotional swings, dramatic pauses, a grin you can hear, never flat or monotone.",
         "sample": "In my world, everyone gets ONE slug. And most people? They get something AMAZING. Fire! Lightning! Pure power! And then... there's me. And honestly? I would NOT trade him for anything!"
@@ -17,15 +17,15 @@
         "pitch": 0
       },
       "gemini": {
-        "voice": "Puck",
+        "voice": "Algieba",
         "candidates": [
+          "Algieba",
           "Puck",
-          "Fenrir",
-          "Sadachbia"
+          "Orus"
         ],
-        "style": "energetic, charismatic storytime narrator, punchy emphasis, dramatic pauses, smiling",
+        "style": "Low, smooth male storyteller with a dry, deadpan, understated delivery and a hint of a smile; calm but never slow, never shouting. Fast-paced, continuous storytime narration at about 205 words per minute: keep sentences flowing with only short pauses between them, and one brief pause just before the final line.",
         "shared_delivery": false,
-        "note": "owner 2026-11-25: the first Gemini version's narrator (this style, no shared delivery) was the best"
+        "note": "owner 2026-11-26: picked Algieba deep-dry (in-story test M2_Algieba_deep-dry) over Puck, Orus and three female voices; previous default Puck (2026-11-25)"
       }
     },
     "NARRATOR_F": {

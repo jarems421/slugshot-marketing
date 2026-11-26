@@ -43,6 +43,27 @@ for _take in ("a", "b"):
                             "(low pizzicato, muted bass, ticking woodblock, cave drone); final 25 seconds resolve into warm, tender felt piano and strings with a crystal shimmer.")
 
 
+# Scene-bed library (owner 2026-11-26): the house bed is M2a + subtle nature; one bed per kind of scene, cut together per edit
+# (no fixed cycle). Same palette, key of D and 92 BPM pulse as M2a so any two cut together cleanly.
+HOUSE = ("Same musical world throughout: soft low pizzicato strings, muted upright bass, gentle woodblock, warm cave drone, "
+         "glassy crystal shimmer, celesta, water-drip percussion; tactile cavern fantasy. 92 BPM pulse. ")
+SCENES = {
+    "S01": ("upbeat-fun", "D major, upbeat and fun but not hyper: bouncier pizzicato, a light shaker and brushed snare, marimba hook. Things are going well."),
+    "S02": ("tense", "D minor, tense and suspenseful: low sustained strings, a ticking pulse, sparse heartbeat-like bass hits, no melody, held breath."),
+    "S03": ("mystery", "D minor, curious mystery and discovery: questioning celesta motif, soft harp, a slowly opening cave drone, sense of wonder."),
+    "S04": ("sad", "D minor, sad and tender: slow felt piano, a lonely cello line, sparse, quiet, a little empty. Half-time feel."),
+    "S05": ("wholesome", "D major, warm and wholesome: soft felt piano, gentle strings, celesta sparkle, a friendly heartfelt moment. Half-time feel."),
+    "S06": ("showdown", "D minor, epic showdown, comic-book serious: taiko-like toms, pizzicato ostinato, low brass swells, crystal impact hits, gaps for lines."),
+    "S07": ("victory", "D major, triumphant win: bright strings and brass stab, marimba run, a proud rising phrase, short and celebratory."),
+    "S08": ("silly", "D major, silly goofy comedy: plucky staccato bassoon and pizzicato, a tiptoeing rhythm, playful cartoon mischief, light."),
+    "S09": ("dread", "D minor, eerie horror dread: a detuned music box, deep cave drone, distant drips, faint glassy whine, very sparse."),
+    "S10": ("awkward", "D major, awkward deadpan pause: a near-silent drone with one hesitant plucked note now and then, very minimal, comic emptiness."),
+    "S11": ("chase", "D minor, frantic chase and panic: driving fast pizzicato in double time, rapid woodblock, rising strings, urgent but light."),
+}
+for _id, (_name, _prompt) in SCENES.items():
+    TRACKS[_id] = (_name, "lyria-3-clip-preview", 0.04, HOUSE + _prompt)
+
+
 def spent():
     if not LEDGER.exists():
         return 0.0

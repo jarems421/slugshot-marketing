@@ -42,3 +42,7 @@ Generated with Google Lyria via the Gemini API, only with the owner's approval. 
 ## Owner pick (26 Nov 2026)
 
 After listening to the first set and to chill retakes, the owner chose **M2a cavern-sneak-chill with the subtle nature layer** (`assets/music/M2a-cavern-sneak-chill-nature-subtle.wav`, 92 BPM, D minor; nature layer from `scripts/music_nature.py`) as the house background bed. The owner wants the energy to vary through a video (chill, then lifting, then easing back) without ever being in the viewer's face; tense scenes switch to a tense bed.
+
+## Scene-bed library (26 Nov 2026)
+
+Owner decision: no fixed energy cycle. Instead there's one bed per kind of scene, cut together in each edit as the story needs. `scripts/music_gen.py` S01–S11 share the house bed's palette and 92 BPM pulse: upbeat-fun, tense, mystery, sad, wholesome, showdown, victory, silly, dread, awkward, chase. Lyria drifted off D, so keys were measured (Krumhansl profiles), and S03, S06, S07, S10 and S11 were pitch-shifted by 1–2 semitones into keys related to the house bed's C minor (originals in `assets/music/unshifted/`). The calm beds (S03, S04, S05, S10) also have a `-nature-subtle.wav`. One take each; the owner flags misses by ear.

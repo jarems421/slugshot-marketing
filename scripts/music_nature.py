@@ -99,11 +99,12 @@ def save(path, x):
 
 
 def main():
-    bed_path = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "assets" / "music" / "M2a-cavern-sneak-chill.mp3"
+    bed_path = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else ROOT / "assets" / "music" / "M2a-cavern-sneak-chill.mp3"
     bed = load(bed_path)
     log = ROOT / "assets" / "LICENSES.csv"
     rows = list(csv.DictReader(log.open(encoding="utf-8")))
-    for label, density, level in (("faint", 0.8, 1.0), ("subtle", 1.0, 1.8), ("noticeable", 1.0, 2.8)):
+    levels = (("faint", 0.8, 1.0), ("subtle", 1.0, 1.8), ("noticeable", 1.0, 2.8))
+    for label, density, level in [l for l in levels if len(sys.argv) < 3 or l[0] == sys.argv[2]]:
         mix = bed + layer(len(bed) / RATE, density) * level
         mix *= min(1.0, 0.89 / np.max(np.abs(mix)))
         out = bed_path.with_name(f"{bed_path.stem}-nature-{label}.wav")
