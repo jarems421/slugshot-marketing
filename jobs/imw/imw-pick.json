@@ -1,4 +1,4 @@
-﻿{
+{
  "_about": "In My World format sample (toolkit capability demo; script is a placeholder for the owner's own). Fiction: label stays on screen. Not for publishing.",
  "concept": "InMyWorldPick",
  "hook_id": "SampleGemini",
@@ -40,8 +40,8 @@
  "scenes": [
   {
    "kind": "video",
-   "src": "out/takes/imw_pick_v04_matched.mp4",
-   "seconds": 30.467,
+   "src": "out/takes/imw_pick_v05_final.mp4",
+   "seconds": 30.633,
    "fit": "crop",
    "volume": 0
   }

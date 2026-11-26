@@ -14,6 +14,7 @@ rest of the place (scripts, meshes, binary properties) is byte-for-byte the snap
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -137,8 +138,9 @@ def main():
     swapped = 0
     if OVERRIDES.exists():
         for old, new in json.loads(OVERRIDES.read_text(encoding="utf-8")).items():
-            n = text.count(f"rbxassetid://{old}<")
-            text = text.replace(f"rbxassetid://{old}<", f"rbxassetid://{new}<")
+            # whole-number matches: content links (rbxassetid://ID) and IDs in script source (Floppy's model is
+            # loaded at runtime from `model = ID`)
+            text, n = re.subn(rf"(?<!\d){old}(?!\d)", new, text)
             swapped += n
 
     i = text.find(SERVER_STORAGE)

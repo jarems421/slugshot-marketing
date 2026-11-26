@@ -165,3 +165,9 @@ Later in revision 2:
 - **Voices.** The narrator uses the first Gemini version's direction. Rammstone and Floppy have stronger line directions. This sample used three candidates per line. Future runs default to one take and can request a performance audition with `--takes 3`. The timed transcript flagged only Floppy's opening groan. The owner judges the voices and performance.
 - **V04 picture check.** The decoder recovered all 914 frames at 30 fps with zero repeats. A 914-frame brightness comparison found the ten strongest in-shot differences in Inferno's intentional hop. The reviewed close-ups show a continuous front outline on Floppy and a clean blue edge around Aquabeek's belly peak.
 - **Dashboard master.** `SS_20261125_WORLD_InMyWorldPick_SampleGemini_V04_MASTER.mp4` passed every technical check at 1080 × 1920, 30 fps, 30.5 seconds, −14.0 LUFS and −2.8 dBTP. The captioned contact sheet confirmed the story label and speaker captions. The local dashboard opened V04 first and served its video stream.
+
+## 11. V05 (2026-11-26)
+
+- **Floppy's right eye.** The model's right socket sat up to 0.021 units off the mirrored left one at its outer-lower corner, so the rim curved into the eye. The game's `tools/slugs/repair_floppy_socket.py` mirrors it (gap now under 0.010). The owner approved the model upload; the marketing place swaps Floppy's model ID through the private overrides, which now match bare IDs in script source too (his model loads at runtime from `model = ID`). Checked in Studio: the right eye's lower edge matches the left.
+- **Rammstone's voice.** Charon with a deep, gruff American direction (Algenib was rejected: "sounds weird, a bit British").
+- **Picture.** 919/919 frames, no repeats. One patched frame came out slightly darker and was replaced by the average of its neighbours; frame-to-frame jumps only at the planned cuts and Inferno's hop. Master passes QC.
