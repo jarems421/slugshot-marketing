@@ -238,6 +238,7 @@ function Scene.prepare(id: string, options: any?): any
 		local a = actors[name]
 		return if a then Actors.frameAt(a, t, where) else mark(name)
 	end
+	local lensAt: Vector3? = nil
 	local function headAt(name: string, t: number): Vector3
 		local a = actors[name]
 		if not a then
@@ -246,6 +247,11 @@ function Scene.prepare(id: string, options: any?): any
 		return (frameAt(name, t) * CFrame.new(0, a.eye or a.height * 0.72, 0)).Position
 	end
 	where = function(name: string, t: number): Vector3
+		-- "camera": the lens of the shot being filmed, for lines said to the viewer (owner, 2026-11-26: Floppy should
+		-- look into the screen). The previous frame's camera, so it lags one frame at a cut; looks ease anyway.
+		if name == "camera" then
+			return lensAt or headAt(next(actors), t)
+		end
 		return headAt(name, t)
 	end
 	-- Initial facing: `face` on the actor def turns it toward an actor or mark on its first frame.
@@ -380,6 +386,7 @@ function Scene.prepare(id: string, options: any?): any
 		FilmTime.step(t)
 		fov = fov or 50
 		local plain = cf
+		lensAt = plain.Position
 		if portrait then
 			cf, fov = Cameras.portrait(cf, fov)
 		end

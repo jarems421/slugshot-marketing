@@ -12,7 +12,7 @@ Script (UTF-8 text):
   Default gap between lines is 0.25 s.
 
 Writes to out/dialogue/<id>/:
-  lines/NN_NAME.wav     each line as performed (never silence-trimmed or sped up)
+  lines/NN_NAME.wav     each line as performed (Gemini: TTS edge padding trimmed; cast tempo applied, pitch kept)
   dialogue.wav          the lines placed on one timeline (48 kHz mono, about -16 LUFS)
   dialogue.json         THE timing source: per line speaker, actor, start/end, script words with measured
                         times, a 30 fps mouth envelope, and deviations between script and performance
@@ -160,6 +160,25 @@ def perform_passage(group, lines, voice, style, work):
     return True
 
 
+
+def line_filters(pitch=0, tempo=1.0, trim=False):
+    """FFmpeg filters for one performed line.
+    trim: cut the TTS's own padding at the line's edges to 40 ms before and 80 ms after the voice (Gemini adds about
+      0.3-0.5 s; 31 lines of it added about 20 s of dead air to pilot 01). Scripted pauses are [beat]s and gaps
+      between lines, so nothing acted is removed.
+    tempo: a character's pace (cast.json <engine>.tempo), pitch-preserving. The narrator's bright genre direction read
+      at about 150 wpm against the genre's ~210 (owner, 2026-11-26).
+    Then an even level per line without squashing delivery: a gentle peak-safe loudness match."""
+    chain = []
+    if trim:
+        chain += ["silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.04", "areverse",
+                  "silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.08", "areverse"]
+    if pitch:
+        chain.append(f"rubberband=pitch={2 ** (pitch / 12):.5f}:formant=preserved")
+    if tempo and abs(tempo - 1.0) > 1e-3:
+        chain.append(f"rubberband=tempo={tempo:.4f}:pitchq=quality:formant=preserved")
+    return chain + ["highpass=f=70", "loudnorm=I=-17:TP=-2:LRA=15", f"aresample={RATE}"]
+
 def perform(lines, engine, work, only, mode="design", takes=1):
     """Synthesise each line to lines/NN_NAME.wav (48 kHz mono, pitch applied, levelled but not compressed).
     Gemini, one take, full run: consecutive same-speaker, same-direction lines share one request."""
@@ -236,11 +255,8 @@ def perform(lines, engine, work, only, mode="design", takes=1):
     for ln in lines:
         if "_raw" not in ln:
             continue
-        chain = []
-        if ln["_pitch"]:
-            chain.append(f"rubberband=pitch={2 ** (ln['_pitch'] / 12):.5f}:formant=preserved")
-        # Even level per line without squashing delivery: a gentle peak-safe loudness match, no silence removal.
-        chain += ["highpass=f=70", "loudnorm=I=-17:TP=-2:LRA=15", f"aresample={RATE}"]
+        g = CAST[ln["speaker"]].get(engine) or {}
+        chain = line_filters(ln["_pitch"], g.get("tempo", 1.0), trim=engine == "gemini")
         ffmpeg("-i", ln["_raw"], "-af", ",".join(chain), "-ac", "1", ln["file"])
         ln["_raw"].unlink(missing_ok=True)
 

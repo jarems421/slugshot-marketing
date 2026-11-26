@@ -44,8 +44,11 @@ def mix(a):
     if a.music:
         inputs += ["-stream_loop", "-1", "-i", a.music]
         count += 1
-        graph.append(f"[1:a]aresample=48000,volume={a.music_db}dB[bed]")
-        graph.append("[bed][key]sidechaincompress=threshold=0.02:ratio=10:attack=15:release=350[ducked]")
+        # Every bed is levelled to -16 LUFS first, so music_db means the same for any track. Gentle ducking: the old 10:1
+        # duck held beds about 13 dB under narration that fills ~90% of an In My World video, inaudible on a phone
+        # (owner, 2026-11-26: "I can only hear the narrator"). Measured with music_db -6: about 9 dB under the voice.
+        graph.append(f"[1:a]aresample=48000,loudnorm=I=-16:TP=-2:LRA=11,volume={a.music_db}dB[bed]")
+        graph.append("[bed][key]sidechaincompress=threshold=0.05:ratio=3:attack=20:release=250[ducked]")
         layers.append("[ducked]")
     else:
         graph.append("[key]anullsink")
@@ -79,7 +82,7 @@ def main():
     m.add_argument("output")
     m.add_argument("--narration", required=True)
     m.add_argument("--music")
-    m.add_argument("--music-db", type=float, default=-18)
+    m.add_argument("--music-db", type=float, default=-6, help="bed gain after levelling to -16 LUFS; -6 sits about 9 dB under the voice")
     m.add_argument("--sfx", nargs="*", help="file@seconds[@dB]")
     m.add_argument("--sfx-db", type=float, default=-6)
     a = ap.parse_args()

@@ -3,7 +3,7 @@
 ## Balance (what the toolkit does by default)
 
 - Masters land at about -14 LUFS integrated, true peak ≤ -1 dBTP (`ss qc` checks). **(C: common platform loudness practice)**
-- Voice is the priority. `ss audio mix` ducks music about 13 dB under speech (`--music-db -18` to `-24` for the bed). If you can't follow the words at low phone volume, the music is too loud. **(research PDF audio gate)**
+- Voice is the priority, but the bed must be heard. `ss audio mix` levels every bed to -16 LUFS, then applies `music_db` (default -6) and a gentle 3:1 duck: the bed sits about 9 dB under the voice, like genre videos (about 8 dB). The old 10:1 duck held it 13 dB under, and the owner heard only the narrator (2026-11-26). Measure, don't guess: bed under voice during speech should be 7-10 dB. If the words get hard to follow at low phone volume, the music is too loud. **(S: measured; research PDF audio gate)**
 - Gameplay sound under narration: `clip_volume` about 0.2-0.35; louder only on the payoff hit, where the game's own sound sells it. **(D)**
 
 ## Narration
@@ -72,5 +72,6 @@ Don't use an SFX:
   - Give each SFX its own level (`"db"`); one global SFX gain flattens the hierarchy.
 - Anchor SFX to the script: `"at": "L6.end+0.55"`. Sounds land on actions (a landing, a smile), never as rhythm filler.
 - Soundboard bank (real meme sounds, owner-accepted takedown risk; TikTok entertainment posts only, never with the game named): `data/local/research/creative/soundboard/bank.csv`, files in `media/meme/soundboard/`. Pick by scene job, clean clips only.
+- **No SFX by default (owner, 2026-11-26).** After pilot 01 the owner asked for a clean slate: music only, then they choose the sound language (e.g. a fart on a Floppy impact or a fail). Don't add stings or meme sounds until the owner has chosen them. The Looney Tunes signature over the Inferno miss "didn't fit at all".
 - The silence after a punchline stays silent. The bed may continue underneath; nothing new starts. **(D)**
 - Listen on a phone speaker before calling a mix done (owner check).

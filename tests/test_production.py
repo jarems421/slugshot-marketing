@@ -86,6 +86,14 @@ class Dialogue(unittest.TestCase):
         # directions never merge or spread; an [overlap] (interruption) stays its own request
         self.assertEqual(groups, [[0], [1, 2], [3], [4], [5], [6]])
 
+    def test_line_filters_trim_and_tempo(self):
+        plain = dialogue.line_filters()
+        self.assertFalse(any("silenceremove" in f or "tempo" in f for f in plain))
+        f = dialogue.line_filters(tempo=1.25, trim=True)
+        self.assertTrue(f[0].startswith("silenceremove") and "areverse" in f)
+        self.assertIn("rubberband=tempo=1.2500:pitchq=quality:formant=preserved", f)
+        self.assertTrue(f[-1].startswith("aresample"))
+
     def test_split_points_cut_in_the_pause(self):
         w = [{"text": t, "start": s, "end": e} for t, s, e in
              (("Some", 0, .2), ("pick", .2, .4), ("fire.", .4, .7), ("Some", 1.1, 1.3), ("pick", 1.3, 1.5), ("water.", 1.5, 1.9))]

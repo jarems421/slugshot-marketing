@@ -247,7 +247,7 @@ def validate(spec):
             bad = set(b.get("set", {})) - CHANNELS
             if not b.get("set") or bad:
                 e.append(f"{where}: express needs 'set' with channels from {sorted(CHANNELS)}")
-        if action == "look" and b.get("target") not in named | {"none", "auto"}:
+        if action == "look" and b.get("target") not in named | {"none", "auto", "camera"}:
             e.append(f"{where}: look target {b.get('target')} unknown")
         if action == "animate" and b.get("animation") not in LIBRARY["animations"]:
             e.append(f"{where}: animation {b.get('animation')} is not in library.json")

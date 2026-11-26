@@ -23,9 +23,10 @@
           "Puck",
           "Orus"
         ],
-        "style": "Low, smooth male storyteller with a dry, deadpan, understated delivery and a hint of a smile; calm but never slow, never shouting. Fast-paced, continuous storytime narration at about 205 words per minute: keep sentences flowing with only short pauses between them, and one brief pause just before the final line.",
+        "style": "Bright, theatrical, conspiratorial storyteller with a smile in the voice, like a spirited bedtime story told fast for TikTok. Wide pitch jumps: launch each sentence on a high, energetic reset and keep clause ends suspended and buoyant; never trail into low, tired vocal fry. Fast rhythmic patter for set-up, slowing down to hit key nouns and numbers. Punchlines get a tiny pause, then a crisp drop.",
         "shared_delivery": false,
-        "note": "owner 2026-11-26: picked Algieba deep-dry (in-story test M2_Algieba_deep-dry) over Puck, Orus and three female voices; previous default Puck (2026-11-25)"
+        "note": "owner 2026-11-26: Algieba voice kept; delivery redirected after pilot 01 ('plain', 'trying to be fast'): genre narrators are bright and theatrical (Gemini listening to the 8 most-viewed openings; data/local/research/creative/prosody/). The old 'dry, deadpan' direction put Algieba in vocal fry (~69 Hz on 'In'); this one measured ~125 Hz with a +5 st rise to 'world'. Don't add per-word melody instructions: they made it sing-song (+15.7 st). Put the hook on its own line with [beat 0.3] after it.",
+        "tempo": 1.25
       }
     },
     "NARRATOR_F": {

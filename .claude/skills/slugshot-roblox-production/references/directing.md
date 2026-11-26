@@ -80,3 +80,33 @@ Slugs have no arms, so acting lives in head, body, eyes and timing:
 1. Stills at the first frame of each shot and at each punchline.
 2. Nothing clipped at the frame edge; eyes upper-middle; eyelines correct.
 3. Truth label set; canon clean; no game name visible on any prop while the reveal lock is on.
+
+## 8. Owner rules from pilot 01's review (2026-11-26): MUST for every video
+
+1. **Use the whole world.** At least two or three sets per 60-90 s video, chosen for the beat: the hub plaza for the setup, the training arena for duels and practice, other islands and the grove for montage and the twist. One spawn island for 95 s read as cramped (owner: "we've got the training island, we've got so much"). Sets and marks: `references/sets.md`.
+2. **Wider by default.** Show what's happening, not just faces.
+   - Action (aiming, firing, getting hit): the whole person and the blaster in frame (`close_up` `size` 3-4.5 for humans, or `two_shot`, or a wide).
+   - Ordinary lines: medium (`size` 2-2.5 for humans, 1.6-2 for slugs).
+   - Close-ups (`size` 1.1-1.4) only for reactions and punchlines, and never with part of the head out of frame.
+   - Owner: "always so packed in tight", "why is the camera so zoomed in? You should see the whole gun."
+3. **Establish before you cut in.** Each new situation (a duel, a huddle, a new set) opens with a wide or two-shot that shows who is where. Then cut closer.
+4. **Simultaneous action is split screen.** A duel is two shooters firing at once:
+   - top half the slower slug (Floppy flopping), bottom half the other (Rammstone in his cool transformed form);
+   - on impact, show the result (Floppy misses; Rammstone hits with an exaggerated knockback);
+   - the screens rejoin into one;
+   - the winner's ending plays (lands, looks up cocky, digs down).
+
+   Use `split` (`references/humans.md`). The owner designed this; don't fall back to fast cuts between tight shots ("you can't tell what's going on").
+5. **Show what the narration claims.** If a line says "So did everyone else", the viewer sees each of them lose on screen. Never park characters in the background and *say* they lost.
+6. **No extras without a job.** Background characters enter on screen or are established, have a beat, and stand on clean floor (check stills: nobody in a crack, rock or wall).
+7. **The speaker is on screen.** During a character's line, the frame shows that character (or their reaction is the point). Otherwise viewers can't tell who's talking.
+8. **Lines to the viewer go into the lens.** A slug talking to the viewer (Floppy's "Mm. Hello.", a proud beat like "a month without a single loss") uses `look` with target `"camera"`, framed so his whole face is in shot.
+9. **Still review before filming.** For every shot, a still at its middle, checked against this list:
+   - subject fully framed;
+   - the speaker visible;
+   - what the line says is shown;
+   - geography clear;
+   - background clean;
+   - not too tight.
+
+   Fix it, then re-check. Don't film until every shot passes.

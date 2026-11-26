@@ -35,3 +35,9 @@ Run this before voicing or filming. A script that passes the checker can still b
 4. What needs the owner's ear (humour, voice, feel).
 
 Then run the checker for text signals. Never present its output as a quality verdict.
+
+## Line logic and show-don't-tell (owner review of pilot 01, 2026-11-26)
+
+- **Read every character line from inside that character.** Would they say it, here, given what they want? Pilot 01 had Inferno shout "FINALLY! Someone good!" as he was handed to Kai. The owner: it makes no sense, because Kai has spent months with Floppy and wouldn't be the "good" one to Inferno. If a line needs explaining, rewrite it.
+- **Every narrated event needs a picture.** "So did everyone else" must be filmable as each of them losing. If a claim can't be shown in a second or two, cut it or change it to something that can.
+- **Name who speaks.** A character line should come where the edit can show that character speaking.

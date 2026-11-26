@@ -9,7 +9,7 @@ Edit file (JSON), paths relative to this folder:
     "voice": {"voice": "am_puck", "speed": 1.1},    Kokoro settings for the script
     "narration": "media/vo/recorded.wav",           OR your own recording (takes priority over "script")
     "tidy": true,                                   clean the voice first (pause trimming, levelling)
-    "music": "assets/music/bed.mp3", "music_db": -20,
+    "music": "assets/music/bed.mp3", "music_db": -6,     bed levelled to -16 LUFS, then this gain
     "sfx": [{"src": "assets/sfx/whoosh.wav", "at": 3.0}],     seconds on the final timeline
     "captions": "auto",                             "auto" = transcribe the voice; or a checked .srt; or null
     "emphasis": ["Floppy", "Inferno"],              words always shown in the accent colour
@@ -166,7 +166,7 @@ def main():
     if voice and (edit.get("music") or edit.get("sfx")):
         cmd = [PY, "scripts/audio.py", "mix", work / "mix.wav", "--narration", voice]
         if edit.get("music"):
-            cmd += ["--music", edit["music"], "--music-db", edit.get("music_db", -20)]
+            cmd += ["--music", edit["music"], "--music-db", edit.get("music_db", -6)]
         if edit.get("sfx"):
             cmd += ["--sfx", *[f"{s['src']}@{when(s['at'], dialogue)}" + (f"@{s['db']}" if "db" in s else "") for s in edit["sfx"]]]
         sh(cmd)
