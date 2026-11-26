@@ -9,19 +9,66 @@
  "music": "assets/sfx/cavern_bed.wav",
  "music_db": -30,
  "sfx": [
-  {"src": "assets/sfx/finger_snap.wav", "at": 11.38, "db": -8},
-  {"src": "assets/sfx/slug_land.wav", "at": 12.36, "db": -24},
-  {"src": "assets/sfx/slug_land.wav", "at": 12.91, "db": -24},
-  {"src": "assets/sfx/floppy_burble.wav", "at": 13.3, "db": -16},
-  {"src": "assets/sfx/floppy_burble.wav", "at": 14.95, "db": -18},
-  {"src": "assets/sfx/blaster_shot.wav", "at": 20.53, "db": -9},
-  {"src": "assets/sfx/blaster_shot.wav", "at": 21.0, "db": -10},
-  {"src": "assets/sfx/crystal_tick.wav", "at": "L7.end+0.05", "db": -20},
-  {"src": "assets/sfx/floppy_burble.wav", "at": "L8.end+0.3", "db": -12}
+  {
+   "src": "assets/sfx/finger_snap.wav",
+   "at": 11.38,
+   "db": -8
+  },
+  {
+   "src": "assets/sfx/slug_land.wav",
+   "at": 12.36,
+   "db": -24
+  },
+  {
+   "src": "assets/sfx/slug_land.wav",
+   "at": 12.91,
+   "db": -24
+  },
+  {
+   "src": "assets/sfx/floppy_burble.wav",
+   "at": 13.3,
+   "db": -16
+  },
+  {
+   "src": "assets/sfx/floppy_burble.wav",
+   "at": 14.95,
+   "db": -18
+  },
+  {
+   "src": "assets/sfx/blaster_shot.wav",
+   "at": 20.53,
+   "db": -14
+  },
+  {
+   "src": "assets/sfx/whoosh.wav",
+   "at": 20.6,
+   "db": -12
+  },
+  {
+   "src": "assets/sfx/crystal_tick.wav",
+   "at": 20.95,
+   "db": -16
+  },
+  {
+   "src": "assets/sfx/crystal_tick.wav",
+   "at": "L7.end+0.05",
+   "db": -20
+  },
+  {
+   "src": "assets/sfx/floppy_burble.wav",
+   "at": "L8.end+0.3",
+   "db": -12
+  }
  ],
  "hook": "",
  "end_card": false,
  "scenes": [
-  {"kind": "video", "src": "out/takes/humans_demo_v02.mp4", "seconds": 29.033, "fit": "crop", "volume": 0}
+  {
+   "kind": "video",
+   "src": "out/takes/humans_demo_v04.mp4",
+   "seconds": 29.033,
+   "fit": "crop",
+   "volume": 0
+  }
  ]
 }

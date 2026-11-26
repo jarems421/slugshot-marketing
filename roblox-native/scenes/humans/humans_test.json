@@ -210,7 +210,7 @@
    "actor": "kai",
    "action": "hold",
    "item": "floppy",
-   "hand": "both",
+   "hand": "right",
    "duration": 3.0
   },
   {

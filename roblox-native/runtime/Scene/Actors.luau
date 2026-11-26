@@ -351,7 +351,7 @@ end
 function Actors.compile(actor: any, beats: { any }, place: (string, any) -> CFrame, dialogue: any?)
 	local tr = {
 		moves = {}, faces = {}, hops = {},
-		ch = { smile = {}, angry = {}, react = {}, look_up = {}, squint = {}, open = {}, lean = {} },
+		ch = { smile = {}, angry = {}, react = {}, look_up = {}, squint = {}, open = {}, lean = {}, smirk = {} },
 		blinks = {}, lines = {}, held = {},
 	}
 	tr.home = place(actor.def.mark, actor)

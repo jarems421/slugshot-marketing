@@ -10,11 +10,15 @@ built into the marketing place only). Demo: `roblox-native/scenes/humans/humans_
   game's own `chord` / `toR6` (ported), so the game's clips, Roblox emotes and authored poses all share one path.
 - **Deterministic**: every part is anchored and placed by our own forward kinematics from scene time. No AnimationTracks,
   no physics, so held film frames, patches and stills agree, as for slugs.
-- **Faces drawn from parts** (eyes, brows, a two-piece mouth) on the head's curve: blink, glance before the head turns,
-  raised/knitted brows (`react`/`angry`), smile/frown (`smile`), mouth from the dialogue envelope. Our ink, no uploads.
-  (EditableImage decals did not render in this place.)
-- **Looks** come from free Roblox-owned catalog items applied by ID in Studio (`library.json` `humans`): nothing bought,
-  uploaded or published. The server builds the rig (`CreateHumanoidModelFromDescription` is server-only).
+- **Painted faces** (owner, 2026-11-26: "actual facial features" like top Roblox videos): our own kit drawn by
+  `roblox-native/tools/faces.py` (7 eyes, 5 brows, 11 mouths; `face_style` boy|girl), uploaded with owner approval as
+  private decals (IDs only in ignored `studio/face-assets.json`, inlined into the runtime by the place builder). Three
+  layers switch per frame from the `express` channels (`smile`, `react`, `angry`, `squint`, new `smirk`), blinks,
+  glances and the dialogue mouth. Without the kit the old part-drawn face is the fallback.
+- **Looks**: Roblox catalog clothing and hair applied by ID in Studio (owner choice: catalog fits; nothing bought).
+  They are other creators' designs, so check each on the rig for brand logos (a North Face puffer and a Guess top were
+  dropped). Pick hair that keeps the face clear: long bangs hid the painted eyes. Some layered hair doesn't attach to
+  R6; check in a still. The server builds the rig (`CreateHumanoidModelFromDescription` is server-only).
 
 ## Moves (`library.json` `human_moves`)
 - Game clips: `stand`, `run`, `sprint`, plus private retargets present in the marketing place (`flinch`, `land`, `jump`,
@@ -31,10 +35,24 @@ built into the marketing place only). Demo: `roblox-native/scenes/humans/humans_
 - Space people about 4-5 studs apart; at 2.5 their shoulders cross when they turn to each other.
 - A two-person walk needs a front-diagonal follow (`follow` with `offset` and `look`) to fit 9:16.
 - Keep entrances out of earlier shots' backgrounds (start marks behind the camera).
-- Holding: hands sit low and in front; scale the slug to taste (`scale` on the slug actor) so it never hides the face.
+- Holding (owner, 2026-11-26): a slug sits on one hand (`hand` right|left, palm out to the side) or a shoulder
+  (`shoulder`, `shoulder_left`); two-handed holds were dropped (the slug floated between the hands).
+- Slug shots (owner: "the slug actually shooting and transforming ... a special moment"): `shoot` with `slug` and
+  `target` launches that species from the muzzle and plays the game's own SlugTransformation (twirl, glow, swap to
+  <Slug>Transformed, hit, turn back), replayed from scene time (Shots.luau). Floppy never transforms: he tumbles.
+  Pair it with the `slug_shot` camera (rides beside the slug; keep it on the open side, away from walls) and end that
+  shot right after the hit. One shot per beat; no generic muzzle flash.
+- The game's blaster model points its barrel along the handle's +Z, so the hold turns it about the grip.
 - R6 has no fingers: a "snap" is an arm flick timed to `assets/sfx/finger_snap.wav`.
 - Rehearse without rebuilding: `scene.py json ID`, or patch the built spec in the playtest through
   `_G.SlugshotSceneSpecs[id]` (Scene.load prefers it), then `Scene.still`.
+
+## Filming notes
+- Wait for the lobby: the game's HubArt builds the cavern for about two minutes after play starts. Scene.film now waits
+  for `workspace.HubSolidParts`, preloads and looks through every shot first (`warmup_s` in the manifest); takes started
+  earlier filmed walls appearing (owner: background "flashes from dark to light").
+- `take.py film` matches frames filled from patch recordings to the first recording's lighting (smooth per-pixel gain
+  from nearby shared frames), so patches no longer flash.
 
 ## Owner checks still needed
 - Whether R6 humans with drawn faces fit the brand (an R15 / dynamic-head route would need its own decision).

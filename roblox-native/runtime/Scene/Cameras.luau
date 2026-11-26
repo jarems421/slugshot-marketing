@@ -103,6 +103,20 @@ Cameras.presets = {
 		return ctx.Shot.still({ at = CFrame.lookAt(at, b - Vector3.new(0, 0.1 * ctx.height(s.target), 0)),
 			duration = s.duration, fov = s.fov or 34 })
 	end,
+	-- A slug shot as its own moment (owner, 2026-11-26): from beside the shooter's muzzle, the camera rides along with
+	-- the flying slug (`target` = the shooter, `shot` = which of their slug shots), a little behind and to one side,
+	-- looking ahead of it, so its twirl, glow and transformation fill the frame.
+	slug_shot = function(s, ctx)
+		local side, back, up = s.side or 2.2, s.back or 3.2, s.height or 0.8
+		return {
+			duration = s.duration,
+			pose = function(lt)
+				local cf = ctx.slug(s.target, s.shot or 1, ctx.start + lt) or ctx.frame(s.target)
+				local at = cf.Position + cf.RightVector * side - cf.LookVector * back + Vector3.new(0, up, 0)
+				return CFrame.lookAt(at, cf.Position + cf.LookVector * (s.lead or 1.5)), s.fov or 55, nil
+			end,
+		}
+	end,
 	whip_pan = function(s, ctx)
 		local a, b = ctx.frame(s.from).Position, ctx.frame(s.to).Position
 		local at = (a + b) / 2 + Vector3.new(0, s.height or 3, 0) + (b - a).Unit:Cross(Vector3.yAxis) * (s.distance or 10)

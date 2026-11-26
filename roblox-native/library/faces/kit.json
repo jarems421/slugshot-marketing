@@ -1,0 +1,64 @@
+{
+ "boy": {
+  "eyes": [
+   "open",
+   "left",
+   "right",
+   "wide",
+   "half",
+   "closed",
+   "happy"
+  ],
+  "brows": [
+   "neutral",
+   "raised",
+   "angry",
+   "sad",
+   "skeptic"
+  ],
+  "mouths": [
+   "neutral",
+   "flat",
+   "smile",
+   "grin",
+   "smirk",
+   "frown",
+   "o",
+   "talk_small",
+   "talk_wide",
+   "talk_smile",
+   "blush"
+  ]
+ },
+ "girl": {
+  "eyes": [
+   "open",
+   "left",
+   "right",
+   "wide",
+   "half",
+   "closed",
+   "happy"
+  ],
+  "brows": [
+   "neutral",
+   "raised",
+   "angry",
+   "sad",
+   "skeptic"
+  ],
+  "mouths": [
+   "neutral",
+   "flat",
+   "smile",
+   "grin",
+   "smirk",
+   "frown",
+   "o",
+   "talk_small",
+   "talk_wide",
+   "talk_smile",
+   "blush"
+  ]
+ }
+}

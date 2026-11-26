@@ -20,16 +20,16 @@ MODES = {"authentic_gameplay", "staged_gameplay", "staged_fiction", "hybrid_brid
 MECHANICS = {"real", "none", "fictional"}
 OUTCOMES = {"organic", "scripted", "n/a"}
 PRESETS = {"static_wide", "two_shot", "orbit_reveal", "dolly_in", "slug_low_angle", "reaction_closeup",
-           "follow", "snap_zoom", "whip_pan", "close_up", "push_in", "over_shoulder"}
+           "follow", "snap_zoom", "whip_pan", "close_up", "push_in", "over_shoulder", "slug_shot"}
 ACTIONS = {"move_to", "face", "hop", "animate", "express", "look", "blink",
            "gesture", "aim", "point", "shoot", "hold", "equip", "holster"}
 ACTOR_KINDS = {"standin_humanoid", "standin_slug", "clone", "slug", "human"}
 # Human actors (runtime/Scene/Humans.luau): what only they do, how they travel, and how they hold a slug.
 HUMAN_ACTIONS = {"gesture", "aim", "point", "shoot", "hold", "equip", "holster"}
 GAITS = {"walk", "run", "sprint", "back"}
-HANDS = {"right", "left", "both"}
+HANDS = {"right", "left", "shoulder", "shoulder_left"}  # one hand or a shoulder (owner, 2026-11-26)
 SPECIES = {"Floppy", "Inferno", "Aquabeek", "Rammstone", "Tormato", "BoonDoc", "Phosphoro"}
-CHANNELS = {"smile", "angry", "react", "look_up", "squint", "open", "lean"}
+CHANNELS = {"smile", "angry", "react", "look_up", "squint", "open", "lean", "smirk"}  # smirk: humans' painted faces
 REPO = ROOT.parent
 SET_KINDS = {"cyc", "place"}
 CUE_TYPES = {"vfx", "sound"}
@@ -179,13 +179,18 @@ def validate(spec):
             e.append(f"{where}: {action} target {b.get('target')} unknown")
         if action in ("shoot", "equip", "holster", "aim") and human and actors[actor].get("blaster") is None:
             e.append(f"{where}: {action} needs the actor to carry a blaster (\"blaster\": true or false = holstered)")
+        if action == "shoot" and b.get("slug"):
+            if b["slug"] not in SPECIES:
+                e.append(f"{where}: shoot slug must be one of {sorted(SPECIES)}")
+            if b.get("target") not in named:
+                e.append(f"{where}: a slug shot needs a target (actor or mark)")
         if action == "hold":
             item = actors.get(b.get("item"), {})
             if not item or item.get("kind") == "human":
                 e.append(f"{where}: hold needs 'item', a slug or prop actor in this scene")
             if not b.get("duration") or b["duration"] <= 0:
                 e.append(f"{where}: hold needs a positive duration")
-            if b.get("hand", "both") not in HANDS or b.get("facing", "holder") not in ("holder", "out"):
+            if b.get("hand", "right") not in HANDS or b.get("facing", "holder") not in ("holder", "out"):
                 e.append(f"{where}: hold hand is one of {sorted(HANDS)}, facing 'holder' or 'out'")
         if action == "move_to" and b.get("mark") not in marks:
             e.append(f"{where}: unknown mark {b.get('mark')}")

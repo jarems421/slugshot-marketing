@@ -2,59 +2,97 @@
  "_about": "Reusable production assets referenced by scene specs. Empty until production preparation. Animation entry: {\"id\": \"rbxassetid://...\", \"rig\": \"R15|slug:<species>\", \"source\": \"how it was made\", \"licence\": \"original|...\", \"approved\": false, \"markers\": {\"FIRE\": {\"type\": \"vfx\", \"effect\": \"burst\"}}}. Sound entry: {\"id\": \"rbxassetid://...\", \"volume\": 0.6, \"licence\": \"...\"}. Only add assets the owner has approved; never Floppy transform/ability animations.",
  "animations": {},
  "sounds": {},
- "_humans": "Human actors (kind 'human', runtime/Scene/Humans.luau). humans: reusable characters; clothing and hair are free Roblox-owned catalog items applied by catalog ID in Studio (nothing bought, uploaded or committed but the IDs). human_moves: {clip} = the game's own movement clips; {animation} = a Roblox-owned default animation; {catalog} = a free Roblox emote; {keys} = an authored pose in the game's R15 pose terms, degrees (Shoulder/Hip +X swings forward, right limbs abduct +Z, left -Z; Waist/Neck -X leans forward, +Y turns left, +Z tilts left). Options: mask (full|upper|arms|right_arm|left_arm|head), loop, rate, speed (studs/s a locomotion cycle covers at rate 1). approved: false until the owner has seen them in a video.",
+ "_humans": "Human actors (kind 'human', runtime/Scene/Humans.luau). humans: reusable characters; clothing and hair are Roblox catalog items applied by ID in Studio (nothing bought; other creators' designs, so no brand logos); face_style picks the painted face kit (boy|girl, tools/faces.py). human_moves: {clip} = the game's own movement clips; {animation} = a Roblox-owned default animation; {catalog} = a free Roblox emote; {keys} = an authored pose in the game's R15 pose terms, degrees (Shoulder/Hip +X swings forward, right limbs abduct +Z, left -Z; Waist/Neck -X leans forward, +Y turns left, +Z tilts left). Options: mask (full|upper|arms|right_arm|left_arm|head), loop, rate, speed (studs/s a locomotion cycle covers at rate 1). approved: false until the owner has seen them in a video.",
  "humans": {
   "kai": {
-   "note": "plaid shirt, black jeans, brown hair",
+   "note": "'86' jersey, baggy black jeans, side-shave fade (keeps the face clear)",
    "skin": [
     224,
     172,
     132
    ],
-   "shirt": 398635081,
-   "pants": 382537569,
+   "shirt": 107788293618309,
+   "pants": 86318051157475,
    "hair": [
-    376524487
-   ]
-  },
-  "mira": {
-   "note": "denim jacket, dark green jeans",
-   "skin": [
-    141,
-    96,
-    70
+    3814474927
    ],
-   "shirt": 398633584,
-   "pants": 144076760,
-   "hair": [
-    451220849
-   ]
+   "face_style": "boy",
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
   },
   "raf": {
-   "note": "motorcycle shirt, ripped skater pants",
+   "note": "grin hoodie, grey sweats, brown quiff (keeps the face clear)",
    "skin": [
     246,
     205,
     170
    ],
-   "shirt": 144076358,
-   "pants": 398635338,
+   "shirt": 78111090302176,
+   "pants": 112064006460227,
    "hair": [
-    63690008
-   ]
+    376548738
+   ],
+   "face_style": "boy",
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
+  },
+  "mira": {
+   "note": "'28' crop jersey, baggy cargo jeans, brown braid",
+   "skin": [
+    234,
+    184,
+    146
+   ],
+   "shirt": 70587456021388,
+   "pants": 7235326918,
+   "hair": [
+    13251161977
+   ],
+   "face_style": "girl",
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
   },
   "juno": {
-   "note": "guitar tee and black jacket, jeans",
+   "note": "skeleton zip hoodie, baggy jeans, blonde-brown hair",
+   "skin": [
+    141,
+    96,
+    70
+   ],
+   "shirt": 113499282337185,
+   "pants": 7235326918,
+   "hair": [
+    6501746646
+   ],
+   "face_style": "girl",
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
+  },
+  "dex": {
+   "note": "red shirt and black vest, grey star cargos, two-tone wolf cut",
    "skin": [
     196,
     140,
     104
    ],
-   "shirt": 4047884046,
-   "pants": 398634487,
+   "shirt": 133089196017050,
+   "pants": 12598481285,
    "hair": [
-    451221329
-   ]
+    8358684655
+   ],
+   "face_style": "boy",
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
+  },
+  "nova": {
+   "note": "brown varsity jacket, black ripped pants, grunge wolf hair",
+   "skin": [
+    120,
+    82,
+    60
+   ],
+   "shirt": 91721205591696,
+   "pants": 4737347763,
+   "hair": [
+    11770892209
+   ],
+   "face_style": "girl",
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
   }
  },
  "human_moves": {

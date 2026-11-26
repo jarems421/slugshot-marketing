@@ -107,7 +107,12 @@ def runtime_xml():
     import scene  # validates every spec or stops the build
     specs = scene.load_valid()
     runtime = HERE / "runtime"
-    library = (HERE / "library" / "library.json").read_text(encoding="utf-8")
+    library = json.loads((HERE / "library" / "library.json").read_text(encoding="utf-8"))
+    # Human face kit decal IDs (tools/faces.py, owner-approved upload): private, so kept in an ignored file.
+    faces = STUDIO / "face-assets.json"
+    if faces.exists():
+        library["face_assets"] = json.loads(faces.read_text(encoding="utf-8"))
+    library = json.dumps(library)
     scenes = "".join(module(s["id"], f"return [==[{json.dumps(s)}]==]") for s in specs)
     # Cast: the RemoteFunction human actors use to ask the server (runtime/CastServer.server.luau) for rigs
     cast = f'<Item class="RemoteFunction" referent="{Refs.next()}"><Properties><string name="Name">Cast</string></Properties></Item>\n'

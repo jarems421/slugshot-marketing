@@ -187,7 +187,12 @@ function Scene.prepare(id: string, options: any?): any
 
 	local function ctxAt(start: number)
 		return {
-			Shot = Reel.Shot, Curve = Reel.Curve, seed = opts.seed or 1,
+			Shot = Reel.Shot, Curve = Reel.Curve, seed = opts.seed or 1, start = start,
+			-- a human's k-th slug shot in flight at scene time tt (the slug_shot camera)
+			slug = function(n, k, tt)
+				local a = actors[n]
+				return if a and a.human then Humans.shotFrame(a, k or 1, tt, where) else nil
+			end,
 			frame = function(n) return frameAt(n, start) end,
 			head = function(n) return headAt(n, start) end,
 			height = function(n) return actors[n] and actors[n].height or 5 end,
@@ -341,6 +346,7 @@ function Scene.prepare(id: string, options: any?): any
 	local function destroy()
 		RunService:UnbindFromRenderStep("SlugshotSceneCamera")
 		workspace:SetAttribute("FilmClock", nil)
+		workspace:SetAttribute("FilmTimeScale", nil)
 		if grove and groveParent and grove.Parent == nil then
 			grove.Parent = groveParent
 		end
@@ -512,6 +518,34 @@ function Scene.film(id: string, options: any?): any
 				end
 			end
 		end
+		-- Warm-up: a take started soon after play began filmed the cavern while its textures were still loading,
+		-- so the background brightened over the first seconds and frames mixed from a later pass flashed between
+		-- dark and light (owner, 2026-11-26). Load what the take shows, then look through every shot once so the
+		-- renderer has it all resident before frame `first` is filmed. (frame(t) is pure; no cues fire here.)
+		local warm = os.clock()
+		-- The lobby's solid art (cavern walls, roof, rocks) is built by the game's HubArt over about two minutes after
+		-- play starts; it marks the end with workspace.HubSolidParts. Takes started earlier filmed walls appearing
+		-- mid-shot, seen as dark-to-light flashes (owner, 2026-11-26). Wait for it (at most 4 minutes).
+		while workspace:GetAttribute("HubSolidParts") == nil and workspace:FindFirstChild("HubArt")
+			and os.clock() - warm < 240 do
+			task.wait(0.5)
+		end
+		manifest.hub_built = workspace:GetAttribute("HubSolidParts") ~= nil
+		pcall(function()
+			game:GetService("ContentProvider"):PreloadAsync({ workspace })
+		end)
+		for _, s in st.shots do
+			for _, k in { 0, 0.5, 0.95 } do
+				st.frame(s.start + s.duration * k)
+				for _ = 1, 10 do
+					RunService.RenderStepped:Wait()
+				end
+			end
+		end
+		while game:GetService("ContentProvider").RequestQueueSize > 0 and os.clock() - warm < 30 do
+			RunService.RenderStepped:Wait()
+		end
+		manifest.warmup_s = math.floor((os.clock() - warm) * 10) / 10
 		for i = 0, first do
 			st.frame(i / Scene.FPS)
 			st.cues(i / Scene.FPS, manifest)
@@ -531,6 +565,8 @@ function Scene.film(id: string, options: any?): any
 		local fps = n / (os.clock() - c0)
 		local scale = math.clamp(fps / (Scene.FPS * hold), 0.05, 1)
 		manifest.render_fps, manifest.time_scale = fps, scale
+		-- Real-time motion scripts that honour a TimeScale attribute (the game's transformed slug forms) slow to match.
+		workspace:SetAttribute("FilmTimeScale", scale)
 		for _, e in workspace:GetDescendants() do
 			if e:IsA("ParticleEmitter") then
 				table.insert(slowed, { e, e.TimeScale })

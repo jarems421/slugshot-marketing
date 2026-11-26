@@ -22,6 +22,7 @@ local StarterPack = game:GetService("StarterPack")
 local TweenService = game:GetService("TweenService")
 
 local Humans = {}
+local Shots = require(script.Parent.Shots)
 
 local IDENTITY = CFrame.identity
 local FPS = 30
@@ -292,10 +293,34 @@ local function facePart(parent: Instance, name: string, shape: Enum.PartType?): 
 	return p
 end
 
-local function makeFace(model: Model, head: BasePart): any
-	local decal = head:FindFirstChildOfClass("Decal")
-	if decal then
+-- Painted face (owner, 2026-11-26: "actual facial features", the classic painted Roblox face of top videos): three
+-- decal layers from our face kit (tools/faces.py; IDs in library.face_assets), swapped per frame in faceDecals.
+local function makeDecalFace(head: BasePart, style: string): any?
+	local kit = library.face_assets
+	if not (kit and kit[style] and kit.mouths) then
+		return nil
+	end
+	local face = { kit = kit, style = style, layers = {} }
+	for z, layer in { "mouth", "eyes", "brows", "blush" } do
+		local d = Instance.new("Decal")
+		d.Name = `SS_face_{layer}`
+		d.Face = Enum.NormalId.Front
+		d.ZIndex = z
+		d.Texture = ""
+		d.Parent = head
+		face.layers[layer] = d
+	end
+	return face
+end
+
+local function makeFace(model: Model, head: BasePart, style: string?): any
+	local decal = head:FindFirstChild("face")
+	if decal and decal:IsA("Decal") then
 		decal.Transparency = 1
+	end
+	local painted = makeDecalFace(head, style or "boy")
+	if painted then
+		return painted
 	end
 	local folder = Instance.new("Model")
 	folder.Name = "SS_face"
@@ -321,7 +346,7 @@ local function makeBlaster(model: Model, loaded: string?): any?
 	local handle = copy:FindFirstChild("Handle") :: BasePart
 	local gun = Instance.new("Model")
 	gun.Name = "SS_blaster"
-	local parts, front = {}, 0
+	local parts, tip, tipY = {}, -math.huge, {}
 	for _, d in copy:GetDescendants() do
 		if d:IsA("LuaSourceContainer") then
 			d:Destroy()
@@ -341,7 +366,11 @@ local function makeBlaster(model: Model, loaded: string?): any?
 			local hidden = slug ~= nil and not (loaded and string.sub(slug.Name, 1, #loaded) == loaded)
 			table.insert(parts, { part = d, rel = rel, transparency = if hidden then 1 else d.Transparency })
 			if not d:FindFirstAncestorOfClass("Model") then -- the gun body, not the slugs shown in its chamber
-				front = math.min(front, rel.Z - math.abs(rel:VectorToWorldSpace(Vector3.zAxis * d.Size.Z / 2).Z))
+				local reach = rel.Z + math.abs(rel:VectorToWorldSpace(Vector3.zAxis * d.Size.Z / 2).Z)
+				if reach > tip then
+					tip = reach
+				end
+				table.insert(tipY, { reach, rel.Y })
 			end
 		end
 	end
@@ -350,8 +379,16 @@ local function makeBlaster(model: Model, loaded: string?): any?
 	end
 	copy:Destroy()
 	gun.Parent = model
-	-- the barrel points along the handle's look direction (-Z); the flash sits just past its front
-	local muzzle = CFrame.new(0, 0, front - 0.15)
+	-- This blaster's barrel runs along the handle's +Z, the opposite of Roblox's tool convention (owner, 2026-11-26:
+	-- held with the standard grip it pointed back "inside of their arm"). The hold turns it about the grip point
+	-- (GRIP_FLIP below); the flash sits just past the barrel tip, at the barrel's height.
+	local sum, n = 0, 0
+	for _, e in tipY do
+		if e[1] > tip - 0.35 then
+			sum, n = sum + e[2], n + 1
+		end
+	end
+	local muzzle = CFrame.new(0, if n > 0 then sum / n else 0, tip + 0.15)
 	local flash = facePart(gun, "SS_flash", Enum.PartType.Ball)
 	flash.Color = Color3.fromRGB(255, 226, 120)
 	flash.Material = Enum.Material.Neon
@@ -430,7 +467,7 @@ function Humans.spawn(name: string, def: any, parent: Instance): any
 	end
 	hrp.Transparency = 1
 
-	local face = makeFace(model, head)
+	local face = makeFace(model, head, look.face_style)
 	local blaster = if def.blaster ~= nil then makeBlaster(model, def.loaded) else nil
 	-- Character lighting, as for slugs: a soft shadowless fill in front of the face (def.fill: brightness, 0 = off).
 	local fill = if def.fill ~= nil then def.fill else 0.35
@@ -544,7 +581,7 @@ function Humans.compile(actor: any, beats: { any }, place: (string, any) -> CFra
 		})
 		travelled += len
 	end
-	tr.gestures, tr.aims, tr.shots, tr.holds, tr.gear = {}, {}, {}, {}, {}
+	tr.gestures, tr.aims, tr.shots, tr.holds, tr.gear, tr.slugShots = {}, {}, {}, {}, {}, {}
 	for _, b in beats do
 		if b.actor ~= actor.name then
 			continue
@@ -563,8 +600,11 @@ function Humans.compile(actor: any, beats: { any }, place: (string, any) -> CFra
 				two = a == "aim" and b.two_hands ~= false, fade = b.fade or 0.25 })
 		elseif a == "shoot" then
 			table.insert(tr.shots, b.time)
+			if b.slug then
+				table.insert(tr.slugShots, b) -- planned at first pose, when the muzzle can be placed (Shots.luau)
+			end
 		elseif a == "hold" then
-			table.insert(tr.holds, { t = b.time, d = b.duration, item = b.item, hand = b.hand or "both", fade = b.ease or 0.35 })
+			table.insert(tr.holds, { t = b.time, d = b.duration, item = b.item, hand = b.hand or "right", fade = b.ease or 0.35 })
 		elseif a == "equip" or a == "holster" then
 			table.insert(tr.gear, { t = b.time, on = a == "equip" })
 		end
@@ -802,12 +842,13 @@ function Humans.solve(actor: any, t: number, where: any): any
 	for _, h in tr.holds do
 		local e = envelope(t, h.t, h.d, h.fade)
 		if e > 1e-3 then
-			moved = true
-			local inward = if h.hand == "both" then 0.25 else 0.7
-			for _, side in { 1, -1 } do
-				if h.hand == "both" or (h.hand == "right") == (side > 0) then
-					arm(side, torso * (Vector3.new(inward * side, -1.05, -2.0) * scale), e)
-				end
+			-- One hand held out, palm up, a little below level so the slug sits on top of it. (Two-handed holds left the
+			-- slug floating between the hands, owner 2026-11-26; a slug sits on one hand or a shoulder instead.) A
+			-- shoulder perch leaves the arms free.
+			if h.hand ~= "shoulder" then
+				moved = true
+				local side = if h.hand == "left" then -1 else 1
+				arm(side, torso * (Vector3.new(0.95 * side, -0.55, -2.0) * scale), e)
 			end
 		end
 	end
@@ -832,7 +873,7 @@ function Humans.solve(actor: any, t: number, where: any): any
 
 	local face = {
 		blink = blinkAt(actor, t), react = A.channel(ch.react, t, 0), smile = A.channel(ch.smile, t, 0),
-		angry = A.channel(ch.angry, t, 0), squint = A.channel(ch.squint, t, 0),
+		angry = A.channel(ch.angry, t, 0), squint = A.channel(ch.squint, t, 0), smirk = A.channel(ch.smirk, t, 0),
 		open = math.clamp(open + A.channel(ch.open, t, 0), 0, 1),
 		gazeX = math.clamp((eyeYaw - headYaw) / 0.45, -1, 1), gazeY = math.clamp((eyePitch - headPitch) / 0.35, -1, 1),
 	}
@@ -851,7 +892,58 @@ local function onFace(head: CFrame, k: number, x: number, y: number, depth: numb
 	return head * CFrame.new(Vector3.new(x, y, surface(x) + depth) * k) * CFrame.Angles(0, -math.asin(x / FACE_R), roll)
 end
 
+-- Which painted layers show at this moment. Thresholds, not blends: painted faces switch, as in Roblox videos.
+local function faceDecals(face: any, f: any)
+	local kit = face.kit
+	local style = kit[face.style]
+	local react, angry, smile, squint = f.react, f.angry, f.smile, math.clamp(f.squint, 0, 1)
+	local eyes = if f.blink > 0.5 then "closed"
+		elseif react > 0.6 then "wide"
+		elseif smile > 0.85 and f.open < 0.15 then "happy"
+		elseif squint > 0.35 or f.smirk > 0.5 then "half"
+		elseif f.gazeX > 0.45 then "left"
+		elseif f.gazeX < -0.45 then "right"
+		else "open"
+	local brows = if angry > 0.4 then "angry"
+		elseif react > 0.4 then "raised"
+		elseif squint > 0.3 and smile <= 0.2 then "skeptic"
+		elseif smile < -0.4 then "sad"
+		else "neutral"
+	local mouth
+	if f.open > 0.5 then
+		mouth = if smile > 0.3 then "talk_smile" else "talk_wide"
+	elseif f.open > 0.18 then
+		mouth = if smile > 0.5 then "talk_smile" else "talk_small"
+	elseif react > 0.6 then
+		mouth = "o"
+	elseif angry > 0.4 or smile < -0.3 then
+		mouth = "frown"
+	elseif f.smirk > 0.5 then
+		mouth = "smirk"
+	elseif smile > 0.75 then
+		mouth = "grin"
+	elseif smile > 0.3 then
+		mouth = "smile"
+	elseif squint > 0.3 then
+		mouth = "flat"
+	else
+		mouth = "neutral"
+	end
+	local want = { eyes = style.eyes[eyes], brows = style.brows[brows], mouth = kit.mouths[mouth],
+		blush = if face.style == "girl" and smile > 0.75 then kit.mouths.blush else "" }
+	for layer, id in want do
+		local d = face.layers[layer]
+		if d.Texture ~= (id or "") then
+			d.Texture = id or ""
+		end
+	end
+end
+
 local function faceFrames(actor: any, head: CFrame, f: any, list: { BasePart }, cfs: { CFrame })
+	if actor.face.kit then
+		faceDecals(actor.face, f)
+		return
+	end
 	local k = actor.scale
 	local react, angry = math.clamp(f.react, 0, 1), math.clamp(f.angry, 0, 1)
 	local gx, gy = -f.gazeX * 0.035, f.gazeY * 0.025
@@ -878,6 +970,39 @@ local function faceFrames(actor: any, head: CFrame, f: any, list: { BasePart }, 
 end
 
 local GRIP_ANGLE = CFrame.Angles(-math.pi / 2, 0, 0)
+local GRIP_FLIP = CFrame.Angles(0, math.pi, 0) -- see makeBlaster: the barrel faces the handle's +Z
+
+local function gunHandle(actor: any, st: any): CFrame
+	local grip = actor.blaster.grip
+	return st.parts[actor.rig.arms.right] * CFrame.new(0, -actor.scale, 0) * GRIP_ANGLE * grip:Inverse()
+		* CFrame.new(grip.Position) * GRIP_FLIP * CFrame.new(-grip.Position)
+end
+
+-- The blaster muzzle in the world at t (where a slug shot leaves from).
+function Humans.muzzleAt(actor: any, t: number, where: any): Vector3
+	local st = Humans.solve(actor, t, where)
+	actor._solved = nil -- a look-ahead: don't keep it as the current pose
+	return (gunHandle(actor, st) * actor.blaster.muzzle).Position
+end
+
+local function plans(actor: any, where: any): { any }
+	local tr = actor.tracks
+	if not tr.shotPlans then
+		tr.shotPlans = {}
+		for _, b in tr.slugShots do
+			table.insert(tr.shotPlans, Shots.plan(b, function(at)
+				return Humans.muzzleAt(actor, at, where)
+			end, where))
+		end
+	end
+	return tr.shotPlans
+end
+
+-- The n-th slug shot's flying slug at t (for the slug_shot camera), or nil.
+function Humans.shotFrame(actor: any, n: number, t: number, where: any): CFrame?
+	local list = if actor.human and actor.blaster then plans(actor, where) else {}
+	return if list[n] then Shots.frameAt(list[n], t) else nil
+end
 
 function Humans.pose(actor: any, t: number, where: any)
 	local st = Humans.solve(actor, t, where)
@@ -901,21 +1026,20 @@ function Humans.pose(actor: any, t: number, where: any)
 			end
 			gun.shown = on
 		end
-		local handle = st.parts[actor.rig.arms.right] * CFrame.new(0, -actor.scale, 0) * GRIP_ANGLE * gun.grip:Inverse()
+		local handle = gunHandle(actor, st)
 		for _, p in gun.parts do
 			table.insert(list, p.part)
 			table.insert(cfs, handle * p.rel)
 		end
-		local flash = false
-		for _, s in actor.tracks.shots do
-			flash = flash or (t >= s and t < s + 0.067)
-		end
-		gun.flash.Transparency = if flash and on then 0.15 else 1
-		gun.light.Enabled = flash and on
-		table.insert(list, gun.flash)
-		table.insert(cfs, handle * gun.muzzle)
+		-- No generic muzzle flash (owner, 2026-11-26): a shot is the slug itself leaving the blaster (Shots.luau).
+		gun.flash.Transparency = 1
+		gun.light.Enabled = false
 	end
 	workspace:BulkMoveTo(list, cfs, Enum.BulkMoveMode.FireCFrameChanged)
+	local tr = actor.tracks
+	if #tr.slugShots > 0 then
+		Shots.pose(plans(actor, where), t, actor.model.Parent)
+	end
 end
 
 -- Where a held slug sits at t: on top of the holding hand(s), facing its holder (or `facing = "out"`). A ground
@@ -925,15 +1049,27 @@ local function carryFrame(holder: any, t: number, where: any, hand: string, faci
 	if holder._busy then
 		-- asked while the holder is itself being solved (it is looking at what it holds): the hold pose's hand spot
 		local f = stateAt(holder, t, where)
-		return f * CFrame.new(0, 2.3 * k, -1.9 * k) * CFrame.Angles(0, if facing == "out" then 0 else math.pi, 0)
+		return f * CFrame.new(0.9 * k, 2.6 * k, -1.9 * k) * CFrame.Angles(0, if facing == "out" then 0 else math.pi, 0)
 	end
 	local st = Humans.solve(holder, t, where)
-	local function top(side: number): Vector3
-		return st.parts[if side > 0 then holder.rig.arms.right else holder.rig.arms.left] * Vector3.new(0, -0.7 * k, 0)
+	local p
+	if hand == "shoulder" or hand == "shoulder_left" then
+		-- on top of the shoulder, over the arm's top face
+		local side = if hand == "shoulder_left" then -1 else 1
+		p = st.parts[holder.rig.torso] * (Vector3.new(1.5 * side, 1.0, 0) * k)
+	else
+		-- the highest point of the hand end's surface: the slug's sole rests there, whatever the arm's angle
+		local arm = st.parts[if hand == "left" then holder.rig.arms.left else holder.rig.arms.right]
+		p = arm * (Vector3.new(0, -0.75, -0.5) * k)
+		for _, c in { Vector3.new(0, -0.75, 0.5), Vector3.new(0.5, -0.75, 0), Vector3.new(-0.5, -0.75, 0) } do
+			local q = arm * (c * k)
+			if q.Y > p.Y then
+				p = q
+			end
+		end
 	end
-	local p = if hand == "both" then (top(1) + top(-1)) / 2 elseif hand == "left" then top(-1) else top(1)
 	local yaw = select(2, st.frame:ToEulerAnglesYXZ()) + (if facing == "out" then 0 else math.pi)
-	return CFrame.new(p + Vector3.new(0, 0.5 * k, 0)) * CFrame.Angles(0, yaw, 0)
+	return CFrame.new(p) * CFrame.Angles(0, yaw, 0)
 end
 
 -- A slug actor's ground frame, carried while a human holds it (eased up into the hands and back down).

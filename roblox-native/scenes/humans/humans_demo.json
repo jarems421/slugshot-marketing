@@ -84,9 +84,9 @@
    180
   ],
   "target": [
-   15,
-   3.6,
-   -16,
+   14,
+   0.4,
+   -15,
    0
   ]
  },
@@ -183,8 +183,9 @@
    "actor": "mira",
    "action": "express",
    "set": {
-    "react": 1,
-    "smile": -0.3
+    "react": 0.2,
+    "squint": 0.5,
+    "smile": -0.2
    },
    "ease": 0.2
   },
@@ -298,7 +299,7 @@
    "actor": "kai",
    "action": "hold",
    "item": "floppy",
-   "hand": "both",
+   "hand": "right",
    "facing": "out",
    "duration": 12.4,
    "ease": 0.4
@@ -313,7 +314,7 @@
    "time": "L4.start",
    "actor": "kai",
    "action": "look",
-   "target": "mira"
+   "target": "floppy"
   },
   {
    "time": "L4.start+0.2",
@@ -454,17 +455,15 @@
    "actor": "juno",
    "action": "aim",
    "target": "target",
-   "duration": 2.2
+   "duration": 1.6
   },
   {
    "time": "L6.start+0.98",
    "actor": "juno",
-   "action": "shoot"
-  },
-  {
-   "time": "L6.start+1.45",
-   "actor": "juno",
-   "action": "shoot"
+   "action": "shoot",
+   "slug": "Inferno",
+   "target": "target",
+   "speed": 11
   },
   {
    "time": "L6.start+1.05",
@@ -599,6 +598,13 @@
    "facing": "out",
    "duration": 3.6,
    "ease": 0.4
+  },
+  {
+   "time": "L4.start+1.35",
+   "actor": "kai",
+   "action": "look",
+   "target": "mira",
+   "ease": 0.3
   }
  ],
  "shots": [
@@ -660,11 +666,21 @@
   {
    "preset": "close_up",
    "target": "juno",
-   "until": "L6.end+0.7",
-   "size": 1.3,
-   "side": -40,
+   "until": "L6.start+0.95",
+   "size": 1.5,
+   "side": 55,
    "fov": 34,
    "headroom": 0.1
+  },
+  {
+   "preset": "slug_shot",
+   "target": "juno",
+   "until": "L6.start+2.05",
+   "side": -3.5,
+   "back": 6,
+   "height": 1.4,
+   "fov": 50,
+   "lead": 2
   },
   {
    "preset": "close_up",

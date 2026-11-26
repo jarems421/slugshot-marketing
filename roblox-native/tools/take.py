@@ -189,8 +189,15 @@ def film(take_path, videos, out, crf):
     total = 0
     filled = set()  # indices the earlier recordings already had: later ones (patch passes) only fill gaps
 
+    # Frames a later recording also holds for indices the first already has: the overlap that matches its lighting.
+    alt = {}  # video number -> {index: frame number}
+
     def keep(idx, run, vi):
-        if idx is None or idx >= frames or (vi > 0 and idx in filled):
+        if idx is None or idx >= frames:
+            return False
+        if vi > 0 and idx in filled:
+            if len(run) > 1:
+                alt.setdefault(vi, {})[idx] = run[len(run) // 2]
             return False
         return len(run) > best.get(idx, (0,))[0]
 
@@ -221,6 +228,39 @@ def film(take_path, videos, out, crf):
     if not best:
         raise SystemExit("no stamped frames found: was the frame stamp hidden?")
 
+    # Passes of one take can be lit a little differently (owner, 2026-11-26: patched frames flashed lighter in the
+    # cavern's upper half). Each frame filled from a later recording is matched to the first recording with a smooth
+    # per-pixel gain, learnt from up to four nearby indices both recordings hold.
+    def frame_at(vi, fn):
+        g = geoms[vi]
+        raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(videos[vi]), "-fps_mode", "passthrough",
+                              "-vf", f"select=eq(n\\,{fn}),crop={w}:{h}:{g[0]}:{g[1]}", "-frames:v", "1",
+                              "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True, check=True).stdout
+        return np.frombuffer(raw, np.uint8).reshape(h, w, 3).astype(np.float32)
+
+    def blur(img):
+        from PIL import Image
+        small = [np.asarray(Image.fromarray(img[..., c]).resize((max(w // 48, 2), max(h // 48, 2)), Image.BOX))
+                 for c in range(3)]
+        return np.stack([np.asarray(Image.fromarray(s).resize((w, h), Image.BICUBIC)) for s in small], -1)
+
+    gains, cache = {}, {}
+    for i, (_, vi, _) in sorted(best.items()):
+        if vi == 0:
+            continue
+        near = sorted((j for j in alt.get(vi, {}) if best.get(j, (0, 0))[1] == 0 and abs(j - i) <= 20),
+                      key=lambda j: abs(j - i))[:4]
+        if not near:
+            continue
+        key = (vi, tuple(near))
+        if key not in cache:
+            ref = sum(blur(frame_at(0, best[j][2])) for j in near)
+            got = sum(blur(frame_at(vi, alt[vi][j])) for j in near)
+            cache[key] = np.clip((ref + 4) / (got + 4), 0.6, 1.6)
+        gains[i] = cache[key]
+    if gains:
+        print(f"  matched {len(gains)} patched frame(s) to the first recording's lighting")
+
     # Pass 2: walk every recording forward once, writing the chosen frame for each index in order.
     portrait = take.get("portrait", True)
     cw = (round(h * 16 / 9) // 2) * 2
@@ -244,6 +284,9 @@ def film(take_path, videos, out, crf):
                 rd["buf"] = rd["proc"].stdout.read(size)
                 rd["at"] += 1
             last = rd["buf"]
+            if i in gains:
+                img = np.frombuffer(last, np.uint8).reshape(h, w, 3).astype(np.float32) * gains[i]
+                last = np.clip(img, 0, 255).astype(np.uint8).tobytes()
         if last is None:  # leading frames missing: use the first chosen frame
             _, vi, fn = best[min(best)]
             rd = readers[vi]
