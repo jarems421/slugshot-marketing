@@ -12,6 +12,7 @@ Last updated 2026-11-25 (production quality pass: docs/production-quality.md). I
 | ruptures + scipy | 1.1.10 + 1.18.1 (BSD) | `.venv` (`requirements.txt`) | `ss analyze changepoints` |
 | Qwen3-TTS 1.7B VoiceDesign + Base | qwen-tts 0.1.1, torch 2.8.0+cu128 (Apache-2.0) | `.venv-voicelab` (not in git; weights in the Hugging Face cache) | `ss dialogue --engine qwen`; 3.94 GiB peak VRAM on the RTX 3070 |
 | kokoro-onnx + Kokoro-82M v1.0 | 0.6.1 | `.venv-tts` (`requirements-tts.txt`), `models/kokoro/` (not in git) | `ss voice` |
+| demucs (htdemucs_ft) | 4.0.1 (reuses `.venv-voicelab` torch 2.8 CUDA via a .pth) | `.venv-demucs` (not in git) | music/voice separation, e.g. lifting a genre bed from under narration: `.venv-demucsScriptspython -m demucs --two-stems=vocals -n htdemucs_ft -o <out> <file.wav>` (added 2026-11-26) |
 | Node | 24.19.0 | system | Remotion, MakeMyClip |
 | FFmpeg | 9.1 full (gyan.dev) | winget `Gyan.FFmpeg` | everything media |
 | OBS Studio | 32.2.2 | system | capture |
