@@ -45,8 +45,8 @@ def main():
     ap.add_argument("input", help="audio or video file")
     ap.add_argument("--out", help="output path stem (default: input path without extension)")
     ap.add_argument("--model", default="base.en", help="whisper model (tiny.en, base.en, small.en, ...)")
-    ap.add_argument("--prompt", default=glossary.whisper_prompt(),
-                    help="spelling hints passed as Whisper's initial prompt (default: glossary terms)")
+    ap.add_argument("--prompt", help="spelling hints (default: glossary terms unless --verbatim)")
+    ap.add_argument("--verbatim", action="store_true", help="omit Slugshot spelling hints and glossary corrections")
     args = ap.parse_args()
 
     import whisper  # imported late so --help works without loading torch
@@ -56,8 +56,9 @@ def main():
     stem.parent.mkdir(parents=True, exist_ok=True)
 
     model = whisper.load_model(args.model, device="cpu")
+    prompt = args.prompt if args.prompt is not None else (None if args.verbatim else glossary.whisper_prompt())
     result = model.transcribe(str(src), word_timestamps=True, fp16=False,
-                              initial_prompt=args.prompt, condition_on_previous_text=False,
+                              initial_prompt=prompt, condition_on_previous_text=False,
                               hallucination_silence_threshold=0.5)  # drops invented words over gaps
     stem.with_suffix(".whisper.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
     # Whisper sometimes invents words over silence. Real speech here scores about -0.1 avg_logprob;
@@ -72,9 +73,10 @@ def main():
         print("dropped invented words:", " ".join(w["word"].strip() for w in ghosts))
     if not words:
         raise SystemExit(f"No speech found in {src}")
-    words, fixes = glossary.fix_words(words)
-    for old, new in fixes:
-        print(f"glossary: '{old}' -> '{new}'")
+    if not args.verbatim:
+        words, fixes = glossary.fix_words(words)
+        for old, new in fixes:
+            print(f"glossary: '{old}' -> '{new}'")
 
     srt = []
     for i, g in enumerate(phrases(words), 1):

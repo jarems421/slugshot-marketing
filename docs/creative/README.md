@@ -2,6 +2,8 @@
 
 Owner-supplied creative intelligence for scripts, characters and direction. **Reference, not canon**: nothing here is an approved claim, game fact or owner decision unless marked. Game truth (`docs/game-truth.md`, `../slugshot/docs/status.md`) always overrides it.
 
+For collecting new references, see [Creative reference packs and the Apify pilot](reference-packs.md).
+
 | File | What | Status |
 |---|---|---|
 | `Slugshot-Slugterra-Creative-Handbook.yaml` | Gemini's Slugterra lore, creature, character, powerscaling, storytelling and EN/ES fandom report, with ChatGPT's digest and evidence rules (2026-11-25) | owner to save here; exploratory |

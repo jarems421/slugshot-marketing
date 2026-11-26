@@ -22,6 +22,7 @@ Slugshot marketing commands. Run from this folder as `.\ss <command> ...` (ss.cm
   clip <args>                                MakeMyClip CLI, confined to media\ (e.g. `.\ss clip ui`)
   yt <args>                                  YouTube collector (scripts\yt_collect.py -h)
   wiki|trends|twitch|rbx|observe <args>      research collectors (docs\research-data.md)
+  references <pack|apify-check>                build local creative reference packs or check Apify credit and pricing
   research status|prune|runs|collect|bundle|families   collection runs, bundles, query families
   analyze <intake|describe|repeat|sensitivity|trend|changepoints|sample|blind-packet|coding-packet|join-annotations|context>
   evidence <new|validate|card|export-evidenceguard>   evidence ledger (docs\research-evidence.md)
@@ -139,6 +140,7 @@ switch ($cmd) {
     'rbx' { & $Py scripts\rbx_collect.py @rest }
     'observe' { & $Py scripts\observe.py @rest }
     'research' { & $Py scripts\research_admin.py @rest }
+    'references' { & $Py scripts\creative_references.py @rest }
     'analyze' { & $Py scripts\research_analysis.py @rest }
     'evidence' { & $Py scripts\evidence.py @rest }
     'kb' { & $Py scripts\kb.py @rest }

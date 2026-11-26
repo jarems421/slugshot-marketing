@@ -199,6 +199,11 @@ function Actors.spawn(name: string, def: any, parent: Instance): any
 			if def.species == "Rammstone" and d:IsA("MeshPart") and not string.find(d.Name, "Eye", 1, true) then
 				d.DoubleSided = true
 			end
+			-- Floppy alone carries a thick inverted-hull ink shell, which broke and cut at the edges; he takes the
+			-- same thin Highlight outline as every other slug instead (owner, 2026-11-26).
+			if d:IsA("BasePart") and string.sub(d.Name, -4) == "_Ink" then
+				d.Transparency = 1
+			end
 		end
 		-- A slug's own glow (the game's SlugGlow) reaches 5-6.5 studs: in a close two-shot Floppy's lit Aquabeek's face
 		-- as a soft green spot (owner, 2026-11-25: her face "looks very weird ... the soft looking cheek"). Staged
