@@ -19,10 +19,14 @@ ACTORS = (
     "clockworks/tiktok-transcript-extractor",
 )
 API = "https://api.apify.com/v2/"
+DISCOVERY_ACTOR = "apify~google-search-scraper"
+# This Actor rejects smaller run caps. The one-page-per-query limit bounds normal usage.
+DISCOVERY_CAP_USD = 0.50
 
 GEMINI = """# Gemini audiovisual review
 
 Use the reference IDs in references.json. Review only supplied media cleared for this service.
+For public YouTube references, use Gemini's official YouTube URL video input where available.
 For each clip give timestamped observations about the hook, premise, cuts, on-screen text, audio
 and payoff. Distinguish visible action, audible speech and your interpretation. Mark unclear
 words and gaps, including music-only sections. Verify Whisper excerpts against the audio.
@@ -47,9 +51,72 @@ the timestamps that informed each idea. Follow docs/game-truth.md for game mecha
 """
 
 
+def apify_request(path, token, params=None, payload=None):
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    data = json.dumps(payload).encode() if payload is not None else None
+    body, _ = rc.http(API + path, params=params, headers=headers, data=data)
+    return json.loads(body)
+
+
 def apify_get(path, token):
-    body, _ = rc.http(API + path, headers={"Authorization": f"Bearer {token}"})
-    return json.loads(body)["data"]
+    return apify_request(path, token)["data"]
+
+
+def discover(queries, country):
+    """Collect one page of indexed public links per query from the Apify Store Actor."""
+    queries = list(dict.fromkeys(q.strip() for q in queries if q.strip()))
+    if not 1 <= len(queries) <= 6 or any(len(q) > 700 or "\n" in q or "\r" in q for q in queries):
+        raise ValueError("Supply one to six single-line queries of up to 700 characters each.")
+    token = rc.env_value("APIFY_TOKEN")
+    if not token:
+        raise ValueError("Set APIFY_TOKEN in .env or the environment.")
+    plan = apify_get("users/me", token)["plan"]
+    quota = apify_get("users/me/limits", token)
+    ceiling = min(plan["monthlyUsageCreditsUsd"], quota["limits"]["maxMonthlyUsageUsd"])
+    if plan["id"] != "FREE" or ceiling - quota["current"]["monthlyUsageUsd"] < DISCOVERY_CAP_USD:
+        raise ValueError(f"The Free plan needs at least ${DISCOVERY_CAP_USD:.2f} remaining to start this Actor.")
+    payload = {"queries": "\n".join(queries), "maxPagesPerQuery": 1, "resultsPerPage": 10,
+               "countryCode": country, "languageCode": "en", "includePaidResults": False,
+               "saveHtmlToKeyValueStore": False}
+    actor_path = f"actors/{DISCOVERY_ACTOR}"
+    if not apify_request(f"{actor_path}/validate-input", token, payload=payload).get("valid"):
+        raise ValueError("Apify rejected the discovery input.")
+    dest = rc.DATA / "creative" / "discovery" / rc.new_run_id("apify")
+    dest.mkdir(parents=True)
+    run = apify_request(f"{actor_path}/runs", token, params={"maxTotalChargeUsd": DISCOVERY_CAP_USD,
+                        "timeout": 160, "waitForFinish": 10}, payload=payload)["data"]
+    print(f"Apify run {run['id']} -> {dest}", flush=True)
+    terminal = {"SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"}
+    while True:
+        fields = ("id", "status", "startedAt", "finishedAt", "defaultDatasetId", "chargedEventCounts", "usageTotalUsd")
+        receipt = {field: run.get(field) for field in fields}
+        receipt.update(actor=DISCOVERY_ACTOR.replace("~", "/"), input=payload, charge_cap_usd=DISCOVERY_CAP_USD)
+        (dest / "run.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+        if run["status"] in terminal:
+            break
+        run = apify_request(f"actor-runs/{run['id']}", token, params={"waitForFinish": 10})["data"]
+    pages = apify_request(f"datasets/{run['defaultDatasetId']}/items", token, params={"limit": 10})
+    (dest / "results.json").write_text(json.dumps(pages, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    observed = rc.iso(rc.parse_time(run.get("finishedAt")) or rc.now())
+    candidates = discovery_candidates(pages, observed, run["id"])
+    print(f"{run['status']} | {len(candidates)} indexed links | ${run.get('usageTotalUsd', 0):.5f} metered")
+    if not candidates:
+        raise ValueError("The discovery run returned no organic links. See run.json and results.json.")
+    rc.write_rows(dest / "candidates.csv", list(candidates[0]), candidates)
+
+
+def discovery_candidates(pages, observed, run_id):
+    candidates = []
+    for page in pages:
+        query = (page.get("searchQuery") or {}).get("term", "")
+        for hit in page.get("organicResults", []):
+            url = hit.get("url") or ""
+            if url.startswith("https://"):
+                candidates.append({"url": url, "source": "apify_google_serp", "observed_at_utc": observed,
+                                   "discovery_query": query, "access_status": "metadata_only",
+                                   "title": hit.get("title"), "snippet": hit.get("description"),
+                                   "apify_run_id": run_id})
+    return candidates
 
 
 def apify_check():
@@ -124,12 +191,16 @@ def pack(source, question):
     (dest / "GEMINI.md").write_text(GEMINI, encoding="utf-8")
     (dest / "CHATGPT.md").write_text(CHATGPT, encoding="utf-8")
     print(f"{len(references)} unique references from {len(rows)} observations -> {dest}")
+    return dest
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("apify-check", help="read account usage and current Store pricing without running Actors")
+    search = commands.add_parser("discover", help="collect indexed public links with an Apify discovery Actor")
+    search.add_argument("queries", nargs="+")
+    search.add_argument("--country", default="us", help="Google search country code, such as us or gb")
     build = commands.add_parser("pack", help="group CSV observations by source identity and write local review prompts")
     build.add_argument("csv", type=Path)
     build.add_argument("--question", required=True)
@@ -137,6 +208,8 @@ def main():
     try:
         if args.command == "apify-check":
             apify_check()
+        elif args.command == "discover":
+            discover(args.queries, args.country.lower())
         else:
             pack(args.csv, args.question)
     except (OSError, ValueError, KeyError, rc.HttpError) as e:

@@ -39,10 +39,13 @@ Start with roughly 20–40 candidates across the branches. Use source URLs and U
 
 ```powershell
 .\ss references apify-check
+.\ss references discover "site:youtube.com/shorts in my world roblox story" "site:tiktok.com in this town roblox story"
 .\ss references pack research\pilots\CREATIVE-REFERENCES-2026-11-26.csv --question "Which story rules, streamer beats and edit patterns are adaptable for original Slugshot scripts?"
 .\ss caption <permitted-local-file> --verbatim --model small
 .\ss sheet <permitted-local-video> --every 1
 ```
+
+`ss references discover` saves indexed links to `candidates.csv` alongside its run receipt under `data/local/research/creative/discovery/`. Select the relevant rows for `ss references pack`. Use `ss yt stats --ids <comma-separated-video-ids>` for first-party YouTube metadata and engagement.
 
 The pack is saved under `data/local/research/creative/packs/`. It keeps one reference ID per recognised post and all dated discovery observations under it. For authorised local copies, an identical file hash establishes an exact file duplicate. Flag likely cross-posts or trimmed reposts using matching dialogue and frames, and retain meaningful changes in the premise, cut, voice, reveal or reaction. A shared sound or matching caption by itself is weak evidence of duplication.
 
