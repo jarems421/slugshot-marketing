@@ -91,13 +91,16 @@
         "pitch": -2.5
       },
       "gemini": {
-        "voice": "Algenib",
+        "voice": "Charon",
         "candidates": [
-          "Algenib",
           "Orus",
-          "Alnilam"
+          "Charon",
+          "Gacrux"
         ],
-        "style": "loud, cocky, booming show-off, chest puffed out, laughing at his own bravado"
+        "style": "deep, gruff, chesty American bruiser voice, loud, cocky, booming show-off, laughing at his own bravado",
+        "rejected": {
+          "Algenib": "owner 2026-11-26: sounds weird, a bit British; doesn't suit him"
+        }
       }
     },
     "AQUABEEK": {
