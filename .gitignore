@@ -5,6 +5,7 @@ node_modules/
 .venv/
 .venv-tts/
 .venv-voicelab/
+.venv-demucs/
 whisper-env/
 models/
 assets/music/*
