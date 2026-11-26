@@ -35,7 +35,7 @@ Gemini listened to 31 of the 50 TOP videos. These are its reports, cross-checked
 - **Narrators:** 31/31 sounded male and 29/31 like AI TTS. An AI voice is normal for the genre, and a female narrator would stand out (TEST it).
 - **Sound is a CONVENTION, not an edge.** The same check on 20 FLOP videos found the same picture: a bed in 20/20, a shift at the turn in 15/20, male AI narrators 20/20, and *more* effects (median 9 vs 5 in TOP). More effects don't help; place a few on real actions and on the turn.
 - Write the joke so it works without the sound, then mark where a sting or shift helps (`# sting: boom on "eleven hours"`).
-- **The kit:** our original accents via `ss sfx` (boing, slides, pop, sub_boom, riser, tension_sting, record_scratch, sparkle_reveal and the cavern set) and 70 CC0 sounds in `assets/sfx/library/` (impacts, crystal, foley, UI pops, cartoon zips, sci-fi and goo). Name the sound in the note so the edit can find it.
+- **The kit:** our original accents via `ss sfx` (boing, slides, pop, sub_boom, riser, tension_sting, record_scratch, sparkle_reveal and the cavern set) and 70 CC0 sounds in `assets/sfx/library/` (impacts, crystal, foley, UI pops, cartoon zips, sci-fi and goo). Name the sound in the note so the edit can find it. Music beds M1–M7 are in `assets/music/` (brief: docs/creative/music-brief.md). Mark the bed and where it switches, e.g. `# music: M1, switch to M2 at "Then the coin stopped"`.
 
 ## Needs a person
 
