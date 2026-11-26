@@ -8,7 +8,7 @@ Live research checks make a handful of free calls (Wikimedia, Google Trends RSS,
 |---|---|---|
 | Installed tools | **PASS** | git: git version 2.55.0.windows.3; node: v24.19.0; ffmpeg: ffmpeg version 9.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers; ffmpeg filters: all present; obs: installed; kdenlive: installed; kokoro venv: installed; kokoro model: present |
 | Glossary corrections | **PASS** | 12 term-correction checks passed |
-| Whisper transcription | **PASS** | glossary: 'slug's Hoh' -> 'Slugshot' / 27 words, 11 caption lines -> C:\Users\runni\slugshot marketing\out\smoke\narration.srt / Check these low-confidence words: Slugshot |
+| Whisper transcription | **PASS** | glossary: 'slug's Hoh' -> 'Slugshot' / 27 words, 11 caption lines -> out\smoke\narration.srt / Check these low-confidence words: Slugshot |
 | Kokoro voice + Whisper round trip | **PASS** | Whisper heard: "He brought Inferno, I brought Floppy, Slugshot on Roblox" |
 | Audio tidy + ducked mix | **PASS** | narration 12.7s -> tidied 10.4s; ducked music mix written |
 | FFmpeg vertical render + QC | **PASS** | out\smoke\ffmpeg_vertical.mp4 13.1s |
@@ -19,16 +19,16 @@ Live research checks make a handful of free calls (Wikimedia, Google Trends RSS,
 | YouTube collector dry run | **PASS** | discover -> stats -> report (+ data dictionary) on fake fixtures, no network |
 | YouTube report + data dictionary | **PASS** | report + data dictionary written (real runs go to exports/share for ChatGPT) |
 | YouTube collector live call | **PASS** | Estimated cost: ~1 units + 0 search calls (used today: 11 units, 0 searches).
-1/1 snapshots -> C:\Users\runni\slugshot marketing\out\smoke\yt_live\youtube_snapshots.csv [run youtube-20261125T164252Z-9ef7: 1 ok / 0 failed requests, ~1 units] |
+1/1 snapshots -> out\smoke\yt_live\youtube_snapshots.csv [run youtube-20261125T164252Z-9ef7: 1 ok / 0 failed requests, ~1 units] |
 | Research collectors offline tests | **PASS** | Ran 27 tests in 7.238s: OK (YouTube, Wikimedia, Trends, observations, Twitch, Roblox on fixtures) |
 | Research analysis + evidence ledger tests | **PASS** | Ran 26 tests in 10.664s: OK (evidence-ledger traps, intake, repeat, sensitivity, blind coding, trend, change points) |
 | Evidence ledger worked example (real data) | **PASS** | EXAMPLE-HUSS-SLUGTERRA.json: VALID - 0 errors, 1 warnings, 2 items for AI review; 5 claims, 4 evidence items |
 | Installed scholarly skills (upstream offline tests) | **PASS** | verifying-bibliography: Ran 97 tests in 22.484s OK; surveying-literature: Ran 110 tests in 0.539s FAILED (failures=1) (1 known POSIX-path assertion in surveying-literature on Windows) |
-| Wikimedia pageviews live | **PASS** | 62 points read, 62 stored -> C:\Users\runni\slugshot marketing\out\smoke\research_live\wiki_collect\wiki_pageviews.csv; request log -> C:\Users\runni\slugshot marketing\out\smoke\research_live\wiki_collect\wiki_coverage.csv [run wikimedia-20261125T164436Z-a13f] |
-| Google Trending Now RSS live | **PASS** | 20 rows -> C:\Users\runni\slugshot marketing\out\smoke\research_live\trends_collect\trending_now.csv [run google_trends-20261125T164606Z-1fdd] |
-| Roblox experience stats live (legacy API) | **PASS** | 1 snapshots -> C:\Users\runni\slugshot marketing\out\smoke\research_live\rbx_collect\roblox_experiences.csv [run roblox-20261125T164607Z-2126] |
-| TikTok oEmbed live check | **PASS** | oEmbed check confirmed the post ID (Imported 1 values -> C:\Users\runni\slugshot marketing\out\smoke\research_live\observe\public_observations.csv) |
-| YouTube upgraded collector live (chart + Shorts check) | **PASS** | 5 chart snapshots (region MX, category 20) -> C:\Users\runni\slugshot marketing\out\smoke\research_live\yt_collect\youtube_snapshots.csv [run youtube-20261125T164608Z-3827: 1 ok / 0 failed requests, ~1 units] |
+| Wikimedia pageviews live | **PASS** | 62 points read, 62 stored -> out\smoke\research_live\wiki_collect\wiki_pageviews.csv; request log -> out\smoke\research_live\wiki_collect\wiki_coverage.csv [run wikimedia-20261125T164436Z-a13f] |
+| Google Trending Now RSS live | **PASS** | 20 rows -> out\smoke\research_live\trends_collect\trending_now.csv [run google_trends-20261125T164606Z-1fdd] |
+| Roblox experience stats live (legacy API) | **PASS** | 1 snapshots -> out\smoke\research_live\rbx_collect\roblox_experiences.csv [run roblox-20261125T164607Z-2126] |
+| TikTok oEmbed live check | **PASS** | oEmbed check confirmed the post ID (Imported 1 values -> out\smoke\research_live\observe\public_observations.csv) |
+| YouTube upgraded collector live (chart + Shorts check) | **PASS** | 5 chart snapshots (region MX, category 20) -> out\smoke\research_live\yt_collect\youtube_snapshots.csv [run youtube-20261125T164608Z-3827: 1 ok / 0 failed requests, ~1 units] |
 | Twitch Helix live | **PASS** |     1960479087  Robox |
 | Dashboard tests | **PASS** | Ran 33 tests in 4.824s: OK (store, metric rules, connectors on fixtures, imports, exports, vault, server security) |
 | Knowledge and sentiment tests | **PASS** | Ran 21 tests in 0.220s: OK (schema, links, game truth, expiry, export and policy gates, sentiment pipeline, fixture isolation) |

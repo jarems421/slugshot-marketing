@@ -1,9 +1,17 @@
 """Measure narration voices in TOP TikToks vs our V06 narrator: pitch, pitch range, loudness swings, speaker fingerprints."""
+import os
+import shutil
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(project_root / "scripts"), str(project_root / "research" / "tiktok-genre")]
+import research_common as rc
+
 import glob, json, os, subprocess, sys, tempfile
 import numpy as np, librosa, soundfile as sf
-sys.path.insert(0, r"C:\Users\runni\slugshot marketing\scripts")
-FF = r"C:\Users\runni\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-9.1-full_build\bin\ffmpeg.exe"
-ROOT = r"C:\Users\runni\slugshot marketing"
+FF = os.environ.get("FFMPEG") or shutil.which("ffmpeg") or "ffmpeg"
+ROOT = str(rc.ROOT)
 items = {}
 for f in glob.glob(ROOT + r"\data\local\research\creative\tiktok-genre\apify-top15-*\items.json"):
     for it in json.load(open(f, encoding="utf-8")): items[it["id"]] = it

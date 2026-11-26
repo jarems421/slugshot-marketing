@@ -1,15 +1,54 @@
-import json, csv, statistics as st
-rows = list(csv.DictReader(open('exports/share/research/tiktok-in-my-world-2026-11-26/ALL-POSTS.csv', encoding='utf-8-sig')))
-pool = {r['id']: r for r in csv.DictReader(open('data/local/research/creative/tiktok-genre/pool.csv', encoding='utf-8'))}
-for t in ('TOP', 'MID', 'FLOP'):
-    wpm, top10 = [], []
-    for r in rows:
-        if r['tier'] != t: continue
-        L = json.loads(pool[r['id']]['transcript'])
-        if len(L) < 4: continue
-        words = sum(len(x[1].split()) for x in L[:-1]); span = L[-1][0] - L[0][0]
-        if span >= 10: wpm.append(words / span * 60)
-        if r['tier'] == 'TOP' and int(r['views']) >= 2_000_000: top10.append(words / max(span, 1) * 60)
-    q = st.quantiles(wpm, n=4)
-    print(t, len(wpm), 'speech WPM median %.0f, middle half %.0f-%.0f, min %.0f max %.0f' % (st.median(wpm), q[0], q[2], min(wpm), max(wpm)))
-    if top10: print('   TOP posts >=2M views:', len(top10), 'median %.0f' % st.median(top10))
+"""Summarise narration pace by tier in a built TikTok genre bank."""
+
+import argparse
+import json
+import statistics
+from pathlib import Path
+
+from genre_common import DATA_DIR, PILOT_EXPORT, read_csv
+
+
+def rates(rows, transcripts, tier):
+    """Measure words per minute from cue starts, excluding the final cue's words."""
+    pace, two_million = [], []
+    for row in rows:
+        if row["tier"] != tier:
+            continue
+        cues = json.loads(transcripts[row["id"]]["transcript"])
+        if len(cues) < 4:
+            continue
+        words = sum(len(text.split()) for _, text in cues[:-1])
+        span = cues[-1][0] - cues[0][0]
+        if span >= 10:
+            pace.append(words / span * 60)
+        if tier == "TOP" and int(row["views"]) >= 2_000_000:
+            two_million.append(words / max(span, 1) * 60)
+    return pace, two_million
+
+
+def main(argv=None):
+    """Read the pool and built bank and print a pace summary."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--posts", type=Path, default=PILOT_EXPORT / "ALL-POSTS.csv")
+    parser.add_argument("--pool", type=Path, default=DATA_DIR / "pool.csv")
+    args = parser.parse_args(argv)
+    rows = read_csv(args.posts)
+    transcripts = {row["id"]: row for row in read_csv(args.pool)}
+    for tier in ("TOP", "MID", "FLOP"):
+        pace, popular = rates(rows, transcripts, tier)
+        if len(pace) < 2:
+            print(f"{tier} {len(pace)} usable posts (need at least two for quartiles)")
+        else:
+            first, _, third = statistics.quantiles(pace, n=4)
+            print(
+                f"{tier} {len(pace)} speech WPM median {statistics.median(pace):.0f}, "
+                f"middle half {first:.0f}-{third:.0f}, min {min(pace):.0f} max {max(pace):.0f}"
+            )
+        if popular:
+            print(
+                f"   TOP posts >=2M views: {len(popular)} median {statistics.median(popular):.0f}"
+            )
+
+
+if __name__ == "__main__":
+    main()

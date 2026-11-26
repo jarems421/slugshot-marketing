@@ -25,7 +25,6 @@ import json
 import re
 import shutil
 import sys
-import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 

@@ -5,11 +5,18 @@
 Audio-only (mono 32 kbps) sent inline to gemini-3.8-flash; JSON per video saved to
 data/local/research/creative/tiktok-genre/listen/. Gemini-reported (P4): names of meme sounds are its guess.
 """
-import argparse, base64, csv, glob, json, os, subprocess, sys
-sys.path.insert(0, r"C:\Users\runni\slugshot marketing\scripts")
+import os
+import shutil
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(project_root / "scripts"), str(project_root / "research" / "tiktok-genre")]
 import research_common as rc
-ROOT = r"C:\Users\runni\slugshot marketing"
-FF = r"C:\Users\runni\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-9.1-full_build\bin\ffmpeg.exe"
+
+import argparse, base64, csv, glob, json, os, subprocess, sys
+ROOT = str(rc.ROOT)
+FF = os.environ.get("FFMPEG") or shutil.which("ffmpeg") or "ffmpeg"
 OUT = os.path.join(ROOT, r"data\local\research\creative\tiktok-genre\listen"); os.makedirs(OUT, exist_ok=True)
 MODEL = "gemini-3.8-flash"
 USD_IN_AUDIO, USD_IN_TEXT, USD_OUT = 1.0 / 1e6, 0.5 / 1e6, 3.0 / 1e6   # conservative estimates; actual billing may be lower

@@ -1,10 +1,18 @@
 """Estimate narrator gender for all TOP videos: speaker-fingerprint nearest centroid (Kokoro labelled refs) + pitch."""
+import os
+import shutil
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(project_root / "scripts"), str(project_root / "research" / "tiktok-genre")]
+import research_common as rc
+
 import csv, glob, json, os, subprocess, sys, tempfile
 import numpy as np, librosa, soundfile as sf, torch
-sys.path.insert(0, r"C:\Users\runni\slugshot marketing\scripts")
 import voicelab
-FF = r"C:\Users\runni\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-9.1-full_build\bin\ffmpeg.exe"
-ROOT = r"C:\Users\runni\slugshot marketing"; TT = os.path.dirname(os.path.abspath(__file__))
+FF = os.environ.get("FFMPEG") or shutil.which("ffmpeg") or "ffmpeg"
+ROOT = str(rc.ROOT); TT = os.path.dirname(os.path.abspath(__file__))
 meta = {r["id"]: r for r in csv.DictReader(open(ROOT + r"\exports\share\research\tiktok-in-my-world-2026-11-26\ALL-POSTS.csv", encoding="utf-8-sig"))}
 emb = voicelab.Embedder()
 refs = sorted(glob.glob(TT + r"\refs\*.wav"))

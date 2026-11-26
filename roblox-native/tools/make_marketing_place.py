@@ -155,6 +155,15 @@ def string_value(ref, name, value):
             f'      </Properties>\n    </Item>\n')
 
 
+def provenance_source(source):
+    """Record a portable source path when it is on the workspace drive."""
+    resolved = source.resolve()
+    try:
+        return resolved.relative_to(HERE.parent, walk_up=True).as_posix()
+    except ValueError:
+        return str(resolved)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--source", help="use an existing snapshot instead of copying from the game build")
@@ -214,7 +223,7 @@ def main():
     out.write_text(text, encoding="utf-8", newline="\n")
     (STUDIO / "provenance.json").write_text(json.dumps({
         "built_utc": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
-        "source": str(DEFAULT_SOURCE if not a.source else a.source), "source_sha256": sha256(snap),
+        "source": provenance_source(Path(a.source) if a.source else DEFAULT_SOURCE), "source_sha256": sha256(snap),
         "game_commit": commit, "output_sha256": sha256(out),
         "patches": ["SettingsStore.connect -> MarketingIsolated (x2)", "HubMotion follows workspace.FilmClock during takes",
                     f"film time (SlugshotMarketing.FilmTime) in {', '.join(FILM_TIME_MODULES)}",
@@ -224,7 +233,7 @@ def main():
                     "ServerScriptService.SlugshotMarketingCast (human actor rigs and emotes)"],
         "scenes": scene_ids,
     }, indent=1), encoding="utf-8")
-    print(f"{out} built from {snap.name} (game {commit[:7]}); marker {marker_token()}; scenes {scene_ids}")
+    print(f"{out} built from {snap.name} (game {commit[:7]}); scenes {scene_ids}")
 
 
 if __name__ == "__main__":

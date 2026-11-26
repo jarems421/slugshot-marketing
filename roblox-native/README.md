@@ -137,7 +137,7 @@ Source clones are in `../vendor/` (git-ignored). No plugins were bought or insta
 ## Opening the place by hand
 
 1. Save game work and close the game place. Only the marketing place may be open during marketing MCP work.
-2. File > Open from File > `C:\Users\runni\slugshot marketing\roblox-native\studio\SlugshotMarketing.rbxlx`.
+2. File > Open from File > `roblox-native/studio/SlugshotMarketing.rbxlx`.
 3. The Studio MCP server must be enabled (Assistant > ... > Settings > MCP Servers); it already is on this machine.
 
 ## Deferred (production preparation)

@@ -34,6 +34,7 @@ def check(name, fn):
         status, detail = fn()
     except Exception as e:  # a crash in a check is a FAIL, not a crash of the report
         status, detail = "FAIL", f"{type(e).__name__}: {e}"
+    detail = detail.replace(str(ROOT) + os.sep, "").replace(str(ROOT) + "/", "")
     results.append((name, status, detail))
     print(f"{status:8} {name}: {detail}", flush=True)
 

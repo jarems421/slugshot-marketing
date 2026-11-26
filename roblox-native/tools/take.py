@@ -176,7 +176,6 @@ def film(take_path, videos, out, crf):
     geoms = [(x, y, gw, gh) for x, y, _, _ in geoms]
     w, h = gw, gh
     sx, sy = w / vw, h / vh
-    strip_w = (int((st["x"] + st["size"]) * sx) + 7) // 2 * 2  # even: FFmpeg rounds odd crop widths
     centres = [(round((st["x"] + st["size"] / 2) * sx), round((st["y"] + k * (st["size"] + st["gap"]) + st["size"] / 2) * sy))
                for k in range(st["bits"] + 2)]
     r = 3

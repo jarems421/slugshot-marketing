@@ -37,3 +37,4 @@ public/
 research/sources/
 roblox-native/studio/asset-overrides.json
 roblox-native/studio/face-assets.json
+.ruff_cache/

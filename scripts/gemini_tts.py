@@ -68,7 +68,7 @@ def speak(text, voice, style, out, language="en"):
                 data = json.loads(r.read())
             break
         except urllib.error.HTTPError as e:
-            msg = e.read().decode("utf-8", "replace")[:400]
+            msg = e.read().decode("utf-8", "replace").replace(key, "[redacted]")[:400]
             if e.code in (429, 500, 503) and attempt < 5:
                 wait = 20 * (attempt + 1)
                 print(f"Gemini TTS {e.code}; waiting {wait}s (free-tier rate limits are tight)", flush=True)

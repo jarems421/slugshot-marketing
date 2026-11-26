@@ -7,12 +7,17 @@ Files: media/meme/soundboard/<source>_<n>_<slug>.wav (ignored; third-party audio
 TikTok entertainment posts only, never in posts naming Slugshot). Bank: data/local/research/creative/soundboard/bank.csv
 and the owner's Downloads. Descriptions, names and contexts are Gemini-reported (P4): verify by ear.
 """
-import base64, csv, glob, json, os, re, subprocess, sys
-sys.path.insert(0, r"C:\Users\runni\slugshot marketing\scripts")
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(project_root / "scripts"), str(project_root / "research" / "tiktok-genre")]
 import research_common as rc
-ROOT = r"C:\Users\runni\slugshot marketing"
+
+import base64, csv, glob, json, os, re, subprocess, sys
+ROOT = str(rc.ROOT)
 MEDIA = os.path.join(ROOT, r"media\meme\soundboard"); DATA = os.path.join(ROOT, r"data\local\research\creative\soundboard")
-DL = r"C:\Users\runni\Downloads\slugshot-audio-kit\soundboard-bank"
+DL = str(Path.home() / "Downloads" / "slugshot-audio-kit" / "soundboard-bank")
 for d in (MEDIA, DATA, os.path.join(DATA, "raw"), DL): os.makedirs(d, exist_ok=True)
 PROMPT = """This is the audio of a TikTok post about soundboard / meme sound effects{extra}.
 Post caption: {caption!r}. Its transcript, if any: {transcript!r}.

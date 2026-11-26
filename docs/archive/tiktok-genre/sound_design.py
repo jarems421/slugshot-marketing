@@ -1,10 +1,19 @@
 """Stage 2 of the sound-design measurement (run in .venv-voicelab): music bed vs voice level, sudden hits
 (likely sound effects), silent drops and bed tempo, for each TOP video. Rough signal measures, not identification:
 a "hit" is a sharp onset well above the local level; music, laughs and shouted words can also trigger one."""
+import os
+import shutil
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(project_root / "scripts"), str(project_root / "research" / "tiktok-genre")]
+import research_common as rc
+
 import csv, glob, json, os, subprocess, tempfile
 import numpy as np, librosa, soundfile as sf
-ROOT = r"C:\Users\runni\slugshot marketing"
-FF = r"C:\Users\runni\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-9.1-full_build\bin\ffmpeg.exe"
+ROOT = str(rc.ROOT)
+FF = os.environ.get("FFMPEG") or shutil.which("ffmpeg") or "ffmpeg"
 DIR = os.path.join(ROOT, r"data\local\research\creative\tiktok-genre\sound-design")
 meta = {r["id"]: r for r in csv.DictReader(open(ROOT + r"\exports\share\research\tiktok-in-my-world-2026-11-26\ALL-POSTS.csv", encoding="utf-8-sig"))}
 SR, HOP = 22050, 512

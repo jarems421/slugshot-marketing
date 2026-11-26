@@ -53,3 +53,21 @@ Top level: `concept`, `hook_id`, `format` (preset), `language` ("en" default, "e
 Scenes: `kind` (video/image/card), `src`, `text`, `seconds`, `trim_start`, `fit` (crop/blur/contain), `volume`, `zoom`, `punch_at` [s], `transition` (cut/fade), `label`, `captions` (true/false).
 
 Examples: `jobs\bench\floppy-seven-qwenclone.json` (dialogue), `jobs\edit-sample-story.json`, `jobs\sample-variants.json`; dialogue script format: `jobs\dialogue\floppy-seven.txt`; script format: `jobs\scripts\sample-story.md`.
+
+## TikTok genre research
+
+Run these from the repository root with `.\.venv\Scripts\python research\tiktok-genre\<script>`. Use `--help` for optional paths. Check remaining credit with `ss references apify-check` before running an Actor. The [data guide](research-data.md#7-tiktok-collection-routes) defines the approved scope.
+
+| Script | Purpose |
+|---|---|
+| `apify.py` | Inspect the default Clockworks Actor's input schema without starting a run. |
+| `run.py LABEL CAP_USD PAYLOAD.json` | Run the Actor with a hard charge cap and retain the dataset and receipt. The default is Clockworks. Use `APIFY_ACTOR` for the selected approved Actor. |
+| `ss_subtitles.py ITEMS.json [ITEMS.json ...]` | Cache the Social Scrapers caption tracks already returned by the Actor. |
+| `savetop.py [ITEMS.json]` | Save permitted media from a previously collected run. Defaults to the first top run. |
+| `whisper_run.py` | Transcribe permitted local copies with Whisper small. |
+| `process.py` | Deduplicate observations and build `pool.csv` with captions or local transcript fallback. |
+| `build.py` | Build TOP/MID/FLOP and the untiered packs from the pool. By default writes the pilot export directory and copies it to Downloads. |
+| `speed.py` | Report narration pace by tier. |
+| `measure.py WAV_DIRECTORY` | Measure word rate and pauses for local narrator takes. |
+
+Whisper uses FFmpeg on PATH. The MakeMyClip MCP also accepts `MAKEMYCLIP_FFMPEG_PATH` from its launching environment.

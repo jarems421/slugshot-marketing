@@ -1,9 +1,15 @@
 """Six narrator takes of one original In My World passage via Gemini TTS (spend guard + ledger in gemini_tts)."""
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(project_root / "scripts"), str(project_root / "research" / "tiktok-genre")]
+import research_common as rc
+
 import json, os, shutil, sys
 from pathlib import Path
-sys.path.insert(0, r"C:\Users\runni\slugshot marketing\scripts")
 import gemini_tts
-OUT = Path(r"C:\Users\runni\slugshot marketing\out\voices\narrator-test-2026-11-26")
+OUT = rc.ROOT / "out" / "voices" / "narrator-test-2026-11-26"
 TEXT = ("In my world, every slug picks its partner on the day it hatches. Some pick fire. Some pick water. "
         "You see, the whole town lines up at sunrise, and the slugs choose. Not you. The slugs. "
         "My best friend got picked in four seconds. My neighbour got picked before breakfast. "

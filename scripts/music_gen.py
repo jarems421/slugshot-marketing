@@ -5,7 +5,13 @@ r"""Generate Slugshot music beds with Google Lyria (Gemini API, paid; owner appr
 Writes assets\music\<ID>-<name>.<ext>, logs each in assets\LICENSES.csv and a cost line in
 data\local\spend\lyria.jsonl. Outputs carry Google's SynthID watermark; the owner confirmed Google allows commercial use (2026-11-26).
 """
-import base64, csv, json, sys, time, urllib.error, urllib.request
+import base64
+import csv
+import json
+import sys
+import time
+import urllib.error
+import urllib.request
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -76,15 +82,17 @@ def generate(tid):
         raise SystemExit(f"cap ${CAP_USD:.2f} would be passed (spent ${spent():.2f}); ask the owner")
     body = {"model": model, "input": [{"type": "user_input", "content": [{"type": "text", "text": prompt + " " + COMMON}]}],
             "response_format": {"type": "audio"}}
+    key = env_value("GEMINI_API_KEY")
     req = urllib.request.Request(URL, data=json.dumps(body).encode(), method="POST",
-                                 headers={"x-goog-api-key": env_value("GEMINI_API_KEY"), "Content-Type": "application/json"})
+                                 headers={"x-goog-api-key": key, "Content-Type": "application/json"})
     for attempt in range(4):
         try:
             with urllib.request.urlopen(req, timeout=300) as r:
                 data = json.loads(r.read())
             break
         except urllib.error.HTTPError as e:
-            msg = e.read().decode("utf-8", "replace")[:300]
+            msg = e.read().decode("utf-8", "replace")
+            msg = (msg.replace(key, "[redacted]") if key else msg)[:300]
             if e.code in (429, 500, 503) and attempt < 3:
                 time.sleep(20 * (attempt + 1)); continue
             raise SystemExit(f"Lyria failed ({e.code}): {msg}")

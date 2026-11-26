@@ -25,7 +25,7 @@ Run from this folder: `.\ss <command>` in PowerShell, or `ss <command>` in Comma
 .\ss smoke                      # full smoke test -> reports\smoke-test.md
 
 # 1. Capture: record in OBS, then copy into media\raw\ with the naming convention
-.\ss import "C:\Users\runni\Videos\2026-11-25 17-02-11.mkv" --format PVP --concept FloppyUnderdog --hook BestSlug --note "build 08fee46, me vs Sam"
+.\ss import "$env:USERPROFILE\Videos\2026-11-25 17-02-11.mkv" --format PVP --concept FloppyUnderdog --hook BestSlug --note "build 08fee46, me vs Sam"
 
 # 2. Narration: record your own, or generate one (label AI voices where platforms ask)
 .\ss voice "He brought Inferno. I brought Floppy." media\vo\floppy.wav --voice am_puck --speed 1.1
@@ -95,7 +95,7 @@ FAIL: not H.264/yuv420p, no AAC audio, loudness outside -18..-10 LUFS, opens on 
 
 ## OBS settings (once)
 
-Settings > Output > Recording: Recording Path = `C:\Users\runni\slugshot marketing\media\obs`, format MKV, encoder NVIDIA NVENC H.264, quality "High Quality". Settings > Video: 1920x1080, 60 fps. Keep the action in the middle third of the screen so the vertical crop doesn't cut it.
+Settings > Output > Recording: Recording Path = `media/obs (use the absolute path under this checkout)`, format MKV, encoder NVIDIA NVENC H.264, quality "High Quality". Settings > Video: 1920x1080, 60 fps. Keep the action in the middle third of the screen so the vertical crop doesn't cut it.
 
 Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, import the checked `.srt` onto the subtitle track (Import Subtitle File) and render with the MP4-H264/AAC profile.
 

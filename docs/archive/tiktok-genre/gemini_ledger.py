@@ -1,7 +1,14 @@
 """Repost scan, IMW-GEMINI-VERIFY ledger, and a blind recode packet for Gemini's interpretive codes."""
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(project_root / "scripts"), str(project_root / "research" / "tiktok-genre")]
+import research_common as rc
+
 import csv, json, random, re, difflib, shutil
 from pathlib import Path
-ROOT = Path(r"C:\Users\runni\slugshot marketing")
+ROOT = rc.ROOT
 EXP = ROOT / "exports/share/research/tiktok-in-my-world-2026-11-26"
 G = ROOT / "data/local/research/gemini"
 pool = {r["id"]: r for r in csv.DictReader(open(ROOT / "data/local/research/creative/tiktok-genre/pool.csv", encoding="utf-8"))}
@@ -38,7 +45,7 @@ for t, v in copies.items():
 # 2. ledger
 src = "exports/share/research/tiktok-in-my-world-2026-11-26/ALL-POSTS.csv"
 ev = [
- {"evidence_id": "E1", "description": "Our 631-post TikTok bank (Apify clockworks, 26 Nov 2026), tiers TOP/MID/FLOP-50; public counts at one snapshot", "source_family": "tiktok", "actual_role": "third_party_estimate", "provenance": "P3", "access_status": "full", "metric_definition": "approximate", "sample_role": "retrieved", "observed_at": "2026-11-26", "locator": {"file": src, "note": "recomputed by research/tiktok-genre/verify_gemini.py"}},
+ {"evidence_id": "E1", "description": "Our 631-post TikTok bank (Apify clockworks, 26 Nov 2026), tiers TOP/MID/FLOP-50; public counts at one snapshot", "source_family": "tiktok", "actual_role": "third_party_estimate", "provenance": "P3", "access_status": "full", "metric_definition": "approximate", "sample_role": "retrieved", "observed_at": "2026-11-26", "locator": {"file": src, "note": "recomputed by docs/archive/tiktok-genre/verify_gemini.py"}},
  {"evidence_id": "E2", "description": "TikTok ASR subtitles / local Whisper transcripts for the same posts", "source_family": "tiktok", "actual_role": "observed_result", "provenance": "P3", "access_status": "full", "metric_definition": "approximate", "sample_role": "retrieved", "observed_at": "2026-11-26", "locator": {"file": "data/local/research/creative/tiktok-genre/pool.csv", "column": "transcript"}},
  {"evidence_id": "E3", "description": "Gemini Deep Research report and coded CSV (owner-supplied, 26 Nov 2026); coding done with tier labels visible", "source_family": "qualitative_review", "actual_role": "qualitative_coding", "provenance": "P4", "access_status": "full", "metric_definition": "unknown", "sample_role": "unknown", "observed_at": "2026-11-26", "locator": {"note": "Gemini-In-My-World-Empirical-Creative-Research.pdf + Gemini-IMW-Coded-Dataset.csv, supplied in chat; save to data/local/research/gemini/"}},
 ]
