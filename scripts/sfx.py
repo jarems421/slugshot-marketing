@@ -18,6 +18,9 @@ tools/audio/build_style_test.py (same owner).
   riser / tension_sting   build-up into a turn; a short horror-style sting
   record_scratch the "wait, what?" stop
   sparkle_reveal an ascending crystal cascade for a reveal (the cavern magic, bigger than crystal_tick)
+  deep_thud / dramatic_hits / fail_horn / correct_ding / cartoon_gulp / awkward_crickets / hype_horn / heartbeat
+                 meme-grammar stingers (realisation boom, dun-dun-DUN, you-failed horn, correct, gulp, silence, hype)
+  reverse_swell / bass_drop / glitch_stutter   transitions: swell into a cut, drop into a bigger bed, jump-cut stutter
 
 CC0 Kenney library (impacts, crystal, foley, UI pops, cartoon zips, sci-fi/goo): scripts/sfx_library.py -> assets\sfx\library\
 """
@@ -205,6 +208,90 @@ def tension_sting():
     return low + high + 0.15 * noise(t, 60, 600) * decay(t, 0.003, 0.2)
 
 
+# Meme-grammar stingers and transitions (owner 2026-11-26: "TikTok sound effects… transitional signals"). Original
+# synthesis in the style of short-form edits; no meme recordings, so they are ours on every platform.
+def deep_thud():
+    t = clock(1.8)  # the dramatic "realisation" boom: a resonant low hit with a long ring
+    body = sum(np.sin(2 * math.pi * f * t) * decay(t, 0.002, tail) for f, tail in ((52, 0.9), (104.5, 0.35), (157, 0.18)))
+    return 0.7 * body * (1 + 0.3 * np.exp(-t / 0.05)) + 0.2 * noise(t, 50, 900) * decay(t, 0.002, 0.08)
+
+
+def reverse_swell():
+    t = clock(1.6)  # a reversed cymbal-like swell that ends exactly on the cut
+    wash = noise(t, 2500, 14000) * decay(t[::-1], 0.002, 0.5)
+    return 0.6 * wash * np.minimum(1, (t[-1] - t) / 0.004 + 0.0) * (t < t[-1])
+
+
+def bass_drop():
+    t = clock(1.5)  # an 808-style glide down for a hard switch into a bigger bed
+    tone = np.sin(2 * math.pi * np.cumsum(30 + 90 * np.exp(-t / 0.18)) / RATE)
+    return 0.85 * np.tanh(2.2 * tone) * decay(t, 0.003, 0.6)
+
+
+def glitch_stutter():
+    t = clock(0.6)  # a digital stutter for a jump cut
+    out = np.zeros_like(t)
+    for i in range(8):
+        g = clock(0.045)
+        place(out, i * 0.07, np.sign(np.sin(2 * math.pi * RNG.uniform(300, 1800) * g)) * 0.35 + 0.25 * noise(g, 800, 9000), 0.5 * (1 - i / 10))
+    return out
+
+
+def fail_horn():
+    t = clock(2.0)  # the "you failed" descending muted-horn phrase (original notes, four steps down, last one wobbles)
+    out = np.zeros_like(t)
+    for i, (f, dur) in enumerate(((293.7, 0.32), (277.2, 0.32), (261.6, 0.32), (246.9, 0.9))):
+        n = clock(dur)
+        wob = 1 + (0.03 * np.sin(2 * math.pi * 6 * n) if i == 3 else 0 * n)
+        tone = sum(np.sin(2 * math.pi * f * k * np.cumsum(wob) / RATE) / k ** 1.3 for k in range(1, 7))
+        place(out, i * 0.34, tone * np.minimum(1, n / 0.03) * np.minimum(1, (n[-1] - n) / 0.08), 0.22)
+    return out
+
+
+def dramatic_hits():
+    t = clock(2.2)  # "dun, dun, DUN": three low orchestral-style hits, the last one held
+    out = np.zeros_like(t)
+    for i, (f, tail) in enumerate(((73.4, 0.25), (69.3, 0.25), (61.7, 0.9))):
+        n = clock(1.4)
+        hit = sum(np.sin(2 * math.pi * f * k * n) / k for k in (1, 2, 3, 4.01)) * decay(n, 0.004, tail)
+        place(out, i * 0.42, hit + 0.3 * noise(n, 40, 600) * decay(n, 0.002, 0.06), 0.3)
+    return out
+
+
+def heartbeat():
+    t = clock(1.6)  # two low thumps, for tension or a "caught" moment
+    out = np.zeros_like(t)
+    for at, g in ((0.0, 1.0), (0.24, 0.7), (0.8, 1.0), (1.04, 0.7)):
+        n = clock(0.25)
+        place(out, at, sweep(n, 70, 40, 0.04) * decay(n, 0.003, 0.07), 0.8 * g)
+    return out
+
+
+def correct_ding():
+    t = clock(1.3)  # a bright two-note "correct" bell
+    return 0.35 * modes(t, 1046.5, 0.5, (1, 2.76, 5.4)) + 0.35 * np.where(t > 0.12, modes(np.maximum(t - 0.12, 0), 1568, 0.6, (1, 2.76, 5.4)), 0)
+
+
+def cartoon_gulp():
+    t = clock(0.35)  # a nervous swallow
+    return 0.6 * sweep(t, 180, 520, 0.08) * decay(t, 0.01, 0.09) + 0.1 * noise(t, 200, 1500) * decay(t, 0.005, 0.05)
+
+
+def awkward_crickets():
+    t = clock(3.0)  # the awkward-silence crickets (three slow chirps)
+    out = np.zeros_like(t)
+    for at in (0.2, 1.2, 2.2):
+        n = clock(0.35)
+        place(out, at, np.sin(2 * math.pi * 4500 * n) * (np.sin(2 * math.pi * 32 * n) > 0.1) * np.sin(math.pi * n / n[-1]), 0.4)
+    return out
+
+
+def hype_horn():
+    t = clock(1.0)  # a short party-horn blast (original stacked saws, not a recording)
+    tone = sum(((f * t) % 1 - 0.5) for f in (466.2, 470.1, 587.3, 698.5))
+    return 0.25 * np.tanh(1.5 * tone) * np.minimum(1, t / 0.02) * np.minimum(1, (t[-1] - t) / 0.08) * (1 + 0.1 * np.sin(2 * math.pi * 7 * t))
+
+
 def master(signal, peak):
     signal = signal - signal.mean()
     signal = np.tanh(signal * 1.2)
@@ -230,7 +317,12 @@ SOUNDS = {"cavern_bed": (cavern_bed, 0.5), "slug_land": (slug_land, 0.9), "flopp
           # added 2026-11-26: comedy and story accents for short-form edits (gaps the CC0 library doesn't cover)
           "boing": (boing, 0.6), "slide_up": (lambda: slide(True), 0.55), "slide_down": (lambda: slide(False), 0.55),
           "sub_boom": (sub_boom, 0.9), "riser": (riser, 0.6), "record_scratch": (record_scratch, 0.6),
-          "sparkle_reveal": (sparkle_reveal, 0.55), "cartoon_pop": (cartoon_pop, 0.6), "tension_sting": (tension_sting, 0.7)}
+          "sparkle_reveal": (sparkle_reveal, 0.55), "cartoon_pop": (cartoon_pop, 0.6), "tension_sting": (tension_sting, 0.7),
+          # added 2026-11-26: meme-grammar stingers and transitions into the scene beds
+          "deep_thud": (deep_thud, 0.9), "reverse_swell": (reverse_swell, 0.6), "bass_drop": (bass_drop, 0.9),
+          "glitch_stutter": (glitch_stutter, 0.55), "fail_horn": (fail_horn, 0.6), "dramatic_hits": (dramatic_hits, 0.85),
+          "heartbeat": (heartbeat, 0.8), "correct_ding": (correct_ding, 0.55), "cartoon_gulp": (cartoon_gulp, 0.6),
+          "awkward_crickets": (awkward_crickets, 0.45), "hype_horn": (hype_horn, 0.6)}
 
 
 def main():
