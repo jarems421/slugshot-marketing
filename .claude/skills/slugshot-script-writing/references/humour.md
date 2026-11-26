@@ -12,7 +12,9 @@ Adapted from the marketing bank's safeguards (docs/Slugshot-Marketing-Bank.md, "
   - escalation to absurd;
   - a character taking something stupid completely seriously;
   - the literal reading of a figure of speech;
-  - the callback.
+  - the callback;
+  - the wrong answer: the viewer knows the answer, the character doesn't, and the consequence is the punchline (format-memes.md, "Wrong answer, get him");
+  - the straight-faced crossover: a famous boast or edit style moved onto the wrong subject and played completely seriously (format-memes.md, "I wasn't born yet"). The owner's view: these "almost always work when executed precisely", so timing is the whole job.
 - **Timing:** a short pause before the punchline (`[beat]`), the punchline as the shortest line nearby, and nothing after it that explains it. If you have to explain it, cut it or rebuild the setup.
 - **Predictable jokes:** if the viewer can finish the line, either subvert the last word or cut to the reaction instead.
 
