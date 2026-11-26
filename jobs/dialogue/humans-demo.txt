@@ -1,0 +1,19 @@
+# Human actors capability demo (internal test, not a release). Fiction: "Fictional story" label on screen.
+# Humans are marketing characters, not game canon. Game truth: no stats or mechanics claimed; Floppy is never
+# called useless.
+KAI (proud, walking and talking, building it up): Trust me. Floppy is the strongest slug in this whole cavern.
+[beat 0.5]
+MIRA (stops dead, flat disbelief): Floppy? The one that naps twenty hours a day?
+[beat 0.35]
+KAI (snaps his fingers, confident): Watch this. Floppy!
+[beat 1.6]
+KAI (presenting him like a trophy): Behold. Pure power.
+[beat 0.5]
+RAF (running in, breathless and hyped): Did somebody say power?!
+[beat 0.9]
+JUNO (cool, unbothered, a smirk): You mean like this?
+[beat 1.2]
+MIRA (dry, to Kai): Your move.
+[beat 0.6]
+FLOPPY (groggy, mumbling, a big lazy groan): Mmh... five more minutes.
+[beat 1.0]

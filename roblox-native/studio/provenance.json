@@ -1,20 +1,23 @@
 {
- "built_utc": "2026-11-26T00:38:36+00:00",
+ "built_utc": "2026-11-26T02:06:00+00:00",
  "source": "C:\\Users\\runni\\slugshot marketing\\roblox-native\\studio\\SlugshotMarketing.source.rbxlx",
  "source_sha256": "dd6f7f50f30e794157fa2972c1e3a581afc1401d4918f71d17af7e3874db6b5b",
  "game_commit": "08fee46d4ee318c875d3c089115e8ee41c3ad993",
- "output_sha256": "783dba5e82b86fe7e801c914b4931bfb3d7bd9dce9cfd014d53b0bd59d88309d",
+ "output_sha256": "283fa12fad087c3e40adeb4faf273d7b286cde1aca7de1fc07e378b61ce0a08d",
  "patches": [
   "SettingsStore.connect -> MarketingIsolated (x2)",
   "HubMotion follows workspace.FilmClock during takes",
   "repaired slug textures: 29 reference(s) swapped (studio/asset-overrides.json)",
   "ServerStorage marker + provenance",
-  "ReplicatedStorage.SlugshotMarketing runtime (Reel 4b810e9, Scene, Library, Scenes)"
+  "ReplicatedStorage.SlugshotMarketing runtime (Reel 4b810e9, Scene, Library, Scenes, Cast)",
+  "ServerScriptService.SlugshotMarketingCast (human actor rigs and emotes)"
  ],
  "scenes": [
   "bench_floppy_seven",
   "bench_floppy_seven_qc",
   "bench_floppy_seven_qd",
+  "humans_demo",
+  "humans_test",
   "imw_pick",
   "smoke_floppy_standin"
  ]

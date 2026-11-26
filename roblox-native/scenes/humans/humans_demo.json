@@ -1,0 +1,688 @@
+{
+ "id": "humans_demo",
+ "note": "human actors capability demo: walk and talk, disbelief, snap, Floppy hops into Kai's hands, Raf runs in, Juno aims and fires",
+ "truth": {
+  "mode": "staged_fiction",
+  "gameplay_mechanics": "fictional",
+  "match_outcome": "n/a",
+  "label": "Fictional story"
+ },
+ "format": "vertical",
+ "dialogue": "out/dialogue/humans-demo/dialogue.json",
+ "capture": {
+  "ui": "hidden",
+  "sample": 0.5
+ },
+ "set": {
+  "kind": "place",
+  "origin": [
+   19,
+   0,
+   20
+  ],
+  "yaw": 0
+ },
+ "marks": {
+  "kai_a": [
+   -4.6,
+   0,
+   -12,
+   180
+  ],
+  "kai_b": [
+   -3.8,
+   0,
+   -2.2,
+   180
+  ],
+  "mira_a": [
+   0.6,
+   0,
+   -11.6,
+   180
+  ],
+  "mira_b": [
+   1.0,
+   0,
+   -4.4,
+   180
+  ],
+  "floppy": [
+   -3.6,
+   0,
+   3.8,
+   0
+  ],
+  "floppy_b": [
+   -3.7,
+   0,
+   -0.4,
+   0
+  ],
+  "raf_a": [
+   14,
+   0,
+   -12,
+   90
+  ],
+  "raf_b": [
+   3.4,
+   0,
+   -0.4,
+   90
+  ],
+  "juno_a": [
+   11,
+   0,
+   7,
+   180
+  ],
+  "juno_b": [
+   7.2,
+   0,
+   -3.8,
+   180
+  ],
+  "target": [
+   15,
+   3.6,
+   -16,
+   0
+  ]
+ },
+ "actors": {
+  "kai": {
+   "kind": "human",
+   "human": "kai",
+   "mark": "kai_a"
+  },
+  "mira": {
+   "kind": "human",
+   "human": "mira",
+   "mark": "mira_a",
+   "phase": 2.1
+  },
+  "raf": {
+   "kind": "human",
+   "human": "raf",
+   "mark": "raf_a",
+   "phase": 3.3,
+   "auto_look": false
+  },
+  "juno": {
+   "kind": "human",
+   "human": "juno",
+   "mark": "juno_a",
+   "phase": 4.4,
+   "blaster": false,
+   "auto_look": false,
+   "loaded": "Inferno"
+  },
+  "floppy": {
+   "kind": "slug",
+   "species": "Floppy",
+   "mark": "floppy",
+   "auto_look": false,
+   "scale": 0.8
+  }
+ },
+ "timeline": [
+  {
+   "time": 0.2,
+   "actor": "kai",
+   "action": "move_to",
+   "mark": "kai_b",
+   "gait": "walk",
+   "duration": 4.7
+  },
+  {
+   "time": 0.2,
+   "actor": "mira",
+   "action": "move_to",
+   "mark": "mira_b",
+   "gait": "walk",
+   "duration": 4.28
+  },
+  {
+   "time": 0.4,
+   "actor": "kai",
+   "action": "look",
+   "target": "mira"
+  },
+  {
+   "time": 0.9,
+   "actor": "mira",
+   "action": "look",
+   "target": "kai"
+  },
+  {
+   "time": 0.3,
+   "actor": "kai",
+   "action": "gesture",
+   "move": "explain",
+   "duration": 3.9
+  },
+  {
+   "time": 1.1,
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": 0.6
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L2.start-0.15",
+   "actor": "mira",
+   "action": "face",
+   "target": "kai",
+   "duration": 0.45
+  },
+  {
+   "time": "L2.start",
+   "actor": "mira",
+   "action": "express",
+   "set": {
+    "react": 1,
+    "smile": -0.3
+   },
+   "ease": 0.2
+  },
+  {
+   "time": "L2.start+0.25",
+   "actor": "mira",
+   "action": "gesture",
+   "move": "disbelief",
+   "duration": 4.3
+  },
+  {
+   "time": "L2.start+0.3",
+   "actor": "kai",
+   "action": "face",
+   "target": "mira",
+   "duration": 0.5
+  },
+  {
+   "time": "L2.start+0.4",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": 0
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L3.start-0.1",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": 1
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L3.start",
+   "actor": "mira",
+   "action": "express",
+   "set": {
+    "react": 0.3,
+    "smile": -0.2
+   },
+   "ease": 0.5
+  },
+  {
+   "time": "L2.end-0.35",
+   "actor": "kai",
+   "action": "face",
+   "target": "floppy",
+   "duration": 0.45
+  },
+  {
+   "time": "L2.end-0.3",
+   "actor": "kai",
+   "action": "look",
+   "target": "floppy"
+  },
+  {
+   "time": "L3.start+0.97",
+   "actor": "kai",
+   "action": "gesture",
+   "move": "snap",
+   "duration": 1.1
+  },
+  {
+   "time": "L3.start+1.5",
+   "actor": "floppy",
+   "action": "express",
+   "set": {
+    "squint": 0.6
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L3.start+1.7",
+   "actor": "floppy",
+   "action": "look",
+   "target": "kai"
+  },
+  {
+   "time": "L3.start+1.9",
+   "actor": "floppy",
+   "action": "move_to",
+   "mark": "floppy_b",
+   "duration": 1.0
+  },
+  {
+   "time": "L3.start+1.9",
+   "actor": "floppy",
+   "action": "hop",
+   "height": 0.35,
+   "duration": 0.4
+  },
+  {
+   "time": "L3.start+2.45",
+   "actor": "floppy",
+   "action": "hop",
+   "height": 0.35,
+   "duration": 0.4
+  },
+  {
+   "time": "L3.end+0.95",
+   "actor": "floppy",
+   "action": "hop",
+   "height": 0.6,
+   "duration": 0.42
+  },
+  {
+   "time": "L3.end+0.95",
+   "actor": "kai",
+   "action": "hold",
+   "item": "floppy",
+   "hand": "both",
+   "facing": "out",
+   "duration": 12.4,
+   "ease": 0.4
+  },
+  {
+   "time": "L3.end+1.0",
+   "actor": "mira",
+   "action": "look",
+   "target": "floppy"
+  },
+  {
+   "time": "L4.start",
+   "actor": "kai",
+   "action": "look",
+   "target": "mira"
+  },
+  {
+   "time": "L4.start+0.2",
+   "actor": "mira",
+   "action": "gesture",
+   "move": "arms_crossed",
+   "duration": 10.8
+  },
+  {
+   "time": "L4.start+1.1",
+   "actor": "floppy",
+   "action": "express",
+   "set": {
+    "squint": 2.0
+   },
+   "ease": 0.6
+  },
+  {
+   "time": "L4.start+1.3",
+   "actor": "floppy",
+   "action": "express",
+   "set": {
+    "open": 0.7
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L4.start+2.1",
+   "actor": "floppy",
+   "action": "express",
+   "set": {
+    "open": 0
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L4.start+1.4",
+   "actor": "mira",
+   "action": "express",
+   "set": {
+    "react": 0,
+    "smile": -0.5,
+    "squint": 0.5
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L5.start-2.2",
+   "actor": "raf",
+   "action": "move_to",
+   "mark": "raf_b",
+   "gait": "run"
+  },
+  {
+   "time": "L5.start-0.3",
+   "actor": "raf",
+   "action": "look",
+   "target": "kai"
+  },
+  {
+   "time": "L5.start",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "react": 1,
+    "smile": 1
+   },
+   "ease": 0.2
+  },
+  {
+   "time": "L5.start+0.1",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "hands_up",
+   "duration": 1.3
+  },
+  {
+   "time": "L5.start-0.4",
+   "actor": "kai",
+   "action": "look",
+   "target": "raf"
+  },
+  {
+   "time": "L5.start-0.2",
+   "actor": "mira",
+   "action": "look",
+   "target": "raf"
+  },
+  {
+   "time": "L5.start+0.5",
+   "actor": "juno",
+   "action": "move_to",
+   "mark": "juno_b",
+   "gait": "sprint"
+  },
+  {
+   "time": "L6.start-0.9",
+   "actor": "kai",
+   "action": "look",
+   "target": "juno"
+  },
+  {
+   "time": "L6.start-0.8",
+   "actor": "mira",
+   "action": "look",
+   "target": "juno"
+  },
+  {
+   "time": "L6.start-0.7",
+   "actor": "raf",
+   "action": "look",
+   "target": "juno"
+  },
+  {
+   "time": "L6.start-0.5",
+   "actor": "juno",
+   "action": "equip"
+  },
+  {
+   "time": "L6.start-1.15",
+   "actor": "juno",
+   "action": "face",
+   "target": "target",
+   "duration": 0.45
+  },
+  {
+   "time": "L6.start-0.2",
+   "actor": "juno",
+   "action": "express",
+   "set": {
+    "smile": 0.7,
+    "squint": 0.4
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L6.start",
+   "actor": "juno",
+   "action": "aim",
+   "target": "target",
+   "duration": 2.2
+  },
+  {
+   "time": "L6.start+0.98",
+   "actor": "juno",
+   "action": "shoot"
+  },
+  {
+   "time": "L6.start+1.45",
+   "actor": "juno",
+   "action": "shoot"
+  },
+  {
+   "time": "L6.start+1.05",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "flinch",
+   "weight": 0.8
+  },
+  {
+   "time": "L6.start+1.0",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "react": 1,
+    "smile": 0
+   },
+   "ease": 0.1
+  },
+  {
+   "time": "L6.start+1.0",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "react": 1,
+    "smile": 0
+   },
+   "ease": 0.1
+  },
+  {
+   "time": "L6.start+3.0",
+   "actor": "juno",
+   "action": "holster"
+  },
+  {
+   "time": "L6.start+2.4",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "applaud",
+   "duration": 2.0
+  },
+  {
+   "time": "L7.start-0.5",
+   "actor": "mira",
+   "action": "face",
+   "target": "kai",
+   "duration": 0.45
+  },
+  {
+   "time": "L7.start-0.97",
+   "actor": "mira",
+   "action": "look",
+   "target": "kai"
+  },
+  {
+   "time": "L7.start-0.3",
+   "actor": "mira",
+   "action": "express",
+   "set": {
+    "react": 0,
+    "smile": 0.4,
+    "squint": 0.3
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L7.start-0.2",
+   "actor": "kai",
+   "action": "look",
+   "target": "floppy"
+  },
+  {
+   "time": "L7.start-0.1",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "react": 0,
+    "smile": 0.8
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L7.start-0.2",
+   "actor": "raf",
+   "action": "look",
+   "target": "floppy"
+  },
+  {
+   "time": "L7.start-0.1",
+   "actor": "juno",
+   "action": "look",
+   "target": "floppy"
+  },
+  {
+   "time": "L8.start+0.3",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": -0.4,
+    "react": 0.4
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L8.start+1.3",
+   "actor": "kai",
+   "action": "gesture",
+   "move": "facepalm",
+   "duration": 2.4
+  },
+  {
+   "time": "L8.start+1.8",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "laugh",
+   "duration": 2.2
+  },
+  {
+   "time": "L8.start+0.8",
+   "actor": "mira",
+   "action": "express",
+   "set": {
+    "smile": 1
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L8.start+0.6",
+   "actor": "kai",
+   "action": "hold",
+   "item": "floppy",
+   "hand": "left",
+   "facing": "out",
+   "duration": 3.6,
+   "ease": 0.4
+  }
+ ],
+ "shots": [
+  {
+   "preset": "follow",
+   "target": "kai",
+   "offset": [
+    -13.5,
+    1.4,
+    -6.5
+   ],
+   "look": [
+    -2.4,
+    0.4,
+    0
+   ],
+   "until": "L2.start+0.55",
+   "fov": 44
+  },
+  {
+   "preset": "close_up",
+   "target": "mira",
+   "until": "L2.end+0.1",
+   "size": 0.75,
+   "side": -22,
+   "fov": 30,
+   "headroom": 0.04
+  },
+  {
+   "preset": "close_up",
+   "target": "kai",
+   "until": "L3.end+1.5",
+   "size": 1.9,
+   "side": 8,
+   "eye": 0.1,
+   "headroom": 0.38,
+   "fov": 40
+  },
+  {
+   "preset": "push_in",
+   "target": "kai",
+   "until": "L4.end+0.3",
+   "from_size": 1.5,
+   "size": 1.0,
+   "side": 12,
+   "eye": 0.0,
+   "headroom": 0.12,
+   "fov": 34
+  },
+  {
+   "preset": "close_up",
+   "target": "raf",
+   "until": "L5.end+0.4",
+   "size": 1.5,
+   "side": -15,
+   "fov": 36,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "target": "juno",
+   "until": "L6.end+0.7",
+   "size": 1.3,
+   "side": -40,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "target": "mira",
+   "until": "L7.end+0.25",
+   "size": 0.75,
+   "side": -18,
+   "fov": 30,
+   "headroom": 0.04
+  },
+  {
+   "preset": "close_up",
+   "target": "kai",
+   "until": "L8.end+0.6",
+   "size": 1.1,
+   "side": 20,
+   "fov": 32,
+   "headroom": 0.1
+  }
+ ]
+}

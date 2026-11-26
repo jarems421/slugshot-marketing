@@ -1,0 +1,298 @@
+{
+ "id": "humans_test",
+ "note": "technical test of human actors: walk, stop, gestures, hold a slug, run in, aim and shoot",
+ "truth": {
+  "mode": "staged_fiction",
+  "gameplay_mechanics": "none",
+  "match_outcome": "n/a",
+  "label": "Fictional story"
+ },
+ "format": "vertical",
+ "capture": {
+  "ui": "hidden",
+  "sample": 0.5
+ },
+ "set": {
+  "kind": "place",
+  "origin": [
+   19,
+   0,
+   20
+  ],
+  "yaw": 0
+ },
+ "marks": {
+  "kai_a": [
+   -3,
+   0,
+   -13,
+   180
+  ],
+  "mira_a": [
+   -0.6,
+   0,
+   -12.4,
+   180
+  ],
+  "kai_b": [
+   -2.2,
+   0,
+   -2,
+   180
+  ],
+  "mira_b": [
+   0.4,
+   0,
+   -1.6,
+   180
+  ],
+  "floppy": [
+   -1.2,
+   0,
+   1.6,
+   0
+  ],
+  "raf_a": [
+   10,
+   0,
+   -6,
+   90
+  ],
+  "raf_b": [
+   3.5,
+   0,
+   -1,
+   90
+  ],
+  "juno_a": [
+   -14,
+   0,
+   -3,
+   -90
+  ],
+  "juno_b": [
+   -6,
+   0,
+   -1,
+   -90
+  ],
+  "target": [
+   -8,
+   2.5,
+   7,
+   0
+  ]
+ },
+ "actors": {
+  "kai": {
+   "kind": "human",
+   "human": "kai",
+   "mark": "kai_a"
+  },
+  "mira": {
+   "kind": "human",
+   "human": "mira",
+   "mark": "mira_a",
+   "phase": 2.1
+  },
+  "raf": {
+   "kind": "human",
+   "human": "raf",
+   "mark": "raf_a",
+   "face": "kai"
+  },
+  "juno": {
+   "kind": "human",
+   "human": "juno",
+   "mark": "juno_a",
+   "face": "kai",
+   "blaster": false
+  },
+  "floppy": {
+   "kind": "slug",
+   "species": "Floppy",
+   "mark": "floppy"
+  }
+ },
+ "timeline": [
+  {
+   "time": 0.2,
+   "actor": "kai",
+   "action": "move_to",
+   "mark": "kai_b"
+  },
+  {
+   "time": 0.2,
+   "actor": "mira",
+   "action": "move_to",
+   "mark": "mira_b"
+  },
+  {
+   "time": 0.4,
+   "actor": "kai",
+   "action": "look",
+   "target": "mira"
+  },
+  {
+   "time": 0.6,
+   "actor": "mira",
+   "action": "look",
+   "target": "kai"
+  },
+  {
+   "time": 0.5,
+   "actor": "kai",
+   "action": "gesture",
+   "move": "explain",
+   "duration": 1.6
+  },
+  {
+   "time": 2.3,
+   "actor": "mira",
+   "action": "face",
+   "target": "kai",
+   "duration": 0.5
+  },
+  {
+   "time": 2.4,
+   "actor": "mira",
+   "action": "express",
+   "set": {
+    "react": 1
+   },
+   "ease": 0.2
+  },
+  {
+   "time": 2.5,
+   "actor": "mira",
+   "action": "gesture",
+   "move": "disbelief",
+   "duration": 1.8
+  },
+  {
+   "time": 4.2,
+   "actor": "kai",
+   "action": "face",
+   "target": "mira",
+   "duration": 0.4
+  },
+  {
+   "time": 4.4,
+   "actor": "kai",
+   "action": "gesture",
+   "move": "snap",
+   "duration": 0.9
+  },
+  {
+   "time": 4.5,
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": 1
+   },
+   "ease": 0.3
+  },
+  {
+   "time": 5.3,
+   "actor": "kai",
+   "action": "face",
+   "target": "floppy",
+   "duration": 0.5
+  },
+  {
+   "time": 5.4,
+   "actor": "kai",
+   "action": "look",
+   "target": "floppy"
+  },
+  {
+   "time": 5.8,
+   "actor": "kai",
+   "action": "hold",
+   "item": "floppy",
+   "hand": "both",
+   "duration": 3.0
+  },
+  {
+   "time": 5.8,
+   "actor": "mira",
+   "action": "look",
+   "target": "floppy"
+  },
+  {
+   "time": 6.0,
+   "actor": "raf",
+   "action": "move_to",
+   "mark": "raf_b",
+   "gait": "run"
+  },
+  {
+   "time": 6.4,
+   "actor": "juno",
+   "action": "move_to",
+   "mark": "juno_b",
+   "gait": "sprint"
+  },
+  {
+   "time": 7.6,
+   "actor": "juno",
+   "action": "equip"
+  },
+  {
+   "time": 7.7,
+   "actor": "juno",
+   "action": "face",
+   "target": "target",
+   "duration": 0.4
+  },
+  {
+   "time": 7.8,
+   "actor": "juno",
+   "action": "aim",
+   "target": "target",
+   "duration": 2.0
+  },
+  {
+   "time": 8.6,
+   "actor": "juno",
+   "action": "shoot"
+  },
+  {
+   "time": 9.2,
+   "actor": "juno",
+   "action": "shoot"
+  },
+  {
+   "time": 8.0,
+   "actor": "raf",
+   "action": "gesture",
+   "move": "wave"
+  },
+  {
+   "time": 9.0,
+   "actor": "mira",
+   "action": "gesture",
+   "move": "facepalm",
+   "duration": 1.2
+  },
+  {
+   "time": 10.0,
+   "actor": "juno",
+   "action": "gesture",
+   "move": "reload"
+  }
+ ],
+ "shots": [
+  {
+   "preset": "static_wide",
+   "targets": [
+    "kai",
+    "mira"
+   ],
+   "duration": 11.5,
+   "distance": 22,
+   "height": 7,
+   "aim": 2.5
+  }
+ ]
+}

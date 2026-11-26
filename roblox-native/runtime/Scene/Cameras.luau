@@ -51,9 +51,11 @@ Cameras.presets = {
 		local at = behind(head, f.LookVector, s.distance or 4, 0.2)
 		return ctx.Shot.still({ at = CFrame.lookAt(at, head), duration = s.duration, fov = s.fov or 40 })
 	end,
+	-- `look` (the target's own axes, like `offset`) aims off the target, e.g. between two people walking together.
 	follow = function(s, ctx)
-		local o = s.offset or { 0, 3, 8 }
-		return ctx.Shot.follow({ target = ctx.target(s.target), offset = Vector3.new(o[1], o[2], o[3]), duration = s.duration, fov = s.fov or 55 })
+		local o, l = s.offset or { 0, 3, 8 }, s.look or { 0, 0, 0 }
+		return ctx.Shot.follow({ target = ctx.target(s.target), offset = Vector3.new(o[1], o[2], o[3]),
+			aim = Vector3.new(l[1], l[2], l[3]), duration = s.duration, fov = s.fov or 55 })
 	end,
 	-- Fast punch-in: same framing, field of view snaps narrower early in the shot.
 	snap_zoom = function(s, ctx)

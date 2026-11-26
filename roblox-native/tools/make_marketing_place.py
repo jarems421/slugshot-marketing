@@ -82,6 +82,12 @@ def module(name, source, children=""):
             f'</Properties>{children}</Item>\n')
 
 
+def script(name, source):
+    return (f'<Item class="Script" referent="{Refs.next()}"><Properties>'
+            f'<string name="Name">{name}</string><ProtectedString name="Source">{cdata(source)}</ProtectedString>'
+            f'</Properties></Item>\n')
+
+
 def folder(name, children):
     return (f'<Item class="Folder" referent="{Refs.next()}"><Properties><string name="Name">{name}</string>'
             f'</Properties>{children}</Item>\n')
@@ -103,8 +109,10 @@ def runtime_xml():
     runtime = HERE / "runtime"
     library = (HERE / "library" / "library.json").read_text(encoding="utf-8")
     scenes = "".join(module(s["id"], f"return [==[{json.dumps(s)}]==]") for s in specs)
+    # Cast: the RemoteFunction human actors use to ask the server (runtime/CastServer.server.luau) for rigs
+    cast = f'<Item class="RemoteFunction" referent="{Refs.next()}"><Properties><string name="Name">Cast</string></Properties></Item>\n'
     body = (package(runtime / "vendor" / "Reel", "Reel") + package(runtime / "Scene", "Scene")
-            + module("Library", f"return [==[{library}]==]") + folder("Scenes", scenes))
+            + module("Library", f"return [==[{library}]==]") + folder("Scenes", scenes) + cast)
     return folder("SlugshotMarketing", body), [s["id"] for s in specs]
 
 
@@ -162,6 +170,12 @@ def main():
     xml, scene_ids = runtime_xml()
     text = text[:k] + xml + text[k:]
 
+    sss = '<Item class="ServerScriptService" referent="'
+    if text.count(sss) != 1:
+        raise SystemExit("expected exactly one ServerScriptService")
+    k = text.find("</Properties>\n", text.find(sss)) + len("</Properties>\n")
+    text = text[:k] + script("SlugshotMarketingCast", (HERE / "runtime" / "CastServer.server.luau").read_text(encoding="utf-8")) + text[k:]
+
     out = STUDIO / "SlugshotMarketing.rbxlx"
     out.write_text(text, encoding="utf-8", newline="\n")
     (STUDIO / "provenance.json").write_text(json.dumps({
@@ -171,7 +185,8 @@ def main():
         "patches": ["SettingsStore.connect -> MarketingIsolated (x2)", "HubMotion follows workspace.FilmClock during takes",
                     f"repaired slug textures: {swapped} reference(s) swapped (studio/asset-overrides.json)",
                     "ServerStorage marker + provenance",
-                    "ReplicatedStorage.SlugshotMarketing runtime (Reel 4b810e9, Scene, Library, Scenes)"],
+                    "ReplicatedStorage.SlugshotMarketing runtime (Reel 4b810e9, Scene, Library, Scenes, Cast)",
+                    "ServerScriptService.SlugshotMarketingCast (human actor rigs and emotes)"],
         "scenes": scene_ids,
     }, indent=1), encoding="utf-8")
     print(f"{out} built from {snap.name} (game {commit[:7]}); marker {marker_token()}; scenes {scene_ids}")

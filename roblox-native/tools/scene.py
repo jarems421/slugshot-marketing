@@ -2,6 +2,7 @@
 
   python roblox-native/tools/scene.py validate [scene.json ...]   (default: every roblox-native/scenes/**/*.json)
   python roblox-native/tools/scene.py list
+  python roblox-native/tools/scene.py json ID                    one validated spec as the runtime reads it (rehearsals)
 
 Checks structure, references (marks, actors, presets, actions, library entries), timing, and the
 same canon rules as runtime/Scene/Canon.luau. make_marketing_place.py refuses to build invalid specs.
@@ -20,8 +21,13 @@ MECHANICS = {"real", "none", "fictional"}
 OUTCOMES = {"organic", "scripted", "n/a"}
 PRESETS = {"static_wide", "two_shot", "orbit_reveal", "dolly_in", "slug_low_angle", "reaction_closeup",
            "follow", "snap_zoom", "whip_pan", "close_up", "push_in", "over_shoulder"}
-ACTIONS = {"move_to", "face", "hop", "animate", "express", "look", "blink"}
-ACTOR_KINDS = {"standin_humanoid", "standin_slug", "clone", "slug"}
+ACTIONS = {"move_to", "face", "hop", "animate", "express", "look", "blink",
+           "gesture", "aim", "point", "shoot", "hold", "equip", "holster"}
+ACTOR_KINDS = {"standin_humanoid", "standin_slug", "clone", "slug", "human"}
+# Human actors (runtime/Scene/Humans.luau): what only they do, how they travel, and how they hold a slug.
+HUMAN_ACTIONS = {"gesture", "aim", "point", "shoot", "hold", "equip", "holster"}
+GAITS = {"walk", "run", "sprint", "back"}
+HANDS = {"right", "left", "both"}
 SPECIES = {"Floppy", "Inferno", "Aquabeek", "Rammstone", "Tormato", "BoonDoc", "Phosphoro"}
 CHANNELS = {"smile", "angry", "react", "look_up", "squint", "open", "lean"}
 REPO = ROOT.parent
@@ -90,6 +96,8 @@ def validate(spec):
             e.append(f"actor {name}: kind must be one of {sorted(ACTOR_KINDS)}")
         if a.get("kind") == "slug" and a.get("species") not in SPECIES:
             e.append(f"actor {name}: slug needs species, one of {sorted(SPECIES)}")
+        if a.get("kind") == "human" and a.get("human") not in LIBRARY.get("humans", {}) and not isinstance(a.get("look"), dict):
+            e.append(f"actor {name}: human needs 'human' (one of {sorted(LIBRARY.get('humans', {}))}) or a 'look'")
         if a.get("kind") == "clone" and not a.get("asset"):
             e.append(f"actor {name}: clone needs 'asset' (dotted path to a Model in the place)")
         if a.get("mark") not in marks:
@@ -154,6 +162,31 @@ def validate(spec):
             continue
         if action not in ACTIONS:
             e.append(f"{where}: unknown action {action}")
+        if "duration" in b and (not isinstance(b["duration"], (int, float)) or b["duration"] <= 0):
+            e.append(f"{where}: duration must be a positive number of seconds (anchors work for `time` only)")
+        human = actors[actor].get("kind") == "human"
+        if action in HUMAN_ACTIONS and not human:
+            e.append(f"{where}: {action} is for human actors")
+        if action == "move_to" and "gait" in b and (not human or b["gait"] not in GAITS):
+            e.append(f"{where}: gait is for human actors, one of {sorted(GAITS)}")
+        if action == "gesture":
+            move = LIBRARY.get("human_moves", {}).get(b.get("move"))
+            if not move:
+                e.append(f"{where}: gesture move {b.get('move')} is not in library.json human_moves")
+            elif move.get("loop") and not b.get("duration"):
+                e.append(f"{where}: {b['move']} loops, so the gesture needs a duration")
+        if action in ("aim", "point") and b.get("target") not in named:
+            e.append(f"{where}: {action} target {b.get('target')} unknown")
+        if action in ("shoot", "equip", "holster", "aim") and human and actors[actor].get("blaster") is None:
+            e.append(f"{where}: {action} needs the actor to carry a blaster (\"blaster\": true or false = holstered)")
+        if action == "hold":
+            item = actors.get(b.get("item"), {})
+            if not item or item.get("kind") == "human":
+                e.append(f"{where}: hold needs 'item', a slug or prop actor in this scene")
+            if not b.get("duration") or b["duration"] <= 0:
+                e.append(f"{where}: hold needs a positive duration")
+            if b.get("hand", "both") not in HANDS or b.get("facing", "holder") not in ("holder", "out"):
+                e.append(f"{where}: hold hand is one of {sorted(HANDS)}, facing 'holder' or 'out'")
         if action == "move_to" and b.get("mark") not in marks:
             e.append(f"{where}: unknown mark {b.get('mark')}")
         if action == "face" and b.get("target") not in named:
@@ -201,6 +234,13 @@ def load_valid():
 
 def main():
     cmd = sys.argv[1] if len(sys.argv) > 1 else "validate"
+    if cmd == "json":
+        # one validated spec as the runtime reads it, for a rehearsal without a rebuild (Scene.load)
+        spec = next((s for s in load_valid() if s["id"] == sys.argv[2]), None)
+        if not spec:
+            raise SystemExit(f"no valid scene {sys.argv[2]}")
+        print(json.dumps(spec))
+        return
     if cmd == "list":
         for p in all_specs():
             s = json.loads(p.read_text(encoding="utf-8"))

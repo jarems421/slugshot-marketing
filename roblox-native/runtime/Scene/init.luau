@@ -23,6 +23,7 @@ local Reel = require(Root:WaitForChild("Reel"))
 local Actors = require(script.Actors)
 local Cameras = require(script.Cameras)
 local Canon = require(script.Canon)
+local Humans = require(script.Humans)
 
 local Scene = {}
 Scene.FPS = 30
@@ -41,12 +42,20 @@ function Scene.list(): { string }
 end
 
 function Scene.load(id: string): any
+	-- Rehearsal: a spec validated by tools/scene.py (`scene.py json ID`) and handed to the playtest through
+	-- _G.SlugshotSceneSpecs[id] replaces the built one until the place is rebuilt.
+	local rehearsal = _G.SlugshotSceneSpecs and _G.SlugshotSceneSpecs[id]
+	if rehearsal then
+		return HttpService:JSONDecode(rehearsal)
+	end
 	local module = Root.Scenes:FindFirstChild(id)
 	assert(module, `no scene {id}; built scenes: {table.concat(Scene.list(), ", ")}`)
 	return decode(module)
 end
 
 local library = decode(Root:WaitForChild("Library"))
+Actors.humans = Humans
+Humans.bind(Actors, library)
 
 local function v3(t: { number }): Vector3
 	return Vector3.new(t[1], t[2] or 0, t[3] or 0)
@@ -147,6 +156,9 @@ function Scene.prepare(id: string, options: any?): any
 	for name, def in spec.actors or {} do
 		actors[name] = Actors.spawn(name, def, stage)
 	end
+	for _, a in actors do
+		a.cast = actors -- a held slug finds its holder
+	end
 	local where -- name, t -> Vector3 (an actor's head, or a mark)
 	local function frameAt(name: string, t: number): CFrame
 		local a = actors[name]
@@ -157,7 +169,7 @@ function Scene.prepare(id: string, options: any?): any
 		if not a then
 			return mark(name).Position
 		end
-		return (frameAt(name, t) * CFrame.new(0, a.height * 0.72, 0)).Position
+		return (frameAt(name, t) * CFrame.new(0, a.eye or a.height * 0.72, 0)).Position
 	end
 	where = function(name: string, t: number): Vector3
 		return headAt(name, t)

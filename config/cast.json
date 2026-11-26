@@ -213,6 +213,90 @@
         ],
         "style": "curious, wide-eyed and eager, soft and quick, delighted gasps"
       }
+    },
+    "KAI": {
+      "actor": "kai",
+      "caption": "#7fb8ff",
+      "status": "draft",
+      "gender": "male",
+      "persona": "Human slugslinger (marketing character, not game canon): Floppy's proud, overconfident partner; talks fast, loves a big reveal.",
+      "kokoro": {
+        "voice": "am_adam",
+        "speed": 1.05,
+        "pitch": 0
+      },
+      "gemini": {
+        "voice": "Fenrir",
+        "candidates": [
+          "Fenrir",
+          "Puck",
+          "Achird"
+        ],
+        "style": "excitable, cocky young guy, fast and bright, grinning, loves to show off his slug"
+      }
+    },
+    "MIRA": {
+      "actor": "mira",
+      "caption": "#ffb3e6",
+      "status": "draft",
+      "gender": "female",
+      "persona": "Human slugslinger (marketing character): Kai's sceptical friend; dry, deadpan, quick with a comeback.",
+      "kokoro": {
+        "voice": "af_bella",
+        "speed": 1.0,
+        "pitch": 0
+      },
+      "gemini": {
+        "voice": "Kore",
+        "candidates": [
+          "Kore",
+          "Leda",
+          "Aoede"
+        ],
+        "style": "dry, deadpan, sceptical young woman, sharp comebacks, eyebrow-raised disbelief"
+      }
+    },
+    "JUNO": {
+      "actor": "juno",
+      "caption": "#9dffb0",
+      "status": "draft",
+      "gender": "female",
+      "persona": "Human slugslinger (marketing character): cool, confident blaster ace; few words, big entrance.",
+      "kokoro": {
+        "voice": "af_nicole",
+        "speed": 1.0,
+        "pitch": 0
+      },
+      "gemini": {
+        "voice": "Aoede",
+        "candidates": [
+          "Aoede",
+          "Zephyr",
+          "Leda"
+        ],
+        "style": "cool, confident, laid-back young woman, a smirk you can hear, unbothered"
+      }
+    },
+    "RAF": {
+      "actor": "raf",
+      "caption": "#ffd36b",
+      "status": "draft",
+      "gender": "male",
+      "persona": "Human slugslinger (marketing character): loud hype-man friend who always arrives running.",
+      "kokoro": {
+        "voice": "am_michael",
+        "speed": 1.05,
+        "pitch": 0
+      },
+      "gemini": {
+        "voice": "Orus",
+        "candidates": [
+          "Orus",
+          "Puck",
+          "Fenrir"
+        ],
+        "style": "loud, breathless, hyped young guy who just ran in, enthusiastic"
+      }
     }
   },
   "gemini_delivery": "TikTok storytime performance: animated and emotionally committed, real pitch and pace changes, punchy stress on the key word, reacting as if it is happening right now; never a flat read"

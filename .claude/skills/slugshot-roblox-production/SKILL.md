@@ -87,7 +87,10 @@ Status (2026-11-25): the deterministic performance engine is built and real-asse
   - Tormato: spinning eyes, mouth.
   - Inferno: shaped mouth bones not yet driven.
   - Phosphoro: no face bones.
-- Player avatars: not yet. Next route: `KeyframeSequenceProvider:RegisterKeyframeSequence` (no upload).
+- **Humans** (2026-11-26): `{"kind": "human", "human": "kai|mira|raf|juno"}` (or an inline `look`). Blocky R6 like the game's players (owner's R6 ADR). Details and the move list: [references/humans.md](references/humans.md).
+  - `move_to` takes `gait`: walk, run, sprint, back. Feet follow distance travelled; starts and stops ease.
+  - `gesture` (a `human_moves` entry, over a body `mask`), `aim` / `point` (at an actor or mark), `shoot`, `equip` / `holster` (needs `"blaster": true|false`; `loaded` picks the slug in the chamber), `hold` (a slug in one or both hands, `facing` holder|out).
+  - The same `express` channels, `look`, `face`, dialogue mouths, nods and auto eyelines as slugs; an inked face drawn from parts blinks, glances and talks.
 
 ## Bilingual reuse
 

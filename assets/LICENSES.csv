@@ -5,3 +5,6 @@ assets/sfx/floppy_burble.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261
 assets/sfx/whoosh.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-25,"procedural; no samples, recordings or services"
 assets/sfx/crystal_tick.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-25,"procedural; no samples, recordings or services"
 assets/brand/Kalam-Bold.ttf,font,https://github.com/google/fonts/tree/main/ofl/kalam,SIL OFL 1.1 (assets/brand/Kalam-OFL.txt),no (keep licence with the font),all,yes,2026-11-25,"the game's one font (owner, 2026-11-22, ../slugshot/docs/pvp-ui.md)"
+assets/sfx/finger_snap.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-26,"procedural; no samples, recordings or services"
+assets/sfx/blaster_shot.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-26,"procedural; no samples, recordings or services"
+assets/sfx/footstep.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-26,"procedural; no samples, recordings or services"

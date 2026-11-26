@@ -172,3 +172,10 @@ Later in revision 2:
 - **Rammstone's voice.** Charon with a deep, gruff American direction (Algenib was rejected: "sounds weird, a bit British").
 - **Picture.** 919/919 frames, no repeats. One patched frame came out slightly darker and was replaced by the average of its neighbours; frame-to-frame jumps only at the planned cuts and Inferno's hop. Master passes QC.
 - **V06 (2026-11-26).** Floppy's right upper lid had hard dark stripes painted on (texture, not lighting: unchanged with the normal map off); his right socket and lid are now repainted from the mirrored left one in body coordinates (game `repair_textures.py`, `mirror_right_socket`). Floppy's thick inverted-hull ink shell is hidden on staged actors so he has the same thin Highlight outline as every other slug (owner: it "cuts and breaks"). 919/919 frames; one missed frame blended from its neighbours, one held before a cut; QC pass.
+
+## 12. Human actors (2026-11-26)
+
+- **What.** A `human` actor kind for staged scenes, next to the slugs: blocky R6 people like the game's players, walking, running and sprinting with eased starts and stops, gestures and emotes layered over locomotion, eyelines and turns, a drawn ink face (blinks, glances, brows, smile, talking mouth), the game's blaster (equip, two-handed aim, recoil, muzzle flash, holster), and holding a slug. Details: `.claude/skills/slugshot-roblox-production/references/humans.md`.
+- **Demo.** `SS_20261126_WORLD_HumansDemo_HumanActors_V01_MASTER.mp4` (internal; placeholder script): Kai and Mira walk and talk, Mira stops in disbelief, Kai snaps, Floppy hops into his hands, Raf runs in, Juno sprints in and fires, Kai facepalms when Floppy wants five more minutes. 871/871 frames, 0 repeated, QC pass. Four new Gemini voices (draft) at a few cents.
+- **Needs the owner's eyes and ears.** Whether R6 humans with drawn faces suit the brand; character looks and voices; the walk; comedy timing. Known limits: no fingers (snap is sound plus arm flick), no slug projectile or hit reaction yet in staged shots, emote motions are Roblox's generic ones.
+

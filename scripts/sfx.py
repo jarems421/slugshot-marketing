@@ -10,6 +10,9 @@ tools/audio/build_style_test.py (same owner).
   floppy_burble  Floppy's sleepy, airy little burble (a smile, a shrug)
   whoosh         a soft air pass for motivated camera moves and whip transitions
   crystal_tick   the small magical accent: a punchline beat or a reveal, never on every cut
+  finger_snap    a dry, bright finger snap (human actors; R6 hands have no fingers, so the sound sells it)
+  blaster_shot   the slug blaster firing: a soft pneumatic thump with a short rising zip, not a gunshot
+  footstep       one light step on stone (place per footfall, low in the mix)
 """
 import csv
 import math
@@ -114,6 +117,26 @@ def crystal_tick():
     return out
 
 
+def finger_snap():
+    t = clock(0.25)
+    out = 0.9 * noise(t, 1800, 9000) * decay(t, 0.0003, 0.012)
+    out += 0.4 * modes(t, 2100, 0.02, (1, 1.6, 2.7))
+    return out
+
+
+def blaster_shot():
+    t = clock(0.6)
+    thump = 0.6 * sweep(t, 180, 60, 0.04) * decay(t, 0.002, 0.08)
+    puff = 0.35 * noise(t, 300, 2500) * decay(t, 0.003, 0.09)
+    zip_ = 0.18 * sweep(t, 600, 1800, 0.08) * decay(t, 0.01, 0.12)
+    return thump + puff + zip_
+
+
+def footstep():
+    t = clock(0.3)
+    return 0.6 * noise(t, 90, 1200) * decay(t, 0.003, 0.035) + 0.2 * sweep(t, 140, 80, 0.02) * decay(t, 0.002, 0.04)
+
+
 def master(signal, peak):
     signal = signal - signal.mean()
     signal = np.tanh(signal * 1.2)
@@ -133,7 +156,9 @@ def write(path, signal):
 
 
 SOUNDS = {"cavern_bed": (cavern_bed, 0.5), "slug_land": (slug_land, 0.9), "floppy_burble": (floppy_burble, 0.7),
-          "whoosh": (whoosh, 0.6), "crystal_tick": (crystal_tick, 0.6)}
+          "whoosh": (whoosh, 0.6), "crystal_tick": (crystal_tick, 0.6),
+          # added 2026-11-26 for human actors; appended so the seeded sounds above stay identical
+          "finger_snap": (finger_snap, 0.7), "blaster_shot": (blaster_shot, 0.8), "footstep": (footstep, 0.5)}
 
 
 def main():

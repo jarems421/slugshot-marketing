@@ -7,11 +7,14 @@
 --   slug            a real slug rig from ReplicatedStorage.CombatAssets (species), performed by the game's own
 --                   SlugIdle (breathing, idle, facial acting) and, for Floppy, FloppyFace (lids, eyes, mouth)
 --   clone           a copy of any Model in the place (asset = dotted path); a puppet
+--   human           a blocky R6 person like the game's players (Humans.luau: walks, gestures, face, blaster, holds slugs)
 --   standin_humanoid / standin_slug   part-built stand-ins, technical tests only
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Actors = {}
+-- Human actors live in Humans.luau; the runner binds it here (Actors.humans) so both share these helpers.
+Actors.humans = nil
 
 local TAU = 2 * math.pi
 
@@ -100,6 +103,9 @@ end
 function Actors.spawn(name: string, def: any, parent: Instance): any
 	local model: Model
 	local kind = def.kind
+	if kind == "human" then
+		return Actors.humans.spawn(name, def, parent)
+	end
 	if kind == "standin_humanoid" then
 		model = standinHumanoid()
 	elseif kind == "standin_slug" then
@@ -346,9 +352,16 @@ function Actors.compile(actor: any, beats: { any }, place: (string, any) -> CFra
 	local tr = {
 		moves = {}, faces = {}, hops = {},
 		ch = { smile = {}, angry = {}, react = {}, look_up = {}, squint = {}, open = {}, lean = {} },
-		blinks = {}, lines = {},
+		blinks = {}, lines = {}, held = {},
 	}
 	tr.home = place(actor.def.mark, actor)
+	-- Held by a human (`hold` beats are the holder's; `item` names this actor).
+	for _, b in beats do
+		if b.action == "hold" and b.item == actor.name then
+			table.insert(tr.held, { t = b.time, d = b.duration, holder = b.actor, hand = b.hand or "both",
+				facing = b.facing, ease = b.ease or 0.35 })
+		end
+	end
 	for _, b in beats do
 		if b.actor ~= actor.name then
 			continue
@@ -390,10 +403,16 @@ function Actors.compile(actor: any, beats: { any }, place: (string, any) -> CFra
 		end)
 	end
 	actor.tracks = tr
+	if actor.human then
+		Actors.humans.compile(actor, beats, place)
+	end
 end
 
 -- Where the actor stands at t (ground position and facing), from its moves, turns and hops. Pure.
 function Actors.frameAt(actor: any, t: number, where: (string, number) -> Vector3): CFrame
+	if actor.human then
+		return Actors.humans.frameAt(actor, t, where)
+	end
 	local tr = actor.tracks
 	local pos = tr.home.Position
 	local yaw = select(2, tr.home:ToEulerAnglesYXZ())
@@ -417,7 +436,11 @@ function Actors.frameAt(actor: any, t: number, where: (string, number) -> Vector
 	for _, h in tr.hops do
 		lift += hopShape(t - h.t, h.d) * h.h * actor.height
 	end
-	return CFrame.new(pos + Vector3.new(0, lift, 0)) * CFrame.Angles(0, yaw, 0)
+	local base = CFrame.new(pos + Vector3.new(0, lift, 0)) * CFrame.Angles(0, yaw, 0)
+	if #tr.held > 0 then
+		base = Actors.humans.carry(actor, t, where, base)
+	end
+	return base
 end
 
 local function sample(series: { number }, start: number, t: number): number
@@ -608,6 +631,10 @@ end
 
 -- Pose the actor at t. `where(name, t)` resolves look targets.
 function Actors.pose(actor: any, t: number, where: (string, number) -> Vector3, _speaker: string?)
+	if actor.human then
+		Actors.humans.pose(actor, t, where)
+		return
+	end
 	local tr = actor.tracks
 	local frame = Actors.frameAt(actor, t, where)
 	if actor.def.kind ~= "slug" then
@@ -675,5 +702,8 @@ function Actors.pose(actor: any, t: number, where: (string, number) -> Vector3, 
 		end
 	end
 end
+
+-- Shared with Humans.luau.
+Actors.channel, Actors.speech, Actors.shortest, Actors.yawTo = channel, speech, shortest, yawTo
 
 return Actors

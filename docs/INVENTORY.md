@@ -104,6 +104,7 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Scene specs + runner (stand-ins) | `ss roblox validate`, `Scene.runJson` | yes (smoke scene, 6 takes) | **performance, humour, look** | real animations, sets, slug rigs |
 | Take repeatability | `ss roblox compare` | yes (one PASS; one at 56 ms cuts / 80 ms cues vs a 50 ms target) | n/a | n/a |
 | Real slug actors with acting (SlugIdle/FloppyFace, mouths from dialogue, eyelines, size-aware cameras) | scene specs `kind: slug` | **real assets** (Floppy, Rammstone filmed 2026-11-25) | **performance, look** | n/a |
+| Human actors (R6 like the game's players: gaits, gestures and emotes, drawn faces that talk, blaster aim and fire, holding slugs) | scene specs `kind: human` | **real assets** (humans_demo filmed 2026-11-26, 871/871 frames) | **look, performance, humour** | n/a |
 | Film mode: deterministic, frame-stamped, chunked, native 1080x1920 at 30 fps | `Scene.film`, `ss roblox film` | **real assets**: 4 takes, 0 repeated frames | n/a | n/a |
 | Character dialogue (cast script, per-line voices, script-aligned captions, deviation flags) | `ss dialogue` | yes (Gemini with optional performance auditions, Kokoro, Qwen design and clone) | **voice choice** | n/a |
 | Original procedural SFX set | `ss sfx` | yes (in the benchmark mix) | **sound feel** | n/a |
