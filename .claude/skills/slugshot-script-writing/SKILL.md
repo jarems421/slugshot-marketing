@@ -3,7 +3,7 @@ name: slugshot-script-writing
 description: Write, revise, humanise or critique any Slugshot short-form script (TikTok, Shorts, Reels) before production. Covers premise generation, hooks, story progression, character voice and dialogue, humour and cultural references, how the game fits the entertainment, and pre-production script review. Includes format modules (In My World / In This Town, with verified findings from a 631-post TikTok bank; memes and recreations as that research lands). Use when drafting, punching up, checking or choosing between scripts, or when turning a script into the ss dialogue format. Pairs with slugshot-video-editing (script-to-edit and finished-video review) and slugshot-roblox-production (filming).
 ---
 
-# Slugshot script writing (v2, 26 Nov 2026)
+# Slugshot script writing (v2.1, 26 Nov 2026)
 
 This skill covers the words before production: what the video is about, how it's told, who says what, why it's funny, and why it's worth filming. Editing decisions and finished-video review belong to slugshot-video-editing (`references/script-to-edit.md`, `references/review-and-approval.md`).
 

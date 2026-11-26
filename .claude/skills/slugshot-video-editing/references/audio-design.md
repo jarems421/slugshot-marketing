@@ -60,7 +60,9 @@ Don't use an SFX:
 
 ## Sound design kit (2026-11-25)
 
-- `ss sfx` makes the original procedural set in the game's "tactile cavern fantasy" direction (`../slugshot/docs/audio/sound-plan.md`): `cavern_bed`, `slug_land`, `floppy_burble`, `whoosh`, `crystal_tick`. It is logged in `assets/LICENSES.csv` and cleared for every platform. **(owner direction for the game; D for video)**
+- `ss sfx` makes the original procedural set in the game's "tactile cavern fantasy" direction (`../slugshot/docs/audio/sound-plan.md`): `cavern_bed`, `slug_land`, `floppy_burble`, `whoosh`, `crystal_tick`, `finger_snap`, `blaster_shot`, `footstep`. Comedy and story accents added 2026-11-26: `boing`, `slide_up`, `slide_down`, `cartoon_pop`, `sub_boom`, `riser`, `tension_sting`, `record_scratch`, `sparkle_reveal`. It is logged in `assets/LICENSES.csv` and cleared for every platform. **(owner direction for the game; D for video)**
+- `scripts/sfx_library.py` curates 70 CC0 Kenney sounds into `assets/sfx/library/<category>/`: impacts, crystal, foley, ui-pops, cartoon-zips and scifi-goo. CC0 needs no attribution. The listening reel and index are in the owner's Downloads (`slugshot-audio-kit`).
+- What TOP In My World videos do (Gemini listening to 31 TOP videos, 26 Nov 2026): about 5 effects per video, mostly impacts, whooshes and foley on actions, clustered at the turn; meme sounds are only about 9% of effects; the music bed shifts at the turn in most. **(C, Gemini-reported)**
 - Levels that worked in the benchmark:
   - `cavern_bed` as `music` at -30 dB (ducked under speech);
   - landings at -9 to -11 dB;

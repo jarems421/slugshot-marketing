@@ -13,6 +13,13 @@ tools/audio/build_style_test.py (same owner).
   finger_snap    a dry, bright finger snap (human actors; R6 hands have no fingers, so the sound sells it)
   blaster_shot   the slug blaster firing: a soft pneumatic thump with a short rising zip, not a gunshot
   footstep       one light step on stone (place per footfall, low in the mix)
+  boing / slide_up / slide_down / cartoon_pop   cartoon comedy accents (a bounce, a rise, a fall, a pop)
+  sub_boom       a deep generic boom for a reveal or punchline (original; not a meme recording)
+  riser / tension_sting   build-up into a turn; a short horror-style sting
+  record_scratch the "wait, what?" stop
+  sparkle_reveal an ascending crystal cascade for a reveal (the cavern magic, bigger than crystal_tick)
+
+CC0 Kenney library (impacts, crystal, foley, UI pops, cartoon zips, sci-fi/goo): scripts/sfx_library.py -> assets\sfx\library\
 """
 import csv
 import math
@@ -137,6 +144,67 @@ def footstep():
     return 0.6 * noise(t, 90, 1200) * decay(t, 0.003, 0.035) + 0.2 * sweep(t, 140, 80, 0.02) * decay(t, 0.002, 0.04)
 
 
+def boing():
+    t = clock(0.7)
+    f = 260 * (1 + 0.45 * np.exp(-t / 0.25) * np.sin(2 * math.pi * 11 * t))
+    phase = np.cumsum(f) / RATE
+    return 0.6 * np.sin(2 * math.pi * phase) * decay(t, 0.003, 0.22)
+
+
+def slide(up):
+    t = clock(0.65)
+    a, b = (420, 1350) if up else (1350, 420)
+    f = a + (b - a) * (t / t[-1]) ** 0.8
+    f = f * (1 + 0.012 * np.sin(2 * math.pi * 6 * t))  # whistle vibrato
+    tone = np.sin(2 * math.pi * np.cumsum(f) / RATE)
+    env = np.minimum(1, t / 0.04) * np.minimum(1, (t[-1] - t) / 0.06)
+    return (0.5 * tone + 0.04 * noise(t, 900, 5000)) * env
+
+
+def sub_boom():
+    t = clock(1.4)
+    body = 0.8 * sweep(t, 78, 34, 0.25) * decay(t, 0.004, 0.45)
+    body += 0.25 * noise(t, 40, 400) * decay(t, 0.003, 0.12)
+    place(body, 0.0, noise(clock(0.05), 1500, 6000) * decay(clock(0.05), 0.0005, 0.008), 0.15)
+    return body
+
+
+def riser():
+    t = clock(2.0)
+    env = (t / t[-1]) ** 2
+    hiss = noise(t, 400, 9000) * env
+    tone = np.sin(2 * math.pi * np.cumsum(200 + 1400 * (t / t[-1]) ** 2) / RATE) * env
+    return 0.35 * hiss + 0.25 * tone
+
+
+def record_scratch():
+    t = clock(0.55)
+    rate = 1 + 0.9 * np.sin(2 * math.pi * 5.5 * t)  # the hand moving back and forth
+    grit = noise(t, 300, 5000)
+    idx = np.clip((np.cumsum(np.abs(rate)) * 1.0).astype(int), 0, len(t) - 1)
+    return 0.7 * grit[idx] * (0.4 + 0.6 * np.abs(np.sin(2 * math.pi * 5.5 * t))) * np.minimum(1, (t[-1] - t) / 0.05)
+
+
+def sparkle_reveal():
+    t = clock(1.0)
+    out = np.zeros_like(t)
+    for i, f in enumerate((1320, 1568, 1760, 2093, 2637)):
+        place(out, 0.07 * i, modes(clock(0.6), f, 0.18, (1, 2.76, 5.4)), 0.22)
+    return out + 0.04 * noise(t, 4000, 12000) * decay(t, 0.01, 0.4)
+
+
+def cartoon_pop():
+    t = clock(0.18)
+    return 0.7 * sweep(t, 900, 180, 0.02) * decay(t, 0.0008, 0.04) + 0.2 * noise(t, 2000, 8000) * decay(t, 0.0003, 0.006)
+
+
+def tension_sting():
+    t = clock(1.8)
+    low = sum(np.sin(2 * math.pi * f * t) for f in (55, 58.3, 82.4)) * decay(t, 0.01, 0.7) * 0.25
+    high = sum(np.sin(2 * math.pi * f * t) for f in (1244, 1318)) * decay(t, 0.002, 0.35) * 0.12
+    return low + high + 0.15 * noise(t, 60, 600) * decay(t, 0.003, 0.2)
+
+
 def master(signal, peak):
     signal = signal - signal.mean()
     signal = np.tanh(signal * 1.2)
@@ -158,7 +226,11 @@ def write(path, signal):
 SOUNDS = {"cavern_bed": (cavern_bed, 0.5), "slug_land": (slug_land, 0.9), "floppy_burble": (floppy_burble, 0.7),
           "whoosh": (whoosh, 0.6), "crystal_tick": (crystal_tick, 0.6),
           # added 2026-11-26 for human actors; appended so the seeded sounds above stay identical
-          "finger_snap": (finger_snap, 0.7), "blaster_shot": (blaster_shot, 0.8), "footstep": (footstep, 0.5)}
+          "finger_snap": (finger_snap, 0.7), "blaster_shot": (blaster_shot, 0.8), "footstep": (footstep, 0.5),
+          # added 2026-11-26: comedy and story accents for short-form edits (gaps the CC0 library doesn't cover)
+          "boing": (boing, 0.6), "slide_up": (lambda: slide(True), 0.55), "slide_down": (lambda: slide(False), 0.55),
+          "sub_boom": (sub_boom, 0.9), "riser": (riser, 0.6), "record_scratch": (record_scratch, 0.6),
+          "sparkle_reveal": (sparkle_reveal, 0.55), "cartoon_pop": (cartoon_pop, 0.6), "tension_sting": (tension_sting, 0.7)}
 
 
 def main():
