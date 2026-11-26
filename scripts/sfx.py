@@ -319,6 +319,14 @@ def whistle_swipe_fart():
     return out
 
 
+def cartoon_donk():
+    t = clock(0.45)  # the hollow cartoon "donk" of a mallet on a head: woodblock-like, the pitch dips on impact
+    f = 520 * (1 - 0.12 * np.exp(-t / 0.03))
+    body = sum(np.sin(2 * math.pi * np.cumsum(f * r) / RATE) * decay(t, 0.0006, tail) / (1 + i)
+               for i, (r, tail) in enumerate(((1, 0.11), (2.31, 0.05), (4.2, 0.025))))
+    return 0.8 * body + 0.25 * noise(t, 800, 5000) * decay(t, 0.0004, 0.008)
+
+
 def master(signal, peak):
     signal = signal - signal.mean()
     signal = np.tanh(signal * 1.2)
@@ -350,7 +358,7 @@ SOUNDS = {"cavern_bed": (cavern_bed, 0.5), "slug_land": (slug_land, 0.9), "flopp
           "glitch_stutter": (glitch_stutter, 0.55), "fail_horn": (fail_horn, 0.6), "dramatic_hits": (dramatic_hits, 0.85),
           "heartbeat": (heartbeat, 0.8), "correct_ding": (correct_ding, 0.55), "cartoon_gulp": (cartoon_gulp, 0.6),
           "awkward_crickets": (awkward_crickets, 0.45), "hype_horn": (hype_horn, 0.6),
-          "whistle_swipe_fart": (whistle_swipe_fart, 0.85)}
+          "whistle_swipe_fart": (whistle_swipe_fart, 0.85), "cartoon_donk": (cartoon_donk, 0.8)}
 
 
 def main():

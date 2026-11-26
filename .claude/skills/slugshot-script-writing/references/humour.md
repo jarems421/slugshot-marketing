@@ -42,3 +42,10 @@ Gemini listened to 31 of the 50 TOP videos. These are its reports, cross-checked
 ## Needs a person
 
 Whether something is funny, current or cringe can't be settled by a model. Say which lines need the owner's ear.
+
+## Soundboard bank (26 Nov 2026; owner decision)
+
+- **What's in it:** 539 real soundboard and meme sounds (TikTok soundboard posts and Cuffem clips), each cut to its own file in `media/meme/soundboard/`.
+- **Index:** `data/local/research/creative/soundboard/bank.csv` (owner copy: Downloads `slugshot-audio-kit\soundboard-bank\BANK.md`), with Gemini's description of how each sounds, what it's used for, the scenes it fits, and whether it's clean.
+- **How to place one:** pick by the scene's job (fail, shock, awkward, reveal, hype, transition), write it as `# sfx: <file> on "<word>"`, and keep one strong sting per beat.
+- **Limits** (the owner accepted the takedown risk): TikTok entertainment posts only; never in a post that names the game; clean clips only; names and descriptions are Gemini's and need checking by ear.

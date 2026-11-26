@@ -71,5 +71,6 @@ Don't use an SFX:
   - small character sounds at -10 dB.
   - Give each SFX its own level (`"db"`); one global SFX gain flattens the hierarchy.
 - Anchor SFX to the script: `"at": "L6.end+0.55"`. Sounds land on actions (a landing, a smile), never as rhythm filler.
+- Soundboard bank (real meme sounds, owner-accepted takedown risk; TikTok entertainment posts only, never with the game named): `data/local/research/creative/soundboard/bank.csv`, files in `media/meme/soundboard/`. Pick by scene job, clean clips only.
 - The silence after a punchline stays silent. The bed may continue underneath; nothing new starts. **(D)**
 - Listen on a phone speaker before calling a mix done (owner check).
