@@ -47,5 +47,6 @@ Whether something is funny, current or cringe can't be settled by a model. Say w
 
 - **What's in it:** 539 real soundboard and meme sounds (TikTok soundboard posts and Cuffem clips), each cut to its own file in `media/meme/soundboard/`.
 - **Index:** `data/local/research/creative/soundboard/bank.csv` (owner copy: Downloads `slugshot-audio-kit\soundboard-bank\BANK.md`), with Gemini's description of how each sounds, what it's used for, the scenes it fits, and whether it's clean.
+- **Signature sound (owner pick):** `SIGNATURE-whistle-donk-fart.wav`. A slide-whistle build-up, a smooth donk, a short pause, a fart. Use it for hype that deflates: a big attempt that flops, an entrance that fizzles. Save it for the moment that earns it; overuse kills a signature.
 - **How to place one:** pick by the scene's job (fail, shock, awkward, reveal, hype, transition), write it as `# sfx: <file> on "<word>"`, and keep one strong sting per beat.
 - **Limits** (the owner accepted the takedown risk): TikTok entertainment posts only; never in a post that names the game; clean clips only; names and descriptions are Gemini's and need checking by ear.
