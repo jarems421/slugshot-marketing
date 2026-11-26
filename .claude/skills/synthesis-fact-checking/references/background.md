@@ -6,7 +6,7 @@ Why this skill exists, what version 2.0 added, and how it relates to sibling ski
 
 This skill provides a repeatable process for verifying factual accuracy of articles, blog posts, and news content before publication. v2.0 is specifically calibrated for the recursive-contamination problem: AI-generated text now constitutes a plurality of newly indexed English-language web pages (per Ahrefs measurement of newly indexed pages in April 2025), which means AI outputs become source material for the next generation of AI outputs and human research. Multi-source confidence requires graph independence, not raw count.
 
-The companion skill, [synthesis-content-quality](../../synthesis-content-quality/SKILL.md), addresses stylistic and substantive quality. This skill addresses factual correctness.
+The companion skill, [synthesis-content-quality](https://github.com/synthesisengineering/synthesis-skills/tree/62a0a54bb252a02d9cbb2e4f20f8c5b824111a76), addresses stylistic and substantive quality. This skill addresses factual correctness.
 
 ## What v2.0 adds
 
@@ -20,11 +20,11 @@ The methodology in v1.1.0 (the tier system, the confidence-based evaluation proc
 
 ## Related Skills
 
-- [`synthesis-content-quality`](../../synthesis-content-quality/SKILL.md) v4.0: Companion skill for stylistic and substantive quality. Family-conditional A1 detection feeds the per-family hallucination check (section 6) in this skill.
-- [`synthesis-writing-pitfalls`](../../synthesis-writing-pitfalls/SKILL.md): Universal human-source bad-writing patterns.
-- [`synthesis-writing-craft`](../../synthesis-writing-craft/SKILL.md): Positive writing principles.
-- [`synthesis-reader-briefing`](../../synthesis-reader-briefing/SKILL.md): Pre-writing audience analysis.
-- [`synthesis-article-writing`](../../synthesis-article-writing/SKILL.md): End-to-end article workflow with quality gates.
+- [`synthesis-content-quality`](https://github.com/synthesisengineering/synthesis-skills/tree/62a0a54bb252a02d9cbb2e4f20f8c5b824111a76) v4.0: Companion skill for stylistic and substantive quality. Family-conditional A1 detection feeds the per-family hallucination check (section 6) in this skill.
+- [`synthesis-writing-pitfalls`](https://github.com/synthesisengineering/synthesis-skills/tree/62a0a54bb252a02d9cbb2e4f20f8c5b824111a76): Universal human-source bad-writing patterns.
+- [`synthesis-writing-craft`](https://github.com/synthesisengineering/synthesis-skills/tree/62a0a54bb252a02d9cbb2e4f20f8c5b824111a76): Positive writing principles.
+- [`synthesis-reader-briefing`](https://github.com/synthesisengineering/synthesis-skills/tree/62a0a54bb252a02d9cbb2e4f20f8c5b824111a76): Pre-writing audience analysis.
+- [`synthesis-article-writing`](https://github.com/synthesisengineering/synthesis-skills/tree/62a0a54bb252a02d9cbb2e4f20f8c5b824111a76): End-to-end article workflow with quality gates.
 
 ---
 

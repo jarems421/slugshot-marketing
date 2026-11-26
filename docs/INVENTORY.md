@@ -1,6 +1,6 @@
 # Inventory and capability status
 
-Last updated 2026-11-26 (production quality pass: docs/production-quality.md). Infrastructure phase complete; production work is in [production-checklist.md](production-checklist.md). Command details: [COMMANDS.md](COMMANDS.md).
+Last updated 2026-11-26 (production quality pass: docs/production-quality.md). Infrastructure phase complete; production work is in [production quality and next steps](production-quality.md). Command details: [COMMANDS.md](COMMANDS.md).
 
 ## Software
 
@@ -96,7 +96,7 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Roblox Analytics Query API (players, new players, D1/D7/D30, revenue, payers, acquisition source) + public games API | `ss dash sync` | Analytics: fixture-tested; public games connector live-validated on a public experience | API key with `universe.analytics:read` | **published game** |
 | Roblox share links, TikTok Studio, Instagram app and YouTube Studio figures | `ss dash import` / Settings | yes (validation, dedup, row errors) | owner copies figures | first posts / published game |
 | Campaign snapshot for ChatGPT/Claude/Gemini (safe-to-share, credential scan) | `ss dash export` | yes | owner uploads | n/a |
-| Activation (onboarding funnel) | none | proposal only ([activation-events-proposal.md](dashboard/activation-events-proposal.md)) | **owner approval (game change)** | published game |
+| Activation (onboarding funnel) | none | proposal only ([activation-events-proposal.md](archive/dashboard/activation-events-proposal.md)) | **owner approval (game change)** | published game |
 | Foundational research and knowledge banks (milestone 1) | literature skills, `ss evidence` | built: six Gemini reports audited and Stage 4.7 knowledge banks built 2026-11-25 (1,037 entries, 0 validation errors) | owner approves individual entries; live evidence comes from producing videos | audit outputs local in `data/local/research/stage-4.6/`; export `exports/share/research-4.6-audit/`; ledger `AUDIT-STAGE46-PLATFORM` |
 | External research-report audit (extract IDs/DOIs/URLs, dedupe, Crossref DOI check, URL reachability, figure checks in cited sources, claim register) | `python scripts/research_audit.py all`; `… claims --checks FILE`; `python scripts/research_audit_register.py` | yes (run on the Stage 4.6 reports, 25 Nov 2026) | figure checks are text matches; meaning needs review | sources read from git-ignored `research/sources/` |
 | Knowledge banks (16 banks, validator, filters, briefs, export; dashboard learning loop and export) | `ss kb …` | yes (21 tests in `tests.test_knowledge`; real banks validate) | owner approval per entry (`approved`) | `docs/knowledge-banks.md` |
@@ -112,8 +112,8 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Character dialogue (cast script, per-line voices, script-aligned captions, deviation flags) | `ss dialogue` | yes (Gemini with optional performance auditions, Kokoro, Qwen design and clone) | **voice choice** | n/a |
 | Original procedural SFX set | `ss sfx` | yes (in the benchmark mix) | **sound feel** | n/a |
 | Roblox take into the toolkit | `ss roblox import` | yes (Studio capture) | n/a | first OBS recording of a take |
-| Player-avatar acting, finished set marks, real PvP filming | none | no (production work) | **every animation and set** | production preparation |
+| Finished set marks and real PvP filming | see [production quality](production-quality.md) | production work | owner creative review | first gameplay round |
 
-Infrastructure: complete, including Roblox-native filming ([roblox-native/README.md](../roblox-native/README.md)), research collection (Stage 4.4), research intelligence (4.5.3) and research configuration (4.5.4; families-1.1, codebook v1.1). The project is now in active research and marketing; add infrastructure only for a genuine operational need. Remaining milestone: foundational research and knowledge banks; the commercial funnel and centralised dashboard were built 2026-11-25 ([dashboard/README.md](dashboard/README.md)) ([chatgpt-research-skills-v1.1.md](chatgpt-research-skills-v1.1.md)). The YouTube key was regenerated and restricted (owner confirmed 2026-11-24). Remaining setup: optionally approve the `makemyclip` MCP server; optionally set `contact` in `config/research/settings.json`; review Twitch onward-transfer terms before sharing Twitch exports.
+Infrastructure is frozen. The dashboard, commercial funnel and initial knowledge banks are built. Current work is content production, account validation and small fixes. See the [agent brief](../CLAUDE.md) for approvals.
 
-Production items (gameplay recording, voice selection, licensed music, SFX, brand fonts, real-world production tests) are deferred to [production-checklist.md](production-checklist.md). They don't block the infrastructure.
+Production items (gameplay recording, voice selection, licensed music, SFX, brand fonts, real-world production tests) are deferred to [production quality and next steps](production-quality.md). They don't block the infrastructure.

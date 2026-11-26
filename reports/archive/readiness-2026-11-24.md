@@ -14,7 +14,7 @@ Date: 2026-11-24. Final refinement phase: creative editing intelligence and oper
 | Review aid | `ss sheet`: frame sheets that Claude and people can scan. |
 | YouTube data | Briefly kept internal, then re-enabled after the owner approved sharing public stats with AI tools for internal analysis: reports go to `exports/share/` with a data dictionary. Free quota only; anything paid needs the owner's approval. |
 | Permissions (later the same day) | The game-repo edit block was removed: reading and copying game assets is allowed; changing game files needs the owner's request. Kept: `.env` read block, MakeMyClip CLI block; added confirmation for recursive deletes and destructive git commands. |
-| Docs | [COMMANDS.md](../docs/COMMANDS.md) (every command: inputs, outputs, limits), [flow-and-gemini.md](../docs/flow-and-gemini.md), [INVENTORY.md](../docs/INVENTORY.md) readiness table, README and CLAUDE.md updated. |
+| Docs | [COMMANDS.md](../../docs/COMMANDS.md) (every command: inputs, outputs, limits), [flow-and-gemini.md](../../docs/archive/flow-and-gemini.md), [INVENTORY.md](../../docs/INVENTORY.md) readiness table, README and CLAUDE.md updated. |
 
 ## Production-readiness test (external asset types)
 
@@ -31,11 +31,11 @@ Stand-ins are clearly test material (Blender preview strip, generated gradient c
 
 ## Test results
 
-`ss smoke`: **13/13 PASS** ([report](smoke-test.md)): tools, glossary, Whisper, Kokoro round trip, audio, FFmpeg render, Remotion render, multi-scene assembly, Gemini candidates, MakeMyClip, YouTube dry run, YouTube data kept internal, YouTube live call.
+`ss smoke`: **13/13 PASS** ([report](../smoke-test.md)): tools, glossary, Whisper, Kokoro round trip, audio, FFmpeg render, Remotion render, multi-scene assembly, Gemini candidates, MakeMyClip, YouTube dry run, YouTube data kept internal, YouTube live call.
 
 ## Final audit
 
-**Fully tested:** every `ss` command in [COMMANDS.md](../docs/COMMANDS.md); technical QC; MakeMyClip confinement; YouTube collection within policy limits; YouTube reports kept internal.
+**Fully tested:** every `ss` command in [COMMANDS.md](../../docs/COMMANDS.md); technical QC; MakeMyClip confinement; YouTube collection within policy limits; YouTube reports kept internal.
 
 **Needs human creative approval every time:**
 - whether an edit is funny, exciting or clear to a stranger;
@@ -58,7 +58,7 @@ The skill makes Claude's reviews specific and honest about this limit. It doesn'
 
 **Infrastructure: complete.** The only remaining setup item is to regenerate and restrict the YouTube key, then run `.\ss smoke`.
 
-**Deferred production work** (not infrastructure blockers) is in [docs/production-checklist.md](../docs/production-checklist.md): gameplay recording, voice selection, licensed music, SFX, brand fonts and real-world production tests.
+**Deferred production work** (not infrastructure blockers) is in [docs/production-checklist.md](../../docs/archive/production-checklist.md): gameplay recording, voice selection, licensed music, SFX, brand fonts and real-world production tests.
 
 ## Known limitations
 

@@ -1,6 +1,6 @@
 # Dashboard handoff for ChatGPT and Gemini (25 Nov 2026)
 
-For ChatGPT's research skills (v1.1) and Gemini. It explains what the new dashboard measures, how its snapshot files are structured, and what each AI owns from here. Full technical reference: [dashboard/README.md](dashboard/README.md).
+For ChatGPT's research skills (v1.1) and Gemini. It explains what the new dashboard measures, how its snapshot files are structured, and what each AI owns from here. Full technical reference: [dashboard/README.md](../dashboard/README.md).
 
 ## 1. What changed
 

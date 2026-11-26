@@ -1,6 +1,6 @@
 # Slugshot Marketing Bank
 
-> Historical snapshot. We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center. See the [current data guide](research-data.md).
+> Historical snapshot. We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center. See the [current data guide](../research-data.md).
 
 Updated 24 November 2026 · Research scope: TikTok, YouTube Shorts, Instagram Reels · English and Spanish-language audiences
 

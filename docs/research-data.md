@@ -1,6 +1,6 @@
 # Research data collection
 
-Built and tested 2026-11-24. This is the reference for the research collectors: what each one collects, the exact commands, the file schemas, what may go to ChatGPT, and what is still blocked. The decisions and evidence behind it are in [research-data-audit.md](research-data-audit.md). The YouTube rules are in [youtube-api-policy.md](youtube-api-policy.md).
+Built and tested 2026-11-24. This is the reference for the research collectors: what each one collects, the exact commands, the file schemas, what may go to ChatGPT, and what is still blocked. The decisions and evidence behind it are in [research-data-audit.md](archive/research-data-audit.md). The YouTube rules are in [youtube-api-policy.md](youtube-api-policy.md).
 
 **Split of work.** These collectors gather dated, raw, labelled data and nothing else. ChatGPT owns the query lists, watchlists and entity lists; it classifies concepts (emerging / accelerating / established / saturated / declining / unknown) and does all interpretation. The collectors never rank, score or classify, and never claim anything about fatigue, quality, demographics or conversion.
 
@@ -290,7 +290,7 @@ Example row: `tiktok:hashtag:huss|views|creative_center|2026-11-24T00:00:00+00:0
 
 Rule of thumb: ChatGPT can keep **lessons, concepts and source references** permanently. It should not keep restricted raw statistics (YouTube, Twitch) beyond their expiry. Re-run the collector instead of reusing old numbers.
 
-## 7. TikTok: findings (2026-11-24)
+## 7. TikTok: collection routes
 
 We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center. Use `ss observe import` for observed values and vidIQ only within the owner's agreed budget.
 

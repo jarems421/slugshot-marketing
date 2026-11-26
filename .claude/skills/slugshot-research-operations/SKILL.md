@@ -5,85 +5,18 @@ description: Run Slugshot's research data collection end to end from a short ins
 
 # Slugshot research operations
 
-The `ss` toolkit is **Claude's interface, not the owner's**. When the owner gives a research instruction, run everything yourself: choose the collectors, run the commands, deal with ordinary errors, organise the files, build the bundle, and report. Don't ask the owner to run commands, format tables or move files you can handle. Use sensible defaults instead of asking.
+Use the [command reference](../../../docs/COMMANDS.md) and the [data and provider rules](../../../docs/research-data.md). Use the [analysis skill](../slugshot-research-analysis/SKILL.md) when the request turns to interpretation.
 
-Reference: `docs/research-data.md` (sources, schemas, sharing rules), `docs/COMMANDS.md`. ChatGPT owns methodology, query design and interpretation; this skill only executes and reports. Never rank, score or classify concepts.
-
-## Intent → what to run
-
-| Owner says | Run |
+| Request | Command |
 |---|---|
-| "Collect today's research" | `.\ss research collect --profile daily` |
-| "Research Spanish Roblox content" | `.\ss research collect --profile spanish` (MX, ES, AR, CO, CL; uses ChatGPT's saved YouTube set `spanish`, merged in Stage 4.5.4) |
-| "Refresh our watchlists" | `.\ss research collect --profile refresh` (re-snapshots stored YouTube videos and Twitch clips, creator and broadcaster lists, Wikipedia, Roblox) |
-| "Research Creative Center" | the Creative Center procedure below |
-| "Execute this research brief" | the brief procedure below |
-| "Bundle what we have" / "send it to ChatGPT" | `.\ss research bundle` |
-| "What's the status?" | `.\ss research status` and `.\ss research runs` |
+| Today's research | `ss research collect --profile daily` |
+| Spanish Roblox content | `ss research collect --profile spanish` |
+| Refresh watched items | `ss research collect --profile refresh` |
+| Bundle existing data | `ss research bundle` |
+| Check status | `ss research status` and `ss research runs` |
 
-Targeted runs (single sources) are fine whenever they fit the request better: `ss yt discover/chart/creators/comments`, `ss wiki pull`, `ss trends rss`, `ss twitch clips/streams`, `ss rbx games`, `ss observe import`. Add `-h` to any command for its options.
-
-## After collection: analysis
-
-Anything that asks what the data *means* goes to the `slugshot-research-analysis` skill. That covers analysing a bundle, checking whether a trend is growing, finding evidence for or against something, coding creators' mechanisms, comparing observations, or academic verification. The skill gives intake QC, deterministic statistics, trend dimensions, outcome-blind coding and the evidence ledger (`ss analyze ...`, `ss evidence ...`).
-
-- Every `ss research bundle` automatically adds an `INTAKE.md`/`INTAKE.json` QC report and any ledgers (`evidence/`) and trend outputs (`analysis/`).
-- For a brief, finish with a ledger and decision memo, not only a data dump.
-- Query families (families-1.1): ChatGPT edits `config/research/query_families.json`. Run `ss research families --compile` to turn them into YouTube saved sets named `fam-<id>[-<branch>]`. `market_mode: rotate` gives each query one retrieval country, rotating each ISO week, so recompile at the start of a week. Spanish branches may set their own `days`. When comparing yields, change wording or window, not both at once.
-- Coding for a brief: build the packet with `ss analyze coding-packet` (all ten codes; see the analysis skill). Gemini gets it through the owner; a person's spot-check uses `--keys` and `--coder owner`.
-
-## Executing a ChatGPT research brief
-
-1. Read the brief. Map each requested item to a collector; note anything no source can supply (e.g. audience geography, competitors' retention) and say so in the report rather than approximating it.
-2. Put the brief's lists into config, not code:
-   - YouTube queries: add a set named `brief-YYYYMMDD` to `config/research/youtube_queries.json` (`query`, `lang`, `region`, `days` or `after`/`before`, `order`, `duration`, `max`), then run `ss yt sweep --set brief-YYYYMMDD --check-shorts`.
-   - Creators, broadcasters, Wikipedia topics, Roblox experiences: append to the CSVs in `config/research/`, keeping existing rows. Resolve Roblox place IDs with `ss rbx universe <placeId>`, and YouTube handles to channel IDs via a `discover`/`videos` lookup.
-   - Observation tables from ChatGPT (CSV or Markdown): save them under `data/local/research/observations/inbox/` and run `ss observe import` with `--source` and the scope options (`--region --period --category --observed-at`).
-3. Run, then `ss research bundle`, then report.
-4. If the brief would exceed the YouTube daily budget (`ss yt quota`), run what fits, schedule nothing, and report what's left for tomorrow.
-
-## Creative Center (core source; the owner's browser does the access)
-
-We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center. Use the guided session to capture what the person copies.
-
-1. Start the guided session yourself, in the background: `.\ss observe cc-session --regions US,GB,MX,ES,AR,CO,CL --periods 7 --category Games` (add `30` to periods if asked).
-2. Ask the owner, once: "Creative Center is opening in your browser. On each page: pick Games if it isn't selected, scroll once, press Ctrl+A then Ctrl+C. I'll handle the rest." If a login wall appears, ask them to sign in once in that browser.
-3. The session watches the clipboard, ignores anything that isn't a hashtag list, saves the copied text to the inbox, parses and imports it (scope, URL and time filled in), opens the next page, and prints a summary. Skipped pages are reported, not retried endlessly.
-4. Check the parsed previews look sane (ranks increasing, values like 24.5K / 60.1M). If the real page layout parses badly, fix `parse_cc_text` in `scripts/observe.py` against the saved `.txt`, then re-import with `ss observe cc-paste <file> --region .. --period .. --import`.
-5. For human-read rows already supplied in a table, import them with `--source creative_center`.
-
-## Handling problems (keep going; report at the end)
-
-- One collector failing never stops the others (`research collect` continues by design).
-- YouTube budget stop: run the remaining non-YouTube steps and report the remaining quota. Don't raise the budget past Google's free limits, and never enable billing.
-- Rate limits (429): the collectors already pace and retry; if a step still fails, rerun that step once later in the session.
-- Roblox "wait until 55 min": expected, report as skipped.
-- Twitch BLOCKED: report it; Twitch exports stay local while `twitch.share_exports` is false.
-- A Google Trends Explore CSV the parser rejects: inspect the file and fix the parser for the real format, then import.
-
-## Bundle and report
-
-`ss research bundle` writes `exports/share/bundles/slugshot_research_<time>.zip` (newest export of each kind, MANIFEST, DATA_DICTIONARY, BUNDLE_SUMMARY). Report to the owner in a few lines:
-- the scope collected;
-- rows per source (from BUNDLE_SUMMARY);
-- what failed or was skipped, and why;
-- material caveats (e.g. default query used, a parser that isn't confirmed yet);
-- the bundle path.
-
-The owner uploads the zip to ChatGPT. Don't claim any automatic sync exists. Google Drive is connected to Claude (claude.ai connector). Composio is set up read-only but has no accounts authorised (`docs/composio.md`). Uploading research data to Drive is a shared-workflow decision, and YouTube/Twitch copies would have to be deleted by their expiry, so don't upload without the owner asking. Reuse native connectors first, and check Composio before building any new OAuth integration.
-
-Only send the newest corrected bundle. Superseded bundles stay out of `exports/share/` (see `docs/stage-4.5.4-report.md`), and the owner manages deletion of copies uploaded to chats.
-
-## Pre-approved vs ask first
-
-Pre-approved (just do it): free API calls within budgets, local file and config changes in this workspace, imports, exports, prune, bundles, opening pages in the owner's browser, reading clipboard text that parses as research data.
-
-Ask first:
-- spending money, paid APIs or subscriptions, or any vidIQ credits without an agreed budget;
-- publishing anything;
-- destructive operations beyond the collectors' own retention pruning;
-- changes to the game repo `../slugshot`;
-- sharing Twitch exports;
-- anything that would bypass a login, rate limit or access control.
-
-Never print credentials. Keep the YouTube policy limits (30 days, per-video maths only), provenance labels, blank-not-zero, and the Studio guard.
+1. Map a brief to available sources. Record gaps in scope and metric coverage.
+2. Put saved YouTube queries, watchlists and families in `config/research/`. Compile changed families with `ss research families --compile`. Use one rotating retrieval market per query where configured.
+3. Collect within the provider budget. Keep independent sources running when one is blocked. Use the run log to report failures and retries.
+4. For Creative Center, run `ss observe cc-session`. A person reads each page and copies its contents. Validate the parsed ranks and counts against the paste. For Apify and other TikTok routes, use the [data guide](../../../docs/research-data.md#7-tiktok-collection-routes).
+5. Run `ss research bundle`, check the intake report and identify scope, row counts, limitations and the bundle path. Give the owner the current corrected bundle for handoff.

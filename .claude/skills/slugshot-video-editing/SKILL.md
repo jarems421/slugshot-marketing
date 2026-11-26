@@ -17,15 +17,11 @@ The toolkit already does the technical half (cut, caption, zoom, mix, render, QC
 
 Say which label a recommendation rests on. Never present C or D as fact.
 
-## Quality bar (owner rules, 2026-11-25)
-
-1. **Pixels and frames.** Masters are 1080x1920 from native pixels: Roblox-native footage comes from film mode (`ss roblox film`, 0 repeated frames). Never upscale a centre crop of landscape footage when a native take is possible. Inspect frames (`ss sheet`) before showing anyone.
-2. **Story-matched picture.** Every shot, push-in, reaction and sound is motivated by the script beat it sits on, and timed to the dialogue (line anchors), not to whatever clip was handy. A random idle snippet or a pretty shot with no job is cut.
-3. **Identity.** It should look like our world: inked characters, glowing caverns, the Kalam font, one accent colour at a time. See [references/visual-direction.md](references/visual-direction.md). Generic Roblox-story styling (default baseplates, random meme fonts, constant shake) is a fail.
+Apply the [production quality bar](../../../docs/production-quality.md) before creative review.
 
 ## Non-negotiables before any creative choice
 
-1. **Truth gate.** Check every gameplay claim against `docs/game-truth.md` and re-check `../slugshot/docs/status.md` (read and copy freely; ask before changing game files). Floppy never transforms. Nothing is published, so no "play now". Fiction and AI shots carry a label (WORLD, SKIT and AISCENE presets) and are never cut into gameplay in a way that implies they happened. **(A: Roblox ad standards and platform AI-disclosure rules; research PDF)**
+1. **Truth gate.** Verify gameplay claims against the [game-truth guide](../../../docs/game-truth.md). Use the WORLD, SKIT or AISCENE labels for invented events and keep a clear distinction from gameplay footage. **(A)**
 2. **Rights.** Trending sounds are added in each platform's app; only files listed in `assets/LICENSES.csv` go into masters. **(A)**
 3. **One video, one promise.** Write down in one sentence what the viewer is promised in the first seconds and where it pays off. If you can't, the edit isn't ready.
 

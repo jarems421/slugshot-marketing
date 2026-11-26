@@ -117,7 +117,7 @@ All in `ss analyze`; methods in `docs/research-methods.md`.
 
 ## 8. Known limits
 
-- **Creative Center:** a person reads the page. We have permission to use Apify for the toolkit's TikTok collection. [Current collection guide](research-data.md#7-tiktok-findings-2026-11-24)
+- **Creative Center:** a person reads the page. We have permission to use Apify for the toolkit's TikTok collection. [Current collection guide](../research-data.md#7-tiktok-collection-routes)
 - **Google Trends Explore import:** tested on sample files only.
 - **TikTok Discovery API:** not available (companies only).
 - **Competitors' metrics:** no retention or audience geography from any source. Slugshot has no own-channel results yet, so nothing is "experimental" strength.

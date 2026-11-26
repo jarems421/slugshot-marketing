@@ -44,11 +44,11 @@ Fixture screenshots carry a "Fixture data" banner. Every figure in them is fake.
 
 | | |
 |---|---|
-| Overview (fixture, dark) ![](../docs/dashboard/screens/fixture-overview-dark-1440.jpg) | Overview (fixture, light) ![](../docs/dashboard/screens/fixture-overview-light-1440.jpg) |
-| Content (fixture) ![](../docs/dashboard/screens/fixture-content-dark-1440.jpg) | Research (real research store) ![](../docs/dashboard/screens/research-dark-1440.jpg) |
-| Game (fixture) ![](../docs/dashboard/screens/fixture-game-dark-1440.jpg) | Experiments (real seed) ![](../docs/dashboard/screens/fixture-experiments-dark-1440.jpg) |
-| Settings (fixture) ![](../docs/dashboard/screens/fixture-settings-dark-1440.jpg) | Phone width (fixture) ![](../docs/dashboard/screens/fixture-game-dark-600.jpg) |
-| Real dashboard today: empty Overview ![](../docs/dashboard/screens/real-empty-overview-dark-1440.jpg) | Real dashboard today: empty Game ![](../docs/dashboard/screens/real-empty-game-dark-1440.jpg) |
+| Overview (fixture, dark) ![](https://github.com/jarems421/slugshot-marketing/blob/ac1e8851545187a4236914edd26e887580ca8ad3/docs/dashboard/screens/fixture-overview-dark-1440.jpg) | Overview (fixture, light) ![](https://github.com/jarems421/slugshot-marketing/blob/ac1e8851545187a4236914edd26e887580ca8ad3/docs/dashboard/screens/fixture-overview-light-1440.jpg) |
+| Content (fixture) ![](https://github.com/jarems421/slugshot-marketing/blob/ac1e8851545187a4236914edd26e887580ca8ad3/docs/dashboard/screens/fixture-content-dark-1440.jpg) | Research (real research store) ![](https://github.com/jarems421/slugshot-marketing/blob/ac1e8851545187a4236914edd26e887580ca8ad3/docs/dashboard/screens/research-dark-1440.jpg) |
+| Game (fixture) ![](https://github.com/jarems421/slugshot-marketing/blob/ac1e8851545187a4236914edd26e887580ca8ad3/docs/dashboard/screens/fixture-game-dark-1440.jpg) | Experiments (real seed) ![](https://github.com/jarems421/slugshot-marketing/blob/ac1e8851545187a4236914edd26e887580ca8ad3/docs/dashboard/screens/fixture-experiments-dark-1440.jpg) |
+| Settings (fixture) ![](https://github.com/jarems421/slugshot-marketing/blob/ac1e8851545187a4236914edd26e887580ca8ad3/docs/dashboard/screens/fixture-settings-dark-1440.jpg) | Phone width (fixture) ![](https://github.com/jarems421/slugshot-marketing/blob/ac1e8851545187a4236914edd26e887580ca8ad3/docs/dashboard/screens/fixture-game-dark-600.jpg) |
+| Real dashboard today: empty Overview ![](https://github.com/jarems421/slugshot-marketing/blob/ac1e8851545187a4236914edd26e887580ca8ad3/docs/dashboard/screens/real-empty-overview-dark-1440.jpg) | Real dashboard today: empty Game ![](https://github.com/jarems421/slugshot-marketing/blob/ac1e8851545187a4236914edd26e887580ca8ad3/docs/dashboard/screens/real-empty-game-dark-1440.jpg) |
 
 ## 3. Install and launch
 
@@ -111,7 +111,7 @@ Already done on this PC: the **Slugshot Dashboard** shortcut is on the Desktop a
 | Test | Result |
 |---|---|
 | `tests.test_dashboard`: 30 tests (store semantics, metric rules, connector fixtures, failure isolation, retry/no-retry, async polling, Instagram unavailable metrics, imports and row errors, duplicate files, exports, sharing rules, credential-leak abort, DPAPI vault, Host/Origin/token checks, path traversal, exclusive port, git-ignore and no secrets in tracked files) | **PASS** 30/30 |
-| `ss smoke --dashboard` | **PASS** 3/3 ([report](smoke-test-dashboard.md)) |
+| `ss smoke --dashboard` | **PASS** 3/3 ([report](../smoke-test-dashboard.md)) |
 | Existing suites `tests.test_research`, `tests.test_analysis` | **PASS** 53/53 |
 | `ss smoke --research` (incl. live Wikimedia, Trends, Roblox, oEmbed, YouTube, Twitch) | **PASS** 10/10 |
 | Roblox public connector against a public experience (throwaway DB, 1 request) | **PASS**, live-validated |
@@ -141,7 +141,7 @@ Not run: the full `ss smoke` (Whisper, Kokoro, Remotion renders). No production 
 
 ## 10. Credential and account-authorisation checklist
 
-The full table (product, official URL, account type, credential, how to get it, where it goes, mandatory or optional, what it unlocks) is in [docs/dashboard/credentials-checklist.md](../docs/dashboard/credentials-checklist.md). In short:
+The full table (product, official URL, account type, credential, how to get it, where it goes, mandatory or optional, what it unlocks) is in [docs/dashboard/credentials-checklist.md](../../docs/dashboard/credentials-checklist.md). In short:
 
 1. **YouTube.** In the existing Google Cloud project:
    - enable the YouTube Analytics API;
@@ -169,6 +169,6 @@ The full table (product, official URL, account type, credential, how to get it, 
 
 Redirect URI for every OAuth client: `http://127.0.0.1:47615/oauth/callback`. Nothing here costs money.
 
-The ChatGPT/Gemini handoff is regenerated: [docs/chatgpt-handoff-dashboard.md](../docs/chatgpt-handoff-dashboard.md), and the docs pack (`exports/share/chatgpt-pack/Slugshot-Claude-Toolkit-Docs.md`, 54 files) includes the dashboard docs.
+The ChatGPT/Gemini handoff is regenerated: [docs/chatgpt-handoff-dashboard.md](../../docs/archive/chatgpt-handoff-dashboard.md), and the docs pack (`exports/share/chatgpt-pack/Slugshot-Claude-Toolkit-Docs.md`, 54 files) includes the dashboard docs.
 
 Nothing was committed, pushed, published or spent. The game repository and Jami were only read.

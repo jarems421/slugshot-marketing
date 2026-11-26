@@ -5,53 +5,13 @@ description: Roblox-native filming for Slugshot marketing. Use when planning, st
 
 # Slugshot Roblox-native production
 
-**Roblox first, AI-enhanced second.** Most Slugshot videos are real Roblox footage, filmed in an isolated copy of the game:
-- gameplay;
-- staged scenes and Roblox-native comedy;
-- characters and cinematics.
+Follow the [production quality bar](../../../docs/production-quality.md) and [Studio safety](references/studio-safety.md).
 
-Flow, manga and anime tools only add short cutaways (1-4 s) with a narrative job.
-
-Status (2026-11-25): the deterministic performance engine is built and real-asset tested. Real slug rigs act through the game's own `SlugIdle`/`FloppyFace` code, mouths and eyelines follow the dialogue, and takes are filmed frame by frame at native resolution. Results, register and limits: `docs/production-quality.md`.
-
-## Quality bar (owner rules, 2026-11-25: non-negotiable)
-
-1. **Resolution and completeness.**
-   - Vertical footage comes from **film mode** (rolled camera, native pixels, exact 30 fps) and `ss roblox film`, never from a centre crop of a landscape recording.
-   - A take is usable only when the decoder reports **0 repeated frames**. Patch missing ranges; don't accept duplicates.
-   - Always check the decoded footage (contact sheet or frames) before showing anyone.
-2. **Story-matched performance, never random snippets.**
-   - Every shot and every acting beat has a job in the script: who matters now, what they feel, what changes.
-   - Anchor cuts and beats to dialogue lines (`"until": "L3.end+0.3"`, `"time": "L6.end+0.4"`). Don't eyeball seconds.
-   - "This is Floppy": the camera pushes in *as* his name is said; he turns and smiles *on* the beat.
-   - Never use an idle loop as a stand-in for acting, and never use a shot just because it looks nice.
-3. **Look before you claim.** Judge from real frames (`video_capture` grabs; `screen_capture` without camera arguments is unreliable in play mode). Say what needs the owner: humour, voice, "does it feel like our world".
-
-## Hard rules
-
-1. **Studio target.**
-   - Studio MCP tools may only act on `SlugshotMarketing.rbxlx`, and it must be the only Studio window open.
-   - A PreToolUse hook enforces this and fails closed. Never get around it: no launching `StudioMCP.exe`/`mcp.bat`, no settings edits.
-   - Details: [references/studio-safety.md](references/studio-safety.md).
-2. **Game repo.**
-   - `../slugshot` may be read and copied from. Never modify, build, commit or push it.
-   - `ss roblox switch` runs only when the owner asks. `ss roblox rebuild`, with only the marketing place involved, is the normal workflow.
-3. **No publishing, uploads or spending** without approval. Never publish the marketing place. Asset insertion, AI generation, image upload, Open Cloud and sub-agent tools ask first.
-4. **Truth classification on every scene and take.**
-   - `staged_gameplay`, `staged_fiction` (label) or `hybrid_bridge` (label). `authentic_gameplay` is captured, never staged.
-   - A scripted outcome is never presented as organic.
-5. **Canon.**
-   - Re-check `docs/game-truth.md` and `../slugshot/docs/status.md` before showing a mechanic.
-   - **Floppy never transforms or uses abilities.** Validator and runtime reject it; a `slug` actor's species sets its canon identity.
-   - Floppy deals 7 damage: never "does nothing".
-   - Fantasy or "what if" feats are unmistakable fiction, labelled, and never a new canon power.
-6. **Rights.**
-   - Original or licensed assets only, recorded in `roblox-native/library/library.json` or `assets/LICENSES.csv`.
-   - No copied franchise designs, footage, music or dialogue. Slugterra is a feeling to evoke, not a source to copy.
+Set a truth class on each scene and take. Use staged_gameplay, staged_fiction or hybrid_bridge, with the required label on fiction and bridges. Use authentic_gameplay only for a captured match. Check the [game facts](../../../docs/game-truth.md) before staging any mechanic. Record original or licensed material in the scene library or asset licence register.
 
 ## Workflow
 
-1. **Script first.** `jobs/dialogue/<id>.txt` (cast script) → `.\ss dialogue <file> --engine qwen --mode clone`.
+1. **Script first.** `jobs/dialogue/<id>.txt` (cast script) → `.\ss dialogue <file>`.
    - Read the flagged deviations. Re-do one line with `--only N`.
    - The manifest `out/dialogue/<id>/dialogue.json` is the single timing source.
 2. **Direct the spec.**

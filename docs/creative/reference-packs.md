@@ -1,54 +1,11 @@
-# Creative reference packs and the Apify pilot
+# Creative reference packs
 
-## What worked on 26 November 2026
+Use the [research data guide](../research-data.md#7-tiktok-collection-routes) for TikTok collection. Use the [evidence ledger](../research-evidence.md) for factual and comparative claims.
 
-- TikTok's documented oEmbed API returned HTTP 200 for the [supplied @nosp1ne_ post](https://www.tiktok.com/@nosp1ne_/video/7667187711299652878). The video ID matched and the response contained iframe markup. The payload supplied no author field, caption, engagement, sound ID, subtitles, downloadable media or verified playback. The handle is from the supplied URL. The local receipt is `data/local/research/creative/validation/2026-11-26/seed-oembed.json`. [TikTok embed API](https://developers.tiktok.com/doc/embed-videos)
-- The Apify token authenticated successfully. The account has a $5.00 monthly usage limit, with about $5 remaining. Apify's input validation API accepted one-post payloads for SocialCrawler and Clockworks Video Scraper. This checked the input schemas. Store capability, runtime access and result quality for this post remain unverified. No Actor runs were started. Apify metered less than $0.0001 for account and Store API traffic. [Apify Free plan](https://apify.com/pricing) · [Validate Actor input](https://docs.apify.com/api/v2/actor-validate-input-post)
-- We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center.
-- The existing YouTube Data API collector returned nine dated video snapshots across four runs, including two Shorts confirmed from the channel playlist and a third confirmed Short outside the pack. The [pilot index](../../research/pilots/CREATIVE-REFERENCES-2026-11-26.csv) includes a Blokburg powers premise, two Roblox rule-story variations, a Spotlight live-action lead, Cuffem stream context and a clip lead, two Potential Man edits, and one phrase-match exclusion. Dated engagement metrics remain in the existing YouTube research store under its retention rules. The index holds creative leads and access notes. Creator and clip claims beyond the observed metadata require playback.
-- FFmpeg produced a five-frame contact sheet from a 10-second excerpt of our Slugshot In My World sample. Local Whisper produced 19 words in seven timestamped cues. The rule is spoken and captioned through roughly 00:05, then the observed frames show distinct fire and water examples at 00:06 and 00:08. This verified the workflow on owned media. The seed's audiovisual content remains unresolved. The outputs are in the same local validation folder as the embed receipt.
+1. Record the source URL, UTC observation, query, language, market, access, rights and scope. Find a mix of representative examples, ordinary posts and counterexamples. Use native search, the existing collectors, or `ss references discover` for indexed links. Follow the [command reference](../COMMANDS.md).
+2. Check the post ID and confirm actual playback before describing a joke, edit, voice or music. The TikTok oEmbed check verifies the public ID. Record partial access as such.
+3. Run `ss references pack <csv> --question "<question>"`. It groups dated observations by post identity. Identical file hashes establish duplicates. Check probable reposts by matching audio and frames, and preserve meaningful re-edits.
+4. For each item, use the generated Gemini brief with video or audio cleared for cloud review. Use native playback and timestamped notes for link-only items. Verify automated transcripts against playback, especially names and slang.
+5. Give ChatGPT the generated handoff and verified notes. Group examples by mechanism, preserve alternate interpretations and draft original Slugshot work. Use [blind coding](../research-methods.md#7-qualitative-coding) before reading outcomes for formal format research.
 
-## Apify costs and coverage
-
-USD rates are for the Free plan, checked against the Store API. Coverage in this table comes from the Actor publishers. Prices below include the listed platform usage where the pricing page specifies it.
-
-| Actor | Use if access is approved | Free-plan pricing |
-| --- | --- | --- |
-| [Social Scrapers TikTok Scraper](https://apify.com/socialscrapers/tiktok-scraper) | Lowest published rate in this shortlist for post URLs, creators, hashtags and sound pages. Advertises engagement, caption, music and optional subtitle/media links. No keyword mode in its input. | $0.00015 per video, or $0.006 for 40. Optional profiles and comments cost extra. [Pricing](https://apify.com/socialscrapers/tiktok-scraper/pricing) |
-| [SocialCrawler TikTok Scraper](https://apify.com/socialcrawler/tiktok-scraper) | Unified metadata and keyword, creator, hashtag and sound discovery. Useful for a very small discovery test. | $0.00030 per standard result or $0.00040 per discovery result, plus $0.001 start at default memory. Free demo limited to 10 rows per run and 5 runs per month. [Pricing](https://apify.com/socialcrawler/tiktok-scraper/pricing) · [Input and limits](https://apify.com/socialcrawler/tiktok-scraper/input-schema) |
-| [Social Scrapers Sound Scraper](https://apify.com/socialscrapers/tiktok-sound-scraper) | Fallback for a known sound URL or ID when sound-specific metadata is useful. Prefer the native sound page for initial review. | Store API returned $0.000225 per video, $0.00237 per sound details row and $0.006 per start event. The publisher's README quotes different rates. Recheck before a run. |
-| [Clockworks TikTok Scraper](https://apify.com/clockworks/tiktok-scraper) | Established fallback for URLs, creators, hashtags and keywords. Filters, downloads, transcripts and other add-ons can change consumption. | $0.00370 per result plus $0.001 listed start. Forty base rows cost about $0.149 before add-ons. [Pricing](https://apify.com/clockworks/tiktok-scraper/pricing) |
-| [Clockworks Video Scraper](https://apify.com/clockworks/tiktok-video-scraper) | Targeted URL enrichment for a short list. Advertises caption, engagement, posted date, subtitle availability and optional media or AI transcript. | $0.003 per video, $0.0013 per enabled video download and $0.048 per started minute for AI transcription. For 40 clips up to one minute each, turning on paid transcription adds $1.92. [Pricing](https://apify.com/clockworks/tiktok-video-scraper/pricing) |
-| [Clockworks Transcript Extractor](https://apify.com/clockworks/tiktok-transcript-extractor) | Specialist fallback for published subtitle files and optional generated transcripts. Local Whisper covers the generated-transcript case when we have an authorised copy. | $0.00370 per video and $0.048 per started minute for the transcription add-on. [Pricing](https://apify.com/clockworks/tiktok-transcript-extractor/pricing) |
-
-For an approved Actor test, use one direct URL first, choose metadata only and disable comments, related results, media and AI add-ons. Then test one keyword and one sound or creator branch with a few results each. Use both the Actor's result limit and Apify's pay-per-event `maxTotalChargeUsd` run option, check current credit, and confirm the actual billed events and result fields before expanding. Record the run ID, discovery input, result count and charge. Count Apify-relayed engagement as P3 unless the same metric is independently observed on the platform. [Apify run options](https://docs.apify.com/api/v2/actors-runs-post)
-
-## Run a reference search
-
-| Seed | Start here |
-| --- | --- |
-| Video URL | Record the canonical post ID and try `ss observe check INPUT.csv --oembed` on a TikTok post observation CSV. Check native playback before making claims about the post. |
-| Meme or search term | Run the existing YouTube discovery command with a narrow phrase and a broader mechanism-based query. On TikTok, use native search or Creator Search Insights where available. Try `"in my world" Roblox story`, `"in this town" rule` and `"Potential Man" Megumi`. Review title collisions, unrelated songs and ordinary uploads. |
-| Creator | Follow creator-linked channels first, then collect a few fan edits with their upload source recorded. For Cuffem, start on his Kick and YouTube channels and use the Twitch collector for Twitch-native streamers. |
-| Sound | Use a known post's native sound link or look up the track in-app, record the exact sound ID, then sample across creators. Log reuploads under other IDs as possible matches. For a vague sound description, confirm the audio before grouping results. |
-| Trend or hashtag | Browse Creative Center or use `ss observe cc-session` to record dated ranks. Compare retrieval routes and include some recent ordinary posts. Carry market, language and time window with the observations. |
-
-[Cuffem on Kick](https://kick.com/cuffem) · [Cuffem on YouTube](https://www.youtube.com/@Cuffem) · [TikTok Creator Search Insights](https://newsroom.tiktok.com/creator-search-insights?lang=en) · [TikTok Creative Center](https://ads.tiktok.com/creative/creativeCenter/trends)
-
-Start with roughly 20–40 candidates across the branches. Use source URLs and UTC dates in the input CSV, with optional discovery query, caption, source notes, sound ID, and the access or rights basis for any local file. Preserve P1–P4, expiration and source scope under the existing observation and evidence conventions. Keep platform counts in the collector stores so that retention still applies. The pack tool copies input fields for review, so submit only fields appropriate for the destination.
-
-```powershell
-.\ss references apify-check
-.\ss references discover "site:youtube.com/shorts in my world roblox story" "site:tiktok.com in this town roblox story"
-.\ss references pack research\pilots\CREATIVE-REFERENCES-2026-11-26.csv --question "Which story rules, streamer beats and edit patterns are adaptable for original Slugshot scripts?"
-.\ss caption <permitted-local-file> --verbatim --model small
-.\ss sheet <permitted-local-video> --every 1
-```
-
-`ss references discover` saves indexed links to `candidates.csv` alongside its run receipt under `data/local/research/creative/discovery/`. Select the relevant rows for `ss references pack`. Use `ss yt stats --ids <comma-separated-video-ids>` for first-party YouTube metadata and engagement.
-
-The pack is saved under `data/local/research/creative/packs/`. It keeps one reference ID per recognised post and all dated discovery observations under it. For authorised local copies, an identical file hash establishes an exact file duplicate. Flag likely cross-posts or trimmed reposts using matching dialogue and frames, and retain meaningful changes in the premise, cut, voice, reveal or reaction. A shared sound or matching caption by itself is weak evidence of duplication.
-
-The generated `CHATGPT.md` prompt uses meaning and source evidence to assign direct, adjacent, unrelated or needs review. It keeps a reason with each decision, allows multiple groupings and preserves alternate treatments. The pilot CSV applies this review from metadata only. For formal format coding, use the repo's [creative codebook](../../config/research/codebooks/slugshot-creative.json) and `ss analyze blind-packet` before looking at performance.
-
-The generated `GEMINI.md` prompt takes clip IDs and audiovisual files cleared for cloud analysis. Use a native save option when available and verify the permitted uses, including any third-party music. Creator-supplied or licensed copies can also be used within their scope. Use published captions where available and permitted, otherwise run Whisper locally and verify slang and uncertain speech against the audio. Use `small.en` for English or a multilingual model such as `small` for mixed-language material. Link-only references can go through native playback and timecoded human notes. Give ChatGPT the pack and verified notes for script development. Use [the existing evidence ledger](../research-evidence.md) for factual or comparative claims. [TikTok's native download guidance](https://support.tiktok.com/en/using-tiktok/exploring-videos/video-downloads)
+Use `ss references apify-check` for current Free-plan credit and Store rates. Follow existing run caps. Relayed engagement figures are P3 unless the same metric is independently observed directly. Keep first-party stats under their provider's retention rules. [Dated pilot](../archive/creative/reference-packs-pilot-2026-11-26.md) · [TikTok genre workflow](../../research/tiktok-genre/README.md)

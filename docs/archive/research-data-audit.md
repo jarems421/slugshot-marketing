@@ -1,6 +1,6 @@
 # Stage 4.4: research data collection audit and plan
 
-> Historical audit. We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center. See the [current data guide](research-data.md).
+> Historical audit. We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center. See the [current data guide](../research-data.md).
 
 Written 2026-11-24, before any code changes. It covers the existing YouTube collector, every proposed source, the smallest implementation worth building, and what the owner has to set up. Facts were checked against official pages on this date unless a line says otherwise. Where only third-party or forum sources were available, the line says so. This is a careful reading of the terms, not legal advice.
 
@@ -191,7 +191,7 @@ Claude builds and tests items 1–4 (and 5–6 when unblocked), writes the smoke
 
 ## 7. Outcome (implemented 2026-11-24, same day)
 
-The owner approved the plan with additions (bilingual query sets, comment collection, Shorts confirmation, quota budgets, an easy observation importer, Twitch, Roblox, and further TikTok investigation). What was built and how it tested is in [research-data.md](research-data.md); the short version:
+The owner approved the plan with additions (bilingual query sets, comment collection, Shorts confirmation, quota budgets, an easy observation importer, Twitch, Roblox, and further TikTok investigation). What was built and how it tested is in [research-data.md](../research-data.md); the short version:
 
 | Component | Result | Evidence |
 |---|---|---|
@@ -204,7 +204,7 @@ The owner approved the plan with additions (bilingual query sets, comment collec
 | Observations (`ss observe`) | **PASS**: CSV/TSV/Markdown, URL ID extraction, rounding kept, duplicates/conflicts/repeats, clear errors | the 24 Nov Creative Center figures import as P1 rounded values with unknown rank left blank |
 | TikTok oEmbed | **PASS, live**, but TikTok now returns **only the embed and post ID** (no author/title/stats), so it's an existence/ID check only | |
 
-Corrections to §2.6 (TikTok) after reading TikTok's own docs: the **Discovery API** (TikTok API for Business → Organic API) exists and is well matched to trend research. It offers top-200 hashtags by country, period and industry (Games), with views, posts, rank change and 30-day daily history; Commercial Music Library tracks; videos per hashtag or track (IDs only); and trending search keywords. But TikTok "can't onboard personal accounts or individual developers" (company-domain email and company website required). Hashtag endpoints need an ad-account authorisation; music and keyword endpoints need the Accounts API application form and Advanced Access or a Verified Business Account. Decision: **blocked by eligibility; revisit if Slugshot gets a company identity.** Creative Center stays manual: TikTok's commercial terms bar automated collection from its commercial technology, so no browser automation (Claude in Chrome, Playwright, DevTools MCP) was installed. TikTok's for-Business MCP server covers ads management only. Full detail: [research-data.md §7](research-data.md#7-tiktok-findings-2026-11-24).
+Corrections to §2.6 (TikTok) after reading TikTok's own docs: the **Discovery API** (TikTok API for Business → Organic API) exists and is well matched to trend research. It offers top-200 hashtags by country, period and industry (Games), with views, posts, rank change and 30-day daily history; Commercial Music Library tracks; videos per hashtag or track (IDs only); and trending search keywords. But TikTok "can't onboard personal accounts or individual developers" (company-domain email and company website required). Hashtag endpoints need an ad-account authorisation; music and keyword endpoints need the Accounts API application form and Advanced Access or a Verified Business Account. Decision: **blocked by eligibility; revisit if Slugshot gets a company identity.** Creative Center stays manual: TikTok's commercial terms bar automated collection from its commercial technology, so no browser automation (Claude in Chrome, Playwright, DevTools MCP) was installed. TikTok's for-Business MCP server covers ads management only. Full detail: [research-data.md §7](../research-data.md#7-tiktok-collection-routes).
 
 ## 8. Review corrections (ChatGPT review of the exports, 2026-11-24)
 

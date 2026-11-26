@@ -72,17 +72,4 @@ References:
 | "Find academic research on X and verify it" | surveying-literature skill (OpenAlex/Crossref/Semantic Scholar/arXiv/dblp); open the actual paper; quote the passage into a local text file and cite it with source_path + quote; verifying-bibliography for reference lists; synthesis-fact-checking for claims in articles or drafts |
 | "Execute this ChatGPT brief" | operations skill for collection, then this workflow; return bundle + ledger |
 
-## Hard boundaries
-
-- **YouTube:**
-  - No aggregation across channels (`describe`/`sensitivity` refuse; use per-video `repeat` or one channel).
-  - No scores or rankings. Exports expire after 30 days, and so does evidence citing them.
-  - `region_param` and `relevance_language_param` are retrieval context, never audience.
-- **Other providers:**
-  - Twitch stays local.
-  - Creative Center figures are rounded with unknown definitions.
-  - Wikipedia editions are languages, not countries, and views are not fans.
-  - Trends indices are per-download; Trending Now is all topics.
-  - Roblox player counts are not acquisition.
-- **Never:** turn a blank into 0, build a composite score, infer demographics from language or filters, or rewrite a correlation as a cause.
-- **Free resources only:** no vidIQ credits, paid APIs or new accounts without the owner.
+Check the [methodology](../../../docs/research-methods.md) and [provider rules](../../../docs/research-data.md) before issuing a decision memo.

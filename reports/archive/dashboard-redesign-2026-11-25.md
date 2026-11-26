@@ -1,6 +1,6 @@
 # Dashboard redesign and learning loop: 2026-11-25
 
-The final usability and design pass before content production. Principle: the minimum useful information by default, and detail only when you click into it. Guide: [docs/dashboard/README.md](../docs/dashboard/README.md). Screenshots: [docs/dashboard/screens/](../docs/dashboard/screens/) (`fixture-*` populated with test data, `live-*` the real current state).
+The final usability and design pass before content production. Principle: the minimum useful information by default, and detail only when you click into it. Guide: [docs/dashboard/README.md](../../docs/dashboard/README.md). Screenshots: [docs/dashboard/screens/](../../docs/dashboard/screens) (`fixture-*` populated with test data, `live-*` the real current state).
 
 ## What changed
 

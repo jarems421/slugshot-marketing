@@ -9,7 +9,7 @@ This repository is the working machinery behind Slugshot's short-form video mark
 
 It is built to be **operated by an AI agent**. [Claude Code](https://code.claude.com/docs/en/overview) runs the toolkit from short natural-language instructions ("collect today's research", "is this meme still growing?", "make the Floppy duel edit"). ChatGPT designs research and writes scripts; Gemini/Flow analyses footage and generates visuals; the owner makes decisions and approves anything consequential.
 
-> **Status, 26 November 2026.** Infrastructure is frozen and content production is underway. YouTube EN/ES, TikTok EN/ES and Buffer for TikTok EN/ES and Instagram EN were live-validated. Cloudinary hosting and Buffer draft creation were checked, and the first test posts await owner approval. Player analytics awaits launch. [Capability inventory](docs/INVENTORY.md) ? [Live validation](reports/live-integration-validation-2026-11-25.md)
+> **Status, 26 November 2026.** Infrastructure is frozen and content production is underway. YouTube EN/ES, TikTok EN/ES and Buffer for TikTok EN/ES and Instagram EN were live-validated. Cloudinary hosting and Buffer draft creation were checked, and the first test posts await owner approval. Player analytics awaits launch. [Capability inventory](docs/INVENTORY.md) ? [Live validation](reports/archive/live-integration-validation-2026-11-25.md)
 
 ---
 
@@ -168,7 +168,7 @@ roblox-native/           isolated marketing place builder, Studio guard, scene r
                          research analysis + installed upstream research skills
 config/                  formats, glossary, research settings, query families, watchlists, codebook
 research/                evidence-ledger schema, templates, upstream provenance
-docs/                    commands, inventory, research guides, policies, game truth, handoffs
+docs/                    commands, inventory, research guides, policies, game truth and archives
 dashboard/               personal dashboard: local server, connectors, metric rules, publishing, hosting, front end
 tests/                   offline tests and fixtures (fake data)
 jobs/                    example edit, variant and script files
@@ -186,20 +186,15 @@ Not in git: `.env`, `media/`, `exports/`, `data/local/`, `models/`, `out/`, `ven
 | Operator walkthrough, folders, CSV schemas | [docs/OPERATIONS.md](docs/OPERATIONS.md) |
 | Status of every capability | [docs/INVENTORY.md](docs/INVENTORY.md) |
 | Research collectors, data contract, sharing rules | [docs/research-data.md](docs/research-data.md) |
-| Research methodology (ChatGPT skills v1.1, authoritative) | [docs/chatgpt-research-skills-v1.1.md](docs/chatgpt-research-skills-v1.1.md) |
 | Research methods / evidence ledger | [docs/research-methods.md](docs/research-methods.md) · [docs/research-evidence.md](docs/research-evidence.md) |
-| Source audit and decisions | [docs/research-data-audit.md](docs/research-data-audit.md) |
 | YouTube API rules | [docs/youtube-api-policy.md](docs/youtube-api-policy.md) |
-| Flow and Gemini hand-offs | [docs/flow-and-gemini.md](docs/flow-and-gemini.md) |
+| Production quality, workflow and Flow / Gemini handoffs | [Production quality](docs/production-quality.md) |
 | Game facts for marketing claims | [docs/game-truth.md](docs/game-truth.md) |
-| ChatGPT handoff (Stage 4.5.3) | [docs/chatgpt-handoff-4.5.3.md](docs/chatgpt-handoff-4.5.3.md) |
-| Stage 4.5.4 configuration and 4.5.5 pilot validation | [docs/stage-4.5.4-report.md](docs/stage-4.5.4-report.md) |
 | Composio (read-only OAuth broker) | [docs/composio.md](docs/composio.md) |
 | Knowledge banks / audience sentiment | [docs/knowledge-banks.md](docs/knowledge-banks.md) · [docs/audience-sentiment.md](docs/audience-sentiment.md) |
-| Live integration validation (accounts, Buffer, Cloudinary) | [reports/live-integration-validation-2026-11-25.md](reports/live-integration-validation-2026-11-25.md) |
-| Dashboard: guide, credential checklist, publishing, activation-events proposal | [docs/dashboard/README.md](docs/dashboard/README.md) · [credentials-checklist.md](docs/dashboard/credentials-checklist.md) · [publishing.md](docs/dashboard/publishing.md) · [activation-events-proposal.md](docs/dashboard/activation-events-proposal.md) |
+| Dashboard, credential setup and publishing | [Dashboard guide](docs/dashboard/README.md) · [Credentials](docs/dashboard/credentials-checklist.md) · [Publishing](docs/dashboard/publishing.md) |
+| Historical documentation and reports | [Archive index](docs/archive/README.md) |
 | Agent brief and working rules | [CLAUDE.md](CLAUDE.md) |
-| Strategy (Marketing Bank snapshot) | [docs/Slugshot-Marketing-Bank.md](docs/Slugshot-Marketing-Bank.md) |
 
 ## Testing
 

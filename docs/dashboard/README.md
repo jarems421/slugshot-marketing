@@ -124,7 +124,7 @@ Loopback only; Host-header check (DNS rebinding); cross-origin requests refused;
 | Cloudinary hosting, Buffer draft creation from a hosted link | **live-validated** 2026-11-25 |
 | Instagram API connector, Roblox Analytics | fixture-tested; Instagram deferred (Buffer covers it), Roblox waits for launch |
 | Buffer post metrics, checkpoints, comparisons on real videos | need real posts |
-| Activation stage | blocked: needs approved in-game events ([proposal](activation-events-proposal.md)) |
+| Activation stage | blocked: needs approved in-game events ([archived proposal](../archive/dashboard/activation-events-proposal.md)) |
 
 What the owner must do: [credentials-checklist.md](credentials-checklist.md).
 
