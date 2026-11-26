@@ -38,3 +38,7 @@ All in D (major for comedy and resolve, minor for tension and dread), instrument
 ## Production
 
 Generated with Google Lyria via the Gemini API, only with the owner's approval. Each output carries Google's inaudible SynthID watermark. Check Google's current terms for commercial use before publishing. Every kept track goes in `assets/music/` and is logged in `assets/LICENSES.csv`. Placed in edits with `ss assemble` `music` at about −22 dB and ducked under speech.
+
+## Owner pick (26 Nov 2026)
+
+After listening to the first set and to chill retakes, the owner chose **M2a cavern-sneak-chill with the subtle nature layer** (`assets/music/M2a-cavern-sneak-chill-nature-subtle.wav`, 92 BPM, D minor; nature layer from `scripts/music_nature.py`) as the house background bed. The owner wants the energy to vary through a video (chill, then lifting, then easing back) without ever being in the viewer's face; tense scenes switch to a tense bed.
