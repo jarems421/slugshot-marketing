@@ -3,6 +3,7 @@
   .venv\\Scripts\\python -m unittest tests.test_production
 """
 import copy
+import os
 import sys
 import tempfile
 import unittest
@@ -226,6 +227,8 @@ class Review2(unittest.TestCase):
     def test_calibrate_finds_viewport_card(self):
         import shutil
         import subprocess
+        if os.environ.get("SLUGSHOT_TEST_SKIP_MEDIA"):
+            self.skipTest("offline runner skips FFmpeg calibration, which generates a test video")
         if not shutil.which("ffmpeg"):
             self.skipTest("ffmpeg not on PATH")
         v = Path(tempfile.gettempdir()) / "ss_cal.mkv"

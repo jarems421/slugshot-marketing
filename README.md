@@ -198,11 +198,23 @@ Not in git: `.env`, `media/`, `exports/`, `data/local/`, `models/`, `out/`, `ven
 
 ## Testing
 
-- `ss smoke` runs 30 checks, including production, research and dashboard. The [latest full production report](reports/smoke-test.md) records 30 passes in its configured workspace.
-- Research and dashboard smoke run 10 and 7 checks. Results depend on credentials, local evidence and the dashboard server. See the [research report](reports/smoke-test-research.md) and [dashboard report](reports/smoke-test-dashboard.md).
-- The seven project offline suites contain 173 tests. Run each module in its own Python process to isolate fixture state:
-  `Get-ChildItem tests/test_*.py | ForEach-Object { .\.venv\Scripts\python -m unittest ('tests.' + $_.BaseName) }`
-- Test environment: numpy/ruptures use OpenBLAS, which on this machine can fail with "OpenBLAS error: Memory allocation still failed" at its default thread count. `scripts/research_analysis.py` sets `OPENBLAS_NUM_THREADS=1` by default; if another numpy script hits it, set `$env:OPENBLAS_NUM_THREADS = '1'` before running tests.
+[GitHub Actions](.github/workflows/offline.yml) runs Ruff and the offline unittest suites on Windows with Python 3.13. Tests use fixtures and loopback only. They require no API credentials, production media, models or provider calls.
+
+```powershell
+.\.venv\Scripts\python -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python -m ruff check scripts dashboard roblox-native/tools research tests
+.\.venv\Scripts\python tests/run_offline.py
+```
+
+The offline runner runs 183 project tests and 207 pinned scholarly tests in separate processes. It skips FFmpeg calibration to keep the run media-free and skips the upstream POSIX-path assertion on Windows. DPAPI tests run on Windows.
+
+For a configured local workspace, these smoke commands run extra checks and write reports:
+
+| Command | Checks | Latest report |
+|---|---|---|
+| `.\ss.cmd smoke` | 30 toolkit, research and dashboard checks | [Full production run](reports/smoke-test.md) |
+| `.\ss.cmd smoke --research` | 10 research checks, including public provider calls | [Research smoke](reports/smoke-test-research.md) |
+| `.\ss.cmd smoke --dashboard` | 7 dashboard checks, including fixture sync and loopback health | [Dashboard smoke](reports/smoke-test-dashboard.md) |
 
 ## Third-party components
 

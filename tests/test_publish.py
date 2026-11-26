@@ -12,6 +12,7 @@ import urllib.error
 import urllib.request
 from contextlib import contextmanager
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parent.parent
 TMP = Path(tempfile.mkdtemp(prefix="sspub_"))
@@ -22,7 +23,13 @@ sys.path.insert(0, str(ROOT))
 from dashboard import publish as P  # noqa: E402
 from dashboard.store import Store  # noqa: E402
 
-MEDIA = ROOT / "media" / "_test_publish"
+MEDIA = TMP / "media"
+
+
+def setUpModule():
+    for override in (patch.object(P, "ROOT", TMP), patch.object(P, "PACKAGES", TMP / "packages")):
+        override.start()
+        unittest.addModuleCleanup(override.stop)
 
 
 def fresh(name):
@@ -77,7 +84,6 @@ def publishing(**over):
 
 
 def tearDownModule():
-    shutil.rmtree(MEDIA, ignore_errors=True)
     shutil.rmtree(TMP, ignore_errors=True)
 
 
@@ -412,7 +418,7 @@ class Uploads(unittest.TestCase):
         jid = P.create(s, AID, "yt-es", video("m.mp4", 1000), "manual")
         self.assertEqual(P.job(s, jid)["state"], "manual_pending")
         r = P.package(s, jid)
-        folder = ROOT / r["folder"]
+        folder = TMP / r["folder"]
         self.assertTrue((folder / "CHECKLIST.md").exists() and (folder / "title.txt").exists())
         shutil.rmtree(folder)
         j = P.mark_posted(s, jid, "https://youtu.be/abcdefghijk")
