@@ -1,0 +1,47 @@
+# 01 The most feared slug (owner premise, sharpened). In My World, narrator-led, third person. Fiction (WORLD label on screen).
+# Game truth: Floppy deals 7 damage of 100 HP (combat.md; shared/init.luau Damage = 7); his shot is the slowest (120 vs 340 studs/s, combat.md);
+# Floppy never transforms (he tumbles); Inferno transforms mid-flight (CAPTURE: game place). The duel rule is FICTION.
+NARRATOR (dry, brisk, a hint of a smile): In my world, you don't pick your slug for a duel. Whoever challenges you picks it for you.
+NARRATOR (dry, brisk): Which is why Kai gets challenged every single day.
+[beat 0.2]
+NARRATOR (dry, brisk): Because every challenger hands him the same slug.
+[beat 0.35]
+NARRATOR (deadpan, flat): Floppy.
+FLOPPY (drowsy, slow, quietly proud): Mm. Hello.
+NARRATOR (dry, brisk): Floppy is the weakest slug in the cavern. Seven damage a shot, and the slowest shot there is.
+NARRATOR (dry, brisk): Raf beat him before his first shot even landed.
+RAF (shouting, delighted, mid-laugh): Too EASY!
+NARRATOR (dry, brisk): The next day, Raf beat him with his eyes closed.
+NARRATOR (dry, brisk, flat): Two hundred duels. Two hundred losses.
+[beat 0.4]
+NARRATOR (lower, leaning in): But when you lose with the same slug two hundred times, something strange happens.
+[beat 0.2]
+NARRATOR (quiet, certain): You learn him.
+NARRATOR (brisk, building): Kai learned exactly how slow a Floppy flies. He learned to aim where you're going to be, not where you are.
+KAI (quiet, focused, a small grin): Watch this.
+NARRATOR (brisk, building): Seven damage. A hundred health. That's fifteen hits.
+[beat 0.25]
+NARRATOR (slower, weighty): He stopped missing.
+[beat 0.4]
+NARRATOR (dry, brisk): Raf handed him Floppy again, laughing.
+RAF (cocky, laughing): Good luck, bro.
+NARRATOR (dry, brisk): Twenty-two seconds later, Raf was not laughing.
+[beat 0.3]
+RAF (stunned, quiet): Run it back.
+NARRATOR (dry, brisk): He ran it back. He lost again. So did everyone else.
+NARRATOR (brisk, building): A whole month without a single loss. So the challengers did something nobody had ever done.
+[beat 0.45]
+NARRATOR (deadpan, slow): They gave Kai a different slug.
+INFERNO (thrilled, bursting): FINALLY! Someone good!
+NARRATOR (brisk): A dragon. Fast, straight, and on fire.
+NARRATOR (dry, brisk): And Kai aimed it exactly like a Floppy.
+[beat 0.4]
+NARRATOR (dry, deadpan): He'd spent months aiming way ahead for the slowest slug there is. Inferno isn't slow.
+RAF (hyped, pointing, shouting): LET'S GOOO!
+NARRATOR (dry, brisk): So now, everyone challenges Kai again.
+[beat 0.2]
+NARRATOR (dry, slow, a hint of a smile): And they all hand him the dragon.
+[beat 0.4]
+INFERNO (deflating, small, hurt): Wait. Am I the weak one now?
+[beat 0.5]
+FLOPPY (slow, dignified, utterly sure): Mm. Welcome.

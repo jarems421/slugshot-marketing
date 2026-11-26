@@ -1,0 +1,1699 @@
+{
+ "id": "most_feared_slug",
+ "note": "pilot 01 'The most feared slug': narrator-led In My World; Kai is always handed Floppy, learns him, then gets handed the dragon",
+ "format": "vertical",
+ "truth": {
+  "mode": "staged_fiction",
+  "source": "staged_runtime",
+  "gameplay_mechanics": "fictional",
+  "match_outcome": "n/a",
+  "label": "Fictional story"
+ },
+ "dialogue": "out/dialogue/most-feared-slug/dialogue.json",
+ "set": {
+  "kind": "place",
+  "origin": [
+   19,
+   0,
+   20
+  ],
+  "yaw": 0
+ },
+ "marks": {
+  "kai": [
+   -2,
+   0,
+   -4,
+   180
+  ],
+  "raf": [
+   2,
+   0,
+   -19,
+   0
+  ],
+  "kai_chest": [
+   -2,
+   1.7,
+   -4,
+   0
+  ],
+  "raf_chest": [
+   2,
+   1.7,
+   -19,
+   0
+  ],
+  "raf_shin": [
+   2,
+   0.4,
+   -18.2,
+   0
+  ],
+  "floppy": [
+   -0.9,
+   0,
+   -5.6,
+   0
+  ],
+  "floppy_off": [
+   -14,
+   0,
+   18,
+   0
+  ],
+  "lens_floppy": [
+   -0.9,
+   0.9,
+   -1.6,
+   0
+  ],
+  "rammstone": [
+   4.4,
+   0,
+   -18.2,
+   200
+  ],
+  "inferno_off": [
+   -16,
+   0,
+   20,
+   0
+  ],
+  "run_a": [
+   -8,
+   0,
+   -17,
+   90
+  ],
+  "run_b": [
+   9,
+   0,
+   -17,
+   90
+  ],
+  "lead": [
+   3.2,
+   1.4,
+   -17,
+   0
+  ],
+  "train": [
+   6,
+   0.6,
+   -23,
+   0
+  ],
+  "mira_off": [
+   24,
+   0,
+   -30,
+   0
+  ],
+  "juno_off": [
+   26,
+   0,
+   -28,
+   0
+  ],
+  "mira": [
+   5.6,
+   0,
+   -17.2,
+   200
+  ],
+  "juno": [
+   5.0,
+   0,
+   -21.5,
+   200
+  ],
+  "miss_far": [
+   -9,
+   1.2,
+   -26,
+   0
+  ],
+  "run_c": [
+   7,
+   0,
+   -17,
+   270
+  ],
+  "run_d": [
+   -7,
+   0,
+   -17,
+   270
+  ],
+  "huddle": [
+   2,
+   0,
+   -17.6,
+   0
+  ]
+ },
+ "actors": {
+  "kai": {
+   "kind": "human",
+   "human": "kai",
+   "mark": "kai",
+   "blaster": true,
+   "loaded": "Floppy",
+   "face": "raf"
+  },
+  "raf": {
+   "kind": "human",
+   "human": "raf",
+   "mark": "raf",
+   "blaster": true,
+   "loaded": "Rammstone",
+   "face": "kai",
+   "phase": 1.7
+  },
+  "mira": {
+   "kind": "human",
+   "human": "mira",
+   "mark": "mira_off",
+   "phase": 2.1,
+   "auto_look": false
+  },
+  "juno": {
+   "kind": "human",
+   "human": "juno",
+   "mark": "juno_off",
+   "phase": 4.4,
+   "auto_look": false
+  },
+  "floppy": {
+   "kind": "slug",
+   "species": "Floppy",
+   "mark": "floppy",
+   "face": "kai",
+   "scale": 0.8,
+   "auto_look": false
+  },
+  "rammstone": {
+   "kind": "slug",
+   "species": "Rammstone",
+   "mark": "rammstone",
+   "face": "kai",
+   "scale": 0.8,
+   "phase": 2.3,
+   "auto_look": false
+  },
+  "inferno": {
+   "kind": "slug",
+   "species": "Inferno",
+   "mark": "inferno_off",
+   "scale": 0.8,
+   "phase": 0.7,
+   "auto_look": false
+  }
+ },
+ "slowmo": [
+  {
+   "from": "L16.end+0.02",
+   "until": "L16.end+0.36",
+   "rate": 0.22,
+   "ramp": 0.05
+  },
+  {
+   "from": "L26.end+0.12",
+   "until": "L26.end+0.38",
+   "rate": 0.2,
+   "ramp": 0.05
+  }
+ ],
+ "shots": [
+  {
+   "preset": "over_shoulder",
+   "until": "L1.start+2.15",
+   "from": "kai",
+   "target": "raf",
+   "shoulder": 1,
+   "back": 2.6,
+   "offset": 1.6,
+   "eye": 0.35,
+   "fov": 30
+  },
+  {
+   "preset": "close_up",
+   "until": "L1.end+0.2",
+   "target": "raf",
+   "size": 1.45,
+   "side": -24,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "push_in",
+   "until": "L2.end+0.1",
+   "target": "kai",
+   "from_size": 1.6,
+   "size": 1.1,
+   "side": 18,
+   "eye": 0.0,
+   "headroom": 0.12,
+   "fov": 34
+  },
+  {
+   "preset": "close_up",
+   "until": "L3.end+0.2",
+   "target": "kai",
+   "size": 1.9,
+   "side": 12,
+   "fov": 38,
+   "headroom": 0.2,
+   "eye": -0.1
+  },
+  {
+   "preset": "push_in",
+   "until": "L4.end+0.1",
+   "target": "floppy",
+   "from_size": 2.4,
+   "size": 1.25,
+   "side": 6,
+   "fov": 36
+  },
+  {
+   "preset": "close_up",
+   "until": "L5.end+0.15",
+   "target": "floppy",
+   "size": 1.05,
+   "side": 10,
+   "fov": 32,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L6.start+2.4",
+   "target": "kai",
+   "size": 1.4,
+   "side": 28,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "slug_cam",
+   "until": "L7.start+0.05",
+   "target": "kai",
+   "mode": "ride",
+   "angle": 50,
+   "near": 2.4,
+   "height": 1.0,
+   "fov": 45,
+   "lead": 1.0
+  },
+  {
+   "preset": "slug_cam",
+   "until": "L7.start+1.05",
+   "target": "raf",
+   "mode": "ride",
+   "angle": -45,
+   "near": 2.6,
+   "height": 1.4,
+   "fov": 46,
+   "lead": 1.4,
+   "land": 3.0
+  },
+  {
+   "preset": "close_up",
+   "until": "L7.start+1.5",
+   "target": "kai",
+   "size": 1.5,
+   "side": 24,
+   "fov": 36,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L8.end+0.35",
+   "target": "raf",
+   "size": 1.7,
+   "side": -30,
+   "fov": 38,
+   "headroom": 0.18,
+   "eye": -0.15
+  },
+  {
+   "preset": "close_up",
+   "until": "L9.end+0.12",
+   "target": "raf",
+   "size": 1.35,
+   "side": 22,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L10.end+0.3",
+   "target": "kai",
+   "size": 2.2,
+   "side": -20,
+   "fov": 40,
+   "headroom": 0.25,
+   "eye": -0.25
+  },
+  {
+   "preset": "push_in",
+   "until": "L11.end+0.2",
+   "target": "kai",
+   "from_size": 2.0,
+   "size": 1.25,
+   "side": 14,
+   "eye": 0.0,
+   "headroom": 0.12,
+   "fov": 34
+  },
+  {
+   "preset": "close_up",
+   "until": "L12.end+0.3",
+   "target": "kai",
+   "size": 1.35,
+   "side": 45,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "slug_cam",
+   "until": "L13.start+2.85",
+   "target": "kai",
+   "shot": 2,
+   "mode": "ride",
+   "angle": 50,
+   "near": 2.4,
+   "height": 1.0,
+   "fov": 45,
+   "lead": 1.0
+  },
+  {
+   "preset": "over_shoulder",
+   "until": "L13.end+0.2",
+   "from": "kai",
+   "target": "raf",
+   "shoulder": 1,
+   "back": 2.6,
+   "offset": 1.6,
+   "eye": 0.35,
+   "fov": 48
+  },
+  {
+   "preset": "close_up",
+   "until": "L14.end+0.25",
+   "target": "kai",
+   "size": 1.2,
+   "side": 24,
+   "fov": 32,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L15.start+1.15",
+   "target": "raf",
+   "size": 1.5,
+   "side": -20,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L15.start+2.0",
+   "target": "raf",
+   "size": 1.25,
+   "side": 26,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "over_shoulder",
+   "until": "L15.end+0.25",
+   "from": "kai",
+   "target": "raf",
+   "shoulder": -1,
+   "back": 2.6,
+   "offset": 1.6,
+   "eye": 0.35,
+   "fov": 36
+  },
+  {
+   "preset": "slug_cam",
+   "until": "L16.end+0.38",
+   "target": "kai",
+   "shot": 4,
+   "mode": "ride",
+   "angle": 65,
+   "near": 3.2,
+   "height": 1.2,
+   "fov": 44,
+   "lead": 1.2,
+   "land": 4.5
+  },
+  {
+   "preset": "close_up",
+   "until": "L17.end+0.2",
+   "target": "raf",
+   "size": 1.6,
+   "side": -26,
+   "fov": 36,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L18.end+0.25",
+   "target": "raf",
+   "size": 1.2,
+   "side": 18,
+   "fov": 32,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L19.end+0.3",
+   "target": "raf",
+   "size": 1.15,
+   "side": -14,
+   "fov": 32,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L20.end+0.3",
+   "target": "raf",
+   "size": 1.3,
+   "side": 20,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L21.start+1.0",
+   "target": "raf",
+   "size": 1.5,
+   "side": -24,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L21.start+2.15",
+   "target": "raf",
+   "size": 1.4,
+   "side": 16,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "two_shot",
+   "until": "L21.end+0.25",
+   "targets": [
+    "mira",
+    "juno"
+   ],
+   "distance": 11,
+   "height": 2.0,
+   "fov": 40
+  },
+  {
+   "preset": "close_up",
+   "until": "L22.start+2.3",
+   "target": "kai",
+   "size": 1.6,
+   "side": -15,
+   "eye": 0.0,
+   "headroom": 0.12,
+   "fov": 36
+  },
+  {
+   "preset": "two_shot",
+   "until": "L22.end+0.4",
+   "targets": [
+    "raf",
+    "mira"
+   ],
+   "distance": 8,
+   "height": 1.8,
+   "fov": 40
+  },
+  {
+   "preset": "push_in",
+   "until": "L23.end+0.2",
+   "target": "inferno",
+   "from_size": 2.6,
+   "size": 1.4,
+   "side": -12,
+   "fov": 36
+  },
+  {
+   "preset": "close_up",
+   "until": "L24.end+0.25",
+   "target": "inferno",
+   "size": 1.2,
+   "side": 14,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L25.end+0.25",
+   "target": "inferno",
+   "size": 1.7,
+   "side": -24,
+   "fov": 36,
+   "headroom": 0.1
+  },
+  {
+   "preset": "over_shoulder",
+   "until": "L26.end+0.05",
+   "from": "kai",
+   "target": "raf",
+   "shoulder": 1,
+   "back": 2.6,
+   "offset": 1.6,
+   "eye": 0.35,
+   "fov": 48
+  },
+  {
+   "preset": "slug_cam",
+   "until": "L27.start+0.3",
+   "target": "kai",
+   "shot": 5,
+   "mode": "ride",
+   "angle": -45,
+   "near": 2.6,
+   "height": 1.4,
+   "fov": 46,
+   "lead": 1.4,
+   "land": 3.0
+  },
+  {
+   "preset": "close_up",
+   "until": "L27.start+4.7",
+   "target": "kai",
+   "size": 1.3,
+   "side": 22,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L27.end+0.15",
+   "target": "raf",
+   "size": 1.4,
+   "side": -20,
+   "fov": 34,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L28.end+0.25",
+   "target": "raf",
+   "size": 1.6,
+   "side": 24,
+   "fov": 36,
+   "headroom": 0.1
+  },
+  {
+   "preset": "over_shoulder",
+   "until": "L29.end+0.1",
+   "from": "kai",
+   "target": "raf",
+   "shoulder": -1,
+   "back": 2.6,
+   "offset": 1.6,
+   "eye": 0.35,
+   "fov": 46
+  },
+  {
+   "preset": "push_in",
+   "until": "L30.end+0.35",
+   "target": "kai",
+   "from_size": 1.7,
+   "size": 1.15,
+   "side": -16,
+   "fov": 34
+  },
+  {
+   "preset": "close_up",
+   "until": "L31.end+0.45",
+   "target": "inferno",
+   "size": 1.15,
+   "side": 12,
+   "fov": 32,
+   "headroom": 0.1
+  },
+  {
+   "preset": "close_up",
+   "until": "L32.end+1.1",
+   "target": "floppy",
+   "size": 0.95,
+   "side": -8,
+   "fov": 32,
+   "headroom": 0.1
+  }
+ ],
+ "timeline": [
+  {
+   "time": 0.0,
+   "actor": "kai",
+   "action": "aim",
+   "target": "raf_chest",
+   "duration": 2.4
+  },
+  {
+   "time": 0.0,
+   "actor": "raf",
+   "action": "aim",
+   "target": "kai_chest",
+   "duration": 2.3
+  },
+  {
+   "time": 0.2,
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "smirk": 1,
+    "squint": 0.3
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L1.start+2.2",
+   "actor": "raf",
+   "action": "point",
+   "target": "floppy",
+   "duration": 1.7
+  },
+  {
+   "time": "L1.start+2.4",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "smile": 0.8,
+    "smirk": 0
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L2.start",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": -0.5,
+    "squint": 0.3
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L2.start+0.9",
+   "actor": "kai",
+   "action": "gesture",
+   "move": "shrug",
+   "mask": "upper",
+   "duration": 1.6
+  },
+  {
+   "time": "L3.start+0.2",
+   "actor": "kai",
+   "action": "look",
+   "target": "floppy"
+  },
+  {
+   "time": "L3.start+0.5",
+   "actor": "floppy",
+   "action": "hop",
+   "height": 0.5,
+   "duration": 0.42
+  },
+  {
+   "time": "L3.start+0.5",
+   "actor": "kai",
+   "action": "hold",
+   "item": "floppy",
+   "hand": "right",
+   "facing": "out",
+   "duration": 6.9,
+   "ease": 0.4
+  },
+  {
+   "time": "L4.start",
+   "actor": "floppy",
+   "action": "look",
+   "target": "lens_floppy"
+  },
+  {
+   "time": "L4.start",
+   "actor": "floppy",
+   "action": "express",
+   "set": {
+    "squint": 0.6
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L5.start+1.5",
+   "actor": "floppy",
+   "action": "express",
+   "set": {
+    "smile": 0.7
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L5.start+1.1",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": 0.3
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L5.end+0.16",
+   "actor": "floppy",
+   "action": "move_to",
+   "mark": "floppy_off",
+   "duration": 0.02
+  },
+  {
+   "time": "L5.end+0.2",
+   "actor": "kai",
+   "action": "aim",
+   "target": "raf_chest",
+   "duration": 4.6
+  },
+  {
+   "time": "L6.start+0.3",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": 0.4,
+    "squint": 0.5
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L6.start+3.85",
+   "actor": "kai",
+   "action": "shoot",
+   "slug": "Floppy",
+   "target": "raf_shin",
+   "speed": 4
+  },
+  {
+   "time": "L7.start+0.2",
+   "actor": "raf",
+   "action": "shoot",
+   "slug": "Rammstone",
+   "target": "kai_chest",
+   "speed": 16
+  },
+  {
+   "time": "L7.start+1.18",
+   "actor": "kai",
+   "action": "gesture",
+   "move": "flinch",
+   "weight": 1.0
+  },
+  {
+   "time": "L7.start+1.2",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "react": 1,
+    "smile": -0.6
+   },
+   "ease": 0.1
+  },
+  {
+   "time": "L7.start+1.6",
+   "actor": "raf",
+   "action": "look",
+   "target": "raf_shin"
+  },
+  {
+   "time": "L7.start+1.7",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "smirk": 1,
+    "squint": 0.4
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L8.start",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "cheer",
+   "duration": 1.4
+  },
+  {
+   "time": "L8.start",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "smile": 1,
+    "smirk": 0,
+    "react": 0.6
+   },
+   "ease": 0.15
+  },
+  {
+   "time": "L9.start",
+   "actor": "raf",
+   "action": "look",
+   "target": "none"
+  },
+  {
+   "time": "L9.start+0.8",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "squint": 2.0,
+    "smile": 0.5,
+    "react": 0
+   },
+   "ease": 0.25
+  },
+  {
+   "time": "L9.start+0.7",
+   "actor": "raf",
+   "action": "aim",
+   "target": "kai_chest",
+   "duration": 1.5
+  },
+  {
+   "time": "L9.start+1.55",
+   "actor": "raf",
+   "action": "shoot",
+   "slug": "Rammstone",
+   "target": "kai_chest",
+   "speed": 20
+  },
+  {
+   "time": "L9.end+0.05",
+   "actor": "floppy",
+   "action": "move_to",
+   "mark": "floppy",
+   "duration": 0.02
+  },
+  {
+   "time": "L10.start",
+   "actor": "kai",
+   "action": "gesture",
+   "move": "flinch",
+   "weight": 0.8
+  },
+  {
+   "time": "L10.start+0.1",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "react": 0.6,
+    "smile": -0.7,
+    "squint": 0.2
+   },
+   "ease": 0.2
+  },
+  {
+   "time": "L10.start+0.7",
+   "actor": "kai",
+   "action": "gesture",
+   "move": "sad",
+   "mask": "upper",
+   "duration": 2.4
+  },
+  {
+   "time": "L10.start+0.8",
+   "actor": "kai",
+   "action": "look",
+   "target": "floppy"
+  },
+  {
+   "time": "L10.start+1.0",
+   "actor": "floppy",
+   "action": "look",
+   "target": "kai"
+  },
+  {
+   "time": "L11.start+0.4",
+   "actor": "floppy",
+   "action": "hop",
+   "height": 0.5,
+   "duration": 0.42
+  },
+  {
+   "time": "L11.start+0.4",
+   "actor": "kai",
+   "action": "hold",
+   "item": "floppy",
+   "hand": "right",
+   "facing": "holder",
+   "duration": 5.75,
+   "ease": 0.3
+  },
+  {
+   "time": "L11.start+0.6",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": 0,
+    "react": 0,
+    "squint": 0.3
+   },
+   "ease": 0.6
+  },
+  {
+   "time": "L11.start+2.0",
+   "actor": "kai",
+   "action": "look",
+   "target": "floppy"
+  },
+  {
+   "time": "L12.start",
+   "actor": "floppy",
+   "action": "look",
+   "target": "kai"
+  },
+  {
+   "time": "L12.start+0.3",
+   "actor": "floppy",
+   "action": "express",
+   "set": {
+    "squint": 0.4,
+    "react": 0.5
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L12.end+0.31",
+   "actor": "floppy",
+   "action": "move_to",
+   "mark": "floppy_off",
+   "duration": 0.02
+  },
+  {
+   "time": "L12.end+0.3",
+   "actor": "kai",
+   "action": "aim",
+   "target": "train",
+   "duration": 1.2
+  },
+  {
+   "time": "L13.start+0.2",
+   "actor": "kai",
+   "action": "shoot",
+   "slug": "Floppy",
+   "target": "train",
+   "speed": 7
+  },
+  {
+   "time": "L13.start+2.8",
+   "actor": "raf",
+   "action": "move_to",
+   "mark": "run_a",
+   "duration": 0.02
+  },
+  {
+   "time": "L13.start+2.86",
+   "actor": "raf",
+   "action": "move_to",
+   "mark": "run_b",
+   "gait": "run",
+   "duration": 3.4
+  },
+  {
+   "time": "L13.start+2.9",
+   "actor": "kai",
+   "action": "aim",
+   "target": "lead",
+   "duration": 1.6
+  },
+  {
+   "time": "L13.start+3.3",
+   "actor": "kai",
+   "action": "shoot",
+   "slug": "Floppy",
+   "target": "lead",
+   "speed": 7
+  },
+  {
+   "time": "L13.start+4.75",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "flinch",
+   "weight": 1.0
+  },
+  {
+   "time": "L13.end+0.21",
+   "actor": "raf",
+   "action": "move_to",
+   "mark": "raf",
+   "duration": 0.02
+  },
+  {
+   "time": "L14.start",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smirk": 1,
+    "smile": 0.4,
+    "squint": 0.3
+   },
+   "ease": 0.25
+  },
+  {
+   "time": "L14.start+0.3",
+   "actor": "kai",
+   "action": "aim",
+   "target": "raf_chest",
+   "duration": 5.6
+  },
+  {
+   "time": "L15.start+0.1",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "flinch",
+   "weight": 0.9
+  },
+  {
+   "time": "L15.start+0.1",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "react": 0.8,
+    "smile": -0.3
+   },
+   "ease": 0.1
+  },
+  {
+   "time": "L15.start+1.3",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "flinch",
+   "weight": 1.0
+  },
+  {
+   "time": "L15.start+2.15",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "flinch",
+   "weight": 1.0
+  },
+  {
+   "time": "L15.start+2.6",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "react": 1,
+    "smile": -0.7,
+    "angry": 0.4
+   },
+   "ease": 0.2
+  },
+  {
+   "time": "L15.end+0.3",
+   "actor": "kai",
+   "action": "shoot",
+   "slug": "Floppy",
+   "target": "raf_chest",
+   "speed": 9
+  },
+  {
+   "time": "L16.end-0.02",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "flinch",
+   "weight": 1.0
+  },
+  {
+   "time": "L16.end+0.39",
+   "actor": "floppy",
+   "action": "move_to",
+   "mark": "floppy",
+   "duration": 0.02
+  },
+  {
+   "time": "L17.start",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "smile": 1,
+    "react": 0.5,
+    "angry": 0
+   },
+   "ease": 0.25
+  },
+  {
+   "time": "L17.start+0.1",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "laugh",
+   "duration": 1.8
+  },
+  {
+   "time": "L17.start+1.0",
+   "actor": "raf",
+   "action": "point",
+   "target": "floppy",
+   "duration": 1.3
+  },
+  {
+   "time": "L18.start",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "smirk": 1,
+    "smile": 0.5,
+    "squint": 0.3
+   },
+   "ease": 0.2
+  },
+  {
+   "time": "L18.start+0.2",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "wave",
+   "mask": "upper",
+   "duration": 1.4
+  },
+  {
+   "time": "L19.start",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "smile": -0.8,
+    "smirk": 0,
+    "react": 0.9,
+    "squint": 0
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L19.start+0.3",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "disbelief",
+   "duration": 2.6
+  },
+  {
+   "time": "L19.start+0.2",
+   "actor": "rammstone",
+   "action": "express",
+   "set": {
+    "lean": -0.6
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L20.start-0.2",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "angry": 0.6,
+    "react": 0.3
+   },
+   "ease": 0.2
+  },
+  {
+   "time": "L20.start",
+   "actor": "raf",
+   "action": "point",
+   "target": "kai",
+   "duration": 1.3
+  },
+  {
+   "time": "L20.end+0.25",
+   "actor": "mira",
+   "action": "move_to",
+   "mark": "mira",
+   "duration": 0.02
+  },
+  {
+   "time": "L20.end+0.25",
+   "actor": "juno",
+   "action": "move_to",
+   "mark": "juno",
+   "duration": 0.02
+  },
+  {
+   "time": "L21.start+0.35",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "flinch",
+   "weight": 1.0
+  },
+  {
+   "time": "L21.start+1.1",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "facepalm",
+   "duration": 1.6
+  },
+  {
+   "time": "L21.start+2.25",
+   "actor": "mira",
+   "action": "gesture",
+   "move": "flinch",
+   "weight": 1.0
+  },
+  {
+   "time": "L21.start+2.45",
+   "actor": "juno",
+   "action": "gesture",
+   "move": "flinch",
+   "weight": 1.0
+  },
+  {
+   "time": "L21.start+2.8",
+   "actor": "mira",
+   "action": "express",
+   "set": {
+    "react": 1,
+    "smile": -0.6
+   },
+   "ease": 0.2
+  },
+  {
+   "time": "L21.start+2.9",
+   "actor": "juno",
+   "action": "express",
+   "set": {
+    "react": 1,
+    "smile": -0.5
+   },
+   "ease": 0.2
+  },
+  {
+   "time": "L21.end+0.26",
+   "actor": "kai",
+   "action": "hold",
+   "item": "floppy",
+   "hand": "shoulder",
+   "duration": 6.5,
+   "ease": 0.05
+  },
+  {
+   "time": "L22.start",
+   "actor": "kai",
+   "action": "gesture",
+   "move": "arms_crossed",
+   "duration": 4.6
+  },
+  {
+   "time": "L22.start",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": 0.7,
+    "smirk": 0.6,
+    "react": 0
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L22.start+0.3",
+   "actor": "floppy",
+   "action": "express",
+   "set": {
+    "squint": 0.5,
+    "smile": 0.5
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L22.start+2.2",
+   "actor": "raf",
+   "action": "face",
+   "target": "huddle",
+   "duration": 0.4
+  },
+  {
+   "time": "L22.start+2.2",
+   "actor": "mira",
+   "action": "face",
+   "target": "huddle",
+   "duration": 0.4
+  },
+  {
+   "time": "L22.start+2.2",
+   "actor": "juno",
+   "action": "face",
+   "target": "huddle",
+   "duration": 0.4
+  },
+  {
+   "time": "L22.start+2.5",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "think",
+   "duration": 2.6
+  },
+  {
+   "time": "L22.start+2.7",
+   "actor": "mira",
+   "action": "gesture",
+   "move": "arms_crossed",
+   "duration": 2.4
+  },
+  {
+   "time": "L22.start+2.9",
+   "actor": "juno",
+   "action": "gesture",
+   "move": "think",
+   "duration": 2.3
+  },
+  {
+   "time": "L22.end+0.34",
+   "actor": "raf",
+   "action": "hold",
+   "item": "inferno",
+   "hand": "right",
+   "facing": "out",
+   "duration": 2.8,
+   "ease": 0.03
+  },
+  {
+   "time": "L22.end+0.33",
+   "actor": "raf",
+   "action": "face",
+   "target": "kai",
+   "duration": 0.03
+  },
+  {
+   "time": "L23.start+0.4",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "smile": 0.4,
+    "smirk": 0.8,
+    "angry": 0,
+    "react": 0
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L23.end+0.15",
+   "actor": "kai",
+   "action": "hold",
+   "item": "inferno",
+   "hand": "right",
+   "facing": "out",
+   "duration": 5.47,
+   "ease": 0.03
+  },
+  {
+   "time": "L28.end+0.05",
+   "actor": "kai",
+   "action": "hold",
+   "item": "inferno",
+   "hand": "right",
+   "facing": "out",
+   "duration": 12.0,
+   "ease": 0.03
+  },
+  {
+   "time": "L24.start",
+   "actor": "inferno",
+   "action": "express",
+   "set": {
+    "react": 1
+   },
+   "ease": 0.15
+  },
+  {
+   "time": "L24.start+0.05",
+   "actor": "inferno",
+   "action": "hop",
+   "height": 0.45,
+   "duration": 0.4
+  },
+  {
+   "time": "L24.start+0.9",
+   "actor": "inferno",
+   "action": "hop",
+   "height": 0.3,
+   "duration": 0.35
+  },
+  {
+   "time": "L24.start+0.2",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": 1,
+    "smirk": 0.5
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L25.start",
+   "actor": "inferno",
+   "action": "express",
+   "set": {
+    "react": 0.8,
+    "lean": 0.4
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L25.start+1.0",
+   "actor": "inferno",
+   "action": "hop",
+   "height": 0.3,
+   "duration": 0.35
+  },
+  {
+   "time": "L25.end+0.26",
+   "actor": "raf",
+   "action": "move_to",
+   "mark": "run_c",
+   "duration": 0.02
+  },
+  {
+   "time": "L25.end+0.27",
+   "actor": "raf",
+   "action": "move_to",
+   "mark": "run_d",
+   "gait": "run",
+   "duration": 4.2
+  },
+  {
+   "time": "L26.start+0.4",
+   "actor": "kai",
+   "action": "aim",
+   "target": "miss_far",
+   "duration": 1.6
+  },
+  {
+   "time": "L26.start+0.5",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smirk": 1,
+    "squint": 0.4
+   },
+   "ease": 0.2
+  },
+  {
+   "time": "L27.start+1.2",
+   "actor": "kai",
+   "action": "look",
+   "target": "miss_far"
+  },
+  {
+   "time": "L27.start+1.4",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smirk": 0,
+    "smile": -0.4,
+    "react": 0.8,
+    "squint": 0
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L27.start+3.0",
+   "actor": "kai",
+   "action": "look",
+   "target": "raf"
+  },
+  {
+   "time": "L26.end+0.08",
+   "actor": "kai",
+   "action": "shoot",
+   "slug": "Inferno",
+   "target": "miss_far",
+   "speed": 22
+  },
+  {
+   "time": "L27.start+4.0",
+   "actor": "raf",
+   "action": "look",
+   "target": "kai"
+  },
+  {
+   "time": "L27.start+4.1",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "smile": 0.2,
+    "react": 0.4,
+    "squint": 0.3
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L28.start",
+   "actor": "raf",
+   "action": "gesture",
+   "move": "hands_up",
+   "duration": 1.3
+  },
+  {
+   "time": "L28.end+0.24",
+   "actor": "raf",
+   "action": "move_to",
+   "mark": "raf",
+   "duration": 0.02
+  },
+  {
+   "time": "L28.start",
+   "actor": "raf",
+   "action": "express",
+   "set": {
+    "smile": 1,
+    "react": 1,
+    "squint": 0
+   },
+   "ease": 0.12
+  },
+  {
+   "time": "L29.start+0.5",
+   "actor": "raf",
+   "action": "point",
+   "target": "kai",
+   "duration": 2.2
+  },
+  {
+   "time": "L29.start+0.8",
+   "actor": "mira",
+   "action": "point",
+   "target": "kai",
+   "duration": 1.9
+  },
+  {
+   "time": "L29.start+1.1",
+   "actor": "juno",
+   "action": "point",
+   "target": "kai",
+   "duration": 1.6
+  },
+  {
+   "time": "L28.end+0.2",
+   "actor": "mira",
+   "action": "face",
+   "target": "kai",
+   "duration": 0.05
+  },
+  {
+   "time": "L29.start+0.5",
+   "actor": "mira",
+   "action": "express",
+   "set": {
+    "smile": 0.8,
+    "smirk": 1,
+    "react": 0
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L28.end+0.2",
+   "actor": "juno",
+   "action": "face",
+   "target": "kai",
+   "duration": 0.05
+  },
+  {
+   "time": "L29.start+0.5",
+   "actor": "juno",
+   "action": "express",
+   "set": {
+    "smile": 0.8,
+    "smirk": 1,
+    "react": 0
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L30.start",
+   "actor": "kai",
+   "action": "express",
+   "set": {
+    "smile": -0.6,
+    "smirk": 0,
+    "react": 0.3,
+    "squint": 0.2
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L30.start+0.3",
+   "actor": "kai",
+   "action": "look",
+   "target": "inferno"
+  },
+  {
+   "time": "L31.start+0.1",
+   "actor": "inferno",
+   "action": "express",
+   "set": {
+    "react": 0,
+    "lean": -0.6
+   },
+   "ease": 0.4
+  },
+  {
+   "time": "L31.start+0.2",
+   "actor": "inferno",
+   "action": "look",
+   "target": "kai"
+  },
+  {
+   "time": "L31.end+0.2",
+   "actor": "floppy",
+   "action": "look",
+   "target": "inferno"
+  },
+  {
+   "time": "L32.start+0.6",
+   "actor": "floppy",
+   "action": "express",
+   "set": {
+    "squint": 0.5,
+    "smile": 0
+   },
+   "ease": 0.3
+  },
+  {
+   "time": "L32.end+0.25",
+   "actor": "floppy",
+   "action": "look",
+   "target": "lens_floppy"
+  },
+  {
+   "time": "L32.end+0.5",
+   "actor": "floppy",
+   "action": "express",
+   "set": {
+    "smile": 1
+   },
+   "ease": 0.5
+  }
+ ],
+ "capture": {
+  "ui": "hidden",
+  "sample": 0.5
+ }
+}

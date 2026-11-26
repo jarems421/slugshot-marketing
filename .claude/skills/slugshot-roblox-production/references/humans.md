@@ -96,3 +96,18 @@ built into the marketing place only). Demo: `roblox-native/scenes/humans/humans_
   above the floor while it burrows. Test: `scenes/humans/shot_test.json`.
 - **In My World structure** is narrator-led (~210 wpm, narration from frame one, one quick 1-2 s illustrative shot per
   sentence), not character dialogue scenes. The humans demo's script was a placeholder; judge production on a real script.
+
+## Lessons from pilot 01 (most_feared_slug, 2026-11-26; 43 shots, 95 s)
+- `slug_cam` follows the shooter's FIRST shot unless `shot: N` (1-based, in timeline order) says which one.
+- A slug held in the shooter's hand when a ride starts puts the camera inside it: end `hold`s before a shot and re-hold after.
+- A held slug eases back to its own ground mark when the hold ends; hand-offs between holders must sit exactly on a cut.
+  A shot is framed at its start, so start a hold a few frames before the cut, never on it.
+- `face` targets must not form a cycle (A faces B faces C faces A): stack overflow. Face a shared mark instead.
+- `static_wide` with several targets came out blocked or black; `two_shot` and `over_shoulder` (back 2.6, offset 1.6) were reliable.
+- Rides: keep the flight lane clear of set dressing and bystanders (the plaza west of the duel lane is open; the east has posts).
+  Cut a ride just after the hit; lingering lets it settle into a body or the floor.
+- Off-camera repositioning: `move_to` with `duration: 0.02` exactly on a cut.
+- One contact run checks every shot: prepare once, step `st.frame(t)` through each shot's midpoint while `video_capture` records,
+  then pick held frames by stability. Studio's PreloadAsync can hang while its TexturePack uploads 429; Scene.film now caps it at 45 s.
+- Throughput: first narrator-led 95 s video took about 2 h, mostly 6 rebuilds (about 5 min each, cavern build) and two film passes
+  (hold 2 then hold 4, about 25 min) for 0 repeated frames.

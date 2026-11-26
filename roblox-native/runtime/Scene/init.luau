@@ -669,9 +669,20 @@ function Scene.film(id: string, options: any?): any
 			task.wait(0.5)
 		end
 		manifest.hub_built = workspace:GetAttribute("HubSolidParts") ~= nil
-		pcall(function()
-			game:GetService("ContentProvider"):PreloadAsync({ workspace })
+		-- Bounded: PreloadAsync never returned while Studio's own TexturePack uploads were failing (HTTP 429), and the
+		-- take sat in it for 6+ minutes (2026-11-26). The look-through and queue drain below still settle assets.
+		local preloaded = false
+		task.spawn(function()
+			pcall(function()
+				game:GetService("ContentProvider"):PreloadAsync({ workspace })
+			end)
+			preloaded = true
 		end)
+		local p0 = os.clock()
+		while not preloaded and os.clock() - p0 < 45 do
+			task.wait(0.5)
+		end
+		manifest.preload_complete = preloaded
 		for _, s in st.shots do
 			for _, k in { 0, 0.5, 0.95 } do
 				st.frame(s.start + s.duration * k)

@@ -1,0 +1,128 @@
+{
+ "_about": "Pilot 01 'The most feared slug' (owner premise, sharpened). In My World, narrator Algieba, our-sound group (house bed + scene beds). Fiction: label on screen. Unnamed (reveal lock): no end card. Soundboard clips (signature, violin) = TikTok entertainment use only.",
+ "concept": "MostFearedSlug",
+ "hook_id": "Pilot01",
+ "format": "WORLD",
+ "label": "Fictional story",
+ "language": "en",
+ "dialogue": "out/dialogue/most-feared-slug/warped/mfs_v01/dialogue.json",
+ "music": "media/mfs_music_v01.wav",
+ "music_db": -4,
+ "emphasis": [
+  "Floppy",
+  "Inferno"
+ ],
+ "hook": "In my world, your opponent picks your slug",
+ "end_card": false,
+ "sfx": [
+  {
+   "src": "assets/sfx/blaster_shot.wav",
+   "at": 18.69,
+   "db": -20
+  },
+  {
+   "src": "assets/sfx/blaster_shot.wav",
+   "at": 20.47,
+   "db": -20
+  },
+  {
+   "src": "assets/sfx/library/impacts/impactPunch_heavy_000.wav",
+   "at": 21.45,
+   "db": -12
+  },
+  {
+   "src": "assets/sfx/blaster_shot.wav",
+   "at": 25.75,
+   "db": -20
+  },
+  {
+   "src": "assets/sfx/library/impacts/impactSoft_heavy_000.wav",
+   "at": 26.53,
+   "db": -14
+  },
+  {
+   "src": "media/meme/soundboard/7570461414633065760_32_sad-romance-violin.wav",
+   "at": 27.08,
+   "db": -17
+  },
+  {
+   "src": "assets/sfx/crystal_tick.wav",
+   "at": 35.3,
+   "db": -15
+  },
+  {
+   "src": "assets/sfx/blaster_shot.wav",
+   "at": 36.1,
+   "db": -20
+  },
+  {
+   "src": "assets/sfx/blaster_shot.wav",
+   "at": 39.2,
+   "db": -20
+  },
+  {
+   "src": "assets/sfx/slug_land.wav",
+   "at": 40.65,
+   "db": -14
+  },
+  {
+   "src": "assets/sfx/library/impacts/impactPunch_medium_000.wav",
+   "at": 42.83,
+   "db": -13
+  },
+  {
+   "src": "assets/sfx/library/impacts/impactPunch_medium_000.wav",
+   "at": 44.03,
+   "db": -13
+  },
+  {
+   "src": "assets/sfx/library/impacts/impactPunch_medium_000.wav",
+   "at": 44.88,
+   "db": -13
+  },
+  {
+   "src": "assets/sfx/blaster_shot.wav",
+   "at": 46.03,
+   "db": -20
+  },
+  {
+   "src": "assets/sfx/sub_boom.wav",
+   "at": 47.3,
+   "db": -11
+  },
+  {
+   "src": "assets/sfx/record_scratch.wav",
+   "at": 54.17,
+   "db": -12
+  },
+  {
+   "src": "assets/sfx/dramatic_hits.wav",
+   "at": 68.71,
+   "db": -9
+  },
+  {
+   "src": "media/meme/soundboard/SIGNATURE-whistle-donk-fart.wav",
+   "at": 76.55,
+   "db": -11
+  },
+  {
+   "src": "assets/sfx/blaster_shot.wav",
+   "at": 76.77,
+   "db": -18
+  },
+  {
+   "src": "assets/sfx/awkward_crickets.wav",
+   "at": 93.89,
+   "db": -15
+  }
+ ],
+ "scenes": [
+  {
+   "kind": "video",
+   "src": "out/takes/mfs_v01.mp4",
+   "seconds": 97.95,
+   "fit": "crop",
+   "volume": 0
+  }
+ ]
+}
