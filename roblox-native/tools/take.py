@@ -120,7 +120,7 @@ def calibrate(video):
     qw, qh = w // 4, h // 4
     # passthrough: window recordings are variable frame rate; without it the rawvideo output duplicates frames and
     # n no longer matches select's decoded-frame number.
-    dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", str(video), "-fps_mode", "passthrough", "-frames:v", "900",
+    dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", str(video), "-fps_mode", "passthrough", "-frames:v", "12000",  # takes may wait minutes for the lobby before the card
                             "-vf", f"scale={qw}:{qh}",
                             "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
     found, n = None, 0
@@ -189,45 +189,101 @@ def film(take_path, videos, out, crf):
         cut = (white + black) / 2
         return sum(1 << b for b, v in enumerate(luma[2:]) if v > cut)
 
-    # Pass 1: stamps only (a narrow grey strip decodes fast).
-    best = {}  # index -> (run length, video number, frame number)
+    # Pass 1: stamps, and how much detail each recorded copy holds. Roblox streams textures at lower resolution now and
+    # then; a frame caught then shows blocky clothing while the rest is sharp (owner, 2026-11-26: "randomly everything
+    # goes blurry"). Detail is measured per tile of the picture (edge energy at half size), so a soft patch shows up.
+    cw = (round(h * 16 / 9) // 2) * 2 if take.get("portrait", True) else (round(h * 9 / 16) // 2) * 2
+    cx0 = (w - cw) // 2
+    TX, TY = 6, 4
+
+    hw, hh2 = w // 2, h // 2  # pass 1 reads frames at half size (fast; the stamp squares and tiles survive it)
+    half = [(x // 2, y // 2) for x, y in centres]
+
+    def half_index(img):
+        luma = [float(img[y - 1:y + 2, x - 1:x + 2].mean()) for x, y in half]
+        white, black = luma[0], luma[1]
+        if white - black < 120:
+            return None
+        cut = (white + black) / 2
+        return sum(1 << b for b, v in enumerate(luma[2:]) if v > cut)
+
+    def tiles(img):
+        a = img[:, cx0 // 2:(cx0 + cw) // 2].astype(np.float32)
+        lap = np.abs(a[1:-1, 1:-1] * 4 - a[:-2, 1:-1] - a[2:, 1:-1] - a[1:-1, :-2] - a[1:-1, 2:])
+        hh, ww = lap.shape[0] // TY, lap.shape[1] // TX
+        edges = lap[:hh * TY, :ww * TX].reshape(TY, hh, TX, ww).mean(axis=(1, 3)).ravel() + 0.05
+        # the broad picture of each tile (6x6 blocks): motion changes it, a texture dropping detail doesn't
+        th, tw = hh // 6, ww // 6
+        broad = a[:th * 6 * TY, :tw * 6 * TX].reshape(TY * 6, th, TX * 6, tw).mean(axis=(1, 3)).astype(np.uint8)
+        return edges, broad
+
+    copies = {}  # index -> {video number: [(frame number, tiles)]}
     total = 0
-    filled = set()  # indices the earlier recordings already had: later ones (patch passes) only fill gaps
-
-    # Frames a later recording also holds for indices the first already has: the overlap that matches its lighting.
-    alt = {}  # video number -> {index: frame number}
-
-    def keep(idx, run, vi):
-        if idx is None or idx >= frames:
-            return False
-        if vi > 0 and idx in filled:
-            if len(run) > 1:
-                alt.setdefault(vi, {})[idx] = run[len(run) // 2]
-            return False
-        return len(run) > best.get(idx, (0,))[0]
-
     for vi, video in enumerate(videos):
         x0, y0 = geoms[vi][0], geoms[vi][1]
         dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", str(video), "-fps_mode", "passthrough",
-                                "-vf", f"crop={strip_w}:{h}:{x0}:{y0}",
+                                "-vf", f"crop={w}:{h}:{x0}:{y0},scale={hw}:{hh2}:flags=area",
                                 "-f", "rawvideo", "-pix_fmt", "gray", "-"], stdout=subprocess.PIPE)
-        n, run_idx, run = 0, None, []
+        n = 0
         while True:
-            buf = dec.stdout.read(strip_w * h)
-            if len(buf) < strip_w * h:
+            buf = dec.stdout.read(hw * hh2)
+            if len(buf) < hw * hh2:
                 break
-            idx = index(np.frombuffer(buf, np.uint8).reshape(h, strip_w))
-            if idx != run_idx:
-                if keep(run_idx, run, vi):
-                    best[run_idx] = (len(run), vi, run[len(run) // 2])
-                run_idx, run = idx, []
-            run.append(n)
+            img = np.frombuffer(buf, np.uint8).reshape(hh2, hw)
+            idx = half_index(img)
+            if idx is not None and idx < frames:
+                e, b = tiles(img)
+                copies.setdefault(idx, {}).setdefault(vi, []).append((n, e, b))
             n += 1
-        if keep(run_idx, run, vi):
-            best[run_idx] = (len(run), vi, run[len(run) // 2])
         dec.wait()
-        filled = set(best)
         total += n
+
+    def score(t):
+        return float(np.log(t).sum())
+
+    # Each index: the sharpest copy in the earliest recording that has it (later recordings fill gaps, as before).
+    best, alt, detail, broad, later = {}, {}, {}, {}, {}
+    for idx, by in copies.items():
+        first = min(by)
+        fn, t, bt = max(by[first], key=lambda c: score(c[1]))
+        best[idx] = (len(by[first]), first, fn)
+        detail[idx], broad[idx] = t, bt.astype(np.float32)
+        for vi in sorted(by):
+            if vi != first:
+                ofn, ot, ob = max(by[vi], key=lambda c: score(c[1]))
+                later.setdefault(idx, []).append((vi, ofn, ot, ob))
+                if first == 0:
+                    alt.setdefault(vi, {})[idx] = ofn
+
+    # Soft frames: a tile with much less detail than the frames either side, which agree with each other, while its
+    # broad picture is unchanged (a texture caught at low resolution, not motion).
+    def is_soft(i):
+        prev = [detail[j] for j in (i - 2, i - 1) if j in detail]
+        nxt = [detail[j] for j in (i + 1, i + 2) if j in detail]
+        if not prev or not nxt or i - 1 not in broad or i + 1 not in broad:
+            return False
+        p_, n_ = np.mean(prev, axis=0), np.mean(nxt, axis=0)
+        rp, rn, agree = detail[i] / p_, detail[i] / n_, p_ / n_
+        bad = (rp < 0.72) & (rn < 0.72) & (agree > 0.8) & (agree < 1.25) & (np.minimum(p_, n_) > 1.0)
+        if not bad.any():
+            return False
+        moved = np.abs(broad[i] - (broad[i - 1] + broad[i + 1]) / 2).reshape(TY, 6, TX, 6).mean(axis=(1, 3)).ravel()
+        return bool((bad & (moved < 4)).any())
+
+    soft = []
+    for i in sorted(detail):
+        if not is_soft(i):
+            continue
+        # a re-filmed copy that isn't soft replaces it
+        for vi, ofn, ot, ob in later.get(i, []):
+            keep_t, keep_b = detail[i], broad[i]
+            detail[i], broad[i] = ot, ob.astype(np.float32)
+            if not is_soft(i):
+                best[i] = (1, vi, ofn)
+                break
+            detail[i], broad[i] = keep_t, keep_b
+        else:
+            soft.append(i)
 
     # a layer pass ("b" views of split shots) films only its own range
     expected = range(take.get("first", 0), take.get("last", frames - 1) + 1) if take.get("layer") else range(frames)
@@ -310,7 +366,9 @@ def film(take_path, videos, out, crf):
     print(f"{out}: {frames} frames from {total} recorded in {len(videos)} recording(s); repeated {len(missing)}")
     if missing:
         print(f"  re-film: {ranges(missing)}  (Scene.film with {{first = A, last = B}}, then pass all recordings)")
-    return 0 if not missing else 2
+    if soft:
+        print(f"  soft (texture caught streaming): {ranges(soft)}  re-film them the same way; the sharper copy wins")
+    return 0 if not missing and not soft else 2
 
 
 def split(take_path, main, layer, out):

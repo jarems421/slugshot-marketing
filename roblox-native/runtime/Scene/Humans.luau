@@ -999,6 +999,12 @@ local function plans(actor: any, where: any): { any }
 end
 
 -- The n-th slug shot's flying slug at t (for the slug_shot camera), or nil.
+-- The n-th slug shot's plan (launch time t, flight, species, from, to) and its twirl length (Shots.spin).
+function Humans.shotPlan(actor: any, n: number, where: any): (any?, number?)
+	local list = if actor.human and actor.blaster then plans(actor, where) else {}
+	return list[n], if list[n] then Shots.spin(list[n]) else nil
+end
+
 function Humans.shotFrame(actor: any, n: number, t: number, where: any): CFrame?
 	local list = if actor.human and actor.blaster then plans(actor, where) else {}
 	return if list[n] then Shots.frameAt(list[n], t) else nil

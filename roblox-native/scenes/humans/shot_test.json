@@ -1,0 +1,177 @@
+{
+ "id": "shot_test",
+ "note": "engine test: one continuous ride camera on a slug shot (zoom out as it transforms), the game's own impact and burrow, Floppy's tumble shot, and a push-in that used to blur",
+ "truth": {
+  "mode": "staged_fiction",
+  "gameplay_mechanics": "fictional",
+  "match_outcome": "n/a",
+  "label": "Fictional story"
+ },
+ "format": "vertical",
+ "capture": {
+  "ui": "hidden",
+  "sample": 0.5
+ },
+ "set": {
+  "kind": "place",
+  "origin": [
+   19,
+   0,
+   20
+  ],
+  "yaw": 0
+ },
+ "marks": {
+  "juno": [
+   7.2,
+   0,
+   -3.8,
+   180
+  ],
+  "kai": [
+   -3.8,
+   0,
+   -2.2,
+   180
+  ],
+  "target": [
+   2,
+   0.4,
+   -24,
+   0
+  ],
+  "target_b": [
+   -8,
+   0.4,
+   -22,
+   0
+  ]
+ },
+ "actors": {
+  "juno": {
+   "kind": "human",
+   "human": "juno",
+   "mark": "juno",
+   "blaster": false,
+   "auto_look": false,
+   "loaded": "Inferno",
+   "face": "target"
+  },
+  "kai": {
+   "kind": "human",
+   "human": "kai",
+   "mark": "kai",
+   "blaster": false,
+   "auto_look": false,
+   "loaded": "Floppy",
+   "face": "target_b"
+  }
+ },
+ "slowmo": [
+  {
+   "from": 1.97,
+   "until": 2.32,
+   "rate": 0.2,
+   "ramp": 0.06
+  }
+ ],
+ "timeline": [
+  {
+   "time": 0.2,
+   "actor": "juno",
+   "action": "equip"
+  },
+  {
+   "time": 0.6,
+   "actor": "juno",
+   "action": "express",
+   "set": {
+    "smirk": 1,
+    "squint": 0.4,
+    "smile": 0.4
+   },
+   "ease": 0.25
+  },
+  {
+   "time": 0.8,
+   "actor": "juno",
+   "action": "aim",
+   "target": "target",
+   "duration": 2.2
+  },
+  {
+   "time": 2.0,
+   "actor": "juno",
+   "action": "shoot",
+   "slug": "Inferno",
+   "target": "target",
+   "speed": 24
+  },
+  {
+   "time": 6.0,
+   "actor": "kai",
+   "action": "equip"
+  },
+  {
+   "time": 6.3,
+   "actor": "kai",
+   "action": "aim",
+   "target": "target_b",
+   "duration": 2.0
+  },
+  {
+   "time": 7.2,
+   "actor": "kai",
+   "action": "shoot",
+   "slug": "Floppy",
+   "target": "target_b",
+   "speed": 18
+  }
+ ],
+ "shots": [
+  {
+   "preset": "close_up",
+   "target": "juno",
+   "duration": 1.95,
+   "size": 1.3,
+   "side": 35,
+   "fov": 32,
+   "headroom": 0.08
+  },
+  {
+   "preset": "slug_cam",
+   "target": "juno",
+   "mode": "ride",
+   "duration": 3.6,
+   "angle": 40,
+   "near": 2.6,
+   "height": 1.6,
+   "fov": 45,
+   "lead": 1.5,
+   "land": 4.5
+  },
+  {
+   "preset": "push_in",
+   "target": "kai",
+   "duration": 1.6,
+   "from_size": 1.6,
+   "size": 1.0,
+   "side": 12,
+   "eye": 0.0,
+   "headroom": 0.12,
+   "fov": 34
+  },
+  {
+   "preset": "slug_cam",
+   "target": "kai",
+   "mode": "ride",
+   "duration": 3.4,
+   "angle": 55,
+   "near": 4.5,
+   "height": 1.2,
+   "fov": 45,
+   "lead": 1,
+   "land": 3.5
+  }
+ ]
+}

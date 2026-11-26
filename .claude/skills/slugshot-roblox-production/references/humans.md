@@ -79,3 +79,20 @@ built into the marketing place only). Demo: `roblox-native/scenes/humans/humans_
 - Slug hops: a damped spring (crouch, push-off stretch, airborne stretch, an impact splat on landing, head on a looser
   spring behind). `move_to` with `gait: "hop"` (`hops`, `hop_time`, `gap`, `height`) moves only while airborne.
 - Hair check: fluffy cuts with long fringes hide the painted eyes; test in a still at close-up size before filming.
+
+## Owner review of V06 (2026-11-26) and what changed
+- **Blur was Roblox's frame-rate manager.** Takes render at ~15 fps, so its automatic mode lowered texture resolution
+  mid-take: clothing went blocky for a few frames ("randomly everything goes blurry"). Scene.film now turns it off (and
+  fixes mesh detail) for the take, and renders a few unstamped frames after every cut so the new view's textures load.
+  Same frames re-filmed: V06 blocky, V07 sharp. take.py also keeps the sharpest held copy of each frame and lists
+  frames whose detail dips (advisory; fast motion can trip it).
+- **Split screen is for duels only** (two shooters firing at each other). A single slug shot is one unbroken camera:
+  `slug_cam` `mode: "ride"` close while the slug twirls, easing out as the glow hides the swap so the transformed form
+  fits the 9:16 frame (distance sized from the form), then in again for the landing.
+- **The game's own impact and burrow are reused, not re-created.** The marketing build patches ImpactFx, FloppyRecovery
+  and SlugTransformation to take their clock, Debris, tweens and randomness from `SlugshotMarketing.FilmTime` (straight
+  through to the real services outside a take), so Shots.luau calls the game's contact sweep, the form's "hit" ending and
+  the fall/wriggle/hop/burrow recovery on scene time. The ride camera follows the slug's body after the hit and stays
+  above the floor while it burrows. Test: `scenes/humans/shot_test.json`.
+- **In My World structure** is narrator-led (~210 wpm, narration from frame one, one quick 1-2 s illustrative shot per
+  sentence), not character dialogue scenes. The humans demo's script was a placeholder; judge production on a real script.

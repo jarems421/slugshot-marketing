@@ -13,10 +13,10 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shots = {}
+local FilmTime = require(ReplicatedStorage:WaitForChild("SlugshotMarketing"):WaitForChild("FilmTime"))
 
 local STEP = 1 / 480
 local SPEED = 42 -- studs per second of flight (the game's shots are faster; staged shots are slowed to read)
-local END_POP = 0.3
 
 local transformation = nil
 local function module()
@@ -31,13 +31,47 @@ local function module()
 	return transformation or nil
 end
 
-local function styleGlow(species: string): Color3
+local function client(name: string): any?
 	local combat = Players.LocalPlayer.PlayerScripts:FindFirstChild("Combat")
-	local styles = combat and combat:FindFirstChild("TransformationStyles")
+	local m = combat and combat:FindFirstChild(name)
+	local ok, v = pcall(function()
+		return require(m)
+	end)
+	return if ok then v else nil
+end
+
+local recoveryModule = nil
+local function recovery(): any
+	recoveryModule = recoveryModule or client("FloppyRecovery")
+	return recoveryModule
+end
+
+local function styleGlow(species: string): Color3
+	local styles = client("TransformationStyles")
 	local ok, s = pcall(function()
-		return require(styles).of(species).glow
+		return styles.of(species).glow
 	end)
 	return if ok and typeof(s) == "Color3" then s else Color3.fromRGB(255, 226, 150)
+end
+
+-- The game's landing (SlugVisuals.land): ImpactFx's contact sweep and chips in the slug's style, the transformed form's
+-- "hit" ending, then FloppyRecovery: the base slug falls, wriggles, hops and burrows into the floor (owner,
+-- 2026-11-26: "the same impact mechanics ... the same digging mechanics", not a re-creation).
+local function contactCue(s: any, at: Vector3, normal: Vector3)
+	local fx, styles = client("ImpactFx"), client("TransformationStyles")
+	if not (fx and styles) then
+		return
+	end
+	local style = styles.of(s.species)
+	local impact = style.impact or styles.DefaultImpact
+	fx.contact(at, normal, s.way * s.speed, impact.burst, style.glow, impact.debris, nil)
+end
+
+local function slugSize(species: string): number
+	local ok, size = pcall(function()
+		return require(ReplicatedStorage:WaitForChild("Combat")).Slugs[species].Size
+	end)
+	return if ok and type(size) == "number" then size else 1
 end
 
 -- A shot's plan: launch time, path and flight time. `muzzle(t)` gives the blaster muzzle's world position.
@@ -47,7 +81,7 @@ function Shots.plan(b: any, muzzleAt: (number) -> Vector3, where: any): any
 	local length = (to - from).Magnitude
 	return {
 		t = b.time, species = b.slug, from = from, to = to, way = (to - from).Unit,
-		flight = math.max(length / (b.speed or SPEED), 0.25), arc = b.arc or 0.06 * length,
+		flight = math.max(length / (b.speed or SPEED), 0.25), arc = b.arc or 0.06 * length, speed = b.speed or SPEED,
 		glow = styleGlow(b.slug), live = nil,
 	}
 end
@@ -72,12 +106,14 @@ local function build(s: any, parent: Instance)
 	end
 	base:PivotTo(CFrame.new(s.from))
 	base.Parent = parent
-	local live = { base = base, clock = -1, state = nil, ended = false, popped = nil, baseScale = base:GetScale() }
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { parent, workspace.CurrentCamera }
+	local live = { base = base, clock = -1, state = nil, params = params, landed = false, ending = false, recovery = nil,
+		gone = false }
+	FilmTime.reseed(math.floor(s.t * 1000) % 100003 + 1) -- the same chips and dirt in every pass
 	local T = module()
 	if T and s.species ~= "Floppy" then
-		local params = RaycastParams.new()
-		params.FilterType = Enum.RaycastFilterType.Exclude
-		params.FilterDescendantsInstances = { parent }
 		local launch = { id = 0, slugId = s.species, origin = s.from, velocity = s.way * (s.speed or SPEED), route = nil }
 		live.state = T.new(s.species, base, launch, params, parent)
 	end
@@ -95,6 +131,7 @@ end
 
 local function destroy(s: any)
 	local live = s.live
+	s.lastLive = nil
 	if not live then
 		return
 	end
@@ -109,6 +146,7 @@ end
 -- One step of the shot at tau seconds after launch (called in order, every STEP).
 local function advance(s: any, tau: number)
 	local live = s.live
+	workspace:SetAttribute("FilmNow", s.t + tau) -- the game's effects started in this step are born now (FilmTime)
 	local T = module()
 	live.light.Brightness = 2.5 * math.max(0, 1 - tau / 0.25)
 	local filmScale = workspace:GetAttribute("FilmTimeScale") or 1
@@ -125,31 +163,42 @@ local function advance(s: any, tau: number)
 		end
 		return
 	end
-	if live.state and not live.ended then
-		if not live.state.ending then
-			local contact = T.contact(live.state, s.to, s.way)
-			if not T.endWith(live.state, "hit", contact, -s.way * 0.8 + Vector3.yAxis * 0.5) then
-				live.ended = true
-			end
-		end
-		if live.state.ending and not live.ended then
-			local done = T.stepEnd(live.state, STEP)
-			if done then
-				live.ended = true
-				T.finish(live.state, s.to, s.way)
-			end
-		end
-	elseif not live.state then
-		live.ended = true
+	if live.gone then
+		return
 	end
-	if live.ended then
-		live.popped = live.popped or tau
-		local k = math.clamp(1 - (tau - live.popped) / END_POP, 0.001, 1)
-		live.base:ScaleTo(live.baseScale * k)
-		live.base:PivotTo(CFrame.new(s.to - s.way * 0.6 + Vector3.new(0, 0.4 * (1 - k), 0)))
-		if k <= 0.001 then
-			live.base.Parent = nil
+	local now = s.t + tau
+	if not live.landed then
+		live.landed = true
+		local hit = workspace:Raycast(s.to - s.way * 1.5 + Vector3.yAxis * 0.5, s.way * 3 - Vector3.yAxis * 1.5, live.params)
+		live.normal = if hit then hit.Normal else Vector3.yAxis
+		local at = if hit then hit.Position else s.to
+		live.ground = at.Y
+		contactCue(s, at, live.normal)
+		if live.state and live.state.swapped then
+			local bounce = T.bounce(live.state, at, live.normal, s.way * s.speed, live.params)
+			if T.endWith(live.state, "hit", T.contact(live.state, at, s.way * s.speed), bounce) then
+				live.ending = true
+				return
+			end
 		end
+		if live.state then
+			T.finish(live.state, at, live.normal)
+		end
+		live.recovery = recovery().new(live.base, slugSize(s.species), at, live.normal, s.way * s.speed, live.params, nil,
+			now)
+	end
+	if live.ending then
+		local done, position, recoil = T.stepEnd(live.state, STEP)
+		if done then
+			live.ending = false
+			live.recovery = recovery().new(live.base, slugSize(s.species), position, Vector3.zero, recoil or Vector3.zero,
+				live.params, nil, now, recoil ~= nil)
+		end
+		return
+	end
+	if live.recovery and recovery().step(live.recovery, now) then
+		live.gone = true
+		live.base.Parent = nil
 	end
 end
 
@@ -191,9 +240,64 @@ function Shots.pose(list: { any }, t: number, parent: Instance)
 	end
 end
 
+-- When the slug's twirl ends and its form takes over (the game's Transformation.Spin), seconds after launch; nil for
+-- Floppy, who never transforms.
+function Shots.spin(s: any): number?
+	if s.species == "Floppy" then
+		return nil
+	end
+	local ok, spin = pcall(function()
+		return require(ReplicatedStorage:WaitForChild("Combat")).Slugs[s.species].Transformation.Spin
+	end)
+	return if ok and type(spin) == "number" then spin else nil
+end
+
 -- Where the slug is at t on its way (a camera follows it); before launch, at the muzzle facing the target.
+-- After the hit the game throws the form back off the surface and the base slug falls, wriggles and burrows wherever
+-- it lands, so a camera following the shot follows the slug itself from then on (owner, 2026-11-26: the V-test shot
+-- stared at empty floor), easing over from the path's end.
+local function liveAt(s: any): Vector3?
+	local live = s.live
+	if not live or live.gone then
+		return nil
+	end
+	local form = live.state and live.state.form
+	for _, m in { form, live.base } do
+		if m and m.Parent then
+			-- the body itself: a model's pivot can sit well away from where its mesh draws
+			local body, size = nil, 0
+			for _, d in m:GetDescendants() do
+				if d:IsA("BasePart") and d.Transparency < 1 and d.Size.Magnitude > size then
+					body, size = d, d.Size.Magnitude
+				end
+			end
+			local p = if body then body.Position else m:GetPivot().Position
+			if p.Y > -1000 then -- parked models sit far below the world
+				-- a burrowing slug goes into the floor; the camera stays above it, on the dirt
+				return if live.ground then Vector3.new(p.X, math.max(p.Y, live.ground + 0.3), p.Z) else p
+			end
+		end
+	end
+	return nil
+end
+
 function Shots.frameAt(s: any, t: number): CFrame
-	return pathAt(s, math.clamp((t - s.t) / s.flight, 0, 1))
+	local tau = t - s.t
+	local frame = pathAt(s, math.clamp(tau / s.flight, 0, 1))
+	if tau <= s.flight or not s.live or math.abs(s.live.clock - tau) > 0.05 then
+		return frame
+	end
+	local p = liveAt(s)
+	if p then
+		s.lastLive = p
+	end
+	p = p or s.lastLive
+	if not p then
+		return frame
+	end
+	local u = math.clamp((tau - s.flight) / 0.3, 0, 1)
+	u = u * u * (3 - 2 * u)
+	return frame.Rotation + frame.Position:Lerp(p, u)
 end
 
 function Shots.clear(list: { any })

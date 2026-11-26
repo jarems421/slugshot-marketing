@@ -47,6 +47,33 @@ HUB_CLOCK = [
 ]
 
 
+# The game's shot effects (impact sweep and chips, Floppy-style fall/wriggle/hop/burrow recovery, the transformation's
+# glow fade) run on os.clock, Debris and TweenService. Takes are frame-stepped and slowed, so in the marketing copy they
+# take their clock, lifetimes, tweens and randomness from SlugshotMarketing.FilmTime, which passes straight through to
+# the real services outside a take (owner, 2026-11-26: reuse the game's impact and burrow in staged shots).
+FILM_TIME_MODULES = ["ImpactFx", "FloppyRecovery", "SlugTransformation"]
+FILM_TIME_HEADER = ('local FilmTime = (require :: any)(game:GetService("ReplicatedStorage"):WaitForChild("SlugshotMarketing")'
+                    ':WaitForChild("FilmTime")) -- slugshot-marketing: takes run these effects on scene time\n')
+FILM_TIME_EDITS = [("os.clock()", "FilmTime.now()"), ("Debris:AddItem(", "FilmTime.addItem("),
+                   ("TweenService:Create(", "FilmTime.create("), ("Random.new()", "FilmTime.random")]
+
+
+def film_time(text):
+    for name in FILM_TIME_MODULES:
+        head = f'<string name="Name">{name}</string>'
+        if text.count(head) != 1:
+            raise SystemExit(f"expected one {name} module, found {text.count(head)}")
+        start = text.index("<![CDATA[", text.index(head)) + len("<![CDATA[")
+        end = text.index("]]>", start)
+        src = text[start:end]
+        first = src.index("\n") + 1  # after --!strict
+        body = src[first:]
+        for old, new in FILM_TIME_EDITS:
+            body = body.replace(old, new)
+        text = text[:start] + src[:first] + FILM_TIME_HEADER + body + text[end:]
+    return text
+
+
 def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
@@ -117,6 +144,7 @@ def runtime_xml():
     # Cast: the RemoteFunction human actors use to ask the server (runtime/CastServer.server.luau) for rigs
     cast = f'<Item class="RemoteFunction" referent="{Refs.next()}"><Properties><string name="Name">Cast</string></Properties></Item>\n'
     body = (package(runtime / "vendor" / "Reel", "Reel") + package(runtime / "Scene", "Scene")
+            + module("FilmTime", (runtime / "FilmTime.luau").read_text(encoding="utf-8"))
             + module("Library", f"return [==[{library}]==]") + folder("Scenes", scenes) + cast)
     return folder("SlugshotMarketing", body), [s["id"] for s in specs]
 
@@ -146,6 +174,7 @@ def main():
         if text.count(old) != 1:
             raise SystemExit(f"expected HubMotion's clock line once, found {text.count(old)}: {old.splitlines()[0].strip()}")
         text = text.replace(old, new)
+    text = film_time(text)
     # Repaired slug textures (the game's tools/slugs/repair_textures.py): {old image id: new id}, kept in an ignored
     # file, as the IDs are private. Applies until the game's own build carries the new IDs.
     swapped = 0
@@ -188,6 +217,7 @@ def main():
         "source": str(DEFAULT_SOURCE if not a.source else a.source), "source_sha256": sha256(snap),
         "game_commit": commit, "output_sha256": sha256(out),
         "patches": ["SettingsStore.connect -> MarketingIsolated (x2)", "HubMotion follows workspace.FilmClock during takes",
+                    f"film time (SlugshotMarketing.FilmTime) in {', '.join(FILM_TIME_MODULES)}",
                     f"repaired slug textures: {swapped} reference(s) swapped (studio/asset-overrides.json)",
                     "ServerStorage marker + provenance",
                     "ReplicatedStorage.SlugshotMarketing runtime (Reel 4b810e9, Scene, Library, Scenes, Cast)",

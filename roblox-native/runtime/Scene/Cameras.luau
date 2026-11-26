@@ -129,6 +129,10 @@ Cameras.presets = {
 	--                 slowmo segment for a bullet-time sweep.
 	--   mode "pan":   locked off beside the path, `along` (0 muzzle .. 1 target), `distance` to its `side` (1 right,
 	--                 -1 left), and turns to follow the slug.
+	--   mode "ride":  the default single-shot cutscene. Rides beside the slug at `angle` degrees (0 = its right side,
+	--                 90 = ahead), `near` studs away while it twirls, easing out to `distance` from `zoom_at` seconds
+	--                 after launch (default: 0.7 of the slug's twirl, as the glow hides the swap) over `zoom_for`, then
+	--                 holds through the game's impact and burrow. Split screen is for duels only (owner, 2026-11-26).
 	slug_cam = function(s, ctx)
 		local k = s.shot or 1
 		local function slugAt(lt)
@@ -151,6 +155,43 @@ Cameras.presets = {
 				local p = cf.Position
 				if fixed then
 					return CFrame.lookAt(fixed, p + way * (s.lead or 0)), fov, nil
+				end
+				if s.mode == "ride" then
+					-- One unbroken angle beside the slug (owner, 2026-11-26: no angle changes mid-shot): close while it
+					-- twirls, easing out as the glow hides the swap so the transformed form fits, then wide through the
+					-- hit and the burrow (the path stops at the target, so the camera settles there).
+					local plan, spin = ctx.shotPlan(s.target, k)
+					local tau = ctx.start + lt - (if plan then plan.t else ctx.start)
+					local zoomAt = s.zoom_at or (if spin then spin * 0.7 else math.huge)
+					local u = ease((tau - zoomAt) / (s.zoom_for or 0.35))
+					-- Wide enough for the transformed form in a 9:16 frame (its length across the narrow width), unless
+					-- `distance` says otherwise; after the hit it eases in to `land` so the fall and burrow read.
+					local far = s.distance
+					if not far then
+						local size = 0
+						local live = plan and plan.live
+						local form = live and live.state and live.state.form
+						if form and form.Parent then
+							local _, ext = form:GetBoundingBox()
+							size = math.max(ext.X, ext.Z)
+						end
+						local half = math.atan(math.tan(math.rad(fov) / 2) * 9 / 16)
+						far = math.max(7, size * 0.75 / math.tan(half) + 1)
+						s._far = math.max(s._far or 0, far)
+						far = s._far
+					end
+					local d = (s.near or 2.4) + (far - (s.near or 2.4)) * u
+					local lead = (s.lead or 0) * u
+					if plan and tau > plan.flight then
+						-- after the hit the slug bounces back and burrows where it lands: look at it, not ahead of it
+						lead *= 1 - ease((tau - plan.flight) / 0.25)
+						local k = ease((tau - plan.flight - 0.4) / 0.6)
+						d += ((s.land or 4) - d) * k
+					end
+					local angle = math.rad(s.angle or 35)
+					local dir = right * math.cos(angle) + way * math.sin(angle)
+					local at = p + dir * d + Vector3.new(0, up * (0.35 + 0.65 * u), 0)
+					return CFrame.lookAt(at, p + way * lead), fov, nil
 				end
 				local u = if s.duration > 0 then ease(lt / s.duration) else 0
 				local sweep = s.sweep or { 20, 70 }

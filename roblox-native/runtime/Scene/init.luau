@@ -24,6 +24,7 @@ local Actors = require(script.Actors)
 local Cameras = require(script.Cameras)
 local Canon = require(script.Canon)
 local Humans = require(script.Humans)
+local FilmTime = require(Root:WaitForChild("FilmTime"))
 
 local Scene = {}
 Scene.FPS = 30
@@ -266,6 +267,13 @@ function Scene.prepare(id: string, options: any?): any
 				local a = actors[n]
 				return if a and a.human then Humans.shotFrame(a, k or 1, tt, where) else nil
 			end,
+			shotPlan = function(n, k)
+				local a = actors[n]
+				if a and a.human then
+					return Humans.shotPlan(a, k or 1, where)
+				end
+				return nil, nil
+			end,
 			frame = function(n) return frameAt(n, start) end,
 			head = function(n) return headAt(n, start) end,
 			height = function(n) return actors[n] and actors[n].height or 5 end,
@@ -340,8 +348,15 @@ function Scene.prepare(id: string, options: any?): any
 	-- through workspace.FilmClock (a marketing patch to the game's HubMotion), so every pass and patch of a take
 	-- agrees. world.clock picks where in their cycle the take happens.
 	local worldClock = spec.world and spec.world.clock or 60
+	local lastT = -math.huge
 	local function frame(t: number): (CFrame, number, number)
 		workspace:SetAttribute("FilmClock", worldClock + t)
+		-- The game's effect modules run on this (FilmTime); going back in time drops what was born later.
+		if t < lastT then
+			FilmTime.rewind(t)
+		end
+		lastT = t
+		workspace:SetAttribute("FilmNow", t)
 		local speaker = Actors.speakerAt(dialogue, t)
 		for _, a in actors do
 			Actors.pose(a, t, where, speaker)
@@ -361,6 +376,8 @@ function Scene.prepare(id: string, options: any?): any
 		end
 		local cf, fov = shot.pose(lt)
 		cf = accents(t, cf)
+		workspace:SetAttribute("FilmNow", t)
+		FilmTime.step(t)
 		fov = fov or 50
 		local plain = cf
 		if portrait then
@@ -457,6 +474,8 @@ function Scene.prepare(id: string, options: any?): any
 		RunService:UnbindFromRenderStep("SlugshotSceneCamera")
 		workspace:SetAttribute("FilmClock", nil)
 		workspace:SetAttribute("FilmTimeScale", nil)
+		workspace:SetAttribute("FilmNow", nil)
+		FilmTime.clear()
 		if grove and groveParent and grove.Parent == nil then
 			grove.Parent = groveParent
 		end
@@ -594,10 +613,16 @@ function Scene.film(id: string, options: any?): any
 	-- one take lit the slugs differently and the decoded video flickered between them (owner, 2026-11-25:
 	-- shadows "jittering, cut"). Takes render at the top quality level and restore the owner's setting after.
 	-- (Settable when the take is started from Studio MCP; a game script can't, and then this is a no-op.)
-	local quality = nil
+	-- The frame-rate manager and distance-based mesh detail also change what is drawn while a take renders slowly:
+	-- frames came out softer at random, worst on close-ups (owner, 2026-11-26: "randomly everything goes blurry").
+	local quality, frm, meshDetail = nil, nil, nil
 	pcall(function()
 		quality = settings().Rendering.QualityLevel
 		settings().Rendering.QualityLevel = Enum.QualityLevel.Level21
+		frm = settings().Rendering.FrameRateManager
+		settings().Rendering.FrameRateManager = Enum.FramerateManagerMode.Off
+		meshDetail = settings().Rendering.MeshPartDetailLevel
+		settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level04
 	end)
 	local st = Scene.prepare(id, { portrait = opts.portrait ~= false, seed = opts.seed, layer = opts.layer })
 	local takeName = opts.take or `{st.spec.id}_{os.date("!%Y%m%dT%H%M%S")}`
@@ -710,6 +735,14 @@ function Scene.film(id: string, options: any?): any
 			if shot ~= lastShot then
 				table.insert(manifest.marks, { kind = "cut", shot = shot, elapsed = st.shots[shot].start, at = now() })
 				lastShot = shot
+				-- A new view's textures stream in over a few frames: clothing showed blocky for the first frames after
+				-- a cut (owner, 2026-11-26: "randomly everything goes blurry ... maybe when there's a cut"). Render it
+				-- unstamped (the decoder skips unstamped frames) until they have loaded.
+				squares[1].BackgroundColor3 = Color3.new(0, 0, 0)
+				for _ = 1, opts.settle or 24 do
+					RunService.RenderStepped:Wait()
+				end
+				squares[1].BackgroundColor3 = Color3.new(1, 1, 1)
 			end
 			if i % 15 == 0 then
 				sample(manifest, t, cf)
@@ -757,6 +790,8 @@ function Scene.film(id: string, options: any?): any
 	if quality then
 		pcall(function()
 			settings().Rendering.QualityLevel = quality
+			settings().Rendering.FrameRateManager = frm
+			settings().Rendering.MeshPartDetailLevel = meshDetail
 		end)
 	end
 	manifest.ended_ms = now()
