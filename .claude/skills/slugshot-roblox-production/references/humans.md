@@ -100,9 +100,10 @@ built into the marketing place only). Demo: `roblox-native/scenes/humans/humans_
 ## Lessons from pilot 01 (most_feared_slug, 2026-11-26; 43 shots, 95 s)
 - `slug_cam` follows the shooter's FIRST shot unless `shot: N` (1-based, in timeline order) says which one.
 - A slug held in the shooter's hand when a ride starts puts the camera inside it: end `hold`s before a shot and re-hold after.
+- Off-camera teleports go 1-2 frames BEFORE the cut, never on or after it: a shot is framed from where actors stand at its first frame (V02: a teleport 0.01 s late framed the arena shot on the hub).
 - A held slug eases back to its own ground mark when the hold ends; hand-offs between holders must sit exactly on a cut.
   A shot is framed at its start, so start a hold a few frames before the cut, never on it.
-- `face` targets must not form a cycle (A faces B faces C faces A): stack overflow. Face a shared mark instead.
+- `face` targets must not form a cycle (A faces B and B faces A, or A faces B faces C faces A): stack overflow (hit twice). Always face marks (where the other person stands), never actors.
 - `static_wide` with several targets came out blocked or black; `two_shot` and `over_shoulder` (back 2.6, offset 1.6) were reliable.
 - Rides: keep the flight lane clear of set dressing and bystanders (the plaza west of the duel lane is open; the east has posts).
   Cut a ride just after the hit; lingering lets it settle into a body or the floor.
@@ -111,3 +112,9 @@ built into the marketing place only). Demo: `roblox-native/scenes/humans/humans_
   then pick held frames by stability. Studio's PreloadAsync can hang while its TexturePack uploads 429; Scene.film now caps it at 45 s.
 - Throughput: first narrator-led 95 s video took about 2 h, mostly 6 rebuilds (about 5 min each, cavern build) and two film passes
   (hold 2 then hold 4, about 25 min) for 0 repeated frames.
+
+## Lessons from pilot 01 V02 (2026-11-26)
+- **Camera collision is on for every framed shot** (init.luau `unblock`): the camera slides toward its subject until no solid, visible part is in between, so wide shots stay wide where there's room and never go black inside rock. Rides and splits are exempt. `opts.no_unblock` turns it off for a test.
+- **Instant moves must finish a frame before the cut** they hide behind; scene.py now rejects late ones. This one mistake caused most of V02's black and empty shots (each was framed on the actor's old spot).
+- `two_shot` places its camera at a fixed side of the two actors with no regard for scenery, and takes only actors. Prefer `over_shoulder` or a wide `close_up` with a chosen `side`.
+- Matching stills to shots by counting held frames fails when a shot is black. Record checks with `ss roblox rec`, or check fewer shots per run in a known order.

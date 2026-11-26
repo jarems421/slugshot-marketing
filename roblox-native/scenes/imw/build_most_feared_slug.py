@@ -19,7 +19,10 @@ def cu(target, until, size=1.5, side=20, fov=34, headroom=0.1, **kw):
     shot("close_up", until, target=target, size=size, side=side, fov=fov, headroom=headroom, **kw)
 
 
-def tp(time, actor, mark):  # off-camera reposition, exactly on a cut
+def tp(time, actor, mark):  # off-camera reposition; must finish before the cut (scene.py checks it)
+    if isinstance(time, str) and "+" in time:
+        base, off = time.rsplit("+", 1)
+        time = f"{base}{float(off) - 0.08:+.3f}"
     b(time, actor, "move_to", mark=mark, duration=0.02)
 
 

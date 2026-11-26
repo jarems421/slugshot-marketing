@@ -68,11 +68,21 @@ def resolve_anchors(spec, dialogue):
     for f in spec.get("fx", []):
         if "at" in f:
             f["at"] = when(f["at"], f"fx {f.get('type')}")
-    start = 0.0
+    start, cuts = 0.0, []
     for i, sh in enumerate(spec.get("shots", []), 1):
         if "until" in sh:
             sh["duration"] = round(when(sh.pop("until"), f"shot {i}") - start, 3)
         start += float(sh.get("duration") or 0)
+        cuts.append(round(start, 3))
+    # An instant off-camera move must finish before the cut it hides behind: a shot is framed from where actors stand
+    # at its first frame (pilot 01 V02: moves 0.01 s late framed whole shots on the old spot, black or empty).
+    for b in spec.get("timeline", []):
+        if b.get("action") == "move_to" and float(b.get("duration") or 1) <= 0.1 and isinstance(b.get("time"), float):
+            end = b["time"] + float(b["duration"])
+            late = [c for c in cuts if b["time"] < c < end + 0.034]
+            if late:
+                errs.append(f"beat {b['time']} {b.get('actor')} move_to {b.get('mark')}: an instant move must finish at least one "
+                            f"frame before the cut at {late[0]} (start it earlier)")
     return errs
 
 

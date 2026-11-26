@@ -1,0 +1,26 @@
+{
+ "_about": "Pilot 01 V02 after the owner's review: bright narrator, hub + training arena, split-screen duel, every loss shown. Music only (owner: no SFX until they choose the sound language). Fiction: label on screen. Unnamed (reveal lock): no end card.",
+ "concept": "MostFearedSlug",
+ "hook_id": "Pilot01",
+ "format": "WORLD",
+ "label": "Fictional story",
+ "language": "en",
+ "dialogue": "out/dialogue/most-feared-slug-v02/warped/mfs2_v01/dialogue.json",
+ "music": "media/mfs_music_v02.wav",
+ "music_db": -6,
+ "emphasis": [
+  "Floppy",
+  "Inferno"
+ ],
+ "hook": "In my world, your opponent picks your slug",
+ "end_card": false,
+ "scenes": [
+  {
+   "kind": "video",
+   "src": "out/takes/mfs2_v01_split.mp4",
+   "seconds": 109.32,
+   "fit": "crop",
+   "volume": 0
+  }
+ ]
+}

@@ -354,6 +354,31 @@ function Scene.prepare(id: string, options: any?): any
 	-- through workspace.FilmClock (a marketing patch to the game's HubMotion), so every pass and patch of a take
 	-- agrees. world.clock picks where in their cycle the take happens.
 	local worldClock = spec.world and spec.world.clock or 60
+	-- Camera collision (owner, 2026-11-26: "always so packed in tight"): wide shots in the cavern and the arena kept
+	-- ending up inside rock and cover blocks (black frames). Like a game camera, slide the camera along its line toward
+	-- the subject until nothing solid is in between, keeping its direction. Invisible and non-colliding parts don't count.
+	local function unblock(cf: CFrame, aim: Vector3): CFrame
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		local skip = { stage, character }
+		local from, to = aim, cf.Position
+		for _ = 1, 6 do
+			params.FilterDescendantsInstances = skip
+			local hit = workspace:Raycast(from, to - from, params)
+			if not hit then
+				return cf
+			end
+			local part = hit.Instance
+			if part:IsA("BasePart") and (part.Transparency > 0.9 or not part.CanCollide) then
+				table.insert(skip, part)
+			else
+				local toward = (aim - hit.Position)
+				local pulled = hit.Position + toward.Unit * math.min(0.8, toward.Magnitude * 0.5)
+				return CFrame.new(pulled) * cf.Rotation
+			end
+		end
+		return cf
+	end
 	local lastT = -math.huge
 	local function frame(t: number): (CFrame, number, number)
 		workspace:SetAttribute("FilmClock", worldClock + t)
@@ -381,6 +406,9 @@ function Scene.prepare(id: string, options: any?): any
 			lt = math.clamp((warp.outAt(t) - a) / math.max(b - a, 1e-6), 0, 1) * shot.duration
 		end
 		local cf, fov = shot.pose(lt)
+		if shot.subject and not opts.no_unblock then
+			cf = unblock(cf, where(shot.subject, t))
+		end
 		cf = accents(t, cf)
 		workspace:SetAttribute("FilmNow", t)
 		FilmTime.step(t)

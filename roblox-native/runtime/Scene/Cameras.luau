@@ -229,6 +229,9 @@ function Cameras.build(shotSpec: any, ctx: any, start: number)
 		duration = shotSpec.duration,
 		start = start,
 		clock = shotSpec.clock, -- "output": moves at the video's pace through slow motion
+		-- what the shot looks at: the camera keeps a clear line to it (init.luau `unblock`); rides and splits have none
+		subject = if shotSpec.preset == "slug_cam" or shotSpec.preset == "slug_shot" then nil
+			else shotSpec.target or (shotSpec.targets and shotSpec.targets[1]),
 		pose = function(t: number)
 			if not inner then
 				inner = preset(shotSpec, ctx.at(start))
