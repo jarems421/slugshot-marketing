@@ -1,4 +1,4 @@
-# Research data collection (Stage 4.4)
+# Research data collection
 
 Built and tested 2026-11-24. This is the reference for the research collectors: what each one collects, the exact commands, the file schemas, what may go to ChatGPT, and what is still blocked. The decisions and evidence behind it are in [research-data-audit.md](research-data-audit.md). The YouTube rules are in [youtube-api-policy.md](youtube-api-policy.md).
 
@@ -19,6 +19,7 @@ Built and tested 2026-11-24. This is the reference for the research collectors: 
 | Twitch Helix | `ss twitch` | clips (views, created time, broadcaster language) and live streams for Roblox or any category; broadcaster watchlist; repeat observations | broadcaster's stream-language setting | app credentials in `.env`; owner read the terms (24 h retention) | **Live-validated** |
 | Roblox experience stats | `ss rbx` | current players, visits, favourites, votes, created/updated for up to 20 experiences | none | none (legacy API) | **Live-validated, experimental** |
 | Public observations (TikTok, Instagram, Creative Center, vidIQ, TinyFish, manual) | `ss observe` | your or ChatGPT's observed values, validated, deduplicated by scope, with provenance; Creative Center link list and copy-paste parser | whatever the source showed (region filter, period, category) | none | **Tested** (fixtures and the 24 Nov Creative Center figures) |
+| TikTok through Apify | [Genre workflow](../research/tiktok-genre/README.md) | public-post research | captured in run receipts | Apify free credit and explicit run caps | live-validated 26 November 2026 |
 | TikTok oEmbed | `ss observe import --oembed` | confirms a TikTok post exists and its ID matches. Since 2026-11-24 it returns **no author, title or stats** | none | none | **Live-validated** (limited use) |
 | TikTok Discovery API | not built | see §7 | country filter | **requires a registered company**; see §7 | **Blocked (eligibility)** |
 | Instagram Business Discovery | not built | competitor Business/Creator account counts incl. Reel `view_count` | none | needs a Slugshot Instagram professional account | **Deferred** |
@@ -238,7 +239,7 @@ Metric columns: `rank, rank_change, views, likes, comments, shares, saves, posts
 ### Creative Center: guided session (the least the owner has to do)
 
 What was investigated (2026-11-24):
-- **Automated access:** not permitted (TikTok's commercial terms) and not technically available here: no browser-control tool (Claude in Chrome, built-in browser, computer use) is connected in this VS Code session.
+- **Access:** a person reads Creative Center in the browser. The command processes only the copied text.
 - **Exports:** none seen on the page.
 - **TinyFish (ChatGPT):** reached the US 7-day table, but detailed analytics needed a login.
 
@@ -252,7 +253,7 @@ Clipboard text that doesn't parse as a hashtag list is ignored and not stored. T
 
 ### Creative Center: making the manual route quick
 
-TikTok's terms rule out automated collection (§7), so the tools speed up the human steps instead. Nothing here fetches TikTok pages.
+A person reads Creative Center. The tools open pages and parse copied text.
 
 ```powershell
 .\ss observe cc-links --periods 7,30 --open          # opens the hashtag page for each market and period; writes a session list
@@ -291,7 +292,7 @@ Rule of thumb: ChatGPT can keep **lessons, concepts and source references** perm
 
 ## 7. TikTok: findings (2026-11-24)
 
-**Bottom line:** no legitimate, free, bulk source of TikTok trend or post statistics is open to us now. The Discovery API would be the best fit, but TikTok only onboards companies. The practical setup is: Creative Center and public pages viewed by a person (or by ChatGPT's TinyFish at the owner's discretion), recorded with `ss observe import`; vidIQ for selected concept and sound work; and own-account analytics after launch.
+We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center. Use `ss observe import` for observed values and vidIQ only within the owner's agreed budget.
 
 ### Discovery API (TikTok API for Business, Organic API)
 
@@ -323,17 +324,17 @@ Read from TikTok's own documentation ([overview](https://business-api.tiktok.com
 
 | Product | Research operations | Verdict |
 |---|---|---|
-| **Creative Center** (ads.tiktok.com/creative) | trending hashtags, songs, creators and videos; regional filters (US and others), 7/30/120 days, industry filters incl. Games; detailed analytics need a login; no export seen | **Use manually, with helpers:** `ss observe cc-links` opens every market/period page, and `ss observe cc-paste` turns copied page text into a checked CSV (§5). Automated collection is **not recommended**: TikTok's commercial terms bar "use automated scripts to collect information from or otherwise interact with the TikTok Commercial Technology" ([Commercial Terms of Service](https://ads.tiktok.com/i18n/official/policy/commercial-terms-of-service); clause text via a September 2026 third-party capture, so confirm in a browser). Browser automation (Claude in Chrome, Playwright MCP, Chrome DevTools MCP) driving Creative Center would be that kind of automated collection, so **nothing was installed**. A person reading the page, or ChatGPT/TinyFish reading a single page at the owner's direction, is a judgement for the owner. Don't build scheduled or bulk browser extraction |
+| **Creative Center** | dated trends, with market, period and category filters | **Human-read.** Use the links, paste parser or guided session in ?5. |
 | **Creator Search Insights** (in the TikTok app / TikTok Studio) | search topics viewers want, with "content gap" labels, for logged-in creators | **Manual** via a Slugshot TikTok account; record with `--source creator_search_insights` (P2) |
 | **TikTok One** (creator marketplace) | creator discovery and audience data for brands running creator campaigns | **Deferred**: aimed at paid creator campaigns; terms bar automated collection |
 | **TikTok for Business MCP server** | about 400 tools for ad campaigns, reporting, audiences and creatives ([help page](https://ads.tiktok.com/resources/help/article/about-tiktok-for-business-mcp-server?lang=en)) | **Reject for research**: ads management only, no organic trend tools |
 | TikTok "Social"/content MCP | no official one found | n/a |
-| Display API / Login Kit | our own account's videos and stats after OAuth | **Later**, for Slugshot's own TikTok |
+| Display API / Login Kit | our own accounts' videos and stats after OAuth | live for authorised accounts in the [dashboard](dashboard/README.md) |
 | Research API | public videos and accounts | **Ineligible**: academic/non-profit only, "independent of commercial interests" |
 | Commercial Content API | ads library (EU) | **Reject**: ads, not organic trends |
 | oEmbed | post exists + ID (no author/title/stats since this test) | **Optional check** in `ss observe` |
 
-**Compared with ChatGPT's TinyFish.** TinyFish already reads single public pages for ChatGPT. A local browser integration would duplicate that and run into the same terms clause. Recommendation: keep TinyFish for one-off page reads you direct, keep vidIQ for selected TikTok concept and sound queries (credits only with owner approval), and send all of it through `ss observe import` so it gets provenance, dates and duplicate checks.
+Keep the observation source and collection method on imported values so their dates, scope and provenance survive in the bundle.
 
 ## 8. Google Trends API (alpha): if access is granted
 

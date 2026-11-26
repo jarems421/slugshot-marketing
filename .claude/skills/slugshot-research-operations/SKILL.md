@@ -44,13 +44,13 @@ Anything that asks what the data *means* goes to the `slugshot-research-analysis
 
 ## Creative Center (core source; the owner's browser does the access)
 
-There's no permitted automated access: TikTok's commercial terms bar automated scripts collecting from its commercial tools, and no browser-control tool is connected in VS Code sessions. So keep the owner's part to one grouped action:
+We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center. Use the guided session to capture what the person copies.
 
 1. Start the guided session yourself, in the background: `.\ss observe cc-session --regions US,GB,MX,ES,AR,CO,CL --periods 7 --category Games` (add `30` to periods if asked).
 2. Ask the owner, once: "Creative Center is opening in your browser. On each page: pick Games if it isn't selected, scroll once, press Ctrl+A then Ctrl+C. I'll handle the rest." If a login wall appears, ask them to sign in once in that browser.
 3. The session watches the clipboard, ignores anything that isn't a hashtag list, saves the copied text to the inbox, parses and imports it (scope, URL and time filled in), opens the next page, and prints a summary. Skipped pages are reported, not retried endlessly.
 4. Check the parsed previews look sane (ranks increasing, values like 24.5K / 60.1M). If the real page layout parses badly, fix `parse_cc_text` in `scripts/observe.py` against the saved `.txt`, then re-import with `ss observe cc-paste <file> --region .. --period .. --import`.
-5. If ChatGPT/TinyFish already collected Creative Center rows, import their table directly with `--source creative_center --collected-via tinyfish_via_chatgpt`.
+5. For human-read rows already supplied in a table, import them with `--source creative_center`.
 
 ## Handling problems (keep going; report at the end)
 

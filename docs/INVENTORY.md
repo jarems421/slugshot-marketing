@@ -1,6 +1,6 @@
 # Inventory and capability status
 
-Last updated 2026-11-25 (production quality pass: docs/production-quality.md). Infrastructure phase complete; production work is in [production-checklist.md](production-checklist.md). Command details: [COMMANDS.md](COMMANDS.md).
+Last updated 2026-11-26 (production quality pass: docs/production-quality.md). Infrastructure phase complete; production work is in [production-checklist.md](production-checklist.md). Command details: [COMMANDS.md](COMMANDS.md).
 
 ## Software
 
@@ -40,7 +40,7 @@ Last updated 2026-11-25 (production quality pass: docs/production-quality.md). I
 | `remotion-best-practices` | project skill | `.claude/skills/remotion-best-practices/` | official Remotion guidance, Markdown only (see `SOURCE.txt`) |
 | `slugshot-roblox-production` | project skill (ours) | `.claude/skills/slugshot-roblox-production/` | Roblox-native filming: truth modes, canon, scene specs, Studio safety, capture and hand-off into `ss` |
 | `slugshot-research-analysis` | project skill (ours) | `.claude/skills/slugshot-research-analysis/` | evidence-led analysis: intake, statistics, trend dimensions, outcome-blind coding, evidence ledger, literature verification routing |
-| `verifying-bibliography`, `surveying-literature` (+ `_shared/scholarly`) | project skills (upstream, MIT) | `.claude/skills/` | claude-skills-research 9d990c1, path-patched to project-local; offline tests 205/207 (2 Windows-only); live DOI check OK |
+| `verifying-bibliography`, `surveying-literature` (+ `_shared/scholarly`) | project skills (upstream, MIT) | `.claude/skills/` | claude-skills-research 9d990c1, path-patched to project-local; offline tests 206/207 (one POSIX-path assertion fails on Windows); live DOI check OK |
 | `synthesis-fact-checking` | project skill (upstream, CC0) | `.claude/skills/` | synthesis-skills 62a0a54, Markdown only |
 | `hypothesis-generation` | project skill (upstream, MIT) | `.claude/skills/` | K-Dense scientific-agent-skills c21d13b, stdlib CLIs, no network |
 | `slugshot-research-operations` | project skill (ours) | `.claude/skills/slugshot-research-operations/` | runs research collection from a short instruction: intents, brief execution, Creative Center session, error handling, bundle and report, approval boundaries |
@@ -56,7 +56,7 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 
 | Capability | Command | Tested | Human approval | Waits on footage/channel |
 |---|---|---|---|---|
-| Tool check / smoke test | `ss doctor`, `ss smoke` | yes (13/13) | n/a | n/a |
+| Tool check / smoke test | `ss doctor`, `ss smoke` | 13 toolkit, 10 research and 7 dashboard checks | n/a | n/a |
 | Capture import + naming | `ss import` | yes (MKV stand-in) | n/a | first real OBS session |
 | AI narration (Kokoro) | `ss voice`, `assemble` with `script` | yes | **voice quality and energy** | n/a |
 | Voice clean-up, ducking, SFX | `ss audio tidy/mix` | yes | **music/SFX choice and feel** | licensed music/SFX files |
@@ -87,7 +87,7 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | One-instruction research operations (skill `slugshot-research-operations`; `ss research collect --profile daily/spanish/refresh`, `ss research bundle`) | `ss research` | yes (live end-to-end: spanish profile, 15 steps OK, bundle of 8 datasets) | n/a | n/a ('daily', 'spanish' and fam-* sets in place) |
 | Guided Creative Center session (opens pages; imports on Ctrl+A, Ctrl+C) | `ss observe cc-session` | loop tested with simulated copies | n/a | **first real session** confirms the page layout |
 | TikTok Discovery API, Instagram Business Discovery, Google Trends API | none | no | n/a | company identity (TikTok); Slugshot Instagram account; alpha approval |
-| TikTok genre bank via Apify (`clockworks/tiktok-scraper`: search, hashtags, creator back catalogues, subtitles, permitted downloads) | `research/tiktok-genre/*.py` (scripts, not `ss`) | yes (live 2026-11-26: 631 in-format posts, TOP/MID/FLOP-50 with transcripts) | owner-asserted TikTok approval for Apify Actors (recorded in run receipts) | Apify Free credit: about $0.60 left until 25 Dec |
+| TikTok genre bank via Apify (`clockworks/tiktok-scraper`: search, hashtags, creator back catalogues, subtitles, permitted downloads) | `research/tiktok-genre/*.py` (scripts, not `ss`) | yes (live 2026-11-26: 631 in-format posts, TOP/MID/FLOP-50 with transcripts) | Apify use approved for this toolkit's TikTok collection | Apify Free credit: about $0.60 left until 25 Dec |
 | Vertex AI for Gemini TTS | none | key, service account and role work (2026-11-26) | n/a | **not used**: on Vertex, `gemini-3.8-flash-tts` speaks delivery directions aloud (no separate style field); retest later |
 | YouTube reports | `ss yt report` | yes | n/a | written to `exports/share/` for ChatGPT (sharing approved by the owner) |
 | Platform metrics for ChatGPT | `ss export` | yes (validation) | n/a | **first posts** |
@@ -99,9 +99,9 @@ Readiness: **Tested** = runs end to end, checked by the smoke test or a recorded
 | Activation (onboarding funnel) | none | proposal only ([activation-events-proposal.md](dashboard/activation-events-proposal.md)) | **owner approval (game change)** | published game |
 | Foundational research and knowledge banks (milestone 1) | literature skills, `ss evidence` | built: six Gemini reports audited and Stage 4.7 knowledge banks built 2026-11-25 (1,037 entries, 0 validation errors) | owner approves individual entries; live evidence comes from producing videos | audit outputs local in `data/local/research/stage-4.6/`; export `exports/share/research-4.6-audit/`; ledger `AUDIT-STAGE46-PLATFORM` |
 | External research-report audit (extract IDs/DOIs/URLs, dedupe, Crossref DOI check, URL reachability, figure checks in cited sources, claim register) | `python scripts/research_audit.py all`; `… claims --checks FILE`; `python scripts/research_audit_register.py` | yes (run on the Stage 4.6 reports, 25 Nov 2026) | figure checks are text matches; meaning needs review | sources read from git-ignored `research/sources/` |
-| Knowledge banks (16 banks, validator, filters, briefs, export; dashboard Knowledge, Opportunities, Sentiment and Hypothesis panels) | `ss kb …` | yes (21 tests in `tests.test_knowledge`; real banks validate) | owner approval per entry (`approved`) | `docs/knowledge-banks.md` |
+| Knowledge banks (16 banks, validator, filters, briefs, export; dashboard learning loop and export) | `ss kb …` | yes (21 tests in `tests.test_knowledge`; real banks validate) | owner approval per entry (`approved`) | `docs/knowledge-banks.md` |
 | Audience sentiment coding | `ss sentiment …` | yes: fixture-tested and one live YouTube sample coded (2026-11-25) | Claude codes; ambiguous items go to a person | owner confirmed the YouTube derived-metrics approval (2026-11-25); reference field to fill in; `docs/audience-sentiment.md` |
-| Publishing (Publish page: drafts, per-platform text, preview, checks, owner approval by typed handle; YouTube resumable upload, TikTok inbox and Direct Post, Instagram container; manual packages; links posts to versions and experiments) | `ss publish …` (drafts only) / dashboard | fixture-tested (20 tests in `tests.test_publish`); connections live-validated; Cloudinary hosting and Buffer draft creation live-validated; **no live post yet** (six test jobs await the owner) | **owner approves every upload in the dashboard**; public posting on, reveal lock on (game unnamed, owner confirms each public video) | upload permissions per account ([credentials-checklist.md](dashboard/credentials-checklist.md)); Instagram local upload not offered by Instagram Login ([publishing.md](dashboard/publishing.md)) |
+| Publishing (Publish page: drafts, per-platform text, preview, checks, owner approval by typed handle; YouTube resumable upload, TikTok inbox and Direct Post, Instagram container; manual packages; links posts to versions and experiments) | `ss publish …` (drafts only) / dashboard | fixture-tested (27 tests in `tests.test_publish`); connections live-validated; Cloudinary hosting and Buffer draft creation live-validated; **no live post yet** (six test jobs await the owner) | **owner approves every upload in the dashboard**; public posting on, reveal lock on (game unnamed, owner confirms each public video) | upload permissions per account ([credentials-checklist.md](dashboard/credentials-checklist.md)); Instagram local upload not offered by Instagram Login ([publishing.md](dashboard/publishing.md)) |
 | Isolated Roblox marketing place | `ss roblox build/rebuild/audit` | yes (audit, live Studio session) | n/a | n/a |
 | Studio target guard | hook, `ss roblox guard` | yes (live deny and allow) | n/a | n/a |
 | Scene specs + runner (stand-ins) | `ss roblox validate`, `Scene.runJson` | yes (smoke scene, 6 takes) | **performance, humour, look** | real animations, sets, slug rigs |

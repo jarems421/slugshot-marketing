@@ -118,8 +118,8 @@ Loopback only; Host-header check (DNS rebinding); cross-origin requests refused;
 | Part | Status |
 |---|---|
 | Five pages, drill-downs, account pages, galleries, three appearances, star sky, phone layout | implemented; reviewed in screenshots with fixture data (populated) and the live database (empty states), `docs/dashboard/screens/` |
-| Analytics rules, measurement windows, tags, comparisons, learning loop | implemented; 14 tests (`tests.test_analytics`) |
-| Store, imports, exports, vault, server security; publishing | 33 and 23 tests |
+| Analytics rules, measurement windows, tags, comparisons, learning loop | implemented; 16 tests (`tests.test_analytics`) |
+| Store, imports, exports, vault, server security; publishing | 33 and 27 tests |
 | YouTube (EN, ES), TikTok (EN, ES), Buffer (TikTok EN/ES, Instagram EN) | **live-validated** 2026-11-25 (no posts yet, so only follower counts are live values) |
 | Cloudinary hosting, Buffer draft creation from a hosted link | **live-validated** 2026-11-25 |
 | Instagram API connector, Roblox Analytics | fixture-tested; Instagram deferred (Buffer covers it), Roblox waits for launch |
@@ -146,7 +146,7 @@ Known limits, left as they are on purpose (infrastructure is frozen); check them
 | Roblox legacy public games API | adopted (no key) | already live-validated in `ss rbx`; gives visits/playing/favourites |
 | Composio | deferred | Instagram through it needs the same Meta OAuth, adds a third party and a plan cap; useful later only for a service with no direct API |
 | TikTok API for Business / Business account | rejected for now | needs a Business account (Commercial Music Library only); the Display API plus Studio imports cover the need |
-| TikTok/Instagram scraping, browser automation of Studio pages | rejected | provider terms |
+| Browser automation of Studio pages and account analytics collection outside authorised routes | rejected | provider terms |
 | Google Drive / Claude Docs MCP for exports | deferred | files stay local; the owner uploads what they choose |
 | Electron/Tauri app, hosting, login | rejected | the Edge app window and PWA give an app-style window with nothing to install or update |
 | A charting or UI library | rejected | hand-drawn SVG charts (crosshair, tooltip, legend, table view) cover every chart here |

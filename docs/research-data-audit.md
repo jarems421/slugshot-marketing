@@ -1,5 +1,7 @@
 # Stage 4.4: research data collection audit and plan
 
+> Historical audit. We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center. See the [current data guide](research-data.md).
+
 Written 2026-11-24, before any code changes. It covers the existing YouTube collector, every proposed source, the smallest implementation worth building, and what the owner has to set up. Facts were checked against official pages on this date unless a line says otherwise. Where only third-party or forum sources were available, the line says so. This is a careful reading of the terms, not legal advice.
 
 Live checks run for this audit, with no credentials: Wikimedia pageviews (Slugterra en/es, Bajoterra es), Google Trends "Trending Now" RSS (GB, ES, MX) and the Roblox `games.roblox.com/v1/games` endpoint all returned real data. No YouTube, Twitch, Meta, TikTok or vidIQ calls were made.

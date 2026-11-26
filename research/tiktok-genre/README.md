@@ -13,6 +13,8 @@ These scripts built the "In My World / In This Town" transcript bank and the nar
 | `voices.py`, `gender.py` | Voice measurements and fingerprints. Gender by fingerprint failed on TikTok audio because music masks it |
 | `narrators.py`, `instory.py` | Gemini narrator takes, and the In My World sample voiced with each narrator |
 
-Results: `exports/share/research/tiktok-in-my-world-2026-11-26/`, with a copy in the owner's Downloads folder. Pace finding: `docs/production-quality.md`. Permission basis (owner-asserted TikTok approval for Apify Actors): `data/local/research/creative/tiktok-genre/README.md`.
+Results: `exports/share/research/tiktok-in-my-world-2026-11-26/`, with a copy in the owner's Downloads folder. Pace finding: `docs/production-quality.md`.
+
+We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center.
 
 Costs on 26 Nov: Apify about $4.40 of the $5 monthly Free credit (cycle ends 25 Dec). Each result costs about $0.0037; TikTok's subtitle tracks are free; video downloads cost $0.0013 each.

@@ -141,6 +141,7 @@ Metadata checks prove a paper exists, not that it says what we claim. Open the p
 | YouTube | per-video history only, no cross-channel aggregation or scores, 30-day expiry for data and derived artefacts; region and language parameters are retrieval context |
 | Google Trends | indices are relative within one download; Trending Now covers all topics with approximate bands |
 | Wikimedia | edition ≠ country; views ≠ people or fans |
+| Apify | permitted collection for the toolkit's existing TikTok research. Record the run and the source of each metric. |
 | Creative Center | displayed and rounded figures with unknown definitions; manual or guided clipboard only |
 | Twitch | local only |
 | Roblox | counters ≠ acquisition |

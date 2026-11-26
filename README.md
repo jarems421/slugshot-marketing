@@ -5,11 +5,11 @@
 This repository is the working machinery behind Slugshot's short-form video marketing on TikTok, YouTube Shorts and Instagram Reels, in English and Spanish. It does two jobs:
 
 1. **Make videos:** capture, narration, captions, vertical renders, multi-scene edits, automatic quality checks, and Roblox-native filming in an isolated copy of the game.
-2. **Do research:** collect dated, labelled public data (YouTube, Google Trends, Wikipedia, Twitch, Roblox, TikTok Creative Center observations), check it, and turn it into findings that are traceable and evidence-led, rather than "AI vibes".
+2. **Do research:** collect dated, labelled public data (YouTube, Google Trends, Wikipedia, Twitch, Roblox, TikTok public posts through Apify and Creative Center observations), check it, and turn it into findings that are traceable and evidence-led, rather than "AI vibes".
 
 It is built to be **operated by an AI agent**. [Claude Code](https://code.claude.com/docs/en/overview) runs the toolkit from short natural-language instructions ("collect today's research", "is this meme still growing?", "make the Floppy duel edit"). ChatGPT designs research and writes scripts; Gemini/Flow analyses footage and generates visuals; the owner makes decisions and approves anything consequential.
 
-> Status (25 Nov 2026): infrastructure is complete, and the dashboard has had its final usability and design pass. That covers research collection and intelligence, knowledge banks, the dashboard with its commercial funnel, and publishing. All five social accounts are connected and live-validated. Publishing waits only on the owner approving the first test posts ([validation report](reports/live-integration-validation-2026-11-25.md)). The research feature freeze is in place: only account setup, live validation and small fixes. Next: content production. The game is unreleased, so player analytics wait for launch. See [docs/INVENTORY.md](docs/INVENTORY.md) for the status of every capability.
+> **Status, 26 November 2026.** Infrastructure is frozen and content production is underway. YouTube EN/ES, TikTok EN/ES and Buffer for TikTok EN/ES and Instagram EN were live-validated. Cloudinary hosting and Buffer draft creation were checked, and the first test posts await owner approval. Player analytics awaits launch. [Capability inventory](docs/INVENTORY.md) ? [Live validation](reports/live-integration-validation-2026-11-25.md)
 
 ---
 
@@ -21,7 +21,7 @@ flowchart LR
     GPT[ChatGPT: research design, culture, scripts]
     Gem[Gemini / Flow: footage analysis, visuals]
     subgraph Repo [This repo, run by Claude Code]
-        Collect[Collectors: YouTube, Trends, Wikipedia, Twitch, Roblox, observations]
+        Collect[Collectors: YouTube, Trends, Wikipedia, Twitch, Roblox, Apify, observations]
         Analyse[Analysis + evidence ledger]
         Bundle[(Research bundle zip)]
         Produce[Video production: captions, renders, assembly, QC]
@@ -70,6 +70,7 @@ Staged scenes and skits are filmed in an **isolated marketing copy** of the game
 | Twitch | Roblox clips and live streams by broadcaster language | `ss twitch` |
 | Roblox | player/visit/favourite snapshots for a small watchlist | `ss rbx` |
 | TikTok Creative Center, vidIQ, TinyFish, manual | validated public observations with provenance; a guided Creative Center session (you press Ctrl+A, Ctrl+C; it does the rest) | `ss observe` |
+| TikTok through Apify | public-post collection for genre research | [Genre workflow](research/tiktok-genre/README.md) |
 | One instruction | run a profile, then a bundle for ChatGPT | `ss research collect`, `ss research bundle` |
 
 ### Research intelligence
@@ -85,7 +86,7 @@ Commands: `ss analyze`, `ss evidence`. Guides: [research methods](docs/research-
 ### Personal dashboard
 A local app (Desktop shortcut or `ss dash`) with five pages (Overview, Content, Publish, Roblox, Settings), styled after Jami with its night sky, in System (blue), Dark and Light. Minimum information by default; click a metric, account or video for detail. Standard-library Python + SQLite, loopback only, credentials encrypted with Windows DPAPI. Guide: [docs/dashboard/README.md](docs/dashboard/README.md).
 
-- **Analytics** for our own accounts, from official owner-authorised APIs. Metric rules keep platforms separate and never invent zeros.
+- **Analytics** for our own accounts, from official owner-authorised APIs. Owner views label combined platform-reported counts. Share exports keep platforms separate, and missing values remain blank.
   - YouTube Analytics (EN, ES).
   - TikTok Display API (EN, ES).
   - Buffer (TikTok and Instagram post metrics; it only adds what the native APIs lack, so nothing is double-counted).
@@ -105,8 +106,8 @@ A local app (Desktop shortcut or `ss dash`) with five pages (Overview, Content, 
 - **Provenance on every row** (P1 platform count, P2 index/rank, P3 third-party estimate, P4 interpretation) and a run log with the exact parameters sent.
 - **Provider rules are enforced, not just documented:**
   - YouTube statistics expire after 30 days, including exported copies, and are never aggregated across channels or turned into scores.
-  - Twitch data is kept 24 hours and stays local.
-  - TikTok Creative Center is only read by a person (TikTok's terms bar automated collection).
+  - Twitch data is kept for 24 hours and stays local unless its export gate is enabled.
+  - We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center.
 - **No composite "viral scores".** Heat and confidence are different things.
 - **Retrieval is not audience.** A video found with a Mexico filter says nothing about Mexican viewers.
 - **Rigour serves experiments, not paralysis.** Suggestive evidence can justify a cheap 15-second test; only our own experiments can support causal claims.
@@ -154,7 +155,7 @@ Refresh the dashboard and export a snapshot for ChatGPT.
 Prepare this video for TikTok EN/ES and Instagram (I'll approve it in the dashboard).
 ```
 
-Or run the commands directly: every `ss` command takes `-h`. Full reference: [docs/COMMANDS.md](docs/COMMANDS.md); walkthrough: [docs/OPERATIONS.md](docs/OPERATIONS.md).
+Or run the commands directly: Python-backed commands show their options with `-h`. Full reference: [docs/COMMANDS.md](docs/COMMANDS.md); walkthrough: [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 ## Repository layout
 
@@ -202,10 +203,10 @@ Not in git: `.env`, `media/`, `exports/`, `data/local/`, `models/`, `out/`, `ven
 
 ## Testing
 
-- `ss smoke` runs every capability once and writes a PASS / WARN / FAIL / BLOCKED report. Latest: 30/30 PASS ([reports/smoke-test.md](reports/smoke-test.md)).
-- `ss smoke --research` runs only the research checks (10/10, about 30 s); `ss smoke --dashboard` the dashboard checks (7/7, about 15 s).
-- Offline suites (145 tests on fake fixtures, no network; the publishing tests never upload or post):
-  `.venv\Scripts\python -m unittest tests.test_publish tests.test_dashboard tests.test_knowledge tests.test_analysis tests.test_research tests.test_analytics`
+- `ss smoke` runs 30 checks, including production, research and dashboard. The [latest full production report](reports/smoke-test.md) records 30 passes in its configured workspace.
+- Research and dashboard smoke run 10 and 7 checks. Results depend on credentials, local evidence and the dashboard server. See the [research report](reports/smoke-test-research.md) and [dashboard report](reports/smoke-test-dashboard.md).
+- The seven project offline suites contain 173 tests. Run each module in its own Python process to isolate fixture state:
+  `Get-ChildItem tests/test_*.py | ForEach-Object { .\.venv\Scripts\python -m unittest ('tests.' + $_.BaseName) }`
 - Test environment: numpy/ruptures use OpenBLAS, which on this machine can fail with "OpenBLAS error: Memory allocation still failed" at its default thread count. `scripts/research_analysis.py` sets `OPENBLAS_NUM_THREADS=1` by default; if another numpy script hits it, set `$env:OPENBLAS_NUM_THREADS = '1'` before running tests.
 
 ## Third-party components
