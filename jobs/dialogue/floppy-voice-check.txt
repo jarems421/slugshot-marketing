@@ -1,0 +1,4 @@
+# Floppy's new voice through the production path (owner pick 2026-11-27: Gemini Puck, light, +3.5 st). Not a release.
+NARRATOR: In my world, the weakest slug is the most feared.
+[beat 0.4]
+FLOPPY: Mm. Hello. I'm Floppy. The most feared slug in the cavern. Probably.

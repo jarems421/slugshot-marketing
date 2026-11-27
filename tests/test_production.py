@@ -96,6 +96,25 @@ class Dialogue(unittest.TestCase):
         self.assertIn("rubberband=tempo=1.2500:pitchq=quality:formant=preserved", f)
         self.assertTrue(f[-1].startswith("aresample"))
 
+    def test_gemini_lines_get_the_characters_pitch_lift(self):
+        # owner, 2026-11-27: Floppy is Gemini Puck lifted 3.5 semitones (cast.json gemini.pitch); Gemini lines used to
+        # ignore the lift
+        import gemini_tts
+        calls, orig = [], (gemini_tts.speak, dialogue.ffmpeg)
+        gemini_tts.speak = lambda text, voice, style, out: (Path(out).write_bytes(b"x"), 1.0)[1]
+        dialogue.ffmpeg = lambda *a: calls.append(a)
+        try:
+            with tempfile.TemporaryDirectory() as d:
+                (Path(d) / "lines").mkdir()
+                lines = [{"speaker": "FLOPPY", "text": "Mm.", "direction": "", "gap_after": 0},
+                         {"speaker": "NARRATOR", "text": "Hi.", "direction": "", "gap_after": 0}]
+                dialogue.perform(lines, "gemini", Path(d), only={1, 2})
+        finally:
+            gemini_tts.speak, dialogue.ffmpeg = orig
+        chains = [a[a.index("-af") + 1] for a in calls]
+        self.assertIn(f"rubberband=pitch={2 ** (3.5 / 12):.5f}", chains[0])
+        self.assertNotIn("rubberband=pitch", chains[1])
+
     def test_music_fades_follow_energy(self):
         import music_beds
         beds = [{"src": "assets/music/M2a-cavern-sneak-chill-nature-subtle.wav", "at": 0},

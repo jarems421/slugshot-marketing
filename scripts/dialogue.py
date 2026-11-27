@@ -194,7 +194,7 @@ def perform(lines, engine, work, only, mode="design", takes=1):
             for i in group:
                 lines[i]["file"] = work / "lines" / f"{i + 1:02}_{lines[i]['speaker']}.wav"
                 lines[i]["_raw"] = work / "lines" / f"{i + 1:02}_{lines[i]['speaker']}.raw.wav"
-                lines[i]["_pitch"] = 0
+                lines[i]["_pitch"] = g.get("pitch", 0)  # a character's fixed lift (cast.json gemini.pitch)
             if perform_passage(group, lines, g["voice"], gemini_tts.style_for(g, first["direction"]), work):
                 done.update(i + 1 for i in group)
             else:
@@ -212,7 +212,7 @@ def perform(lines, engine, work, only, mode="design", takes=1):
             if not g.get("voice"):
                 raise SystemExit(f"{ln['speaker']} has no gemini.voice in config/cast.json")
             style = gemini_tts.style_for(g, ln["direction"])
-            ln["_raw"], ln["_pitch"] = raw, 0
+            ln["_raw"], ln["_pitch"] = raw, g.get("pitch", 0)
             if takes == 1:
                 seconds = gemini_tts.speak(glossary.tts_text(ln["text"]), g["voice"], style, raw)
                 print(f"line {i} ({ln['speaker']}, {g['voice']}): {seconds:.1f}s", flush=True)

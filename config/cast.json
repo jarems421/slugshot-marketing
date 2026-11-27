@@ -52,7 +52,7 @@
     "FLOPPY": {
       "actor": "floppy",
       "caption": "#c8e66a",
-      "status": "approved (owner by ear, 2026-11-26; Gemini Umbriel)",
+      "status": "approved (owner by ear, 2026-11-27; Gemini Puck, light tiredness, +3.5 st)",
       "gender": "male",
       "persona": "The weakest slug and proud of it: drowsy, slow, a little out of it (owner: 'weak, drowsy, slightly drunk/stoned'), unbothered, with stubborn, dead-serious dignity. Never powerful; his wins are attitude.",
       "qwen": {
@@ -65,14 +65,19 @@
         "pitch": 1.5
       },
       "gemini": {
-        "voice": "Umbriel",
+        "voice": "Puck",
+        "pitch": 3.5,
+        "style": "A small, calm cartoon slug with a light, gentle voice. Relaxed and unbothered, a little slow, like he just woke up from a nap but is perfectly content. Clear words, steady voice, deadpan and quietly proud. Not sad, not whiny, no yawning, no sighing.",
+        "shared_delivery": false,
         "candidates": [
-          "Umbriel",
-          "Zubenelgenubi"
+          "Puck",
+          "Achird",
+          "Sadachbia"
         ],
-        "style": "sleepy, slow and mellow, a little slurred, deadpan but with lazy warmth and a proud little smile in the voice",
+        "note": "owner 2026-11-27: Umbriel sounded too close to the narrator; wanted higher, distinct, tired. Round 1's drowsy direction (yawn, mumbly, slurred) 'sounds like whimpering'; picked round 2's Puck 'light' at +3.5 st (Downloads/slugshot-floppy-voice/round-2). Keep the tiredness light; the shared storytime delivery is off because it pushes him back to over-acting. Small ad-libs ('Oh,', 'Mmm') happen: read the deviation flags.",
         "rejected": {
-          "Enceladus": "spoke the audition line twice (2026-11-25)"
+          "Enceladus": "spoke the audition line twice (2026-11-25)",
+          "Umbriel": "too close to the narrator (2026-11-27)"
         }
       }
     },
