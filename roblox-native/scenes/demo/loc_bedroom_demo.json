@@ -1,6 +1,6 @@
 {
   "id": "loc_bedroom_demo",
-  "note": "Temporary location check (2026-11-27): the bedroom set with two people in it.",
+  "note": "Redressed bedroom (2026-11-27): Kai sits on the bed edge watching the terrarium; Raf on the beanbag points at the blaster on the wall. Sitting, things to look at, handcrafted dressing.",
   "format": "vertical",
   "truth": {
     "mode": "staged_fiction",
@@ -15,21 +15,19 @@
   },
   "capture": {
     "ui": "hidden",
-    "sample": 0.5
+    "sample": 0.25
   },
   "marks": {},
   "actors": {
     "kai": {
       "kind": "human",
       "human": "kai",
-      "mark": "by_bed",
-      "face": "at_desk"
+      "mark": "seat_bed"
     },
     "raf": {
       "kind": "human",
       "human": "raf",
-      "mark": "at_desk",
-      "face": "by_bed",
+      "mark": "seat_beanbag",
       "phase": 1.7
     }
   },
@@ -38,43 +36,72 @@
       "preset": "orbit_reveal",
       "duration": 5,
       "target": "raf",
-      "radius": 10,
-      "height": 4,
-      "from": -35,
+      "radius": 9,
+      "height": 4.5,
+      "from": -25,
       "to": 15,
-      "fov": 62
+      "fov": 64
     },
     {
       "preset": "medium",
-      "duration": 4,
+      "duration": 4.5,
       "target": "kai",
-      "size": 2.4,
-      "side": 25,
-      "fov": 44
+      "size": 2.6,
+      "side": 30,
+      "fov": 46
     }
   ],
   "timeline": [
     {
-      "time": 0.8,
+      "time": 0.0,
       "actor": "kai",
       "action": "gesture",
-      "move": "explain",
-      "mask": "upper",
-      "duration": 2.5
+      "move": "sit",
+      "duration": 9.4
     },
     {
-      "time": 4.0,
+      "time": 0.0,
       "actor": "raf",
       "action": "gesture",
-      "move": "laugh",
-      "mask": "upper"
+      "move": "sit",
+      "duration": 9.4
     },
     {
-      "time": 6.0,
+      "time": 0.4,
       "actor": "kai",
-      "action": "gesture",
-      "move": "shrug",
-      "mask": "upper"
+      "action": "look",
+      "target": "look_terrarium"
+    },
+    {
+      "time": 2.2,
+      "actor": "raf",
+      "action": "point",
+      "target": "look_blaster",
+      "duration": 1.8
+    },
+    {
+      "time": 2.2,
+      "actor": "raf",
+      "action": "look",
+      "target": "look_blaster"
+    },
+    {
+      "time": 4.4,
+      "actor": "kai",
+      "action": "look",
+      "target": "raf"
+    },
+    {
+      "time": 4.6,
+      "actor": "raf",
+      "action": "look",
+      "target": "kai"
+    },
+    {
+      "time": 5.4,
+      "actor": "kai",
+      "action": "look",
+      "target": "look_blaster"
     }
   ]
 }

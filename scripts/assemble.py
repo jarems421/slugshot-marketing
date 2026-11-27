@@ -11,6 +11,7 @@ Edit file (JSON), paths relative to this folder:
     "tidy": true,                                   clean the voice first (pause trimming, levelling)
     "music": "assets/music/bed.mp3", "music_db": -6,     bed levelled to -16 LUFS, then this gain
     "sfx": [{"src": "assets/sfx/whoosh.wav", "at": 3.0}],     seconds on the final timeline
+    "ambience": "out/takes/x_world.wav", "ambience_db": 0,   the world track from scripts/soundscape.py, from 0 s
     "captions": "auto",                             "auto" = transcribe the voice; or a checked .srt; or null
     "emphasis": ["Floppy", "Inferno"],              words always shown in the accent colour
     "hook": "In my world, your slug is your rank",
@@ -161,14 +162,18 @@ def main():
         print(sh([PY, "scripts/caption.py", voice, "--out", work / "voice"]).strip())
         captions = str(work / "voice.srt")
 
-    # 3. Mix: ducked music + SFX on the voice.
+    # 3. Mix: ducked music + SFX + the world track on the voice.
     mix = voice
-    if voice and (edit.get("music") or edit.get("sfx")):
+    if voice and (edit.get("music") or edit.get("sfx") or edit.get("ambience")):
         cmd = [PY, "scripts/audio.py", "mix", work / "mix.wav", "--narration", voice]
         if edit.get("music"):
             cmd += ["--music", edit["music"], "--music-db", edit.get("music_db", -6)]
-        if edit.get("sfx"):
-            cmd += ["--sfx", *[f"{s['src']}@{when(s['at'], dialogue)}" + (f"@{s['db']}" if "db" in s else "") for s in edit["sfx"]]]
+        sfx = [f"{s['src']}@{when(s['at'], dialogue)}" + (f"@{s['db']}" if "db" in s else "") for s in edit.get("sfx", [])]
+        if edit.get("ambience"):
+            # scripts/soundscape.py writes it at its own level (well under speech), so it goes in unchanged by default
+            sfx.append(f"{edit['ambience']}@0@{edit.get('ambience_db', 0)}")
+        if sfx:
+            cmd += ["--sfx", *sfx]
         sh(cmd)
         mix = work / "mix.wav"
 

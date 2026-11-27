@@ -1,0 +1,8 @@
+# Acting, vignettes and world-sound demo (internal technical test, not a release; 2026-11-27).
+# Fiction: "Fictional story" label on screen. Humans are marketing characters, not game canon.
+# Game truth: no stats or mechanics claimed; Floppy is never called useless.
+KAI (fast, proud, building to a big reveal): Okay, so I've been training Floppy all week, and honestly? I think he's finally ready to
+[overlap 0.3]
+MIRA (flat, deadpan, not even looking up): He's asleep, Kai.
+[beat 0.6]
+KAI (a beat, then covering, quieter): He's resting his eyes.

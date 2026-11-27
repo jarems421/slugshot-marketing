@@ -9,7 +9,7 @@ This repository is the working machinery behind Slugshot's short-form video mark
 
 It is built to be **operated by an AI agent**. [Claude Code](https://code.claude.com/docs/en/overview) runs the toolkit from short natural-language instructions ("collect today's research", "is this meme still growing?", "make the Floppy duel edit"). ChatGPT designs research and writes scripts; Gemini/Flow analyses footage and generates visuals; the owner makes decisions and approves anything consequential.
 
-> **Status, 27 November 2026.** Infrastructure is frozen and content production is underway. The first pilot video was filmed natively in Roblox, and the production engine now adds living environments: background crowds, the game's resident slugs, crowd reactions and four reusable locations outside the lobby. YouTube EN/ES, TikTok EN/ES and Buffer for TikTok EN/ES and Instagram EN were live-validated; the first test posts await owner approval. Player analytics awaits launch. [Capability inventory](docs/INVENTORY.md) · [Live validation](reports/archive/live-integration-validation-2026-11-25.md)
+> **Status, 27 November 2026.** Infrastructure is frozen and content production is underway. The first pilot video was filmed natively in Roblox, and the production engine now adds living environments (background crowds and stories, resident slugs, crowd reactions, four handcrafted-looking locations), an automatic acting pass and a world-sound track. YouTube EN/ES, TikTok EN/ES and Buffer for TikTok EN/ES and Instagram EN were live-validated; the first test posts await owner approval. Player analytics awaits launch. [Capability inventory](docs/INVENTORY.md) · [Live validation](reports/archive/live-integration-validation-2026-11-25.md)
 
 ---
 
@@ -66,7 +66,9 @@ Staged scenes and skits are filmed in an **isolated marketing copy** of the game
 - **Cast:** the game's real slugs (faces, idles, hops, slug shots) and blocky R6 human players (walks, gestures, blasters, holding slugs). Mouths and nods follow the dialogue, timed with line anchors.
 - **Living environments:** an `ambient` block adds dressed extras and slugs (a busy hangout for talking scenes, or a ring of watchers round a duel), the game's grove residents at their real spots, and crowd reactions on story beats that land together.
 - **Floors and framing:** saved floor maps keep extras off the hub's cracks, and the runtime grounds every actor on solid floor. The validator flags shots that are too tight for what happens in them.
-- **Temporary locations:** a bedroom, a classroom, a wild cavern and a market, built at play time from boxes, the hub's own inked art and generated props, so videos can go anywhere in the Slugshot look.
+- **Temporary locations:** a bedroom, a classroom, a wild cavern and a market, built at play time from boxes, the hub's own inked art and generated props, so videos can go anywhere in the Slugshot look. A generator (`roblox-native/tools/make_locations.py`) dresses them by hand-made rules: furniture off the grid, clutter and story props, panelled rooms and stone cave walls, crystals, motivated light, seats and things to look at.
+- **Acting and stories:** an automatic acting pass gives each named human their own mannerisms, listening nods, reactions and interruption acting around the author's beats. Background groups play small stories (showing off a slug, a runaway slug, training, a trade, browsing). Characters sit, pick up and hand over slugs.
+- **World sound:** `scripts/soundscape.py` builds a world track from the spec and the take's camera: ambience per place, crowd murmur that follows the picture, heard crowd reactions and foley. The crowd voices come from a generated Gemini library (`scripts/crowd_audio.py`).
 
 Details: [roblox-native/README.md](roblox-native/README.md) · [Roblox production skill](.claude/skills/slugshot-roblox-production/SKILL.md).
 

@@ -76,3 +76,16 @@ Don't use an SFX:
 - **No SFX by default (owner, 2026-11-26).** After pilot 01 the owner asked for a clean slate: music only, then they choose the sound language (e.g. a fart on a Floppy impact or a fail). Don't add stings or meme sounds until the owner has chosen them. The Looney Tunes signature over the Inferno miss "didn't fit at all".
 - The silence after a punchline stays silent. The bed may continue underneath; nothing new starts. **(D)**
 - Listen on a phone speaker before calling a mix done (owner check).
+
+## World sound (2026-11-27)
+
+Owner critique: spatial ambience, crowd audio and environmental sounds. Every Roblox-native scene can now have a world track built from its spec and its take:
+- `python scripts/soundscape.py <scene_id> roblox-native/capture/takes/<take>.json out/takes/<take>_world.wav`, then `"ambience": "out/takes/<take>_world.wav"` in the `ss assemble` edit (mixed from 0 s, unducked, at its own level; `"ambience_db"` to trim).
+- The track contains:
+  - ambience per place (cavern air, waterfalls, drips, crickets, crystal shimmer; room tone, the cavern through the walls and a clock indoors; clinks and lantern hum at the market);
+  - crowd murmur that follows the picture (louder as more extras are on screen and near the lens, panned to where they stand), from the take manifest's camera samples (keep `capture.sample`);
+  - the crowd's `ambient.reactions` as heard cheers, gasps, laughs and scatters, sized to the crowd;
+  - foley from the action: footsteps of walkers near the camera, slug landings, cloth on pick-ups.
+- Levels: the bed sits around -35 to -40 dBFS with no normalisation, so a quiet room stays quiet; the final mix's loudness pass lifts everything together.
+- Crowd voices: `scripts/crowd_audio.py` (Gemini TTS, generated once into `assets/sfx/crowd/<kind>/`, 58 takes from 12 voices the cast doesn't use, logged in LICENSES.csv; inside the monthly cap). `python scripts/crowd_audio.py demo OUT.wav` plays murmur, a cheer, a gasp and a laugh.
+- Deterministic per scene, so every re-render matches. The owner judges the crowd sound by ear.

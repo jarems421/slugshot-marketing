@@ -100,8 +100,10 @@ class World:
         c, s = math.cos(self.yaw), math.sin(self.yaw)
         return [round(c * dx - s * dz, 2), round(dy, 2), round(s * dx + c * dz, 2)]
 
-    def ok(self, p, gap=0.0):
-        if not all(math.hypot(p[0] - t[0], p[2] - t[1]) >= max(gap, t[2]) for t in self.taken):
+    def ok(self, p, gap=0.0, own=False):
+        # own: a spot inside one little story (a slug beside its owner, friends round them): other people's spacing
+        # doesn't apply, only the floor and the heroes' clearance
+        if not own and not all(math.hypot(p[0] - t[0], p[2] - t[1]) >= max(gap, t[2]) for t in self.taken):
             return False
         if not all(math.hypot(p[0] - c[0], p[2] - c[2]) >= self.r for c in self.clears):
             return False
@@ -115,7 +117,7 @@ class World:
     def take(self, p, gap):
         self.taken.append((p[0], p[2], gap))
 
-    def point(self, rng, zone, y=0.0, near=None, reach=None, tries=60, gap=0.0):
+    def point(self, rng, zone, y=0.0, near=None, reach=None, tries=60, gap=0.0, own=False):
         """A free, standable spot in the zone (and within `reach` of `near`, reachable on foot from it)."""
         x1, z1, x2, z2 = zone
         for _ in range(tries):
@@ -126,7 +128,7 @@ class World:
                     continue
             else:
                 p = [round(rng.uniform(min(x1, x2), max(x1, x2)), 2), y, round(rng.uniform(min(z1, z2), max(z1, z2)), 2)]
-            if self.ok(p, gap) and (near is None or self.walk_ok(near, p)):
+            if self.ok(p, gap, own) and (near is None or self.walk_ok(near, p)):
                 return p
         return None
 
@@ -188,7 +190,14 @@ def expand(spec, duration):
             _ring(rng, g, world, focus, focus_pos(focus), stop, person, slug, beat, faces)
             continue
         zone = g["zone"]
-        roles_wanted = [acts[i % len(acts)] for i in range(int(g.get("people", 0)))]
+        # vignettes (little stories) take their people first, in the order listed; the rest share the plain roles
+        budget, plain = int(g.get("people", 0)), [x for x in acts if x not in VIGNETTES]
+        for act in [x for x in acts if x in VIGNETTES]:
+            if budget >= VIGNETTES[act][0]:
+                if VIGNETTES[act][1](rng, zone, world, stop, person, slug, beat, mark, faces, actors):
+                    budget -= VIGNETTES[act][0]
+        acts = plain or ["stroll"]
+        roles_wanted = [acts[i % len(acts)] for i in range(budget)]
         if roles_wanted.count("chat") % 2:
             roles_wanted[len(roles_wanted) - 1 - roles_wanted[::-1].index("chat")] = "stroll" if "stroll" in acts else "watch"
         for _ in range(roles_wanted.count("chat") // 2):
@@ -212,7 +221,7 @@ def expand(spec, duration):
             p = world.point(rng, zone, gap=SLUG_GAP)
             if p:
                 world.take(p, SLUG_GAP)
-                _slug_life(rng, slug(p, rng.uniform(0, 360)), p, zone, world, stop, mark, beat)
+                _slug_life(rng, (sn := slug(p, rng.uniform(0, 360))), p, zone, world, stop, mark, beat, species=actors[sn]["species"])
 
     res = amb.get("residents")
     if res:
@@ -225,12 +234,187 @@ def expand(spec, duration):
                 continue
             name = slug(here, yaw, s["species"], s.get("scale", 0.8))
             zone = [here[0] - 3, here[2] - 3, here[0] + 3, here[2] + 3]
-            _slug_life(rng, name, here, zone, world, duration, mark, beat, home_only=True)
+            _slug_life(rng, name, here, zone, world, duration, mark, beat, home_only=True, species=s["species"])
 
     _react(rng, amb.get("reactions", []), roles, homes, faces, beats, focus_pos, world, duration, mark)
     for name in sorted(beats):
         timeline.extend(sorted(beats[name], key=lambda b: b["time"]))
     return spec
+
+
+def _near(rng, world, p, r_lo, r_hi, tries=40):
+    """A standable spot r_lo..r_hi studs from p, reachable on foot (no spacing rule: it belongs to p's little story)."""
+    for _ in range(tries):
+        ang, d = rng.uniform(0, math.tau), rng.uniform(r_lo, r_hi)
+        q = [round(p[0] + d * math.cos(ang), 2), 0, round(p[2] + d * math.sin(ang), 2)]
+        if world.ok(q, own=True) and world.walk_ok(p, q):
+            return q
+    return None
+
+
+def _owned_slug(rng, world, owner_p, slug, mark):
+    q = _near(rng, world, owner_p, 1.3, 1.8)
+    return (slug(q, rng.uniform(0, 360)), q) if q else (None, None)
+
+
+def _show_off(rng, zone, world, stop, person, slug, beat, mark, faces, actors):
+    """Someone holds their slug up; two friends come over to see it, point, applaud and laugh."""
+    p = world.point(rng, zone, gap=PERSON_GAP + 4)
+    if not p:
+        return False
+    owner = person(p, rng.uniform(0, 360))
+    world.take(p, PERSON_GAP + 3)
+    pet, _ = _owned_slug(rng, world, p, slug, mark)
+    if not pet:
+        return False
+    t0 = rng.uniform(0.6, 1.8)
+    show = min(stop - t0 - 0.3, 9.0)
+    beat(t0 - 0.3, owner, "face", target=pet, duration=0.3)
+    beat(t0, owner, "hold", item=pet, facing="out", duration=round(show, 2))
+    beat(t0 + 0.2, owner, "express", set={"smile": 1}, ease=0.3)
+    beat(t0 + 0.3, pet, "express", set={"react": 1}, ease=0.3)
+    for k in range(2):
+        start = _near(rng, world, p, 6, 9)
+        spot = _near(rng, world, p, 2.4, 2.8)
+        if not start or not spot:
+            continue
+        fr = person(start, rng.uniform(0, 360))
+        faces[fr] = owner
+        arrive = t0 + 0.4 + k * 0.7 + math.hypot(spot[0] - start[0], spot[2] - start[2]) / WALK_SPEED
+        beat(t0 + 0.4 + k * 0.7, fr, "move_to", mark=mark(spot), gait="walk",
+             duration=round(arrive - (t0 + 0.4 + k * 0.7), 2))
+        beat(arrive, fr, "face", target=owner, duration=0.4)
+        beat(arrive + 0.3, fr, "point", target=pet, duration=1.4)
+        beat(arrive + 2.0, fr, "gesture", move=rng.choice(["applaud", "laugh", "disbelief"]), mask="upper")
+        beat(arrive + 2.0, fr, "express", set={"smile": 1}, ease=0.3)
+    return True
+
+
+def _runaway(rng, zone, world, stop, person, slug, beat, mark, faces, actors):
+    """A slug makes a break for it; its owner chases it down, arms up, and scoops it up."""
+    p = world.point(rng, zone, gap=PERSON_GAP + 2)
+    if not p:
+        return False
+    owner = person(p, rng.uniform(0, 360))
+    world.take(p, PERSON_GAP)
+    pet, here = _owned_slug(rng, world, p, slug, mark)
+    if not pet:
+        return False
+    t = rng.uniform(0.8, 2.0)
+    me = p
+    for _leg in range(3):
+        nxt = world.point(rng, zone, near=here, reach=6, own=True)
+        if not nxt or t > stop - 4:
+            break
+        hops = max(1, round(math.hypot(nxt[0] - here[0], nxt[2] - here[2]) / HOP_STRIDE))
+        beat(t, pet, "move_to", mark=mark(nxt), gait="hop", hops=hops, height=0.35, hop_time=0.36, gap=0.1)
+        leg = hops * 0.46
+        behind = [round(nxt[0] + (here[0] - nxt[0]) * 0.25, 2), 0, round(nxt[2] + (here[2] - nxt[2]) * 0.25, 2)]
+        if world.walk_ok(me, behind):
+            beat(t + 0.35, owner, "move_to", mark=mark(behind), gait="run",
+                 duration=round(max(0.8, math.hypot(behind[0] - me[0], behind[2] - me[2]) / RUN_SPEED), 2))
+            me = behind
+        beat(t + 0.35, owner, "gesture", move="hands_up", mask="upper", duration=round(leg, 2))
+        beat(t + 0.35, owner, "express", set={"open": 0.8, "smile": 0}, ease=0.15)
+        here = nxt
+        t += leg + rng.uniform(0.2, 0.6)
+    if t < stop - 2:   # caught: face it, scoop it up, relief
+        beat(t + 0.4, owner, "face", target=pet, duration=0.3)
+        beat(t + 0.7, owner, "hold", item=pet, facing="holder", duration=round(stop - t - 0.9, 2))
+        beat(t + 0.8, owner, "express", set={"open": 0, "smile": 0.8}, ease=0.4)
+    world.take(here, PERSON_GAP)
+    return True
+
+
+def _training(rng, zone, world, stop, person, slug, beat, mark, faces, actors):
+    """Someone trains their slug: points, it hops (or doesn't); a cheer when it works, a facepalm when it doesn't."""
+    p = world.point(rng, zone, gap=PERSON_GAP + 2)
+    if not p:
+        return False
+    owner = person(p, rng.uniform(0, 360))
+    world.take(p, PERSON_GAP + 1)
+    q = _near(rng, world, p, 2.2, 2.8)
+    if not q:
+        return False
+    pet = slug(q, rng.uniform(0, 360))
+    actors[owner]["face"] = pet
+    beat(0.1, pet, "face", target=owner, duration=0.3)
+    t = rng.uniform(0.5, 1.5)
+    while t < stop - 3:
+        beat(t, owner, "point", target=pet, duration=1.0)
+        if rng.random() < 0.65:
+            beat(t + 0.6, pet, "hop", height=0.45, duration=0.42)
+            beat(t + 1.3, owner, "gesture", move="cheer", mask="upper")
+            beat(t + 1.3, owner, "express", set={"smile": 1}, ease=0.2)
+        else:
+            beat(t + 0.7, pet, "look", target="none")
+            beat(t + 1.4, owner, "gesture", move="facepalm", mask="upper")
+            beat(t + 1.4, owner, "express", set={"smile": 0}, ease=0.2)
+            beat(t + 2.6, pet, "look", target=owner)
+        t += rng.uniform(3.6, 5.0)
+    return True
+
+
+def _trade(rng, zone, world, stop, person, slug, beat, mark, faces, actors):
+    """Two players swap: one walks over carrying a slug and hands it across; the other takes it, pleased."""
+    a_p = world.point(rng, zone, gap=PERSON_GAP + 4)
+    if not a_p:
+        return False
+    b_p = _near(rng, world, a_p, 5.5, 7.5)
+    if not b_p:
+        return False
+    a, b = person(a_p, 0), person(b_p, 0)
+    world.take(a_p, PERSON_GAP)
+    world.take(b_p, PERSON_GAP)
+    pet, _ = _owned_slug(rng, world, a_p, slug, mark)
+    if not pet:
+        return False
+    faces[a], faces[b] = b, a
+    actors[a]["face"], actors[b]["face"] = b, a
+    meet = [round(b_p[0] + (a_p[0] - b_p[0]) * 0.4, 2), 0, round(b_p[2] + (a_p[2] - b_p[2]) * 0.4, 2)]
+    t0 = rng.uniform(0.3, 1.0)
+    walk = max(1.2, math.hypot(meet[0] - a_p[0], meet[2] - a_p[2]) / WALK_SPEED)
+    handoff = t0 + 0.6 + walk + 0.5
+    if handoff > stop - 2:
+        return False
+    beat(t0, a, "hold", item=pet, facing="out", duration=round(handoff + 0.35 - t0, 2))
+    beat(t0 + 0.6, a, "move_to", mark=mark(meet), gait="walk", duration=round(walk, 2))
+    beat(handoff - 0.4, b, "gesture", move="hello", mask="upper")
+    beat(handoff, b, "hold", item=pet, facing="holder", duration=round(stop - handoff - 0.2, 2))
+    beat(handoff + 0.4, b, "express", set={"smile": 1}, ease=0.3)
+    beat(handoff + 0.6, a, "gesture", move="agree", mask="upper")
+    beat(handoff + 0.6, a, "express", set={"smile": 0.8}, ease=0.3)
+    return True
+
+
+def _browse(rng, zone, world, stop, person, slug, beat, mark, faces, actors):
+    """A browser: wanders between spots, stops to look closely, thinks, points at something that caught their eye."""
+    p = world.point(rng, zone, gap=PERSON_GAP)
+    if not p:
+        return False
+    who = person(p, rng.uniform(0, 360))
+    world.take(p, PERSON_GAP)
+    t, here = rng.uniform(0.3, 1.5), p
+    while t < stop - 3:
+        nxt = world.point(rng, zone, near=here, reach=8, gap=PERSON_GAP)
+        if not nxt:
+            break
+        d = max(1.2, math.hypot(nxt[0] - here[0], nxt[2] - here[2]) / (WALK_SPEED * 0.8))
+        beat(t, who, "move_to", mark=mark(nxt), gait="walk", duration=round(d, 2))
+        t += d
+        thing = mark([nxt[0] + rng.uniform(-2.5, 2.5), 1.5, nxt[2] + rng.uniform(-2.5, 2.5)])
+        beat(t + 0.2, who, "look", target=thing)
+        beat(t + 0.4, who, "gesture", move=rng.choice(["think", "think", "tilt"]), mask="upper")
+        if rng.random() < 0.5:
+            beat(t + 1.8, who, "point", target=thing, duration=1.1)
+        here = nxt
+        t += rng.uniform(3.0, 5.0)
+    return True
+
+
+# people each vignette needs, and its builder
+VIGNETTES = {"show_off": (3, _show_off), "runaway": (1, _runaway), "training": (1, _training),
+             "trade": (2, _trade), "browse": (1, _browse)}
 
 
 def _chat(rng, zone, world, stop, person, actors, homes, faces, mark, beat):
@@ -324,34 +508,60 @@ def _ring(rng, g, world, focus, centre, stop, person, slug, beat, faces):
             beat(0.2, name, "look", target=focus)
 
 
-def _slug_life(rng, name, here, zone, world, stop, mark, beat, home_only=False):
-    """A background slug: rests, looks about, hops a little way in even hops, perks up now and then."""
+# Background slugs act like themselves (directing.md 4b; owner, 2026-11-27: character-specific mannerisms).
+# Weights for: move (hop somewhere), hop (in place), look (at something), away (look off), react, rest (doze);
+# `gap` is the pause range between actions, `air` the hop time, `face` a resting expression.
+PERSONA = {
+    "Tormato": {"move": 3, "hop": 3, "look": 2, "react": 1, "rest": 0.5, "gap": (0.1, 0.5)},
+    "Phosphoro": {"move": 2, "look": 5, "hop": 1, "react": 1, "gap": (0.4, 1.0)},
+    "Aquabeek": {"move": 2, "look": 1, "away": 4, "react": 1, "gap": (0.8, 1.6), "face": {"react": 0.3}},
+    "Floppy": {"move": 1, "look": 1, "rest": 6, "react": 1, "gap": (1.0, 2.2), "air": 0.55, "face": {"squint": 0.9}},
+    "Inferno": {"move": 3, "hop": 3, "react": 3, "look": 1, "gap": (0.3, 0.9)},
+    "BoonDoc": {"move": 2, "look": 3, "react": 3, "rest": 1, "gap": (0.6, 1.4)},
+    "Rammstone": {"move": 2, "look": 2, "react": 2, "hop": 1, "rest": 1, "gap": (0.5, 1.2), "face": {"lean": 0.2}},
+}
+DEFAULT_PERSONA = {"move": 3, "look": 2.5, "hop": 1.5, "react": 1.3, "away": 1.2, "gap": (0.3, 1.2)}
+
+
+def _slug_life(rng, name, here, zone, world, stop, mark, beat, home_only=False, species=None):
+    """A background slug living in character: dozes, looks about, hops a little way in even hops, perks up."""
+    pers = PERSONA.get(species, DEFAULT_PERSONA)
+    kinds = [k for k in ("move", "hop", "look", "away", "react", "rest") if pers.get(k)]
+    weights = [pers[k] for k in kinds]
+    air = pers.get("air", HOP_AIR)
+    if pers.get("face"):
+        beat(0.05, name, "express", set=pers["face"], ease=0.5)
     t = rng.uniform(0, 2)
     home = here
     while t < stop - 1:
-        roll = rng.random()
-        if roll < 0.35:
+        kind = rng.choices(kinds, weights)[0]
+        if kind == "move":
             nxt = world.point(rng, zone, y=here[1], near=here, reach=4, gap=SLUG_GAP) if not home_only else \
                 [round(home[0] + rng.uniform(-2, 2), 2), home[1], round(home[2] + rng.uniform(-2, 2), 2)]
             if nxt:
                 hops = max(1, round(math.hypot(nxt[0] - here[0], nxt[2] - here[2]) / HOP_STRIDE))
-                beat(t, name, "move_to", mark=mark(nxt), gait="hop", hops=hops, height=0.3, hop_time=HOP_AIR, gap=HOP_GAP)
+                beat(t, name, "move_to", mark=mark(nxt), gait="hop", hops=hops, height=0.3, hop_time=air, gap=HOP_GAP)
                 here = nxt
-                t += hops * (HOP_AIR + HOP_GAP)
-        elif roll < 0.6:
-            beat(t, name, "look", target=mark([here[0] + rng.uniform(-6, 6), here[1] + 1, here[2] + rng.uniform(-6, 6)]))
+                t += hops * (air + HOP_GAP)
+        elif kind == "look":
+            beat(t, name, "look", target=mark([here[0] + rng.uniform(-6, 6), here[1] + rng.uniform(0, 1.5), here[2] + rng.uniform(-6, 6)]))
             t += rng.uniform(1.5, 3)
-        elif roll < 0.75:
-            beat(t, name, "hop", height=round(rng.uniform(0.2, 0.4), 2), duration=HOP_AIR)
-            t += 1.4
-        elif roll < 0.88:
-            beat(t, name, "express", set={"react": 1}, ease=0.3)
-            beat(t + 1.6, name, "express", set={"react": 0}, ease=0.5)
-            t += 2.4
-        else:
+        elif kind == "away":
             beat(t, name, "look", target="none")
             t += rng.uniform(2, 4)
-        t += rng.uniform(0.3, 1.2)
+        elif kind == "hop":
+            beat(t, name, "hop", height=round(rng.uniform(0.2, 0.4), 2), duration=air)
+            t += 1.0
+        elif kind == "react":
+            beat(t, name, "express", set={"react": 1}, ease=0.3)
+            beat(t + 1.4, name, "express", set={"react": pers.get("face", {}).get("react", 0)}, ease=0.5)
+            t += 2.2
+        else:  # rest: lids droop, a slow breath of stillness
+            if species == "Floppy":
+                beat(t, name, "express", set={"squint": 1.6}, ease=1.0)
+                beat(t + 2.4, name, "express", set={"squint": 0.9}, ease=0.6)
+            t += rng.uniform(2.5, 4.5)
+        t += rng.uniform(*pers.get("gap", (0.3, 1.2)))
 
 
 def _react(rng, reactions, roles, homes, faces, beats, focus_pos, world, duration, mark):

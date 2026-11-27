@@ -159,6 +159,33 @@ function Locations.ensure(loc: any): Model
 			else
 				warn(`Locations: no hub piece {p.kit} (is the hub built?)`)
 			end
+		elseif p.clone then
+			-- any game object by path (e.g. "StarterPack.Blaster" for a blaster on a wall rack): its parts, no scripts
+			local source: Instance? = game
+			for _, step in string.split(p.clone, ".") do
+				source = source and source:FindFirstChild(step)
+			end
+			if source then
+				local copy = Instance.new("Model")
+				copy.Name = p.name or `clone{i}`
+				for _, d in source:Clone():GetDescendants() do
+					if d:IsA("BasePart") then
+						d.Anchored, d.CanCollide, d.CanQuery, d.CanTouch = true, false, false, false
+						d.Parent = copy
+					end
+				end
+				if #copy:GetChildren() > 0 then
+					if p.scale and p.scale ~= 1 then
+						copy:ScaleTo(p.scale)
+					end
+					local box = copy:GetBoundingBox()
+					copy.WorldPivot = box
+					copy:PivotTo(cf * CFrame.Angles(math.rad(p.tilt and p.tilt[1] or 0), 0, math.rad(p.tilt and p.tilt[2] or 0)))
+					copy.Parent = group(p.group or "props")
+				end
+			else
+				warn(`Locations: no game object {p.clone}`)
+			end
 		elseif p.light then
 			local holder = Instance.new("Part")
 			holder.Name = `light{i}`

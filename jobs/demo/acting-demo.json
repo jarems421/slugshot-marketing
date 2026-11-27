@@ -1,0 +1,17 @@
+{
+ "_about": "Final pre-production critiques demo (2026-11-27): acting pass, background vignettes, hand-off, crowd reactions and the world-sound track, in the hub plaza. Internal test; the script is a placeholder. Fiction: label stays on screen. Not for publishing.",
+ "concept": "CritiquesDemo",
+ "hook_id": "PlazaActing",
+ "format": "WORLD",
+ "label": "Fictional story",
+ "language": "en",
+ "dialogue": "out/dialogue/acting-demo/dialogue.json",
+ "music": "assets/music/M2a-cavern-sneak-chill-nature-subtle.wav",
+ "music_db": -14,
+ "ambience": "out/takes/act2_world.wav",
+ "hook": "",
+ "end_card": false,
+ "scenes": [
+  {"kind": "video", "src": "out/takes/act2.mp4", "seconds": 11.28, "fit": "crop", "volume": 0}
+ ]
+}

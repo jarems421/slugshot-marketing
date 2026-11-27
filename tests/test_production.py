@@ -495,4 +495,88 @@ class Locations(unittest.TestCase):
             self.assertEqual(loc["name"], p.stem)
             self.assertEqual(len(loc["origin"]), 3)
             for piece in loc["pieces"]:
-                self.assertEqual(sum(k in piece for k in ("box", "mesh", "kit", "light")), 1, piece)
+                self.assertEqual(sum(k in piece for k in ("box", "mesh", "kit", "light", "clone")), 1, piece)
+
+
+class ActingAndStories(unittest.TestCase):
+    """Owner critiques (2026-11-27): mannerisms, listening, interruptions, background vignettes, interactions, sound."""
+
+    def scene(self, timeline=None, **extra):
+        return {"id": "act_t", "truth": {"mode": "staged_fiction", "gameplay_mechanics": "none", "match_outcome": "n/a",
+                                         "label": "Fictional story"},
+                "set": {"kind": "place", "origin": [19, 0, 20], "yaw": 0},
+                "marks": {"kai_h": [-15, 0, -18.5, 0], "mira_h": [-10, 0, -20.5, 0]},
+                "actors": {"kai": {"kind": "human", "human": "kai", "mark": "kai_h"},
+                           "mira": {"kind": "human", "human": "mira", "mark": "mira_h"}},
+                "shots": [{"preset": "medium", "duration": 16, "target": "kai"}],
+                "timeline": timeline or [], **extra}
+
+    def test_mannerisms_fill_gaps_but_never_cover_authored_beats(self):
+        authored = {"time": 5.0, "actor": "kai", "action": "gesture", "move": "wave", "mask": "upper", "duration": 2.0}
+        s = self.scene([dict(authored)])
+        self.assertEqual(scene.validate(s), [])
+        kai = [b for b in s["timeline"] if b.get("actor") == "kai" and b["action"] == "gesture"]
+        self.assertGreater(len(kai), 1)
+        for b in kai:
+            if b is not None and b.get("move") != "wave":
+                end = b["time"] + float(b.get("duration") or 1.6)
+                self.assertFalse(b["time"] < 7.0 and end > 5.0, b)
+        mira = [b for b in s["timeline"] if b.get("actor") == "mira" and b.get("move") == "arms_crossed"]
+        self.assertTrue(mira)   # Mira rests with her arms folded
+
+    def test_acting_is_seeded_and_can_be_turned_off(self):
+        a, b = self.scene(), self.scene()
+        scene.validate(a)
+        scene.validate(b)
+        self.assertEqual(a["timeline"], b["timeline"])
+        c = self.scene(acting=False)
+        scene.validate(c)
+        self.assertEqual(c["timeline"], [])
+
+    def test_listeners_nod_and_interruptions_cut_off(self):
+        import acting
+        s = self.scene()
+        dialogue = {"lines": [{"n": 1, "actor": "kai", "start": 1.0, "end": 5.0}, {"n": 2, "actor": "mira", "start": 4.6, "end": 7.0}]}
+        words = [{"text": " absolutely", "startMs": 2000, "endMs": 2600}, {"text": " no", "startMs": 3000, "endMs": 3200}]
+        acting.expand(s, 16, dialogue, words)
+        kai = [b for b in s["timeline"] if b.get("actor") == "kai"]
+        self.assertTrue(any(b["action"] == "express" and b["set"].get("open") and abs(b["time"] - 4.6) < 0.01 for b in kai))
+        self.assertTrue(any(b["action"] == "look" and b.get("target") == "mira" for b in kai))
+
+    def test_vignettes_tell_stories_and_hand_offs_are_in_reach(self):
+        import math
+        s = self.scene()
+        s["ambient"] = {"seed": 5, "clear": ["kai_h", "mira_h"],
+                        "groups": [{"zone": [-40, -46, -12, -24], "people": 7, "activities": ["show_off", "trade", "training", "runaway"]}]}
+        self.assertEqual(scene.validate(s), [])
+        holds = [b for b in s["timeline"] if b.get("action") == "hold"]
+        self.assertGreaterEqual(len(holds), 2)
+        for h in holds:
+            carried = [o for o in holds if o is not h and o["item"] == h["item"] and o["time"] < h["time"] < o["time"] + o["duration"]]
+            if carried:
+                continue   # a hand-off: the slug is in the giver's hands at the meeting point
+            holder = s["marks"][s["actors"][h["actor"]]["mark"]]
+            pet = s["marks"][s["actors"][h["item"]]["mark"]]
+            moved = [b for b in s["timeline"] if b.get("actor") == h["actor"] and b.get("action") == "move_to" and b["time"] < h["time"]]
+            if not moved:
+                self.assertLess(math.hypot(holder[0] - pet[0], holder[2] - pet[2]), 3.5, h)
+
+    def test_far_pick_up_is_flagged(self):
+        s = self.scene([{"time": 2.0, "actor": "kai", "action": "hold", "item": "pet", "duration": 3}])
+        s["marks"]["far"] = [10, 0, 10, 0]
+        s["actors"]["pet"] = {"kind": "slug", "species": "Floppy", "mark": "far"}
+        scene.validate(s)
+        self.assertTrue(any("picks up pet" in w for w in scene.interaction_warnings(s)))
+
+    def test_sound_follows_the_picture(self):
+        import numpy as np
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import soundscape
+        cam = (np.array([0.0, 2, 0]), np.array([0.0, 0, -1]))
+        front, _ = soundscape.seen(cam, np.array([0.0, 2, -8]))
+        behind, _ = soundscape.seen(cam, np.array([0.0, 2, 8]))
+        _, pan_right = soundscape.seen(cam, np.array([6.0, 2, -6]))
+        self.assertGreater(front, behind)
+        self.assertGreater(pan_right, 0.3)
+        self.assertEqual(soundscape.place_kind({"set": {"kind": "location", "location": "market"}}), "market")
+        self.assertEqual(soundscape.place_kind({"set": {"kind": "place", "origin": [120, 0, 10]}}), "grove")

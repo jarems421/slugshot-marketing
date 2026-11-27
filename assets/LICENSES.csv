@@ -158,3 +158,61 @@ assets/sfx/voice/MIRA_okay-and.wav,sfx,Gemini TTS prebuilt voice Kore via script
 assets/sfx/voice/MIRA_we-re-so-back.wav,sfx,Gemini TTS prebuilt voice Kore via scripts/voice_stingers.py,AI voice generated for the owner (Google Gemini API terms); original line,no,all (label AI voice where a platform requires),check,2026-11-26,MIRA soundboard line: We're so back.
 assets/sfx/whistle_swipe_fart.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-26,"procedural; no samples, recordings or services"
 assets/sfx/cartoon_donk.wav,sfx,"scripts/sfx.py (original synthesis, seed 20261125)",original (owner),no,all,yes,2026-11-26,"procedural; no samples, recordings or services"
+assets/sfx/crowd/murmur/Schedar_00.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd murmur: So what did you end up doing yesterday?,generated,2026-11-27
+assets/sfx/crowd/murmur/Erinome_01.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd murmur: No way, he actually said that?",generated,2026-11-27
+assets/sfx/crowd/murmur/Iapetus_02.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd murmur: I need to get some food after this.,generated,2026-11-27
+assets/sfx/crowd/murmur/Sulafat_03.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd murmur: Have you tried the new arena yet?,generated,2026-11-27
+assets/sfx/crowd/murmur/Zephyr_04.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd murmur: Honestly it was kind of funny.,generated,2026-11-27
+assets/sfx/crowd/murmur/Gacrux_05.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd murmur: Wait, where did everyone go?",generated,2026-11-27
+assets/sfx/crowd/murmur/Charon_06.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd murmur: My slug keeps falling asleep, I swear.",generated,2026-11-27
+assets/sfx/crowd/murmur/Despina_07.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd murmur: Yeah, yeah, I know, I'll do it later.",generated,2026-11-27
+assets/sfx/crowd/murmur/Alnilam_08.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd murmur: That's what I told her!,generated,2026-11-27
+assets/sfx/crowd/murmur/Callirrhoe_09.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd murmur: Did you see the waterfall earlier?,generated,2026-11-27
+assets/sfx/crowd/murmur/Laomedeia_10.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd murmur: I mean, it could've gone worse.",generated,2026-11-27
+assets/sfx/crowd/murmur/Leda_11.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd murmur: Okay but hear me out.,generated,2026-11-27
+assets/sfx/crowd/cheer/Despina_00.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd cheer: Yeah! Let's go!,generated,2026-11-27
+assets/sfx/crowd/cheer/Alnilam_01.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd cheer: Woo! Nice one!,generated,2026-11-27
+assets/sfx/crowd/cheer/Callirrhoe_02.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd cheer: Yesss!,generated,2026-11-27
+assets/sfx/crowd/cheer/Laomedeia_03.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd cheer: Let's gooo!,generated,2026-11-27
+assets/sfx/crowd/cheer/Leda_04.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd cheer: Come on! Yeah!,generated,2026-11-27
+assets/sfx/crowd/cheer/Schedar_05.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd cheer: Woohoo!,generated,2026-11-27
+assets/sfx/crowd/cheer/Erinome_06.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd cheer: That was sick!,generated,2026-11-27
+assets/sfx/crowd/cheer/Iapetus_07.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd cheer: Go go go!,generated,2026-11-27
+assets/sfx/crowd/cheer/Sulafat_08.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd cheer: Yeah! Again!,generated,2026-11-27
+assets/sfx/crowd/cheer/Zephyr_09.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd cheer: Woo!,generated,2026-11-27
+assets/sfx/crowd/gasp/Iapetus_00.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd gasp: <gasp> Whoa!,generated,2026-11-27
+assets/sfx/crowd/gasp/Sulafat_01.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd gasp: <gasp> No way!,generated,2026-11-27
+assets/sfx/crowd/gasp/Zephyr_02.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd gasp: <gasp> Ohh!,generated,2026-11-27
+assets/sfx/crowd/gasp/Gacrux_03.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd gasp: <gasp> What?!,generated,2026-11-27
+assets/sfx/crowd/gasp/Charon_04.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd gasp: <gasp>,generated,2026-11-27
+assets/sfx/crowd/gasp/Despina_05.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd gasp: <gasp> Oh my gosh!,generated,2026-11-27
+assets/sfx/crowd/gasp/Alnilam_06.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd gasp: <gasp> Wait, what?",generated,2026-11-27
+assets/sfx/crowd/gasp/Callirrhoe_07.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd gasp: <gasp> Huh?!,generated,2026-11-27
+assets/sfx/crowd/gasp/Laomedeia_08.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd gasp: <gasp> Oh no!,generated,2026-11-27
+assets/sfx/crowd/gasp/Leda_09.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd gasp: <gasp> Whoa whoa!,generated,2026-11-27
+assets/sfx/crowd/laugh/Despina_00.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd laugh: <laugh>,generated,2026-11-27
+assets/sfx/crowd/laugh/Alnilam_01.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd laugh: <laugh> Ha ha ha!,generated,2026-11-27
+assets/sfx/crowd/laugh/Callirrhoe_02.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd laugh: <laugh> Oh my days.,generated,2026-11-27
+assets/sfx/crowd/laugh/Laomedeia_03.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd laugh: <laugh> No way!,generated,2026-11-27
+assets/sfx/crowd/laugh/Leda_04.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd laugh: <laugh> That's so funny.,generated,2026-11-27
+assets/sfx/crowd/laugh/Schedar_05.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd laugh: <laugh> Ha!,generated,2026-11-27
+assets/sfx/crowd/laugh/Erinome_06.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd laugh: <laugh> Stop it!,generated,2026-11-27
+assets/sfx/crowd/laugh/Iapetus_07.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd laugh: <laugh> Hahaha.,generated,2026-11-27
+assets/sfx/crowd/laugh/Sulafat_08.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd laugh: <laugh> I can't.,generated,2026-11-27
+assets/sfx/crowd/laugh/Zephyr_09.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd laugh: <laugh> Okay, okay.",generated,2026-11-27
+assets/sfx/crowd/ooh/Callirrhoe_00.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd ooh: Ooooh!,generated,2026-11-27
+assets/sfx/crowd/ooh/Laomedeia_01.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd ooh: Oooh, nice.",generated,2026-11-27
+assets/sfx/crowd/ooh/Leda_02.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd ooh: Ohhh!,generated,2026-11-27
+assets/sfx/crowd/ooh/Schedar_03.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd ooh: Ooh!,generated,2026-11-27
+assets/sfx/crowd/ooh/Erinome_04.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd ooh: Woah, ooh!",generated,2026-11-27
+assets/sfx/crowd/ooh/Iapetus_05.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd ooh: Oooooh.,generated,2026-11-27
+assets/sfx/crowd/ooh/Sulafat_06.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd ooh: Ooh, look at that!",generated,2026-11-27
+assets/sfx/crowd/ooh/Zephyr_07.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd ooh: Ohhh, okay!",generated,2026-11-27
+assets/sfx/crowd/scatter/Gacrux_00.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd scatter: Whoa! Run!,generated,2026-11-27
+assets/sfx/crowd/scatter/Charon_01.wav,"Gemini TTS (generated, owner-approved commercial use)","crowd scatter: Move, move!",generated,2026-11-27
+assets/sfx/crowd/scatter/Despina_02.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd scatter: Watch out!,generated,2026-11-27
+assets/sfx/crowd/scatter/Alnilam_03.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd scatter: Ahh! Go go go!,generated,2026-11-27
+assets/sfx/crowd/scatter/Callirrhoe_04.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd scatter: Get out of the way!,generated,2026-11-27
+assets/sfx/crowd/scatter/Laomedeia_05.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd scatter: Whoa whoa whoa!,generated,2026-11-27
+assets/sfx/crowd/scatter/Leda_06.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd scatter: Run for it!,generated,2026-11-27
+assets/sfx/crowd/scatter/Schedar_07.wav,"Gemini TTS (generated, owner-approved commercial use)",crowd scatter: Eek! Move!,generated,2026-11-27

@@ -40,6 +40,7 @@ Our own posted results override all of the above once they exist.
 
 ## Process (diverge, choose, draft, humanise aloud, critique)
 
+0. **The owner's video first (owner rule, 2026-11-27).** When the owner describes a video, run the intake interview in [references/intake.md](references/intake.md): ask about everything missing until they say it's enough, hold it to the research, and write `jobs/briefs/<id>.md` for them to confirm. Generate premises or drafts only when the owner asks; then the steps below apply.
 1. **Brief.** Know the format, the marketing job (see [references/marketing-fit.md](references/marketing-fit.md)), the cast and the length range. If there's a cultural or meme brief from ChatGPT, use it. Don't invent trends.
 2. **Diverge (when you need to).** With no strong idea yet, write a spread of one-line premises from several engines in [references/craft.md](references/craft.md), including a couple that break the format's usual moves, and don't judge yet; 8–12 is a useful default. With an idea that's already exceptional, skip ahead. At most, sketch one or two alternatives to check it really is the best version.
 3. **Choose 1–2.** Ask: is it specific and original, can a viewer picture it in seconds, does it make a slug or the world memorable, and is there a payoff you can already see? Keep one safe option and one bold one.

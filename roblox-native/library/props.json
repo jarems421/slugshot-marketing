@@ -1,0 +1,93 @@
+{
+ "_about": "Props made with Roblox Studio's mesh generator (owner-approved 2026-11-27), referenced by asset id. Prompt style: 'stylized chunky shapes, bold flat colours, hand-painted toon style'. Generated sizes come out smaller than asked and some come tilted: check a still. tools/make_locations.py reads this.",
+ "props": {
+  "bed": {
+   "mesh": "rbxassetid://93967272035879",
+   "tex": "rbxassetid://117690733850934"
+  },
+  "desk": {
+   "mesh": "rbxassetid://124774447714420",
+   "tex": "rbxassetid://127490998239565"
+  },
+  "terrarium": {
+   "mesh": "rbxassetid://126144831600868",
+   "tex": "rbxassetid://103791910852079"
+  },
+  "chalkboard": {
+   "mesh": "rbxassetid://103016927528040",
+   "tex": "rbxassetid://75273069053275"
+  },
+  "student_desk": {
+   "mesh": "rbxassetid://109658245082825",
+   "tex": "rbxassetid://92124716137734"
+  },
+  "wardrobe": {
+   "mesh": "rbxassetid://87210000663647",
+   "tex": "rbxassetid://108128107834402"
+  },
+  "teacher_desk": {
+   "mesh": "rbxassetid://92023223924562",
+   "tex": "rbxassetid://129418280791375"
+  },
+  "bookshelf": {
+   "mesh": "rbxassetid://99566528821028",
+   "tex": "rbxassetid://119737944400808"
+  },
+  "crates": {
+   "mesh": "rbxassetid://111089204259796",
+   "tex": "rbxassetid://94361883536144"
+  },
+  "shop_shelf": {
+   "mesh": "rbxassetid://132050189627167",
+   "tex": "rbxassetid://138143126456278"
+  },
+  "stall": {
+   "mesh": "rbxassetid://92578624786234",
+   "tex": "rbxassetid://78821194915266"
+  },
+  "boulder": {
+   "mesh": "rbxassetid://136203981861028",
+   "tex": "rbxassetid://89227566660348"
+  },
+  "plant_pot": {
+   "mesh": "rbxassetid://127030615506839",
+   "tex": "rbxassetid://113955140191517"
+  },
+  "wall_shelf": {
+   "mesh": "rbxassetid://103371063537898",
+   "tex": "rbxassetid://86086810935433"
+  },
+  "books": {
+   "mesh": "rbxassetid://116564965762781",
+   "tex": "rbxassetid://120164090797015"
+  },
+  "barrel": {
+   "mesh": "rbxassetid://119536780326111",
+   "tex": "rbxassetid://118827841960125"
+  },
+  "slug_plush": {
+   "mesh": "rbxassetid://97903357908697",
+   "tex": "rbxassetid://139496444020999"
+  },
+  "stool": {
+   "mesh": "rbxassetid://115204181570403",
+   "tex": "rbxassetid://130525857916931"
+  },
+  "paper_lantern": {
+   "mesh": "rbxassetid://134935026544718",
+   "tex": "rbxassetid://122869253949891"
+  },
+  "beanbag": {
+   "mesh": "rbxassetid://128485098263660",
+   "tex": "rbxassetid://104264459254201"
+  },
+  "sign_board": {
+   "mesh": "rbxassetid://95624244145009",
+   "tex": "rbxassetid://75884468382659"
+  },
+  "backpack": {
+   "mesh": "rbxassetid://129351543416666",
+   "tex": "rbxassetid://128216466113406"
+  }
+ }
+}

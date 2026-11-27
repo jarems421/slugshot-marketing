@@ -113,3 +113,4 @@ Slugs have no arms, so acting lives in head, body, eyes and timing:
    - not too tight.
 
    Fix it, then re-check. Don't film until every shot passes.
+11. **Living, not posed (2026-11-27).** The acting pass gives every named human idle life, listening and reactions; author the story beats yourself and let it fill the rest. Pick background vignettes that fit the story (a hangout has show-offs and a runaway; a duel has a ring that watches). Characters touch the world: they sit on seats, pick up and hand over slugs, and look at `look_*` props. In the still review also check for an assembled look: identical props side by side, perfect grids, bare walls, flat light.

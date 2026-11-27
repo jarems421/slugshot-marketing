@@ -190,6 +190,15 @@ def validate(spec):
             for ln in dialogue["lines"]:
                 if ln.get("actor") and ln["actor"] not in actors:
                     e.append(f"dialogue line {ln['n']}: speaker's actor '{ln['actor']}' is not in this scene")
+    # the acting pass (tools/acting.py) sees every authored beat at its resolved time and only fills the gaps
+    if not e:
+        import acting
+        words = []
+        if dialogue:
+            wp = (REPO / spec["dialogue"]).with_name("dialogue.words.json")
+            words = json.loads(wp.read_text(encoding="utf-8")) if wp.exists() else []
+        length = dialogue["duration"] if dialogue else sum(float(s.get("duration") or 0) for s in spec["shots"])
+        acting.expand(spec, length, dialogue, words)
     total = 0.0
     for i, s in enumerate(spec["shots"], 1):
         total += float(s.get("duration", 0))
@@ -339,6 +348,31 @@ def floor_warnings(spec):
     return out
 
 
+def interaction_warnings(spec):
+    """Physical interactions that would look wrong (owner, 2026-11-27: "more convincing interactions with props, other
+    characters and surroundings"): a `hold` whose slug starts out of reach floats across into the hands."""
+    marks, actors = spec.get("marks", {}), spec.get("actors", {})
+    moves = sorted((b for b in spec.get("timeline", []) if b.get("action") == "move_to"
+                    and isinstance(b.get("time"), (int, float))), key=lambda b: b["time"])
+
+    def where(name, t):
+        m = actors.get(name, {}).get("mark")
+        for b in moves:
+            if b["actor"] == name and b["time"] + float(b.get("duration") or 0) <= t:
+                m = b["mark"]
+        return marks.get(m)
+
+    out = []
+    for b in spec.get("timeline", []):
+        if b.get("action") != "hold" or str(b.get("actor", "")).startswith("amb_") or not isinstance(b.get("time"), (int, float)):
+            continue
+        a, i = where(b["actor"], b["time"]), where(b.get("item"), b["time"])
+        if a and i and math.hypot(a[0] - i[0], a[2] - i[2]) > 3.5:
+            out.append(f"{b['actor']} picks up {b['item']} at {b['time']:.1f}s from {math.hypot(a[0] - i[0], a[2] - i[2]):.1f} studs "
+                       "away; walk them together first (or hand it over from someone close)")
+    return out
+
+
 FULL_BODY = {"cheer", "laugh", "flinch", "cower", "dance", "jump", "salute", "hello", "happy", "sad", "confused",
              "facepalm", "disbelief", "hands_up", "applaud"}
 TALL = {"human": 5.0, "slug": 2.0, "clone": 5.0, "standin_humanoid": 5.0, "standin_slug": 2.0}
@@ -472,7 +506,7 @@ def main():
         print(("OK   " if not errs else "FAIL ") + str(p))
         for x in errs:
             print("     " + x)
-        for x in ([] if errs else floor_warnings(spec) + framing_warnings(spec)):
+        for x in ([] if errs else floor_warnings(spec) + framing_warnings(spec) + interaction_warnings(spec)):
             print("     warning: " + x)
         bad += bool(errs)
     sys.exit(1 if bad else 0)

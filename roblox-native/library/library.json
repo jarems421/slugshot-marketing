@@ -2,7 +2,7 @@
  "_about": "Reusable production assets referenced by scene specs. Empty until production preparation. Animation entry: {\"id\": \"rbxassetid://...\", \"rig\": \"R15|slug:<species>\", \"source\": \"how it was made\", \"licence\": \"original|...\", \"approved\": false, \"markers\": {\"FIRE\": {\"type\": \"vfx\", \"effect\": \"burst\"}}}. Sound entry: {\"id\": \"rbxassetid://...\", \"volume\": 0.6, \"licence\": \"...\"}. Only add assets the owner has approved; never Floppy transform/ability animations.",
  "animations": {},
  "sounds": {},
- "_humans": "Human actors (kind 'human', runtime/Scene/Humans.luau). humans: reusable characters; clothing and hair are Roblox catalog items applied by ID in Studio (nothing bought; other creators' designs, so no brand logos); face_style picks the painted face kit (boy|girl, tools/faces.py). human_moves: {clip} = the game's own movement clips; {animation} = a Roblox-owned default animation; {catalog} = a free Roblox emote; {keys} = an authored pose in the game's R15 pose terms, degrees (Shoulder/Hip +X swings forward, right limbs abduct +Z, left -Z; Waist/Neck -X leans forward, +Y turns left, +Z tilts left). Options: mask (full|upper|arms|right_arm|left_arm|head), loop, rate, speed (studs/s a locomotion cycle covers at rate 1). approved: false until the owner has seen them in a video.",
+ "_humans": "Human actors (kind 'human', runtime/Scene/Humans.luau). humans: reusable characters; clothing and hair are Roblox catalog items applied by ID in Studio (nothing bought; other creators' designs, so no brand logos); face_style picks the painted face kit (boy|girl, tools/faces.py). human_moves: {clip} = the game's own movement clips; {animation} = a Roblox-owned default animation; {catalog} = a free Roblox emote; {keys} = an authored pose in the game's R15 pose terms, degrees (Shoulder/Hip +X swings forward, right limbs abduct +Z, left -Z; Waist/Neck -X leans forward, +Y turns left, +Z tilts left). Options: mask (full|upper|arms|right_arm|left_arm|head), loop, rate, speed (studs/s a locomotion cycle covers at rate 1). approved: false until the owner has seen them in a video. mannerisms: each named human's acting profile for tools/acting.py (baseline face, posture sway, idle/talk/listen/after moves with weights and rates, an optional resting pose), from the cast personas.",
  "humans": {
   "kai": {
    "note": "black-and-white Y2K star hoodie, baggy black jeans, fluffy messy blonde hair (owner 2026-11-26: fluffy hair, no cropped girls' tops on guys; the brown fluffy cuts hid his eyes)",
@@ -17,7 +17,81 @@
     118417075004064
    ],
    "face_style": "boy",
-   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos",
+   "mannerisms": {
+    "note": "proud, overconfident, fast talker, loves a big reveal: leans in, talks with his hands, quick to smirk",
+    "base": {
+     "smile": 0.35,
+     "lean": 0.12
+    },
+    "sway": 0.08,
+    "idle": [
+     [
+      "explain",
+      2
+     ],
+     [
+      "point_emote",
+      1
+     ],
+     [
+      "snap",
+      1
+     ],
+     [
+      "shrug",
+      1
+     ]
+    ],
+    "gap": [
+     3.5,
+     6.5
+    ],
+    "talk": [
+     [
+      "explain",
+      3
+     ],
+     [
+      "point_emote",
+      2
+     ],
+     [
+      "snap",
+      1
+     ]
+    ],
+    "talk_rate": 0.75,
+    "listen": [
+     [
+      "nod",
+      3
+     ],
+     [
+      "tilt",
+      1
+     ]
+    ],
+    "listen_rate": 0.45,
+    "after": [
+     [
+      "nod",
+      2
+     ],
+     [
+      "shrug",
+      1
+     ],
+     [
+      "point_emote",
+      1
+     ]
+    ],
+    "after_rate": 0.45,
+    "after_face": {
+     "smirk": 0.7
+    }
+   }
   },
   "raf": {
    "note": "grin hoodie, grey sweats, brown quiff (keeps the face clear)",
@@ -32,7 +106,80 @@
     376548738
    ],
    "face_style": "boy",
-   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos",
+   "mannerisms": {
+    "note": "loud hype-man who always arrives running: bouncy, big laughs, all-in reactions",
+    "base": {
+     "smile": 0.6
+    },
+    "sway": 0.14,
+    "idle": [
+     [
+      "happy",
+      2
+     ],
+     [
+      "nod",
+      1
+     ],
+     [
+      "agree",
+      1
+     ],
+     [
+      "cheer",
+      1
+     ]
+    ],
+    "gap": [
+     3.0,
+     5.5
+    ],
+    "talk": [
+     [
+      "explain",
+      2
+     ],
+     [
+      "cheer",
+      1
+     ],
+     [
+      "point_emote",
+      1
+     ]
+    ],
+    "talk_rate": 0.8,
+    "listen": [
+     [
+      "nod",
+      3
+     ],
+     [
+      "agree",
+      1
+     ]
+    ],
+    "listen_rate": 0.6,
+    "after": [
+     [
+      "laugh",
+      2
+     ],
+     [
+      "agree",
+      1
+     ],
+     [
+      "hands_up",
+      1
+     ]
+    ],
+    "after_rate": 0.6,
+    "after_face": {
+     "smile": 1
+    }
+   }
   },
   "mira": {
    "note": "pale blue off-shoulder crop top, black cargos, long straight brown hair (flat-colour top: photo-textured tops look low-res in close-ups; the braid hair hung across the torso)",
@@ -47,7 +194,71 @@
     70735083646704
    ],
    "face_style": "girl",
-   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos",
+   "mannerisms": {
+    "note": "dry, deadpan sceptic, quick with a comeback: arms folded, a flat look, the slow head shake",
+    "base": {
+     "smirk": 0.3,
+     "squint": 0.2
+    },
+    "sway": 0.05,
+    "rest": "arms_crossed",
+    "idle": [
+     [
+      "tilt",
+      1
+     ],
+     [
+      "head_shake",
+      1
+     ]
+    ],
+    "gap": [
+     5.0,
+     8.0
+    ],
+    "talk": [
+     [
+      "shrug",
+      2
+     ],
+     [
+      "explain",
+      1
+     ]
+    ],
+    "talk_rate": 0.45,
+    "listen": [
+     [
+      "tilt",
+      1
+     ],
+     [
+      "nod",
+      1
+     ]
+    ],
+    "listen_rate": 0.25,
+    "after": [
+     [
+      "head_shake",
+      2
+     ],
+     [
+      "facepalm",
+      1
+     ],
+     [
+      "tilt",
+      1
+     ]
+    ],
+    "after_rate": 0.5,
+    "after_face": {
+     "squint": 0.6,
+     "smirk": 0.5
+    }
+   }
   },
   "juno": {
    "note": "skeleton zip hoodie, baggy jeans, blonde-brown hair",
@@ -62,7 +273,53 @@
     6501746646
    ],
    "face_style": "girl",
-   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos",
+   "mannerisms": {
+    "note": "cool, confident blaster ace of few words: still, arms folded, one small tilt does the talking",
+    "base": {
+     "smirk": 0.2
+    },
+    "sway": 0.04,
+    "rest": "arms_crossed",
+    "idle": [
+     [
+      "tilt",
+      1
+     ]
+    ],
+    "gap": [
+     6.0,
+     10.0
+    ],
+    "talk": [
+     [
+      "point_emote",
+      1
+     ]
+    ],
+    "talk_rate": 0.3,
+    "listen": [
+     [
+      "nod",
+      1
+     ]
+    ],
+    "listen_rate": 0.15,
+    "after": [
+     [
+      "tilt",
+      1
+     ],
+     [
+      "nod",
+      1
+     ]
+    ],
+    "after_rate": 0.3,
+    "after_face": {
+     "smirk": 0.5
+    }
+   }
   },
   "dex": {
    "note": "red shirt and black vest, grey star cargos, two-tone wolf cut",
@@ -77,7 +334,50 @@
     8358684655
    ],
    "face_style": "boy",
-   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos",
+   "mannerisms": {
+    "note": "supporting player: easy-going, light gestures",
+    "base": {
+     "smile": 0.3
+    },
+    "sway": 0.08,
+    "idle": [
+     [
+      "nod",
+      1
+     ],
+     [
+      "shrug",
+      1
+     ],
+     [
+      "think",
+      1
+     ]
+    ],
+    "gap": [
+     4.0,
+     7.0
+    ],
+    "listen": [
+     [
+      "nod",
+      1
+     ]
+    ],
+    "listen_rate": 0.4,
+    "after": [
+     [
+      "nod",
+      1
+     ],
+     [
+      "laugh",
+      1
+     ]
+    ],
+    "after_rate": 0.4
+   }
   },
   "nova": {
    "note": "brown varsity jacket, black ripped pants, grunge wolf hair",
@@ -92,7 +392,50 @@
     11770892209
    ],
    "face_style": "girl",
-   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos"
+   "source": "Roblox catalog classic clothing and hair by other creators, applied by ID in Studio (owner choice 2026-11-26: catalog fits); checked on the rig for brand logos",
+   "mannerisms": {
+    "note": "supporting player: easy-going, light gestures",
+    "base": {
+     "smile": 0.3
+    },
+    "sway": 0.08,
+    "idle": [
+     [
+      "nod",
+      1
+     ],
+     [
+      "shrug",
+      1
+     ],
+     [
+      "think",
+      1
+     ]
+    ],
+    "gap": [
+     4.0,
+     7.0
+    ],
+    "listen": [
+     [
+      "nod",
+      1
+     ]
+    ],
+    "listen_rate": 0.4,
+    "after": [
+     [
+      "nod",
+      1
+     ],
+     [
+      "laugh",
+      1
+     ]
+    ],
+    "after_rate": 0.4
+   }
   }
  },
  "human_moves": {
@@ -849,6 +1192,43 @@
   "walk_r15": {
    "animation": 507777826,
    "source": "Roblox default R15 walk (high-knee; folds badly onto block legs)"
+  },
+  "sit": {
+   "keys": [
+    {
+     "t": 0,
+     "joints": {}
+    },
+    {
+     "t": 0.35,
+     "joints": {
+      "LeftHip": [
+       88,
+       0,
+       -4
+      ],
+      "RightHip": [
+       88,
+       0,
+       4
+      ],
+      "Root": [
+       0,
+       0,
+       0,
+       0,
+       -0.5,
+       0
+      ],
+      "Waist": [
+       -4,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "source": "authored: R6 seated (2026-11-27): both legs forward at the hips, body lowered half a stud; holds while its duration lasts, upper body free for other gestures; put the mark on the seat's front edge"
   }
  },
  "extras_wardrobe": {
