@@ -50,6 +50,8 @@ Measured (2026-11-25):
 - 4 full takes decoded with 0 repeated frames after chunking and one 4-frame patch.
 
 Facts to remember:
+- A still (`Scene.still`) leaves its posed actors standing until `Scene.clear()`. Before 2026-11-27, filming after a still filmed both casts (living plaza demo: a second Raf floating behind the real one). `Scene.film` and `Scene.run` now clear first; in a playtest built before that fix, call `Scene.clear()` yourself.
+- Start a decode only after `ss roblox rec stop` has finished (its background task reports "stopped ... (exit 0)"); decoding a file still being finalised stalled for 25 minutes.
 - `screen_capture` without camera arguments didn't show the play viewport; use `video_capture` grabs as the truth.
 - The player's avatar must stay in the world (the lobby's presentation follows it); the runner hides it and parks it under the set (the game draws a blaster holster on its back outside the character model, which showed as black blobs).
 - The hub's look-only motion (drifting islands and their sun shadows, lamp pulses, lava) follows `workspace.FilmClock`, set by the runner from scene time (a marketing patch to HubMotion), so every pass and patch of a take agrees. Never mix passes from a place built without that patch: moving shadows jump between frames.

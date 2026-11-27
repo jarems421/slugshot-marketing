@@ -850,5 +850,46 @@
    "animation": 507777826,
    "source": "Roblox default R15 walk (high-knee; folds badly onto block legs)"
   }
+ },
+ "extras_wardrobe": {
+  "note": "Background extras (tools/ambient.py): every extra wears a shirt and trousers from here, so no one shows up as a plain block body (owner, 2026-11-27). Free classic clothing and hair made by Roblox itself, from the public catalog (creator Roblox, price 0), applied by catalog ID like the cast's (nothing bought). Left out: the ROBLOX Jacket and Roblox pattern shirt (logos), the pizza text shirts, Raf's Brown Charmer hair, and the four Braided Hair items (they don't apply to the R6 rigs: bald extras in the 2026-11-27 ring test). Plus the non-cast library outfits (dex, nova). approved: false until the owner has seen them in a video.",
+  "shirts": [
+   398633584,
+   398635081,
+   398634295,
+   144076358,
+   382538059,
+   4047884046,
+   4047886060,
+   144076436,
+   382537702,
+   133089196017050,
+   91721205591696
+  ],
+  "pants": [
+   398633812,
+   398634487,
+   398635338,
+   144076760,
+   382537950,
+   382538503,
+   382537569,
+   382537806,
+   12598481285,
+   4737347763
+  ],
+  "hair": [
+   1103003368,
+   2956239660,
+   376524487,
+   376526888,
+   376527350,
+   451221329,
+   62234425,
+   63690008,
+   8358684655,
+   11770892209
+  ],
+  "approved": false
  }
 }

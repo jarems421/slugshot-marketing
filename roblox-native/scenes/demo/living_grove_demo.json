@@ -1,0 +1,82 @@
+{
+  "id": "living_grove_demo",
+  "note": "Owner checkpoint (2026-11-27): the game's grove residents recreated as our slug actors, plus a few visitors. No dialogue.",
+  "format": "vertical",
+  "truth": {
+    "mode": "staged_fiction",
+    "source": "staged_runtime",
+    "gameplay_mechanics": "none",
+    "match_outcome": "n/a",
+    "label": "Fictional story"
+  },
+  "set": {
+    "kind": "place",
+    "origin": [
+      120,
+      0,
+      10
+    ],
+    "yaw": 0
+  },
+  "capture": {
+    "ui": "hidden",
+    "sample": 0.5
+  },
+  "marks": {
+    "grove_c": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "pond_three": [
+      -5.2,
+      0,
+      -3.1,
+      0
+    ]
+  },
+  "actors": {},
+  "ambient": {
+    "seed": 5,
+    "residents": {
+      "near": [
+        0,
+        0,
+        0
+      ],
+      "radius": 40,
+      "max": 9
+    },
+    "groups": [
+      {
+        "zone": [
+          -14,
+          -10,
+          8,
+          14
+        ],
+        "people": 3,
+        "slugs": 0,
+        "activities": [
+          "stroll",
+          "chat",
+          "chat"
+        ]
+      }
+    ]
+  },
+  "shots": [
+    {
+      "preset": "orbit_reveal",
+      "duration": 8,
+      "target": "pond_three",
+      "radius": 10,
+      "height": 4.5,
+      "from": -15,
+      "to": 25,
+      "fov": 56
+    }
+  ],
+  "timeline": []
+}

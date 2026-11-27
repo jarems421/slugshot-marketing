@@ -1,0 +1,408 @@
+{
+ "name": "wild_cavern",
+ "origin": [
+  800,
+  0,
+  9000
+ ],
+ "about": "A wild cavern outside town: mossy ground, giant glowing mushrooms, flowers, crystal clusters, a crystal boulder, lantern posts, rock walls. About 70 x 70 studs.",
+ "pieces": [
+  {
+   "name": "ground",
+   "box": [
+    80,
+    2,
+    80
+   ],
+   "at": [
+    0,
+    -1,
+    0
+   ],
+   "color": [
+    38,
+    64,
+    58
+   ],
+   "material": "Ground",
+   "group": "floor"
+  },
+  {
+   "name": "moss_a",
+   "box": [
+    22,
+    0.2,
+    16
+   ],
+   "at": [
+    -12,
+    0.05,
+    4
+   ],
+   "color": [
+    52,
+    104,
+    76
+   ],
+   "material": "LeafyGrass",
+   "group": "floor"
+  },
+  {
+   "name": "moss_b",
+   "box": [
+    18,
+    0.2,
+    14
+   ],
+   "at": [
+    14,
+    0.05,
+    -10
+   ],
+   "color": [
+    52,
+    104,
+    76
+   ],
+   "material": "LeafyGrass",
+   "group": "floor"
+  },
+  {
+   "name": "wall_back",
+   "box": [
+    78,
+    44,
+    6
+   ],
+   "at": [
+    0,
+    22.0,
+    -38.0
+   ],
+   "color": [
+    48,
+    38,
+    72
+   ],
+   "material": "Rock",
+   "group": "walls"
+  },
+  {
+   "name": "wall_front",
+   "box": [
+    78,
+    44,
+    6
+   ],
+   "at": [
+    0,
+    22.0,
+    38.0
+   ],
+   "color": [
+    48,
+    38,
+    72
+   ],
+   "material": "Rock",
+   "group": "walls"
+  },
+  {
+   "name": "wall_left",
+   "box": [
+    6,
+    44,
+    70
+   ],
+   "at": [
+    -38.0,
+    22.0,
+    0
+   ],
+   "color": [
+    48,
+    38,
+    72
+   ],
+   "material": "Rock",
+   "group": "walls"
+  },
+  {
+   "name": "wall_right",
+   "box": [
+    6,
+    44,
+    70
+   ],
+   "at": [
+    38.0,
+    22.0,
+    0
+   ],
+   "color": [
+    48,
+    38,
+    72
+   ],
+   "material": "Rock",
+   "group": "walls"
+  },
+  {
+   "name": "roof",
+   "box": [
+    78,
+    4,
+    78
+   ],
+   "at": [
+    0,
+    46,
+    0
+   ],
+   "color": [
+    30,
+    24,
+    46
+   ],
+   "material": "Rock",
+   "group": "walls"
+  },
+  {
+   "kit": "mushroom-12",
+   "at": [
+    -20,
+    0,
+    -18,
+    30
+   ],
+   "scale": 0.55
+  },
+  {
+   "kit": "mushroom-3",
+   "at": [
+    18,
+    0,
+    -20,
+    120
+   ],
+   "scale": 0.5
+  },
+  {
+   "kit": "mushroom-5",
+   "at": [
+    -26,
+    0,
+    10,
+    200
+   ],
+   "scale": 0.6
+  },
+  {
+   "kit": "mushroom-13",
+   "at": [
+    24,
+    0,
+    14,
+    60
+   ],
+   "scale": 0.45
+  },
+  {
+   "kit": "crystals-5",
+   "at": [
+    10,
+    0,
+    -8,
+    0
+   ],
+   "scale": 1.0
+  },
+  {
+   "kit": "crystals-10",
+   "at": [
+    -12,
+    0,
+    -24,
+    40
+   ],
+   "scale": 1.2
+  },
+  {
+   "kit": "crystals-1",
+   "at": [
+    -6,
+    0,
+    16,
+    90
+   ],
+   "scale": 1.0
+  },
+  {
+   "kit": "hub-flora-bell",
+   "at": [
+    -8,
+    0,
+    -6,
+    0
+   ]
+  },
+  {
+   "kit": "hub-flora-bell",
+   "index": 2,
+   "at": [
+    -10,
+    0,
+    -14,
+    45
+   ]
+  },
+  {
+   "kit": "hub-flora-star",
+   "at": [
+    -15,
+    0,
+    2,
+    0
+   ]
+  },
+  {
+   "kit": "hub-flora-star",
+   "index": 2,
+   "at": [
+    20,
+    0,
+    -2,
+    70
+   ]
+  },
+  {
+   "kit": "hub-flora-lantern",
+   "at": [
+    -3,
+    0,
+    -14,
+    0
+   ]
+  },
+  {
+   "kit": "hub-flora-lantern",
+   "index": 2,
+   "at": [
+    20,
+    0,
+    -4,
+    0
+   ]
+  },
+  {
+   "kit": "hub-lantern-post",
+   "at": [
+    -5,
+    0,
+    22,
+    0
+   ]
+  },
+  {
+   "kit": "hub-lantern-post",
+   "index": 2,
+   "at": [
+    5,
+    0,
+    22,
+    0
+   ]
+  },
+  {
+   "name": "boulder",
+   "mesh": "rbxassetid://136203981861028",
+   "tex": "rbxassetid://89227566660348",
+   "at": [
+    17,
+    0,
+    6,
+    30
+   ],
+   "scale": 1.0,
+   "solid": true
+  },
+  {
+   "light": "point",
+   "at": [
+    0,
+    14,
+    0
+   ],
+   "range": 40,
+   "brightness": 1.1,
+   "color": [
+    120,
+    220,
+    210
+   ]
+  },
+  {
+   "light": "point",
+   "at": [
+    -18,
+    10,
+    -12
+   ],
+   "range": 26,
+   "brightness": 1.0,
+   "color": [
+    170,
+    120,
+    255
+   ]
+  },
+  {
+   "light": "point",
+   "at": [
+    16,
+    10,
+    -14
+   ],
+   "range": 26,
+   "brightness": 1.0,
+   "color": [
+    110,
+    240,
+    170
+   ]
+  }
+ ],
+ "marks": {
+  "clearing": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "boulder_side": [
+   12,
+   0,
+   9,
+   0
+  ],
+  "path": [
+   0,
+   0,
+   18,
+   0
+  ],
+  "tree_shade": [
+   -14,
+   0,
+   -8,
+   0
+  ],
+  "crystals": [
+   6,
+   0,
+   -4,
+   0
+  ]
+ },
+ "source": "boxes + hub kit pieces (cloned at play time from workspace.HubArt) + generated props: Studio mesh generator (owner-approved 2026-11-27), applied by asset id"
+}

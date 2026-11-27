@@ -1,0 +1,19 @@
+{
+  "_about": "The game's 14 Slug Grove residents (HubArt GroveSlugs), read in a playtest of SlugshotMarketing.rbxlx on 2026-11-27. World studs; yaw in degrees (Roblox Y rotation of the game's pivot). The game's own grove motion can't be replayed frame-exactly, so tools/ambient.py recreates them as our slug actors at these spots (residents block). Re-read if the hub layout changes.",
+  "slugs": [
+    {"species": "Rammstone", "at": [113.15, 0.25, 8.10], "yaw": 23},
+    {"species": "BoonDoc", "at": [211.17, 1.56, 11.62], "yaw": -45},
+    {"species": "Aquabeek", "at": [196.45, 1.27, 26.97], "yaw": 65},
+    {"species": "Tormato", "at": [126.88, 0.75, 28.91], "yaw": 34},
+    {"species": "BoonDoc", "at": [169.78, 1.82, -13.10], "yaw": -97},
+    {"species": "Aquabeek", "at": [117.80, 0.09, 8.90], "yaw": -29},
+    {"species": "Tormato", "at": [96.17, 2.06, 20.87], "yaw": -106},
+    {"species": "Rammstone", "at": [133.18, 0.68, -32.29], "yaw": -130},
+    {"species": "Inferno", "at": [165.54, 1.46, 18.20], "yaw": 60},
+    {"species": "Floppy", "at": [113.27, 0.30, 3.60], "yaw": 149},
+    {"species": "Inferno", "at": [174.12, 0.49, -46.16], "yaw": 64},
+    {"species": "Floppy", "at": [108.75, 0.53, -24.77], "yaw": 165},
+    {"species": "Inferno", "at": [133.31, 2.86, 51.16], "yaw": -14},
+    {"species": "Floppy", "at": [151.61, 0.49, 35.39], "yaw": -94}
+  ]
+}

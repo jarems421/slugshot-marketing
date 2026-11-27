@@ -516,6 +516,10 @@ function Actors.frameAt(actor: any, t: number, where: (string, number) -> Vector
 		end
 		pos = pos:Lerp(m.to, u)
 	end
+	local floor = actor.groundAt and actor.groundAt(pos.X, pos.Z, pos.Y)
+	if floor then
+		pos = Vector3.new(pos.X, floor, pos.Z)
+	end
 	for _, f in tr.faces do
 		if t < f.t then
 			break

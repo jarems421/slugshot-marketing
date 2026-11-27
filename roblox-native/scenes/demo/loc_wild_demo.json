@@ -1,0 +1,80 @@
+{
+  "id": "loc_wild_demo",
+  "note": "Temporary location check (2026-11-27): the wild_cavern set with two people in it.",
+  "format": "vertical",
+  "truth": {
+    "mode": "staged_fiction",
+    "source": "staged_runtime",
+    "gameplay_mechanics": "none",
+    "match_outcome": "n/a",
+    "label": "Fictional story"
+  },
+  "set": {
+    "kind": "location",
+    "location": "wild_cavern"
+  },
+  "capture": {
+    "ui": "hidden",
+    "sample": 0.5
+  },
+  "marks": {},
+  "actors": {
+    "kai": {
+      "kind": "human",
+      "human": "kai",
+      "mark": "clearing",
+      "face": "boulder_side"
+    },
+    "raf": {
+      "kind": "human",
+      "human": "raf",
+      "mark": "boulder_side",
+      "face": "clearing",
+      "phase": 1.7
+    }
+  },
+  "shots": [
+    {
+      "preset": "orbit_reveal",
+      "duration": 5,
+      "target": "kai",
+      "radius": 15,
+      "height": 5,
+      "from": -30,
+      "to": 25,
+      "fov": 58
+    },
+    {
+      "preset": "medium",
+      "duration": 4,
+      "target": "kai",
+      "size": 2.4,
+      "side": 25,
+      "fov": 44
+    }
+  ],
+  "timeline": [
+    {
+      "time": 0.8,
+      "actor": "kai",
+      "action": "gesture",
+      "move": "explain",
+      "mask": "upper",
+      "duration": 2.5
+    },
+    {
+      "time": 4.0,
+      "actor": "raf",
+      "action": "gesture",
+      "move": "laugh",
+      "mask": "upper"
+    },
+    {
+      "time": 6.0,
+      "actor": "kai",
+      "action": "gesture",
+      "move": "shrug",
+      "mask": "upper"
+    }
+  ]
+}

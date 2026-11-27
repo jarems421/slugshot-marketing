@@ -1,0 +1,294 @@
+{
+ "name": "market",
+ "origin": [
+  1200,
+  0,
+  9000
+ ],
+ "about": "A small cavern market: a stall with an awning, a shelf of creature jars, crates, the town's mushroom shop behind, lanterns. About 60 x 50 studs.",
+ "pieces": [
+  {
+   "name": "ground",
+   "box": [
+    64,
+    1,
+    54
+   ],
+   "at": [
+    0,
+    -0.5,
+    0
+   ],
+   "color": [
+    86,
+    78,
+    96
+   ],
+   "material": "Cobblestone",
+   "group": "floor"
+  },
+  {
+   "name": "wall_back",
+   "box": [
+    70,
+    40,
+    6
+   ],
+   "at": [
+    0,
+    20.0,
+    -29.0
+   ],
+   "color": [
+    48,
+    38,
+    72
+   ],
+   "material": "Rock",
+   "group": "walls"
+  },
+  {
+   "name": "wall_front",
+   "box": [
+    70,
+    40,
+    6
+   ],
+   "at": [
+    0,
+    20.0,
+    29.0
+   ],
+   "color": [
+    48,
+    38,
+    72
+   ],
+   "material": "Rock",
+   "group": "walls"
+  },
+  {
+   "name": "wall_left",
+   "box": [
+    6,
+    40,
+    52
+   ],
+   "at": [
+    -34.0,
+    20.0,
+    0
+   ],
+   "color": [
+    48,
+    38,
+    72
+   ],
+   "material": "Rock",
+   "group": "walls"
+  },
+  {
+   "name": "wall_right",
+   "box": [
+    6,
+    40,
+    52
+   ],
+   "at": [
+    34.0,
+    20.0,
+    0
+   ],
+   "color": [
+    48,
+    38,
+    72
+   ],
+   "material": "Rock",
+   "group": "walls"
+  },
+  {
+   "name": "roof",
+   "box": [
+    70,
+    4,
+    60
+   ],
+   "at": [
+    0,
+    42,
+    0
+   ],
+   "color": [
+    30,
+    24,
+    46
+   ],
+   "material": "Rock",
+   "group": "walls"
+  },
+  {
+   "kit": "hub-gun-shop",
+   "at": [
+    -14,
+    0,
+    -16,
+    20
+   ],
+   "scale": 0.35
+  },
+  {
+   "name": "stall",
+   "mesh": "rbxassetid://92578624786234",
+   "tex": "rbxassetid://78821194915266",
+   "at": [
+    2,
+    0,
+    -4,
+    0
+   ],
+   "scale": 1.0
+  },
+  {
+   "name": "shop_shelf",
+   "mesh": "rbxassetid://132050189627167",
+   "tex": "rbxassetid://138143126456278",
+   "at": [
+    -6,
+    0,
+    -6,
+    0
+   ],
+   "scale": 1.1
+  },
+  {
+   "name": "crates",
+   "mesh": "rbxassetid://111089204259796",
+   "tex": "rbxassetid://94361883536144",
+   "at": [
+    8.5,
+    0,
+    -2.5,
+    15
+   ],
+   "scale": 1.0
+  },
+  {
+   "name": "crates",
+   "mesh": "rbxassetid://111089204259796",
+   "tex": "rbxassetid://94361883536144",
+   "at": [
+    10.5,
+    0,
+    -5,
+    -20
+   ],
+   "scale": 0.9
+  },
+  {
+   "kit": "hub-lantern-post",
+   "at": [
+    -9,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "kit": "hub-lantern-post",
+   "index": 2,
+   "at": [
+    12,
+    0,
+    6,
+    0
+   ]
+  },
+  {
+   "kit": "hub-flora-lantern",
+   "at": [
+    16,
+    0,
+    -12,
+    0
+   ]
+  },
+  {
+   "kit": "hub-flora-star",
+   "at": [
+    -20,
+    0,
+    4,
+    0
+   ]
+  },
+  {
+   "kit": "crystals-5",
+   "at": [
+    22,
+    0,
+    -16,
+    0
+   ],
+   "scale": 1.1
+  },
+  {
+   "light": "point",
+   "at": [
+    2,
+    7,
+    -2
+   ],
+   "range": 18,
+   "brightness": 1.4,
+   "color": [
+    255,
+    200,
+    130
+   ],
+   "shadows": true
+  },
+  {
+   "light": "point",
+   "at": [
+    0,
+    18,
+    6
+   ],
+   "range": 44,
+   "brightness": 1.0,
+   "color": [
+    170,
+    150,
+    255
+   ]
+  }
+ ],
+ "marks": {
+  "shopkeeper": [
+   2,
+   0,
+   -6.5,
+   0
+  ],
+  "customer": [
+   2,
+   0,
+   1.5,
+   0
+  ],
+  "browse": [
+   -6,
+   0,
+   -2.5,
+   0
+  ],
+  "street": [
+   0,
+   0,
+   10,
+   0
+  ]
+ },
+ "source": "boxes + hub kit pieces (cloned at play time from workspace.HubArt) + generated props: Studio mesh generator (owner-approved 2026-11-27), applied by asset id"
+}

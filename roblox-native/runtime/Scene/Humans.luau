@@ -643,6 +643,10 @@ local function stateAt(actor: any, t: number, where: any): (CFrame, number, numb
 			v, vmax = vm, m.v
 		end
 	end
+	local floor = actor.groundAt and actor.groundAt(pos.X, pos.Z, pos.Y)
+	if floor then
+		pos = Vector3.new(pos.X, floor, pos.Z)
+	end
 	for _, f in tr.faces do
 		if t < f.t then
 			break

@@ -3,6 +3,7 @@
   .venv\\Scripts\\python -m unittest tests.test_production
 """
 import copy
+import json
 import sys
 import tempfile
 import unittest
@@ -264,3 +265,232 @@ class ContentOrder(unittest.TestCase):
         vs.sort(key=lambda v: (v["version"], v["made_at"] or ""), reverse=True)
         vs.sort(key=lambda v: v["language"])
         self.assertEqual(vs[0]["version"], "V02")
+
+
+class Ambient(unittest.TestCase):
+    """Background life (tools/ambient.py): seeded, valid, and out of the main characters' way."""
+
+    def spec(self):
+        return {"id": "amb_t", "truth": {"mode": "staged_fiction", "gameplay_mechanics": "none", "match_outcome": "n/a",
+                                         "label": "Fictional story"},
+                "set": {"kind": "place", "origin": [120, 0, 10], "yaw": 0},
+                "marks": {"hero": [0, 0, 0, 0]},
+                "actors": {"kai": {"kind": "human", "human": "kai", "mark": "hero"}},
+                "shots": [{"preset": "orbit_reveal", "duration": 12, "target": "hero", "from": 0, "to": 40}],
+                "ambient": {"seed": 3, "clear": ["hero"], "clear_radius": 6, "avoid": [[4, 4]],
+                            "residents": {"near": [0, 0, 0], "radius": 40, "max": 4},
+                            "groups": [{"zone": [-12, -12, 12, 12], "people": 5, "slugs": 2,
+                                        "activities": ["stroll", "chat", "chat", "watch"], "focus": "hero"}]}}
+
+    def test_same_seed_same_crowd(self):
+        a, b = self.spec(), self.spec()
+        self.assertEqual(scene.validate(a), [])
+        scene.validate(b)
+        self.assertEqual(a, b)
+        self.assertNotIn("ambient", a)
+        self.assertGreaterEqual(sum(n.startswith("amb_p") for n in a["actors"]), 5)
+
+    def test_extras_keep_clear_of_heroes_and_avoid_spots(self):
+        import math
+        s = self.spec()
+        scene.validate(s)
+        used = {a["mark"] for n, a in s["actors"].items() if n.startswith("amb_p")}
+        used |= {b["mark"] for b in s["timeline"] if b.get("action") == "move_to" and b["actor"].startswith("amb_p")}
+        for m in used:
+            x, _, z = s["marks"][m][:3]
+            self.assertGreaterEqual(math.hypot(x, z), 6 - 2.0, m)  # chat partners stand 1.9 studs off their (clear) centre
+            self.assertGreaterEqual(math.hypot(x - 4, z - 4), 2.5 - 2.0, m)
+
+    def test_extras_never_wear_cast_outfits(self):
+        s = self.spec()
+        scene.validate(s)
+        cast = {scene.LIBRARY["humans"][k]["shirt"] for k in ("kai", "raf", "mira", "juno")}
+        for n, a in s["actors"].items():
+            if n.startswith("amb_p"):
+                self.assertNotIn(a["look"].get("shirt"), cast)
+
+    def test_residents_come_from_the_grove_library(self):
+        s = self.spec()
+        scene.validate(s)
+        grove = {g["species"] for g in json.loads((ROOT / "roblox-native/library/grove.json").read_text(encoding="utf-8"))["slugs"]}
+        residents = [a for n, a in s["actors"].items() if n.startswith("amb_s") and "scale" in a and a["species"] in grove]
+        self.assertTrue(residents)
+
+
+class Ambient2(unittest.TestCase):
+    """Owner review of the first living-environments demo (2026-11-27): cracks, racing slugs, plain bodies, reactions."""
+
+    def spec(self, **amb):
+        s = {"id": "amb_t2", "truth": {"mode": "staged_fiction", "gameplay_mechanics": "none", "match_outcome": "n/a",
+                                        "label": "Fictional story"},
+             "set": {"kind": "place", "origin": [19, 0, 20], "yaw": 0},
+             "marks": {"kai_h": [-15, 0, -18.5, 0], "raf_h": [-10, 0, -20.5, 0]},
+             "actors": {"kai": {"kind": "human", "human": "kai", "mark": "kai_h"},
+                        "raf": {"kind": "human", "human": "raf", "mark": "raf_h"}},
+             "shots": [{"preset": "close_up", "duration": 14, "target": "raf"}],
+             "ambient": {"seed": 4, "clear": ["kai_h", "raf_h"],
+                         "groups": [{"zone": [-40, -46, 6, -24], "people": 10, "slugs": 4,
+                                     "activities": ["stroll", "chat", "chat", "watch"], "focus": "kai_h"}], **amb}}
+        self.assertEqual(scene.validate(s), [])
+        return s
+
+    def test_nobody_stands_or_walks_on_a_crack(self):
+        import floormap
+        s = self.spec()
+        o = s["set"]["origin"]
+        for n, a in s["actors"].items():
+            if n.startswith("amb_"):
+                x, _, z = s["marks"][a["mark"]][:3]
+                self.assertTrue(floormap.standable(o[0] + x, o[2] + z), n)
+        for b in s["timeline"]:
+            if b.get("action") == "move_to":
+                x, _, z = s["marks"][b["mark"]][:3]
+                self.assertTrue(floormap.standable(o[0] + x, o[2] + z), b)
+
+    def test_floor_map_knows_the_plaza_cracks(self):
+        import floormap
+        self.assertFalse(floormap.standable(-10.0, 10.0))   # the crack measured at world (-10, 10): 2.45 deep
+        self.assertFalse(floormap.standable(14.0, 12.0))    # the pit by the old duel spot
+        self.assertTrue(floormap.standable(7.0, 1.0))       # open plaza floor (spec -12, -19)
+
+    def test_slugs_hop_at_one_even_stride(self):
+        import math
+        s = self.spec()
+        pos = {n: s["marks"][a["mark"]] for n, a in s["actors"].items() if a["kind"] == "slug"}
+        for b in sorted(s["timeline"], key=lambda b: b["time"]):
+            if b.get("gait") == "hop":
+                to = s["marks"][b["mark"]]
+                d = math.hypot(to[0] - pos[b["actor"]][0], to[2] - pos[b["actor"]][2])
+                self.assertLessEqual(d / b["hops"], 2.4, b)
+                pos[b["actor"]] = to
+
+    def test_every_extra_is_dressed(self):
+        s = self.spec()
+        wardrobe = scene.LIBRARY["extras_wardrobe"]
+        for n, a in s["actors"].items():
+            if n.startswith("amb_p"):
+                self.assertIn(a["look"]["shirt"], wardrobe["shirts"])
+                self.assertIn(a["look"]["pants"], wardrobe["pants"])
+                self.assertTrue(a["look"]["hair"])
+                self.assertNotIn("blaster", a)
+
+    def test_reaction_interrupts_and_staggers(self):
+        s = self.spec(reactions=[{"at": 6.0, "kind": "cheer", "focus": "raf", "hold": 2.0}])
+        people = [n for n in s["actors"] if n.startswith("amb_p")]
+        firsts = []
+        for n in people:
+            mine = [b for b in s["timeline"] if b.get("actor") == n]
+            turn = [b for b in mine if b["action"] == "face" and b.get("target") == "raf"]
+            self.assertTrue(turn, n)
+            t = turn[0]["time"]
+            firsts.append(t)
+            own = [b for b in mine if t - 0.04 < b["time"] < t + 2.0 and b["action"] == "move_to"]
+            self.assertEqual(own, [], n)
+        self.assertGreater(max(firsts) - min(firsts), 0.05)   # not all on the same frame
+
+    def test_scatter_runs_everyone_away(self):
+        import math
+        s = self.spec(reactions=[{"at": 8.0, "kind": "scatter", "focus": "kai_h", "who": "people"}])
+        kai = s["marks"]["kai_h"]
+        for n in (n for n in s["actors"] if n.startswith("amb_p")):
+            runs = [b for b in s["timeline"] if b.get("actor") == n and b.get("gait") == "run"]
+            if not runs:
+                continue
+            start = s["marks"][s["actors"][n]["mark"]]
+            end = s["marks"][runs[-1]["mark"]]
+            self.assertGreater(math.hypot(end[0] - kai[0], end[2] - kai[2]), math.hypot(start[0] - kai[0], start[2] - kai[2]) - 3)
+
+    def test_ring_leaves_the_camera_side_open(self):
+        import math
+        s = self.spec()
+        s2 = {k: v for k, v in s.items()}
+        ring = {"id": "amb_r", "truth": s["truth"], "set": s["set"], "marks": {"c": [-12, 0, -19, 0]}, "actors": {},
+                "shots": [{"preset": "orbit_reveal", "duration": 6, "target": "c", "from": 0, "to": 10}],
+                "ambient": {"seed": 2, "groups": [{"activities": ["ring"], "focus": "c", "people": 12, "radius": 8.5,
+                                                   "open": [135, 205]}]}}
+        self.assertEqual(scene.validate(ring), [])
+        c = ring["marks"]["c"]
+        for n, a in ring["actors"].items():
+            m = ring["marks"][a["mark"]]
+            ang = math.degrees(math.atan2(m[0] - c[0], m[2] - c[2])) % 360
+            self.assertFalse(135 <= ang <= 205, (n, ang))  # demo uses a wider [120, 220]
+
+
+class Ambient3(unittest.TestCase):
+    """Owner review 2 (2026-11-27): crowds not cramped, framing not too tight, one consistent crowd reaction."""
+
+    def spec(self, **amb):
+        s = Ambient2.spec(self, **amb)
+        return s
+
+    def test_nobody_stands_on_top_of_anyone(self):
+        import math
+        import ambient
+        s = self.spec()
+        spots = [(n, s["marks"][a["mark"]]) for n, a in s["actors"].items() if n.startswith("amb_")]
+        for i, (n, p) in enumerate(spots):
+            for m, q in spots[i + 1:]:
+                d = math.hypot(p[0] - q[0], p[2] - q[2])
+                kinds = {s["actors"][n]["kind"], s["actors"][m]["kind"]}
+                need = ambient.SLUG_GAP if "slug" in kinds else 3.7   # chat partners stand 3.8 apart
+                self.assertGreaterEqual(d, need - 0.01, (n, m, round(d, 2)))
+
+    def test_shock_lands_together_with_matching_faces(self):
+        s = self.spec(reactions=[{"at": 6.0, "kind": "gasp", "focus": "raf"}])
+        people = [n for n in s["actors"] if n.startswith("amb_p")]
+        times, faces = [], []
+        for n in people:
+            turn = [b for b in s["timeline"] if b.get("actor") == n and b["action"] == "face" and b.get("target") == "raf"]
+            face = [b for b in s["timeline"] if b.get("actor") == n and b["action"] == "express" and b["time"] >= 6.0]
+            times.append(turn[0]["time"])
+            faces.append(face[0]["set"])
+        self.assertLess(max(times) - min(times), 0.45)
+        self.assertTrue(all(f == faces[0] for f in faces))
+        self.assertGreater(faces[0].get("open", 0), 0.5)
+
+    def test_reaction_holds_until_its_beat_ends(self):
+        s = self.spec(reactions=[{"at": 5.0, "kind": "gasp", "focus": "raf", "until": 11.0}])
+        n = next(n for n in s["actors"] if n.startswith("amb_p"))
+        own = [b for b in s["timeline"] if b.get("actor") == n and 5.0 < b["time"] < 10.9
+               and b["action"] in ("gesture", "move_to") and b.get("move") not in ("disbelief", "hands_up")]
+        self.assertEqual(own, [])
+
+    def test_framing_flags_tight_shots_for_what_happens_in_them(self):
+        s = self.spec(reactions=[{"at": 6.0, "kind": "cheer", "focus": "raf"}])
+        s["timeline"].append({"time": 3.0, "actor": "raf", "action": "aim", "target": "kai", "duration": 1.0})
+        s["actors"]["raf"]["blaster"] = True
+        s["shots"] = [{"preset": "close_up", "duration": 14, "target": "raf", "size": 1.1}]
+        warns = " | ".join(scene.framing_warnings(s))
+        self.assertIn("crowd's cheer", warns)
+        self.assertIn("aim", warns)
+        s["shots"] = [{"preset": "medium", "duration": 14, "target": "raf", "size": 2.6}]
+        self.assertEqual(scene.framing_warnings(s), [])
+        s["shots"] = [{"preset": "close_up", "duration": 14, "target": "raf", "size": 1.1, "tight": "the stare-down"}]
+        self.assertEqual(scene.framing_warnings(s), [])
+
+
+class Locations(unittest.TestCase):
+    """Temporary locations (2026-11-27): a scene set in one gets its origin, named spots and pieces."""
+
+    def test_location_set_brings_origin_marks_and_pieces(self):
+        s = {"id": "loc_t", "truth": {"mode": "staged_fiction", "gameplay_mechanics": "none", "match_outcome": "n/a",
+                                       "label": "Fictional story"},
+             "set": {"kind": "location", "location": "bedroom"}, "marks": {},
+             "actors": {"kai": {"kind": "human", "human": "kai", "mark": "by_bed"}},
+             "shots": [{"preset": "medium", "duration": 3, "target": "kai"}], "timeline": []}
+        self.assertEqual(scene.validate(s), [])
+        self.assertEqual(s["set"]["origin"], [0, 0, 9000])
+        self.assertIn("by_bed", s["marks"])
+        self.assertTrue(any(p.get("mesh") for p in s["set"]["_location"]["pieces"]))
+
+    def test_unknown_location_is_an_error(self):
+        s = {"id": "loc_x", "truth": {}, "set": {"kind": "location", "location": "moon_base"}, "marks": {}, "shots": []}
+        self.assertTrue(any("moon_base" in e for e in scene.validate(s)))
+
+    def test_every_location_file_is_well_formed(self):
+        for p in sorted((ROOT / "roblox-native/library/locations").glob("*.json")):
+            loc = json.loads(p.read_text(encoding="utf-8"))
+            self.assertEqual(loc["name"], p.stem)
+            self.assertEqual(len(loc["origin"]), 3)
+            for piece in loc["pieces"]:
+                self.assertEqual(sum(k in piece for k in ("box", "mesh", "kit", "light")), 1, piece)

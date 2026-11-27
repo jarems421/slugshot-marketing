@@ -8,4 +8,23 @@ The world is built at play time (HubArt about 2 min, Training about 3.5 min); in
 | **Training arena** (floating island) | (6000, 0, 0) | y 0 (TrainingSolids.Footing), about 300 x 300 open | Dark purple stone and mist against a black void (the game's own arena light), cover blocks, grey R6 training dummies, target boards, a green portal | duels, practice, montage. Actors read well at medium and wide (checked); keep marks clear of the dummies |
 | **Cinder Rift** (1v1 PvP greybox) | (-6000, ~0, 0) | indoor under a roof at y 60 | Grey-box walls, orange lava, unlit | not yet: it reads as unfinished |
 
+**Living sets (2026-11-27).**
+- **Hub plaza** (spec coords, origin (19, 0, 20)): the floor is cut by diagonal cracks and pits, now mapped (`python roblox-native/tools/floormap.py show hub_plaza`). The widest clean patch for heroes is around (-12, -19) (x -22..-4, z -24..-14); the big open crowd area is north-west (x -40..-22, z -46..-30). Face the heroes so the camera looks north-west across the crowd; east of x 0 the background is the cave wall and pillars. The pilot's Floppy and Raf marks stood on cracks.
+- **Slug Grove**: origin (120, 0, 10) frames the pond. `residents` brings back the game's 14 residents at their real spots; the pond trio (Rammstone, Aquabeek, Floppy) sits around (-5.2, 0, -3.1), with the waterfall behind from the south-west (orbit angles about 205-250, radius 9, height 3.2). Visitors fit in [-14, -10, 8, 14]. Tall flora in the foreground blocks wider orbits.
+
+**Temporary locations (2026-11-27).** Quick reusable sets outside the lobby, in the Slugshot look, so videos can go anywhere (owner: "one-shotted", not production quality, but our identity). Use `"set": {"kind": "location", "location": "<name>"}`; the location's origin, named marks and lighting come with it.
+
+| Location | Origin | Inside | Named marks |
+|---|---|---|---|
+| `bedroom` | (0, 0, 9000) | 26 x 20 room: bed, desk + lamp, wardrobe, bookshelf, slug terrarium, glowing window, rug, posters | center, by_bed, at_desk, by_window, door |
+| `classroom` | (400, 0, 9000) | 34 x 26 room: chalkboard, teacher's desk + globe, nine student desks, bookshelves, windows | teacher, front, aisle, back_row, door, seat_l1/c1/r1 |
+| `wild_cavern` | (800, 0, 9000) | 70 x 70 cave: mossy ground, giant glowing mushrooms, flowers, crystals, a crystal boulder, lantern posts | clearing, boulder_side, path, tree_shade, crystals |
+| `market` | (1200, 0, 9000) | 60 x 50 cave plaza: striped stall (shopkeeper behind the counter), shelf of creature jars, crates, the town's mushroom shop, lanterns | shopkeeper, customer, browse, street |
+
+- Data: `roblox-native/library/locations/<name>.json` (boxes, `kit` pieces cloned from the hub's own inked art by name, generated props by mesh/texture id, lights); built at play time by `runtime/Scene/Locations.luau`, once, under `workspace.SS_Locations`.
+- A new location: copy one of these files and change it. Props: Studio's `generate_mesh` (owner-approved; prompt "stylized chunky shapes, bold flat colours, hand-painted toon style"), then record the `rbxassetid` mesh and texture. Generated props come in smaller than asked and sometimes tilted (the chalkboard): check a still and use boxes where a shape is simple.
+- Ink: one charcoal Highlight per group (floor, walls, trim, props); kit pieces bring their own ink shells. Roblox renders at most 31 Highlights and every actor uses one, so don't give props their own.
+- Hub kit names: mushroom-3/5/12/13 (trees), hub-flora-bell/star/lantern, crystals-1/5/10, hub-lantern-post, hub-gun-shop (the mushroom shop). `index` picks the nth copy.
+- Aim wides at a person, not a floor mark (the camera looks at the mark's height). Orbit angle 0 is in front of the target.
+
 Each video uses at least two sets (directing.md section 8). Before using a new spot, put a test actor there and look at a still: floors have cracks and props that swallow feet.

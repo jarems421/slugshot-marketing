@@ -1,0 +1,80 @@
+{
+  "id": "loc_classroom_demo",
+  "note": "Temporary location check (2026-11-27): the classroom set with two people in it.",
+  "format": "vertical",
+  "truth": {
+    "mode": "staged_fiction",
+    "source": "staged_runtime",
+    "gameplay_mechanics": "none",
+    "match_outcome": "n/a",
+    "label": "Fictional story"
+  },
+  "set": {
+    "kind": "location",
+    "location": "classroom"
+  },
+  "capture": {
+    "ui": "hidden",
+    "sample": 0.5
+  },
+  "marks": {},
+  "actors": {
+    "kai": {
+      "kind": "human",
+      "human": "kai",
+      "mark": "teacher",
+      "face": "seat_c1"
+    },
+    "raf": {
+      "kind": "human",
+      "human": "raf",
+      "mark": "seat_c1",
+      "face": "teacher",
+      "phase": 1.7
+    }
+  },
+  "shots": [
+    {
+      "preset": "orbit_reveal",
+      "duration": 5,
+      "target": "kai",
+      "radius": 12,
+      "height": 5,
+      "from": -25,
+      "to": 20,
+      "fov": 62
+    },
+    {
+      "preset": "medium",
+      "duration": 4,
+      "target": "kai",
+      "size": 2.4,
+      "side": 25,
+      "fov": 44
+    }
+  ],
+  "timeline": [
+    {
+      "time": 0.8,
+      "actor": "kai",
+      "action": "gesture",
+      "move": "explain",
+      "mask": "upper",
+      "duration": 2.5
+    },
+    {
+      "time": 4.0,
+      "actor": "raf",
+      "action": "gesture",
+      "move": "laugh",
+      "mask": "upper"
+    },
+    {
+      "time": 6.0,
+      "actor": "kai",
+      "action": "gesture",
+      "move": "shrug",
+      "mask": "upper"
+    }
+  ]
+}

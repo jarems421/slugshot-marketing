@@ -1,0 +1,155 @@
+{
+  "id": "duel_ring_demo",
+  "note": "Owner checkpoint 2 (2026-11-27): a duel with a ring of watchers; they gasp when Raf aims and cheer when Kai answers.",
+  "format": "vertical",
+  "truth": {
+    "mode": "staged_fiction",
+    "source": "staged_runtime",
+    "gameplay_mechanics": "none",
+    "match_outcome": "n/a",
+    "label": "Fictional story"
+  },
+  "set": {
+    "kind": "place",
+    "origin": [
+      19,
+      0,
+      20
+    ],
+    "yaw": 0
+  },
+  "capture": {
+    "ui": "hidden",
+    "sample": 0.5
+  },
+  "marks": {
+    "kai_d": [
+      -15.5,
+      0,
+      -19,
+      0
+    ],
+    "raf_d": [
+      -8.5,
+      0,
+      -19,
+      0
+    ],
+    "duel_c": [
+      -12,
+      0,
+      -19,
+      0
+    ]
+  },
+  "actors": {
+    "kai": {
+      "kind": "human",
+      "human": "kai",
+      "mark": "kai_d",
+      "blaster": true,
+      "loaded": "Floppy",
+      "face": "raf_d"
+    },
+    "raf": {
+      "kind": "human",
+      "human": "raf",
+      "mark": "raf_d",
+      "blaster": true,
+      "loaded": "Rammstone",
+      "face": "kai_d",
+      "phase": 1.7
+    }
+  },
+  "ambient": {
+    "seed": 8,
+    "clear": [
+      "kai_d",
+      "raf_d"
+    ],
+    "clear_radius": 3,
+    "groups": [
+      {
+        "activities": [
+          "ring"
+        ],
+        "focus": "duel_c",
+        "people": 12,
+        "slugs": 3,
+        "radius": 8.5,
+        "open": [
+          120,
+          220
+        ]
+      }
+    ],
+    "reactions": [
+      {
+        "at": 3.0,
+        "kind": "gasp",
+        "focus": "raf",
+        "hold": 2.0
+      },
+      {
+        "at": 6.2,
+        "kind": "cheer",
+        "focus": "kai",
+        "hold": 3.0
+      }
+    ]
+  },
+  "shots": [
+    {
+      "preset": "orbit_reveal",
+      "duration": 5,
+      "target": "duel_c",
+      "radius": 20,
+      "height": 8,
+      "from": -10,
+      "to": 20,
+      "fov": 50
+    },
+    {
+      "preset": "medium",
+      "duration": 4.5,
+      "target": "kai",
+      "size": 2.6,
+      "side": 40,
+      "fov": 44
+    }
+  ],
+  "timeline": [
+    {
+      "time": 2.8,
+      "actor": "raf",
+      "action": "aim",
+      "target": "kai",
+      "duration": 2.0
+    },
+    {
+      "time": 3.0,
+      "actor": "kai",
+      "action": "express",
+      "set": {
+        "react": 0.6
+      },
+      "ease": 0.3
+    },
+    {
+      "time": 5.9,
+      "actor": "kai",
+      "action": "aim",
+      "target": "raf",
+      "duration": 2.5
+    },
+    {
+      "time": 6.0,
+      "actor": "kai",
+      "action": "express",
+      "set": {
+        "smirk": 0.8
+      },
+      "ease": 0.3
+    }
+  ]
+}

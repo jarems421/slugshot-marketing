@@ -89,6 +89,17 @@ One JSON file per scene: `roblox-native/scenes/<group>/<id>.json`, where `id` eq
   - `cue`: `{type: vfx, effect, actor}` or `{type: sound, sound}` (a library.json name).
   - `marker`: a named point printed with a Unix-ms timestamp; use CUTAWAY_OUT / CUTAWAY_IN for hybrid bridges.
 - **capture**: `sample` = camera sampling interval (s) for repeatability checks.
+- **ambient** (2026-11-27): background life, expanded by `tools/ambient.py` into ordinary `amb_*` marks, actors and beats before validation (seeded, so every pass and patch matches; the runtime sees nothing new). Full format in the module docstring.
+  - Pick the crowd for the scene (owner, 2026-11-27): talking scenes get a busy hangout all around; a duel gets nobody, a `ring` of watchers, or a crowd that scatters when it starts.
+  - `seed`, `clear` (hero marks), `clear_radius` (default 5), `avoid` ([[x, z], ...], 2.5 studs).
+  - `groups`: `{zone: [x1, z1, x2, z2], people, slugs, activities: [stroll|chat|watch], focus, until}`, or `{activities: ["ring"], focus, people, slugs, radius, open: [from, to]}` (the open arc is where the camera looks in; 0 degrees = +z from the focus, may wrap). An orbit_reveal at angle o sits at ring angle about 163 + o: check a still.
+  - `reactions`: `{at (seconds or line anchor), kind: cheer|gasp|flinch|point|laugh|turn|scatter, focus, who: all|people|slugs, hold, spread}`. Nearest react first; each interrupts that extra's own routine for `hold` seconds (scatter: for good; people run, slugs hop away) and turns them to the focus.
+  - `residents: {near, radius, max}`: the game's grove slugs (`library/grove.json`, world studs) recreated as our actors at their real spots.
+  - Extras wear the `extras_wardrobe` in library.json (free Roblox-made shirts, trousers and hair; never a cast outfit). Slugs hop at one even stride (1.6 studs per hop).
+  - Every spot and walk is checked against the floor maps (`library/floors/*.json`, `tools/floormap.py`): no cracks, pits or ledges. `scene.py validate` also warns when a hero mark is on one.
+  - Extras don't block the camera's collision check: keep zones on the far side of the heroes, and check stills. `close_up` `size` is in actor heights (3 = about 20 studs away).
+- Floors (runtime, 2026-11-27): actors stand on the highest solid floor under a 0.85-stud footprint, at marks and on every step between them, so feet bridge narrow cracks and ride over bumps instead of sinking.
+- Cameras can target a mark as well as an actor (`orbit_reveal` around a place).
 
 ## Adding things
 

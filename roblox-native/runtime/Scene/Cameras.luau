@@ -73,6 +73,14 @@ Cameras.presets = {
 	-- Size-aware framings for creatures of any size. `size` is the frame height in actor heights (1.2 = a tight
 	-- close-up of a slug, 2.5 = a medium shot). `side` swings the camera off the actor's face axis (degrees,
 	-- positive to the actor's left) so eyelines read; `eye` is the camera height as a fraction of actor height.
+	-- Named framings (owner, 2026-11-27: "too zoomed in" again): a medium shows the whole stance with the people around
+	-- it, a wide shows the group in its place. Same geometry as close_up, only the default size differs.
+	medium = function(s, ctx)
+		return Cameras.presets.close_up(setmetatable({ size = s.size or 2.4 }, { __index = s }), ctx)
+	end,
+	wide = function(s, ctx)
+		return Cameras.presets.close_up(setmetatable({ size = s.size or 5.5, eye = s.eye or 0.35 }, { __index = s }), ctx)
+	end,
 	close_up = function(s, ctx)
 		local f, h = ctx.frame(s.target), ctx.height(s.target)
 		local head = ctx.head(s.target)

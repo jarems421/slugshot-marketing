@@ -24,6 +24,7 @@ local Actors = require(script.Actors)
 local Cameras = require(script.Cameras)
 local Canon = require(script.Canon)
 local Humans = require(script.Humans)
+local Locations = require(script.Locations)
 local FilmTime = require(Root:WaitForChild("FilmTime"))
 
 local Scene = {}
@@ -145,6 +146,10 @@ local function buildSet(set: any, parent: Instance): (CFrame, () -> ())
 		return cyc.top, cyc.destroy
 	elseif set.kind == "place" then
 		return CFrame.new(v3(set.origin)) * CFrame.Angles(0, math.rad(set.yaw or 0), 0), function() end
+	elseif set.kind == "location" then
+		-- a temporary location (Locations.luau), built once and kept for the next take
+		Locations.ensure(set._location)
+		return Locations.origin(set._location) * CFrame.Angles(0, math.rad(set.yaw or 0), 0), function() end
 	end
 	error(`unknown set kind {set.kind}`)
 end
@@ -212,16 +217,60 @@ function Scene.prepare(id: string, options: any?): any
 		assert(m, `unknown mark {name}`)
 		return origin * CFrame.new(m[1], m[2] or 0, m[3] or 0) * CFrame.Angles(0, math.rad(m[4] or 0), 0)
 	end
+	-- The floor under a pair of feet (owner, 2026-11-27: people "sunken into the ground", "stuck in the cracks" on the
+	-- spawn plaza). One ray at the centre dropped anyone standing over a crack into it, and walks went in a straight
+	-- line between the two marks' heights, through every bump. Now: a footprint of rays against solid floor only
+	-- (glow, crystals and ink are non-colliding), keeping the highest hit no more than `up` above `near`, so feet bridge
+	-- a crack narrower than about 1.7 studs and ride over bumps. Static geometry, so the same answer every pass.
+	local solid = RaycastParams.new()
+	solid.FilterType = Enum.RaycastFilterType.Exclude
+	solid.RespectCanCollide = true
+	solid.FilterDescendantsInstances = { stage, character }
+	local FOOT = { Vector2.zero }
+	for k = 0, 7 do
+		table.insert(FOOT, Vector2.new(math.cos(k * math.pi / 4), math.sin(k * math.pi / 4)) * 0.85)
+	end
+	local groundCache = {}
+	local function groundAt(x: number, z: number, near: number, up: number): number?
+		x, z = math.round(x * 10) / 10, math.round(z * 10) / 10
+		local key = `{x},{z},{math.round(near * 4)},{up}`
+		local cached = groundCache[key]
+		if cached ~= nil then
+			return cached or nil
+		end
+		local best = nil
+		for _, o in FOOT do
+			local hit = workspace:Raycast(Vector3.new(x + o.X, near + up + 0.5, z + o.Y), Vector3.new(0, -(up + 3.5), 0), solid)
+			if hit and hit.Position.Y <= near + up and (not best or hit.Position.Y > best) then
+				best = hit.Position.Y
+			end
+		end
+		groundCache[key] = best or false
+		return best
+	end
 	-- Marks for actors sit on whatever ground is below them (sets keep marks relative; the floor decides height).
 	local grounded = {}
 	local function place(name: string, actor: any): CFrame
 		local cf = mark(name)
-		if spec.set.kind ~= "place" or (actor and actor.def.ground == false) then
+		if (spec.set.kind ~= "place" and spec.set.kind ~= "location") or (actor and actor.def.ground == false) then
 			return cf
 		end
 		if not grounded[name] then
 			local hit = workspace:Raycast(cf.Position + Vector3.new(0, 12, 0), Vector3.new(0, -40, 0), exclude)
-			grounded[name] = if hit then hit.Position.Y else cf.Position.Y
+			local y = if hit then hit.Position.Y else cf.Position.Y
+			-- A centre ray in a crack finds its bottom; the rim around it is where the feet go. In a crack when the
+			-- footprint finds floor well above the centre on opposite sides (beside a rock, only one side rises).
+			local high = {}
+			for k = 2, #FOOT do
+				local o = FOOT[k]
+				local h = workspace:Raycast(Vector3.new(cf.X + o.X, y + 4.5, cf.Z + o.Y), Vector3.new(0, -7.5, 0), solid)
+				high[k - 1] = h ~= nil and h.Position.Y > y + 0.5 and h.Position.Y <= y + 4
+			end
+			local crack = false
+			for k = 1, 4 do
+				crack = crack or (high[k] and high[k + 4])
+			end
+			grounded[name] = (if crack then groundAt(cf.X, cf.Z, y, 4) else groundAt(cf.X, cf.Z, y, 0.8)) or y
 		end
 		return CFrame.new(cf.X, grounded[name], cf.Z) * cf.Rotation
 	end
@@ -229,6 +278,12 @@ function Scene.prepare(id: string, options: any?): any
 	local actors = {}
 	for name, def in spec.actors or {} do
 		actors[name] = Actors.spawn(name, def, stage)
+		if (spec.set.kind == "place" or spec.set.kind == "location") and def.ground ~= false then
+			-- between marks too: the floor under each step (Actors/Humans frameAt), never more than a step up
+			actors[name].groundAt = function(x: number, z: number, near: number): number?
+				return groundAt(x, z, near, 0.8)
+			end
+		end
 	end
 	for _, a in actors do
 		a.cast = actors -- a held slug finds its holder
@@ -294,7 +349,11 @@ function Scene.prepare(id: string, options: any?): any
 			target = function(n)
 				return function(): CFrame?
 					local a = actors[n]
-					return if a and a.model.Parent then a.model:GetPivot() else nil
+					if a and a.model.Parent then
+						return a.model:GetPivot()
+					end
+					-- a mark works too (an orbit around a place rather than a person: the grove's residents)
+					return if spec.marks[n] then mark(n) else nil
 				end
 			end,
 		}
@@ -384,6 +443,94 @@ function Scene.prepare(id: string, options: any?): any
 		end
 		return cf
 	end
+	-- Walk-through decor in front of the lens (owner, 2026-11-27: the grove shot spent its length inside a bluebell).
+	-- The hub's flowers, mushrooms and crystals are visible but neither solid nor queryable, so the raycast above can't
+	-- see them. Collect them once (near the set, mostly opaque, 1.5-30 studs across) and keep the line from the
+	-- subject to the camera out of their boxes. Static, so the same answer on every pass.
+	local decor = nil
+	local function clearDecor(cf: CFrame, aim: Vector3): CFrame
+		if (aim - cf.Position).Magnitude > 40 then
+			return cf
+		end
+		-- A coarse grid (16-stud cells, each part filed under every cell its box reaches), so a frame only looks at the
+		-- decor near the lens line rather than thousands of parts.
+		local CELL = 16
+		if not decor then
+			decor = {}
+			for _, d in workspace:GetDescendants() do
+				if d:IsA("BasePart") and not d.CanCollide and d.Transparency < 0.5 and not d:IsDescendantOf(stage)
+					and not (character and d:IsDescendantOf(character)) then
+					local m = math.max(d.Size.X, d.Size.Y, d.Size.Z)
+					if m >= 1.5 and m <= 30 and (d.Position - origin.Position).Magnitude < 160 then
+						local e = { part = d, r = d.Size.Magnitude / 2 }
+						for cx = math.floor((d.Position.X - e.r) / CELL), math.floor((d.Position.X + e.r) / CELL) do
+							for cz = math.floor((d.Position.Z - e.r) / CELL), math.floor((d.Position.Z + e.r) / CELL) do
+								local key = cx * 100000 + cz
+								decor[key] = decor[key] or {}
+								table.insert(decor[key], e)
+							end
+						end
+					end
+				end
+			end
+		end
+		local seg = cf.Position - aim
+		local len = seg.Magnitude
+		local best = 1
+		local seen, near = {}, {}
+		for k = 0, math.ceil(len / (CELL / 2)) do
+			local q = aim + seg * math.min(1, k * (CELL / 2) / math.max(len, 1e-3))
+			for dx = -1, 1 do
+				for dz = -1, 1 do
+					for _, e in decor[(math.floor(q.X / CELL) + dx) * 100000 + math.floor(q.Z / CELL) + dz] or {} do
+						if not seen[e] then
+							seen[e] = true
+							table.insert(near, e)
+						end
+					end
+				end
+			end
+		end
+		for _, e in near do
+			local p = e.part
+			if (p.Position - aim).Magnitude > len + e.r or not p.Parent then
+				continue
+			end
+			local half = p.Size / 2 + Vector3.one * 0.3
+			local a, b = p.CFrame:PointToObjectSpace(aim), p.CFrame:PointToObjectSpace(cf.Position)
+			if math.abs(a.X) <= half.X and math.abs(a.Y) <= half.Y and math.abs(a.Z) <= half.Z then
+				continue -- the subject stands in this box (a flower bed it is part of): not in the way
+			end
+			local d = b - a
+			local t0, t1 = 0, 1
+			for _, axis in { "X", "Y", "Z" } do
+				local o, v, h = a[axis], d[axis], half[axis]
+				if math.abs(v) < 1e-6 then
+					if math.abs(o) > h then
+						t0 = 2
+						break
+					end
+				else
+					local u1, u2 = (-h - o) / v, (h - o) / v
+					t0, t1 = math.max(t0, math.min(u1, u2)), math.min(t1, math.max(u1, u2))
+					if t0 > t1 then
+						break
+					end
+				end
+			end
+			-- only what's at the lens (the camera inside it, or within 4 studs behind it) moves the camera; decor further
+			-- along the line is foreground in a wide (owner, 2026-11-27: wides must stay wide, the wild cavern's
+			-- flowers turned a 15-stud orbit into a face close-up)
+			if t0 <= t1 and (1 - t1) * len <= 4 and t0 < best then
+				best = t0
+			end
+		end
+		if best >= 1 or best < 0.5 then
+			return cf
+		end
+		local keep = math.max(0.5, best * len - 0.6)
+		return CFrame.new(aim + seg.Unit * keep) * cf.Rotation
+	end
 	local lastT = -math.huge
 	local function frame(t: number): (CFrame, number, number)
 		workspace:SetAttribute("FilmClock", worldClock + t)
@@ -412,7 +559,7 @@ function Scene.prepare(id: string, options: any?): any
 		end
 		local cf, fov = shot.pose(lt)
 		if shot.subject and not opts.no_unblock then
-			cf = unblock(cf, where(shot.subject, t))
+			cf = clearDecor(unblock(cf, where(shot.subject, t)), where(shot.subject, t))
 		end
 		cf = accents(t, cf)
 		workspace:SetAttribute("FilmNow", t)
@@ -560,6 +707,7 @@ end
 
 -- Real-time preview: wall clock x speed. Frame drops skip time but never change what any moment looks like.
 function Scene.run(id: string, options: any?): any
+	Scene.clear() -- a standing still would be filmed too (see Scene.film)
 	local opts = options or {}
 	local st = Scene.prepare(id, { portrait = opts.portrait, seed = opts.seed, layer = opts.layer })
 	local takeName = opts.take or `{st.spec.id}_{os.date("!%Y%m%dT%H%M%S")}`
@@ -642,6 +790,9 @@ end
 -- of frame 0 and a post-roll of the last frame give the recorder room to start and stop. Particle emitters in
 -- the world are slowed to match, so ambient motion keeps its real speed in the finished video.
 function Scene.film(id: string, options: any?): any
+	-- A still left standing (Scene.still) stays in the world until cleared: filmed after one, its posed actors
+	-- appeared as doubles (living plaza demo, 2026-11-27: a second Raf floating behind the real one).
+	Scene.clear()
 	local opts = options or {}
 	local hold = opts.hold or 4
 	-- Resolution guard (owner rule: native-resolution masters). The rolled 9:16 frame is the viewport's height wide

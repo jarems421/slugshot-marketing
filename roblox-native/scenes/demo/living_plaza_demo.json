@@ -1,0 +1,237 @@
+{
+  "id": "living_plaza_demo",
+  "note": "Owner checkpoint 2 (2026-11-27): a hangout all around Kai and Raf; Raf points off and the crowd turns to look; they draw and everyone scatters. Floor maps, wardrobe, even hops.",
+  "format": "vertical",
+  "truth": {
+    "mode": "staged_fiction",
+    "source": "staged_runtime",
+    "gameplay_mechanics": "none",
+    "match_outcome": "n/a",
+    "label": "Fictional story"
+  },
+  "set": {
+    "kind": "place",
+    "origin": [
+      19,
+      0,
+      20
+    ],
+    "yaw": 0
+  },
+  "capture": {
+    "ui": "hidden",
+    "sample": 0.5
+  },
+  "marks": {
+    "kai_h": [
+      -8,
+      0,
+      -16,
+      0
+    ],
+    "raf_h": [
+      -13,
+      0,
+      -21,
+      0
+    ],
+    "over_there": [
+      -34,
+      3,
+      -10,
+      0
+    ]
+  },
+  "actors": {
+    "kai": {
+      "kind": "human",
+      "human": "kai",
+      "mark": "kai_h",
+      "blaster": false,
+      "face": "raf_h"
+    },
+    "raf": {
+      "kind": "human",
+      "human": "raf",
+      "mark": "raf_h",
+      "blaster": false,
+      "face": "kai_h",
+      "phase": 1.7
+    }
+  },
+  "ambient": {
+    "seed": 21,
+    "clear": [
+      "kai_h",
+      "raf_h"
+    ],
+    "clear_radius": 5,
+    "groups": [
+      {
+        "zone": [
+          -40,
+          -46,
+          -12,
+          -24
+        ],
+        "people": 10,
+        "slugs": 4,
+        "activities": [
+          "stroll",
+          "chat",
+          "chat",
+          "watch",
+          "stroll",
+          "chat",
+          "chat",
+          "stroll",
+          "watch",
+          "stroll"
+        ],
+        "focus": "raf_h"
+      },
+      {
+        "zone": [
+          -40,
+          -24,
+          -19,
+          -10
+        ],
+        "people": 4,
+        "slugs": 2,
+        "activities": [
+          "chat",
+          "chat",
+          "stroll",
+          "watch"
+        ],
+        "focus": "raf_h"
+      },
+      {
+        "zone": [
+          -6,
+          -40,
+          6,
+          -24
+        ],
+        "people": 2,
+        "slugs": 1,
+        "activities": [
+          "chat",
+          "chat"
+        ]
+      }
+    ],
+    "reactions": [
+      {
+        "at": 5.6,
+        "kind": "turn",
+        "focus": "over_there",
+        "hold": 2.2
+      },
+      {
+        "at": 10.3,
+        "kind": "scatter",
+        "focus": "kai_h"
+      }
+    ]
+  },
+  "shots": [
+    {
+      "preset": "orbit_reveal",
+      "duration": 5,
+      "target": "raf",
+      "radius": 11,
+      "height": 4.5,
+      "from": -10,
+      "to": 25,
+      "fov": 46
+    },
+    {
+      "preset": "over_shoulder",
+      "duration": 5,
+      "from": "kai",
+      "target": "raf",
+      "shoulder": 1,
+      "back": 5,
+      "offset": 1.8,
+      "eye": 0.35,
+      "fov": 54
+    },
+    {
+      "preset": "orbit_reveal",
+      "duration": 5,
+      "target": "raf",
+      "radius": 16,
+      "height": 7,
+      "from": 0,
+      "to": 25,
+      "fov": 50
+    }
+  ],
+  "timeline": [
+    {
+      "time": 0.6,
+      "actor": "kai",
+      "action": "gesture",
+      "move": "explain",
+      "mask": "upper",
+      "duration": 2.4
+    },
+    {
+      "time": 3.2,
+      "actor": "raf",
+      "action": "gesture",
+      "move": "laugh",
+      "mask": "upper"
+    },
+    {
+      "time": 3.2,
+      "actor": "raf",
+      "action": "express",
+      "set": {
+        "smile": 1
+      },
+      "ease": 0.3
+    },
+    {
+      "time": 5.4,
+      "actor": "raf",
+      "action": "point",
+      "target": "over_there",
+      "duration": 1.6
+    },
+    {
+      "time": 5.5,
+      "actor": "kai",
+      "action": "look",
+      "target": "over_there"
+    },
+    {
+      "time": 7.6,
+      "actor": "kai",
+      "action": "look",
+      "target": "raf"
+    },
+    {
+      "time": 8.4,
+      "actor": "raf",
+      "action": "express",
+      "set": {
+        "smile": 0.2,
+        "angry": 0.4
+      },
+      "ease": 0.3
+    },
+    {
+      "time": 9.6,
+      "actor": "kai",
+      "action": "equip"
+    },
+    {
+      "time": 9.7,
+      "actor": "raf",
+      "action": "equip"
+    }
+  ]
+}

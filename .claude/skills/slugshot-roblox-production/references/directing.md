@@ -19,10 +19,12 @@ Each answer picks a shot and an acting beat. If a shot or beat has no answer, cu
 ## 2. Vertical framing (9:16)
 
 - **Side-on two-shots don't fit.** Observed: two slugs 3 studs apart framed from the side left one clipped and one out of frame. Establish with **depth staging**: one actor near the lens (over the shoulder), the other further back. (S)
-- Close-ups:
-  - `close_up` `size` 1.0-1.2 (the frame is about that many slug heights tall) for reactions and punchlines;
-  - 1.3-1.5 for ordinary lines;
-  - 0.95 for the final beat. Observed: 1.5 read loose at phone size. (S)
+- **Framing ladder** (owner, 2026-11-25 and again 2026-11-27: "too zoomed in ... you can't even see the environment, which is one of the biggest wow factors"). `size` is the 9:16 frame's height in actor heights (a person is 5 studs, a slug about 2); the width is only 9/16 of that. Choose by what the shot must show:
+  - **wide** (`"preset": "wide"`, size 5-6, or an `orbit_reveal` with radius 18-24): a new place, a group, the crowd, the world. Slugs still read: never more than about 14 slug heights tall.
+  - **medium** (`"preset": "medium"`, size 2.2-2.8 for people, 2-3 for slugs): lines, gestures, emotes, aiming and firing (whole stance and blaster), and any moment where the crowd behind is reacting (frame 12+ studs tall).
+  - **close_up** (size 1.1-1.5): only reactions, punchlines and tension, and mark it `"tight": "<why>"`. Never for an emote, an aim or a crowd beat.
+  - Default to the wider choice. Most of a video should not be close.
+- `scene.py validate` warns on shots too tight for what happens in them: a crowd reaction under 12 studs, a cropped full-body emote or aim, a group that doesn't fit across the frame, slugs that become specks, more than 45% of the runtime under 7 studs. Fix each warning or mark the shot `tight` with a reason. (S, measured)
 - Eyes sit in the upper-middle; the lower third stays clear for captions (`captionTop` about 0.7). (A: platform safe areas)
 - Nothing important in the top 12% or the bottom 20% (platform UI).
 - Foreground intrusion: if another actor's body clips the frame edge at the start of a push, swing `side` further away (observed fix: -18° to -38°).
@@ -101,7 +103,8 @@ Slugs have no arms, so acting lives in head, body, eyes and timing:
 6. **No extras without a job.** Background characters enter on screen or are established, have a beat, and stand on clean floor (check stills: nobody in a crack, rock or wall).
 7. **The speaker is on screen.** During a character's line, the frame shows that character (or their reaction is the point). Otherwise viewers can't tell who's talking.
 8. **Lines to the viewer go into the lens.** A slug talking to the viewer (Floppy's "Mm. Hello.", a proud beat like "a month without a single loss") uses `look` with target `"camera"`, framed so his whole face is in shot.
-9. **Still review before filming.** For every shot, a still at its middle, checked against this list:
+9. **Crowds react as one, on the script's beat.** Anchor `ambient.reactions` `at` and `until` to the line that causes them (the shock lasts until that beat is over). Everyone in view reacts the same way, never half the crowd shocked while the rest carry on. Spread people out (the expander keeps 4 studs between standing people); a busy scene is more people across more space, not people squeezed together.
+10. **Still review before filming.** For every shot, a still at its middle, checked against this list:
    - subject fully framed;
    - the speaker visible;
    - what the line says is shown;

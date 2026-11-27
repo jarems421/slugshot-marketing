@@ -8,9 +8,12 @@ Checks structure, references (marks, actors, presets, actions, library entries),
 same canon rules as runtime/Scene/Canon.luau. make_marketing_place.py refuses to build invalid specs.
 """
 import json
+import math
 import re
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 ROOT = Path(__file__).resolve().parent.parent
 SCENES = ROOT / "scenes"
@@ -20,7 +23,8 @@ MODES = {"authentic_gameplay", "staged_gameplay", "staged_fiction", "hybrid_brid
 MECHANICS = {"real", "none", "fictional"}
 OUTCOMES = {"organic", "scripted", "n/a"}
 PRESETS = {"static_wide", "two_shot", "orbit_reveal", "dolly_in", "slug_low_angle", "reaction_closeup",
-           "follow", "snap_zoom", "whip_pan", "close_up", "push_in", "over_shoulder", "slug_shot", "slug_cam", "split"}
+           "follow", "snap_zoom", "whip_pan", "close_up", "push_in", "over_shoulder", "slug_shot", "slug_cam", "split",
+           "medium", "wide"}
 FX = {"flash", "shake"}
 CLOCKS = {"scene", "output"}
 ACTIONS = {"move_to", "face", "hop", "animate", "express", "look", "blink",
@@ -33,7 +37,8 @@ HANDS = {"right", "left", "shoulder", "shoulder_left"}  # one hand or a shoulder
 SPECIES = {"Floppy", "Inferno", "Aquabeek", "Rammstone", "Tormato", "BoonDoc", "Phosphoro"}
 CHANNELS = {"smile", "angry", "react", "look_up", "squint", "open", "lean", "smirk"}  # smirk: humans' painted faces
 REPO = ROOT.parent
-SET_KINDS = {"cyc", "place"}
+SET_KINDS = {"cyc", "place", "location"}
+LOCATIONS = ROOT / "library" / "locations"
 CUE_TYPES = {"vfx", "sound"}
 TRANSFORM_ACTIONS = {"transform", "ability", "ability_q", "ability_e"}
 NEVER_TRANSFORMS = {"floppy"}
@@ -86,8 +91,56 @@ def resolve_anchors(spec, dialogue):
     return errs
 
 
+def expand_ambient(spec):
+    """An `ambient` block (tools/ambient.py) becomes ordinary marks, actors and beats before anything is checked."""
+    if "ambient" not in spec:
+        return []
+    import ambient
+    dialogue = None
+    if spec.get("dialogue") and (REPO / spec["dialogue"]).exists():
+        dialogue = json.loads((REPO / spec["dialogue"]).read_text(encoding="utf-8"))
+    lines = {ln["n"]: ln for ln in dialogue["lines"]} if dialogue else {}
+    errs = []
+    for item, key in [(g, "until") for g in spec["ambient"].get("groups", [])] + \
+            [(r, k) for r in spec["ambient"].get("reactions", []) for k in ("at", "until")]:
+        u = item.get(key)
+        if isinstance(u, str):
+            m = ANCHOR.match(u.strip())
+            if not m or int(m.group(1)) not in lines:
+                errs.append(f"ambient {key} {u!r} doesn't resolve")
+                item[key] = 0.0 if key == "at" else None
+            else:
+                ln = lines[int(m.group(1))]
+                item[key] = ln[m.group(2) or "start"] + float((m.group(3) or "0").replace(" ", ""))
+    duration = dialogue["duration"] if dialogue else sum(float(s.get("duration") or 0) for s in spec.get("shots", []))
+    spec["_reactions"] = [dict(r) for r in spec["ambient"].get("reactions", [])]  # for framing_warnings
+    ambient.expand(spec, duration)
+    return errs
+
+
+def attach_location(spec):
+    """A temporary location (library/locations/<name>.json, runtime/Scene/Locations.luau) travels inside the spec."""
+    st = spec.get("set", {})
+    if st.get("kind") != "location":
+        return []
+    path = LOCATIONS / f"{st.get('location')}.json"
+    if not path.exists():
+        return [f"set.location {st.get('location')!r} not found in library/locations ({sorted(x.stem for x in LOCATIONS.glob('*.json'))})"]
+    loc = json.loads(path.read_text(encoding="utf-8"))
+    st["_location"] = {k: loc[k] for k in ("name", "origin", "pieces")}
+    st["origin"] = loc["origin"]
+    for name, m in loc.get("marks", {}).items():   # the location's own named spots, usable by any scene there
+        spec.setdefault("marks", {}).setdefault(name, m)
+    if loc.get("look") and not spec.get("look"):
+        spec["look"] = loc["look"]
+    return []
+
+
 def validate(spec):
-    e = []
+    e = attach_location(spec)
+    if e:
+        return e
+    e = expand_ambient(spec)
     for key in ("id", "truth", "set", "marks", "shots"):
         if key not in spec:
             e.append(f"missing '{key}'")
@@ -145,7 +198,7 @@ def validate(spec):
         if not s.get("duration") or s["duration"] <= 0:
             e.append(f"shot {i}: needs a positive duration")
         for key in ("target", "from", "to"):
-            if key in s and s[key] not in named:
+            if key in s and isinstance(s[key], str) and s[key] not in named:  # orbit_reveal's from/to are degrees
                 e.append(f"shot {i}: {key} {s[key]} is not an actor or mark")
         for name in s.get("targets", []):
             if name not in named:
@@ -164,7 +217,7 @@ def validate(spec):
                 if "until" in v or "duration" in v:
                     e.append(f"shot {i} view {k}: views last as long as their split shot")
                 for key in ("target", "from", "to"):
-                    if key in v and v[key] not in named:
+                    if key in v and isinstance(v[key], str) and v[key] not in named:
                         e.append(f"shot {i} view {k}: {key} {v[key]} is not an actor or mark")
         if s.get("preset") in ("slug_cam", "slug_shot") and s.get("target") not in actors:
             e.append(f"shot {i}: {s.get('preset')} target is the shooter (a human actor)")
@@ -264,6 +317,108 @@ def validate(spec):
     return e
 
 
+def floor_warnings(spec):
+    """Marks where someone stands or walks to that the saved floor map calls a crack, pit or ledge (owner, 2026-11-27:
+    people stuck in the plaza's cracks in most videos). Warnings, not errors: the runtime puts feet on the rim of a
+    narrow crack, but a spot clear of it looks better."""
+    import floormap
+    from ambient import World
+    if spec.get("set", {}).get("kind") != "place":
+        return []
+    world = World(spec, [], 0, [])
+    used = {a.get("mark") for n, a in spec.get("actors", {}).items() if not n.startswith("amb_")}
+    used |= {b.get("mark") for b in spec.get("timeline", [])
+             if b.get("action") == "move_to" and not str(b.get("actor", "")).startswith("amb_")
+             and float(b.get("duration") or 1) > 0.1}  # instant moves are off-camera changes of place
+    out = []
+    for m in sorted(x for x in used if x in spec.get("marks", {})):
+        x, z = world.to_world(spec["marks"][m])
+        if floormap.floor_at(x, z) and not floormap.standable(x, z):
+            out.append(f"mark {m} ({x:.1f}, {z:.1f} world) is on a crack, pit or ledge in floor map "
+                       f"{floormap.floor_at(x, z).name}; move it a stud or two")
+    return out
+
+
+FULL_BODY = {"cheer", "laugh", "flinch", "cower", "dance", "jump", "salute", "hello", "happy", "sad", "confused",
+             "facepalm", "disbelief", "hands_up", "applaud"}
+TALL = {"human": 5.0, "slug": 2.0, "clone": 5.0, "standin_humanoid": 5.0, "standin_slug": 2.0}
+
+
+def framing_warnings(spec):
+    """Shots too tight (or too loose) for what happens in them (owner, 2026-11-25 and again 2026-11-27: "too zoomed
+    in ... you can't even see the environment", "barely see the people in the background cheering", "can't see the
+    full emote"). Measured as the 9:16 frame's height in studs at the subject (a spec's fov is the portrait frame's
+    vertical; `size` is that height in actor heights); the width is 9/16 of it. A shot can opt out with
+    "tight": "<why>" (a tense moment that wants the face)."""
+    actors, marks = spec.get("actors", {}), spec.get("marks", {})
+
+    def pos(name):
+        if name in actors:
+            return marks.get(actors[name].get("mark"))
+        return marks.get(name)
+
+    def tall(name):
+        a = actors.get(name)
+        return TALL.get(a.get("kind"), 5.0) * float(a.get("scale", 1)) if a else 5.0
+
+    def height(s):
+        p = s.get("preset")
+        fov = math.radians(s.get("fov") or 50)
+        if p in ("close_up", "push_in", "medium", "wide"):
+            default = {"medium": 2.4, "wide": 5.5, "push_in": 1.4}.get(p, 1.3)
+            return float(s.get("size") or default) * tall(s.get("target"))
+        if p == "orbit_reveal":
+            return 2 * math.hypot(float(s.get("radius", 8)), float(s.get("height", 2.2))) * math.tan(fov / 2)
+        if p == "over_shoulder":
+            a, b = pos(s.get("from")), pos(s.get("target"))
+            if a and b:
+                return 2 * (math.hypot(a[0] - b[0], a[2] - b[2]) + float(s.get("back", 2.8))) * math.tan(fov / 2)
+        return None
+
+    out, start, tight_time, total = [], 0.0, 0.0, 0.0
+    for i, s in enumerate(spec.get("shots", []), 1):
+        d = float(s.get("duration") or 0)
+        end, total = start + d, total + d
+        h = height(s)
+        if h is not None and not s.get("tight"):
+            subject = s.get("target")
+            if h < 7:
+                tight_time += d
+            for r in spec.get("_reactions", []):
+                if start <= float(r.get("at", -1)) < end and h < 12:
+                    out.append(f"shot {i}: the crowd's {r.get('kind')} at {float(r['at']):.1f}s is in a frame {h:.1f} studs "
+                               f"tall; go medium or wide (12+) so the people reacting behind can be seen")
+            for b in spec.get("timeline", []):
+                t = b.get("time")
+                if not isinstance(t, (int, float)) or not start <= t < end or b.get("actor") != subject:
+                    continue
+                action = b.get("action") in ("aim", "shoot")
+                if (action and h < 2.2 * tall(subject)) or \
+                        (b.get("action") == "gesture" and b.get("move") in FULL_BODY and h < 1.8 * tall(subject)):
+                    need = 2.2 if action else 1.8
+                    out.append(f"shot {i}: {subject}'s {b.get('move') or b.get('action')} at {t:.1f}s is cropped (frame "
+                               f"{h:.1f} studs tall); size {need}+ shows the whole stance" + (" and the blaster" if action else ""))
+            centre = pos(subject) if subject else None
+            if centre and s.get("preset") == "orbit_reveal":
+                # the spread the camera sees: across its view, at both ends of the orbit (a group lined up in depth
+                # fits a narrow frame); orbit angle a puts the camera at (sin a, -cos a) from the target
+                near = [pos(n) for n in actors if pos(n) and math.hypot(pos(n)[0] - centre[0], pos(n)[2] - centre[2]) < 7]
+                spread = 0.0
+                for a in (s.get("from", -40), s.get("to", 40)):
+                    across = [p[0] * math.cos(math.radians(a)) + p[2] * math.sin(math.radians(a)) for p in near]
+                    spread = max(spread, (max(across) - min(across)) if across else 0)
+                if len(near) >= 2 and (h * 9 / 16 < 1.2 * spread or h < 10):
+                    out.append(f"shot {i}: {len(near)} actors spread {spread:.1f} studs around {subject} in a frame "
+                               f"{h * 9 / 16:.1f} studs wide; widen (radius {math.ceil(max(1.2 * spread * 16 / 9, 10) / (2 * math.tan(math.radians(s.get('fov') or 50) / 2)))}+) so the group and the place both read")
+            if subject in actors and actors[subject].get("kind") == "slug" and h > 14 * tall(subject):
+                out.append(f"shot {i}: {subject} is a speck (frame {h:.1f} studs tall for a {tall(subject):.1f}-stud slug)")
+        start = end
+    if total and tight_time / total > 0.45:
+        out.append(f"{tight_time / total:.0%} of the video is in tight frames (under 7 studs tall); establish places "
+                   "and groups with wides, keep close-ups for reactions and tension")
+    return out
+
+
 def all_specs():
     return sorted(SCENES.rglob("*.json"))
 
@@ -280,6 +435,7 @@ def load_valid():
         errs = validate(spec)
         if spec.get("id") != path.stem:
             errs.append(f"id {spec.get('id')} must match the file name {path.stem}")
+        spec.pop("_reactions", None)
         problems += [f"{path.relative_to(ROOT)}: {x}" for x in errs]
         if spec.get("dialogue") and not errs:
             # the runtime reads one timing source: the dialogue manifest, inlined (words dropped; not needed there)
@@ -311,10 +467,13 @@ def main():
     paths = [Path(p) for p in sys.argv[2:]] or all_specs()
     bad = 0
     for p in paths:
-        errs = validate(json.loads(Path(p).read_text(encoding="utf-8")))
+        spec = json.loads(Path(p).read_text(encoding="utf-8"))
+        errs = validate(spec)
         print(("OK   " if not errs else "FAIL ") + str(p))
         for x in errs:
             print("     " + x)
+        for x in ([] if errs else floor_warnings(spec) + framing_warnings(spec)):
+            print("     warning: " + x)
         bad += bool(errs)
     sys.exit(1 if bad else 0)
 
