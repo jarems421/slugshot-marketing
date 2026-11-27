@@ -1,10 +1,18 @@
 """The In My World sample as audio with each of six narrators at TOP pace; character lines unchanged."""
+import os
+import shutil
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(project_root / "scripts"), str(project_root / "research" / "tiktok-genre")]
+import research_common as rc
+
 import json, subprocess, sys
 from pathlib import Path
-sys.path.insert(0, r"C:\Users\runni\slugshot marketing\scripts")
 import gemini_tts
-ROOT = Path(r"C:\Users\runni\slugshot marketing")
-FF = r"C:\Users\runni\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-9.1-full_build\bin\ffmpeg.exe"
+ROOT = rc.ROOT
+FF = os.environ.get("FFMPEG") or shutil.which("ffmpeg") or "ffmpeg"
 WORK = ROOT / "out" / "voices" / "narrator-test-2026-11-26" / "in-story"; WORK.mkdir(parents=True, exist_ok=True)
 DL = Path.home() / "Downloads" / "narrator-voice-test-2026-11-26" / "in-story"; DL.mkdir(parents=True, exist_ok=True)
 LINES = ROOT / "out" / "dialogue" / "imw-pick-gemini" / "lines"

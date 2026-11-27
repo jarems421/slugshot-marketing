@@ -2,7 +2,6 @@
 creative tags, comparisons and the learning loop. Fixtures only, no network.
 Run: .venv\\Scripts\\python -m unittest tests.test_analytics"""
 import importlib.util
-import json
 import os
 import shutil
 import sys
@@ -10,6 +9,7 @@ import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parent.parent
 TMP = Path(tempfile.mkdtemp(prefix="ssanalytics_"))
@@ -152,7 +152,9 @@ class WindowsTagsLoop(unittest.TestCase):
         s.put_obs(rows)
         cls.kb_dir = TMP / "kb"
         shutil.copytree(ROOT / "tests" / "fixtures" / "knowledge", cls.kb_dir)
-        views.KB_FIXTURE_DIR = cls.kb_dir                             # never write into the fixture folder itself
+        fixture = patch.object(views, "KB_FIXTURE_DIR", cls.kb_dir)
+        fixture.start()
+        cls.addClassCleanup(fixture.stop)
 
     def test_checkpoints_flag_readings_outside_the_window(self):
         late = {"upload_id": "UPL-tiktok-810000000000000003", "platform": "tiktok", "published_at_utc": "2026-11-01T12:00:00+00:00"}

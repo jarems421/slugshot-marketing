@@ -323,7 +323,7 @@ def cmd_dedupe(args):
     orgs = {"roblox", "tiktok", "youtube", "meta", "google", "pew", "ofcom", "instagram", "platform", "official",
             "public", "national", "preregistered", "university", "dual-task", "event", "short-form", "negative"}
     for p in probable:
-        a_, b_ = items_by_id[p["a"]], items_by_id[p["b"]]
+        a_ = items_by_id[p["a"]]
         p["merged"] = a_["first_author_guess"].lower() not in orgs
         if p["merged"]:
             union(p["a"], p["b"], p["basis"], links)

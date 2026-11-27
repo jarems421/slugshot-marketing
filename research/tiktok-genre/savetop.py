@@ -1,10 +1,43 @@
-import json, glob, sys
-sys.path.insert(0, r"C:\Users\runni\slugshot marketing\scripts")
-import research_common as rc
-it = json.load(open(glob.glob('data/local/research/creative/tiktok-genre/apify-top*/items.json')[0], encoding='utf-8'))
-tok = rc.env_value('APIFY_TOKEN')
-for x in it:
-    u = (x.get('mediaUrls') or [None])[0]
-    if not u: print('none', x.get('url') or x.get('webVideoUrl'), x.get('error')); continue
-    b, _ = rc.http(u, headers={'Authorization': 'Bearer ' + tok}, timeout=120)
-    open(f"media/research/tiktok-genre/top/{x['id']}.mp4", 'wb').write(b); print('ok', x['authorMeta']['name'])
+"""Save permitted media copies from an existing Actor dataset."""
+
+import argparse
+from pathlib import Path
+
+from apify import download
+from genre_common import DATA_DIR, MEDIA_DIR, rc, read_json
+
+
+def main(argv=None):
+    """Download the first permitted media URL per post."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "dataset",
+        nargs="?",
+        type=Path,
+        help="Actor items.json (defaults to the first apify-top run)",
+    )
+    parser.add_argument("--output-dir", type=Path, default=MEDIA_DIR / "top")
+    args = parser.parse_args(argv)
+    dataset = args.dataset or next(
+        iter(sorted(DATA_DIR.glob("apify-top*/items.json"))), None
+    )
+    if dataset is None:
+        parser.exit(1, "No apify-top dataset found. Supply an Actor items.json file.\n")
+    items = read_json(dataset)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    for item in items:
+        url = (item.get("mediaUrls") or [None])[0]
+        if not url:
+            print(f"{item.get('id', 'unknown')}: no media URL")
+            continue
+        try:
+            body = download(url, timeout=120)
+        except (rc.HttpError, ValueError) as error:
+            parser.exit(1, rc.redact(f"Error: {error}\n"))
+        path = args.output_dir / f"{item['id']}.mp4"
+        path.write_bytes(body)
+        print(f"saved {path.name}")
+
+
+if __name__ == "__main__":
+    main()

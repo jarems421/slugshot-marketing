@@ -16,7 +16,7 @@ OAuth redirect URI to register wherever one is asked for: `http://127.0.0.1:4761
 
 ## Publishing permissions (uploads; [publishing.md](publishing.md))
 
-Same apps, same vault and same redirect URI; uploads only add permissions. Everything is free. Nothing is posted until you approve a job in **Publish** by typing the account handle, and the reveal lock keeps everything private.
+Same apps, same vault and same redirect URI; uploads only add permissions. Everything is free. Nothing is posted until you approve a job in **Publish** by typing the account handle, and the reveal lock checks for game references on non-private posts.
 
 | # | Step | Where | Notes |
 |---|---|---|---|

@@ -12,7 +12,6 @@ import io
 import json
 import shutil
 from datetime import datetime, timezone
-from pathlib import Path
 
 from . import sync, vault, views
 from .store import DATA, ROOT, is_fixture_db, metric_defs, now_iso, settings

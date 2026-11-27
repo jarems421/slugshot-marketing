@@ -6,7 +6,9 @@ The packs (kenney.nl: impact-sounds, interface-sounds, rpg-audio, digital-audio,
 ui-audio) are CC0 1.0: no attribution, any platform, commercial use. Each pick is converted to 48 kHz WAV and
 logged in assets\LICENSES.csv. Original procedural sounds stay in scripts/sfx.py.
 """
-import csv, subprocess, sys
+import csv
+import subprocess
+import sys
 from datetime import date
 from pathlib import Path
 

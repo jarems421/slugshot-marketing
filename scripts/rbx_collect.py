@@ -17,7 +17,6 @@ import argparse
 import csv
 import json
 import sys
-from datetime import timedelta
 from pathlib import Path
 
 import research_common as rc

@@ -34,6 +34,7 @@ def check(name, fn):
         status, detail = fn()
     except Exception as e:  # a crash in a check is a FAIL, not a crash of the report
         status, detail = "FAIL", f"{type(e).__name__}: {e}"
+    detail = detail.replace(str(ROOT) + os.sep, "").replace(str(ROOT) + "/", "")
     results.append((name, status, detail))
     print(f"{status:8} {name}: {detail}", flush=True)
 
@@ -224,18 +225,16 @@ def evidence_example():
 
 
 def scholarly_skills():
-    """Installed upstream skills (claude-skills-research): offline test suites in their own folders."""
-    out = []
+    """Run the pinned upstream offline suites with their Windows skip."""
+    summaries = []
+    passed = True
     for skill in ("verifying-bibliography", "surveying-literature"):
-        tests = ROOT / ".claude" / "skills" / skill / "assets" / "tests"
-        r = subprocess.run([PY, "-m", "unittest", "discover", "-p", "test_*.py"], capture_output=True, text=True, cwd=tests,
-                           env={**os.environ, "PYTHONUTF8": "1"})
-        ran = next((l for l in r.stderr.splitlines() if l.startswith("Ran ")), "?")
-        out.append((skill, r.returncode, ran, (r.stderr.strip().splitlines() or ["?"])[-1]))
-    # Known upstream Windows-only failure: surveying-literature asserts a POSIX absolute path ('/abs/x.tex').
-    ok = all(code == 0 or "failures=1" in last for _, code, _, last in out)
-    return ("PASS" if ok else "FAIL"), "; ".join(f"{s}: {ran} {last}" for s, _, ran, last in out) + \
-        " (1 known POSIX-path assertion in surveying-literature on Windows)"
+        result = run([PY, "tests/run_offline.py", "--skill", skill], env={**os.environ, "PYTHONUTF8": "1"})
+        lines = result.stderr.strip().splitlines()
+        ran = next((line for line in lines if line.startswith("Ran ")), "?")
+        summaries.append(f"{skill}: {ran} {lines[-1] if lines else '?'}")
+        passed = passed and result.returncode == 0
+    return ("PASS" if passed else "FAIL"), "; ".join(summaries)
 
 
 def live(script, args, ok_text):

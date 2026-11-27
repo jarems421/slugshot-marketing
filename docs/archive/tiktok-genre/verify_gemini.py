@@ -1,7 +1,14 @@
 """Recompute the objective numbers in Gemini's In My World report from our own files (2026-11-26 bank)."""
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(project_root / "scripts"), str(project_root / "research" / "tiktok-genre")]
+import research_common as rc
+
 import csv, json, re, statistics as st, difflib
 from pathlib import Path
-ROOT = Path(r"C:\Users\runni\slugshot marketing")
+ROOT = rc.ROOT
 EXP = ROOT / "exports/share/research/tiktok-in-my-world-2026-11-26"
 pool = {r["id"]: r for r in csv.DictReader(open(ROOT / "data/local/research/creative/tiktok-genre/pool.csv", encoding="utf-8"))}
 rows = {r["id"]: r for r in csv.DictReader(open(EXP / "ALL-POSTS.csv", encoding="utf-8-sig"))}

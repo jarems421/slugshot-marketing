@@ -561,7 +561,7 @@ def thumbnail(relpath):
     """A cached JPEG frame of a local video (FFmpeg, on this PC), or None."""
     import hashlib
     import subprocess
-    from .publish import ROOT, _tool, resolve_video
+    from .publish import _tool, resolve_video
     from .store import DATA
     p = resolve_video(relpath)
     out = DATA / "thumbs" / (hashlib.sha1(f"{p}:{p.stat().st_mtime}".encode()).hexdigest()[:20] + ".jpg")

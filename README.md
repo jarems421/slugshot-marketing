@@ -5,11 +5,11 @@
 This repository is the working machinery behind Slugshot's short-form video marketing on TikTok, YouTube Shorts and Instagram Reels, in English and Spanish. It does two jobs:
 
 1. **Make videos:** capture, narration, captions, vertical renders, multi-scene edits, automatic quality checks, and Roblox-native filming in an isolated copy of the game.
-2. **Do research:** collect dated, labelled public data (YouTube, Google Trends, Wikipedia, Twitch, Roblox, TikTok Creative Center observations), check it, and turn it into findings that are traceable and evidence-led, rather than "AI vibes".
+2. **Do research:** collect dated, labelled public data (YouTube, Google Trends, Wikipedia, Twitch, Roblox, TikTok public posts through Apify and Creative Center observations), check it, and turn it into findings that are traceable and evidence-led, rather than "AI vibes".
 
 It is built to be **operated by an AI agent**. [Claude Code](https://code.claude.com/docs/en/overview) runs the toolkit from short natural-language instructions ("collect today's research", "is this meme still growing?", "make the Floppy duel edit"). ChatGPT designs research and writes scripts; Gemini/Flow analyses footage and generates visuals; the owner makes decisions and approves anything consequential.
 
-> Status (25 Nov 2026): infrastructure is complete, and the dashboard has had its final usability and design pass. That covers research collection and intelligence, knowledge banks, the dashboard with its commercial funnel, and publishing. All five social accounts are connected and live-validated. Publishing waits only on the owner approving the first test posts ([validation report](reports/live-integration-validation-2026-11-25.md)). The research feature freeze is in place: only account setup, live validation and small fixes. Next: content production. The game is unreleased, so player analytics wait for launch. See [docs/INVENTORY.md](docs/INVENTORY.md) for the status of every capability.
+> **Status, 27 November 2026.** Infrastructure is frozen and content production is underway. The first pilot video was filmed natively in Roblox, and the production engine now adds living environments: background crowds, the game's resident slugs, crowd reactions and four reusable locations outside the lobby. YouTube EN/ES, TikTok EN/ES and Buffer for TikTok EN/ES and Instagram EN were live-validated; the first test posts await owner approval. Player analytics awaits launch. [Capability inventory](docs/INVENTORY.md) · [Live validation](reports/archive/live-integration-validation-2026-11-25.md)
 
 ---
 
@@ -21,7 +21,7 @@ flowchart LR
     GPT[ChatGPT: research design, culture, scripts]
     Gem[Gemini / Flow: footage analysis, visuals]
     subgraph Repo [This repo, run by Claude Code]
-        Collect[Collectors: YouTube, Trends, Wikipedia, Twitch, Roblox, observations]
+        Collect[Collectors: YouTube, Trends, Wikipedia, Twitch, Roblox, Apify, observations]
         Analyse[Analysis + evidence ledger]
         Bundle[(Research bundle zip)]
         Produce[Video production: captions, renders, assembly, QC]
@@ -51,6 +51,8 @@ flowchart LR
 |---|---|
 | Import OBS captures with a naming convention | `ss import` |
 | AI narration (Kokoro, local) or recorded voice clean-up, music ducking, SFX | `ss voice`, `ss audio` |
+| Cast dialogue: per-character voices, script-aligned captions and line anchors for timing | `ss dialogue` |
+| Music beds cut per scene, with transitions that follow the energy (sharp going up, gradual coming down) | `scripts/music_beds.py` |
 | Whisper captions with automatic correction of Slugshot terms | `ss caption`, `ss fixcaps` |
 | 1080×1920 renders from format presets (Remotion), variants, multi-scene edits synced to a script | `ss render`, `ss batch`, `ss assemble` |
 | Gemini-timestamped clip candidates, frame sheets, technical QC (loudness, black/frozen frames, codecs) | `ss candidates`, `ss sheet`, `ss qc` |
@@ -59,7 +61,14 @@ flowchart LR
 Creative judgement (pacing, cuts, captions, audio, formats) lives in a Claude skill with evidence-labelled rules: [`.claude/skills/slugshot-video-editing`](.claude/skills/slugshot-video-editing/SKILL.md).
 
 ### Roblox-native filming
-Staged scenes and skits are filmed in an **isolated marketing copy** of the game, with DataStores disabled. A hook enforces that Claude's Roblox Studio MCP calls can only touch that place. Declarative JSON scene specs drive a scene runner (camera presets, timed actions, VFX/sound cues) and give repeatable takes. Details: [roblox-native/README.md](roblox-native/README.md).
+Staged scenes and skits are filmed in an **isolated marketing copy** of the game, with DataStores disabled. A hook enforces that Claude's Roblox Studio MCP calls can only touch that place. Declarative JSON scene specs drive a deterministic scene runner, so every pass and patch of a take matches, and `ss roblox film` decodes native 1080×1920 masters with zero repeated frames.
+
+- **Cast:** the game's real slugs (faces, idles, hops, slug shots) and blocky R6 human players (walks, gestures, blasters, holding slugs). Mouths and nods follow the dialogue, timed with line anchors.
+- **Living environments:** an `ambient` block adds dressed extras and slugs (a busy hangout for talking scenes, or a ring of watchers round a duel), the game's grove residents at their real spots, and crowd reactions on story beats that land together.
+- **Floors and framing:** saved floor maps keep extras off the hub's cracks, and the runtime grounds every actor on solid floor. The validator flags shots that are too tight for what happens in them.
+- **Temporary locations:** a bedroom, a classroom, a wild cavern and a market, built at play time from boxes, the hub's own inked art and generated props, so videos can go anywhere in the Slugshot look.
+
+Details: [roblox-native/README.md](roblox-native/README.md) · [Roblox production skill](.claude/skills/slugshot-roblox-production/SKILL.md).
 
 ### Research data collection
 | Source | What it gives | Command |
@@ -70,6 +79,7 @@ Staged scenes and skits are filmed in an **isolated marketing copy** of the game
 | Twitch | Roblox clips and live streams by broadcaster language | `ss twitch` |
 | Roblox | player/visit/favourite snapshots for a small watchlist | `ss rbx` |
 | TikTok Creative Center, vidIQ, TinyFish, manual | validated public observations with provenance; a guided Creative Center session (you press Ctrl+A, Ctrl+C; it does the rest) | `ss observe` |
+| TikTok through Apify | public-post collection for genre research | [Genre workflow](research/tiktok-genre/README.md) |
 | One instruction | run a profile, then a bundle for ChatGPT | `ss research collect`, `ss research bundle` |
 
 ### Research intelligence
@@ -85,7 +95,7 @@ Commands: `ss analyze`, `ss evidence`. Guides: [research methods](docs/research-
 ### Personal dashboard
 A local app (Desktop shortcut or `ss dash`) with five pages (Overview, Content, Publish, Roblox, Settings), styled after Jami with its night sky, in System (blue), Dark and Light. Minimum information by default; click a metric, account or video for detail. Standard-library Python + SQLite, loopback only, credentials encrypted with Windows DPAPI. Guide: [docs/dashboard/README.md](docs/dashboard/README.md).
 
-- **Analytics** for our own accounts, from official owner-authorised APIs. Metric rules keep platforms separate and never invent zeros.
+- **Analytics** for our own accounts, from official owner-authorised APIs. Owner views label combined platform-reported counts. Share exports keep platforms separate, and missing values remain blank.
   - YouTube Analytics (EN, ES).
   - TikTok Display API (EN, ES).
   - Buffer (TikTok and Instagram post metrics; it only adds what the native APIs lack, so nothing is double-counted).
@@ -105,8 +115,8 @@ A local app (Desktop shortcut or `ss dash`) with five pages (Overview, Content, 
 - **Provenance on every row** (P1 platform count, P2 index/rank, P3 third-party estimate, P4 interpretation) and a run log with the exact parameters sent.
 - **Provider rules are enforced, not just documented:**
   - YouTube statistics expire after 30 days, including exported copies, and are never aggregated across channels or turned into scores.
-  - Twitch data is kept 24 hours and stays local.
-  - TikTok Creative Center is only read by a person (TikTok's terms bar automated collection).
+  - Twitch data is kept for 24 hours and stays local unless its export gate is enabled.
+  - We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center.
 - **No composite "viral scores".** Heat and confidence are different things.
 - **Retrieval is not audience.** A video found with a Mexico filter says nothing about Mexican viewers.
 - **Rigour serves experiments, not paralysis.** Suggestive evidence can justify a cheap 15-second test; only our own experiments can support causal claims.
@@ -154,7 +164,7 @@ Refresh the dashboard and export a snapshot for ChatGPT.
 Prepare this video for TikTok EN/ES and Instagram (I'll approve it in the dashboard).
 ```
 
-Or run the commands directly: every `ss` command takes `-h`. Full reference: [docs/COMMANDS.md](docs/COMMANDS.md); walkthrough: [docs/OPERATIONS.md](docs/OPERATIONS.md).
+Or run the commands directly: Python-backed commands show their options with `-h`. Full reference: [docs/COMMANDS.md](docs/COMMANDS.md); walkthrough: [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 ## Repository layout
 
@@ -167,7 +177,7 @@ roblox-native/           isolated marketing place builder, Studio guard, scene r
                          research analysis + installed upstream research skills
 config/                  formats, glossary, research settings, query families, watchlists, codebook
 research/                evidence-ledger schema, templates, upstream provenance
-docs/                    commands, inventory, research guides, policies, game truth, handoffs
+docs/                    commands, inventory, research guides, policies, game truth and archives
 dashboard/               personal dashboard: local server, connectors, metric rules, publishing, hosting, front end
 tests/                   offline tests and fixtures (fake data)
 jobs/                    example edit, variant and script files
@@ -185,28 +195,35 @@ Not in git: `.env`, `media/`, `exports/`, `data/local/`, `models/`, `out/`, `ven
 | Operator walkthrough, folders, CSV schemas | [docs/OPERATIONS.md](docs/OPERATIONS.md) |
 | Status of every capability | [docs/INVENTORY.md](docs/INVENTORY.md) |
 | Research collectors, data contract, sharing rules | [docs/research-data.md](docs/research-data.md) |
-| Research methodology (ChatGPT skills v1.1, authoritative) | [docs/chatgpt-research-skills-v1.1.md](docs/chatgpt-research-skills-v1.1.md) |
 | Research methods / evidence ledger | [docs/research-methods.md](docs/research-methods.md) · [docs/research-evidence.md](docs/research-evidence.md) |
-| Source audit and decisions | [docs/research-data-audit.md](docs/research-data-audit.md) |
 | YouTube API rules | [docs/youtube-api-policy.md](docs/youtube-api-policy.md) |
-| Flow and Gemini hand-offs | [docs/flow-and-gemini.md](docs/flow-and-gemini.md) |
+| Production quality, workflow and Flow / Gemini handoffs | [Production quality](docs/production-quality.md) |
 | Game facts for marketing claims | [docs/game-truth.md](docs/game-truth.md) |
-| ChatGPT handoff (Stage 4.5.3) | [docs/chatgpt-handoff-4.5.3.md](docs/chatgpt-handoff-4.5.3.md) |
-| Stage 4.5.4 configuration and 4.5.5 pilot validation | [docs/stage-4.5.4-report.md](docs/stage-4.5.4-report.md) |
 | Composio (read-only OAuth broker) | [docs/composio.md](docs/composio.md) |
 | Knowledge banks / audience sentiment | [docs/knowledge-banks.md](docs/knowledge-banks.md) · [docs/audience-sentiment.md](docs/audience-sentiment.md) |
-| Live integration validation (accounts, Buffer, Cloudinary) | [reports/live-integration-validation-2026-11-25.md](reports/live-integration-validation-2026-11-25.md) |
-| Dashboard: guide, credential checklist, publishing, activation-events proposal | [docs/dashboard/README.md](docs/dashboard/README.md) · [credentials-checklist.md](docs/dashboard/credentials-checklist.md) · [publishing.md](docs/dashboard/publishing.md) · [activation-events-proposal.md](docs/dashboard/activation-events-proposal.md) |
+| Dashboard, credential setup and publishing | [Dashboard guide](docs/dashboard/README.md) · [Credentials](docs/dashboard/credentials-checklist.md) · [Publishing](docs/dashboard/publishing.md) |
+| Historical documentation and reports | [Archive index](docs/archive/README.md) |
 | Agent brief and working rules | [CLAUDE.md](CLAUDE.md) |
-| Strategy (Marketing Bank snapshot) | [docs/Slugshot-Marketing-Bank.md](docs/Slugshot-Marketing-Bank.md) |
 
 ## Testing
 
-- `ss smoke` runs every capability once and writes a PASS / WARN / FAIL / BLOCKED report. Latest: 30/30 PASS ([reports/smoke-test.md](reports/smoke-test.md)).
-- `ss smoke --research` runs only the research checks (10/10, about 30 s); `ss smoke --dashboard` the dashboard checks (7/7, about 15 s).
-- Offline suites (145 tests on fake fixtures, no network; the publishing tests never upload or post):
-  `.venv\Scripts\python -m unittest tests.test_publish tests.test_dashboard tests.test_knowledge tests.test_analysis tests.test_research tests.test_analytics`
-- Test environment: numpy/ruptures use OpenBLAS, which on this machine can fail with "OpenBLAS error: Memory allocation still failed" at its default thread count. `scripts/research_analysis.py` sets `OPENBLAS_NUM_THREADS=1` by default; if another numpy script hits it, set `$env:OPENBLAS_NUM_THREADS = '1'` before running tests.
+[GitHub Actions](.github/workflows/offline.yml) runs Ruff and the offline unittest suites on Windows with Python 3.13. Tests use fixtures and loopback only. They require no API credentials, production media, models or provider calls.
+
+```powershell
+.\.venv\Scripts\python -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python -m ruff check scripts dashboard roblox-native/tools research tests
+.\.venv\Scripts\python tests/run_offline.py
+```
+
+The offline runner runs 203 project tests and 207 pinned scholarly tests in separate processes. It skips FFmpeg calibration to keep the run media-free and skips the upstream POSIX-path assertion on Windows. DPAPI tests run on Windows.
+
+For a configured local workspace, these smoke commands run extra checks and write reports:
+
+| Command | Checks | Latest report |
+|---|---|---|
+| `.\ss.cmd smoke` | 30 toolkit, research and dashboard checks | [Full production run](reports/smoke-test.md) |
+| `.\ss.cmd smoke --research` | 10 research checks, including public provider calls | [Research smoke](reports/smoke-test-research.md) |
+| `.\ss.cmd smoke --dashboard` | 7 dashboard checks, including fixture sync and loopback health | [Dashboard smoke](reports/smoke-test-dashboard.md) |
 
 ## Third-party components
 

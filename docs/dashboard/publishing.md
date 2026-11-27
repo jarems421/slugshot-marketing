@@ -124,7 +124,7 @@ There's no approve command. Approval happens only in the dashboard, by the owner
 | Part | State |
 |---|---|
 | Drafts, checks, approval binding, manual packages, linking to versions and experiments, Publish page, CLI | built; fixture-tested (14 tests) |
-| Connections (YouTube EN/ES with upload scope, TikTok EN/ES Sandbox with `video.upload` + `video.publish`, Buffer's 3 channels) | **live-validated** 2026-11-25: identity, scopes, token refresh ([report](../../reports/live-integration-validation-2026-11-25.md)) |
+| Connections (YouTube EN/ES with upload scope, TikTok EN/ES Sandbox with `video.upload` + `video.publish`, Buffer's 3 channels) | **live-validated** 2026-11-25: identity, scopes, token refresh ([report](../../reports/archive/live-integration-validation-2026-11-25.md)) |
 | YouTube resumable upload, TikTok inbox and Direct Post, Buffer post, Instagram container flow | built and fixture-tested; **authorised but untested live**: two test drafts wait for the owner (`PUB-20261125-071008-yt-en` private YouTube, `PUB-20261125-071008-tt-en` TikTok inbox) |
 | Instagram local-file upload | **blocked** by the platform for Instagram Login. Options: a public HTTPS link the owner controls, or a Facebook Login for Business integration (needs a Facebook Page linked to the account; not built, per the feature freeze). Manual posting covers it |
 | TikTok public Direct Post | blocked until TikTok audits the app (optional; the inbox route needs no public visibility) |

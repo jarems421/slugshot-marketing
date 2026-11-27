@@ -25,7 +25,6 @@ import json
 import re
 import shutil
 import sys
-import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -435,7 +434,7 @@ def cmd_check(a, imp=False):
         sys.exit(1)
 
 
-# ---------- Creative Center helpers (a person opens and copies; nothing here fetches TikTok pages) ----------
+# Creative Center: a person reads each page. The helpers process copied text.
 
 CC_HASHTAG = "https://ads.tiktok.com/creative/creativeCenter/trends/hashtag?region={region}&period={period}"
 CC_LABELS = {"posts": "posts", "post": "posts", "publicaciones": "posts", "videos": "posts", "vídeos": "posts",

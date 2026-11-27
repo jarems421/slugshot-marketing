@@ -14,7 +14,7 @@ metadata:
 
 # Fact-Check Process for Articles and AI-Synthesized Content
 
-A repeatable process for verifying the factual accuracy of articles, blog posts, news and AI-synthesized content before publication. It is calibrated for recursive contamination: AI output now feeds the sources the next AI and the next researcher cite, so agreement among sources counts only when they are independent. [synthesis-content-quality](../synthesis-content-quality/SKILL.md) covers style and substance; this skill covers factual correctness.
+A repeatable process for verifying the factual accuracy of articles, blog posts, news and AI-synthesized content before publication. It is calibrated for recursive contamination: AI output now feeds the sources the next AI and the next researcher cite, so agreement among sources counts only when they are independent. [synthesis-content-quality](https://github.com/synthesisengineering/synthesis-skills/tree/62a0a54bb252a02d9cbb2e4f20f8c5b824111a76) covers style and substance; this skill covers factual correctness.
 
 ## Binding rules
 

@@ -1,5 +1,7 @@
 # Slugshot Marketing Bank
 
+> Historical snapshot. We have permission to use Apify for the toolkit's TikTok collection. A person reads Creative Center. See the [current data guide](../research-data.md).
+
 Updated 24 November 2026 · Research scope: TikTok, YouTube Shorts, Instagram Reels · English and Spanish-language audiences
 
 Slugshot is a Roblox PvP game built around creature-powered shots, transformations, and abilities. The initial campaign will focus on short-form videos that make the 1v1 gameplay clear and give individual slugs a recognisable personality. Reddit is a later research topic.

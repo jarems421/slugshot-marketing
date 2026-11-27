@@ -16,11 +16,10 @@ import json
 import os
 import re
 import sys
-import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -107,13 +106,15 @@ class HttpError(Exception):
         self.status, self.reason = status, reason
 
 
-def http(url, params=None, headers=None, data=None, timeout=30, user_agent=None):
+def http(url, params=None, headers=None, data=None, timeout=30, user_agent=None, *, unredirected_headers=None):
     """GET (or POST when data is given). Returns (body_bytes, response_headers). Error messages never
     contain the URL or query string, because some providers put credentials there."""
     full = url + ("?" + urllib.parse.urlencode(params, doseq=True) if params else "")
     h = {"User-Agent": user_agent or ua(), **(headers or {})}
     body = urllib.parse.urlencode(data).encode() if isinstance(data, dict) else data
     req = urllib.request.Request(full, data=body, headers=h, method="POST" if body is not None else "GET")
+    for name, value in (unredirected_headers or {}).items():
+        req.add_unredirected_header(name, value)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.read(), dict(r.headers)

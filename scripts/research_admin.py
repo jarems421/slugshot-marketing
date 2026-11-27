@@ -302,7 +302,7 @@ def cmd_verify(a):
     tpath = rc.CONFIG / "twitch_broadcasters.csv"
     with tpath.open(newline="", encoding="utf-8-sig") as f:
         r = _csv.DictReader(f)
-        trows, tfields = list(r), r.fieldnames
+        trows = list(r)
     lines += ["", "## Twitch broadcasters (local only)", "", "| login | status | broadcaster language setting | configured | notes |",
               "|---|---|---|---|---|"]
     try:

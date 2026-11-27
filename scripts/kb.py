@@ -85,7 +85,7 @@ def parse_day(s):
 # ------------------------------------------------------------------ load
 def load(base: Path | None = None):
     base = base or kb_dir()
-    entries, origin = [], {}
+    entries = []
     for sub in ("curated", "generated", "sentiment"):
         for p in sorted((base / sub).glob("*.jsonl")) if (base / sub).exists() else []:
             for n, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):

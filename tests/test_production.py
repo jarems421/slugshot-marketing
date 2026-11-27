@@ -4,6 +4,7 @@
 """
 import copy
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -247,6 +248,8 @@ class Review2(unittest.TestCase):
     def test_calibrate_finds_viewport_card(self):
         import shutil
         import subprocess
+        if os.environ.get("SLUGSHOT_TEST_SKIP_MEDIA"):
+            self.skipTest("offline runner skips FFmpeg calibration, which generates a test video")
         if not shutil.which("ffmpeg"):
             self.skipTest("ffmpeg not on PATH")
         v = Path(tempfile.gettempdir()) / "ss_cal.mkv"
@@ -403,7 +406,6 @@ class Ambient2(unittest.TestCase):
     def test_ring_leaves_the_camera_side_open(self):
         import math
         s = self.spec()
-        s2 = {k: v for k, v in s.items()}
         ring = {"id": "amb_r", "truth": s["truth"], "set": s["set"], "marks": {"c": [-12, 0, -19, 0]}, "actors": {},
                 "shots": [{"preset": "orbit_reveal", "duration": 6, "target": "c", "from": 0, "to": 10}],
                 "ambient": {"seed": 2, "groups": [{"activities": ["ring"], "focus": "c", "people": 12, "radius": 8.5,

@@ -932,7 +932,6 @@ def buffer_publish(store, j, acct, tx, url=None, tries=30, wait=10):
     if pid:
         _log(store, j["job_id"], "following the Buffer post created earlier (no second post)")
         return _buffer_wait(store, j, acct, tx, pid, tries, wait)
-    con = C.CONNECTORS["buffer"]
     cached = store.pref(f"buffer_channel_{acct['account_id']}") or {}
     org = cached.get("organization_id")
     if not org:

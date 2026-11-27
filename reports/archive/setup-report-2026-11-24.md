@@ -6,7 +6,7 @@ Date: 2026-11-24. Scope: the Claude Code side only (no Gemini/ChatGPT configurat
 
 | Area | Result |
 |---|---|
-| Software | All present and versions recorded in [docs/INVENTORY.md](../docs/INVENTORY.md). `ss doctor` and the smoke test verify them on demand. |
+| Software | All present and versions recorded in [docs/INVENTORY.md](../../docs/INVENTORY.md). `ss doctor` and the smoke test verify them on demand. |
 | Python deps | Two venvs: `.venv` (Whisper) and `.venv-tts` (Kokoro), each pinned in a requirements file. Kept separate so a TTS upgrade can't break transcription. |
 | Node deps | Exact pins in `package.json` + `package-lock.json`. npm held back two install scripts: `ffmpeg-static` isn't needed (the system FFmpeg is used); `esbuild` works without it. |
 | Skills / MCP | Added the official Remotion skill (reviewed, copied, source recorded). MakeMyClip MCP configured in `.mcp.json`. The MakeMyClip skill was deliberately not installed. |
@@ -16,7 +16,7 @@ Date: 2026-11-24. Scope: the Claude Code side only (no Gemini/ChatGPT configurat
 
 ## 2. Analytics
 
-- Read the current YouTube Developer Policies, policy guide, Terms and quota page. Summary and decisions: [docs/youtube-api-policy.md](../docs/youtube-api-policy.md).
+- Read the current YouTube Developer Policies, policy guide, Terms and quota page. Summary and decisions: [docs/youtube-api-policy.md](../../docs/youtube-api-policy.md).
 - **Disabled:** views compared with the creator's median for similar-age uploads (a ratio against an independently calculated average is listed as prohibited without approval), and the age buckets that fed it.
 - **Kept:** per-video differences between two snapshots (`view_increase_since_prev`, `hours_since_prev`, `views_per_hour_since_prev`), `age_hours`, and a duration flag never called "Short".
 - **Storage:** hard 30-day cap; `prune` can't be set higher.
@@ -26,7 +26,7 @@ Date: 2026-11-24. Scope: the Claude Code side only (no Gemini/ChatGPT configurat
 
 ## 3. Research
 
-Full table with licences and hardware: [docs/tool-research.md](../docs/tool-research.md). Installed: Kokoro-82M (narration) and the Remotion skill. Everything else uses FFmpeg, Remotion and MakeMyClip, which were already here. Considered and not used:
+Full table with licences and hardware: [docs/tool-research.md](../../docs/archive/tool-research.md). Installed: Kokoro-82M (narration) and the Remotion skill. Everything else uses FFmpeg, Remotion and MakeMyClip, which were already here. Considered and not used:
 
 - **Rejected on licence:** XTTS-v2 and F5-TTS, because their weights are non-commercial.
 - **Rejected as unofficial:** edge-tts, which uses a Microsoft service without permission.
@@ -54,7 +54,7 @@ Bugs found and fixed along the way:
 
 ## 5. Test results
 
-[reports/smoke-test.md](smoke-test.md): 10 checks covering tools, glossary, Whisper, Kokoro round trip, audio tidy and mix, FFmpeg render + QC, Remotion render + QC, MakeMyClip, YouTube dry run and YouTube live.
+[reports/smoke-test.md](../smoke-test.md): 10 checks covering tools, glossary, Whisper, Kokoro round trip, audio tidy and mix, FFmpeg render + QC, Remotion render + QC, MakeMyClip, YouTube dry run and YouTube live.
 
 ## Limitations
 

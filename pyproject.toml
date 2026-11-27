@@ -1,0 +1,6 @@
+[tool.ruff]
+target-version = "py313"
+extend-exclude = [".claude/skills", "docs/archive", "research/upstream", "roblox-native/runtime/vendor"]
+
+[tool.ruff.lint]
+select = ["E4", "E9", "F"]

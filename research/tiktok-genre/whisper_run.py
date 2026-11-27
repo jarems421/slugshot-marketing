@@ -1,19 +1,62 @@
-import json, glob, os, sys, time
-os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
-import whisper
-SRC = r"C:\Users\runni\slugshot marketing\media\research\tiktok-genre"
-OUT = r"C:\Users\runni\slugshot marketing\data\local\research\creative\tiktok-genre\subtitles"
-m = whisper.load_model("small")
-files = sorted(glob.glob(SRC + r"\*.mp4"))
-for n, f in enumerate(files, 1):
-    vid = os.path.basename(f)[:-4]; dest = os.path.join(OUT, vid + ".whisper.json")
-    if os.path.exists(dest): continue
-    t = time.time()
-    try:
-        r = m.transcribe(f, fp16=False, verbose=None, condition_on_previous_text=False)
-        segs = [[int(s["start"]), s["text"].strip()] for s in r["segments"] if s["text"].strip() and s.get("no_speech_prob", 0) < 0.8]
-        json.dump({"language": r.get("language"), "model": "openai-whisper small", "segments": segs}, open(dest, "w", encoding="utf-8"), ensure_ascii=False)
-        print(f"{n}/{len(files)} {vid} {r.get('language')} {len(segs)} segs {time.time()-t:.0f}s", flush=True)
-    except Exception as e:
-        print(f"{n}/{len(files)} {vid} FAIL {str(e)[:100]}", flush=True)
-print("WHISPER DONE", flush=True)
+"""Transcribe permitted local TikTok videos with Whisper small."""
+
+import argparse
+import os
+import time
+from pathlib import Path
+
+from genre_common import DATA_DIR, MEDIA_DIR, rc, write_json
+
+
+def usable_segments(result):
+    """Keep nonempty cues below the original no-speech threshold."""
+    return [
+        [int(segment["start"]), segment["text"].strip()]
+        for segment in result["segments"]
+        if segment["text"].strip() and segment.get("no_speech_prob", 0) < 0.8
+    ]
+
+
+def main(argv=None):
+    """Transcribe MP4s whose local transcript is missing."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source-dir", type=Path, default=MEDIA_DIR)
+    parser.add_argument("--subtitles", type=Path, default=DATA_DIR / "subtitles")
+    args = parser.parse_args(argv)
+    args.subtitles.mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+    import whisper
+
+    model = whisper.load_model("small")
+    files = sorted(args.source_dir.glob("*.mp4"))
+    for index, path in enumerate(files, 1):
+        destination = args.subtitles / f"{path.stem}.whisper.json"
+        if destination.exists():
+            continue
+        start = time.monotonic()
+        try:
+            result = model.transcribe(
+                str(path), fp16=False, verbose=None, condition_on_previous_text=False
+            )
+            segments = usable_segments(result)
+            write_json(
+                destination,
+                {
+                    "language": result.get("language"),
+                    "model": "openai-whisper small",
+                    "segments": segments,
+                },
+            )
+            print(
+                f"{index}/{len(files)} {path.stem} {result.get('language')} {len(segments)} segs {time.monotonic() - start:.0f}s",
+                flush=True,
+            )
+        except Exception as error:
+            print(
+                rc.redact(f"{index}/{len(files)} {path.stem} FAIL {error}")[:180],
+                flush=True,
+            )
+
+
+if __name__ == "__main__":
+    main()

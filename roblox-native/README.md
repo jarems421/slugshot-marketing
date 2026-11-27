@@ -2,7 +2,7 @@
 
 **Roblox first, AI-enhanced second.** Most Slugshot videos are real Roblox footage: gameplay, staged scenes, Roblox-native comedy, characters and cinematics, filmed in an isolated copy of the game. Flow and other AI tools add short anime/manga/cinematic cutaways only.
 
-Status (2026-11-25): **real slug actors, deterministic film mode and dialogue-driven acting, tested with real assets** (benchmark skit filmed with 3 voices, 0 repeated frames; `docs/production-quality.md`). Status 2026-11-24: infrastructure validated with stand-ins. Claude's working instructions are in the skill `.claude/skills/slugshot-roblox-production/`.
+Status (2026-11-27): **living environments** (dressed background crowds and slugs, the grove's residents, crowd reactions on story beats, floor-aware grounding, framing checks) and **four temporary locations** outside the lobby, on top of the 2026-11-26 human actors and the 2026-11-25 engine (real slug actors, deterministic film mode, dialogue-driven acting; pilot 01 filmed with 0 repeated frames; `docs/production-quality.md`). Status 2026-11-24: infrastructure validated with stand-ins. Claude's working instructions are in the skill `.claude/skills/slugshot-roblox-production/`.
 
 ## Commands
 
@@ -17,6 +17,7 @@ Status (2026-11-25): **real slug actors, deterministic film mode and dialogue-dr
 | `.\ss roblox guard` | runs the Studio target check once and prints the verdict |
 | `.\ss roblox compare a.json b.json` | repeatability check between two take manifests (cuts/cues within 50 ms, camera within 0.05 studs / 0.5 deg) |
 | `.\ss roblox import take.json video --capture-manifest m.json` (or `--video-start-ms N`) | trims the recording to the take, runs `ss import`, writes `<raw>.take.json` beside it (real-time takes and OBS) |
+| `.\ss roblox rec start <file.mkv>` / `rec stop` | records only the marketing Studio window (Windows Graphics Capture, x264 CRF 8, no 30 s cap) for film-mode takes |
 | `.\ss roblox film take.json rec1.mp4 [rec2.mp4 ...]` | decodes a film-mode take (frame-stamped chunks and patches) into exact 30 fps, native-resolution 1080x1920 in `out/takes/`; lists any frame ranges to re-film |
 
 ## Layout
@@ -24,11 +25,12 @@ Status (2026-11-25): **real slug actors, deterministic film mode and dialogue-dr
 | Path | Contents | In git? |
 |---|---|---|
 | `studio/` | `SlugshotMarketing.rbxlx` (built place), `.source.rbxlx` (game snapshot), `marker.json`, `provenance.json` | place files no (they hold the game's private asset IDs); json yes |
-| `runtime/Scene/` | our Luau engine: `init` (prepare a scene as a pure function of time; drivers `run`, `film`, `still`), `Cameras` (12 presets, portrait roll), `Actors` (real slugs via the game's SlugIdle/FloppyFace, acting tracks, dialogue mouths and eyelines), `Canon` (truth and canon checks) | yes |
+| `runtime/Scene/` | our Luau engine: `init` (prepare a scene as a pure function of time; drivers `run`, `film`, `still`; footprint grounding; camera collision with solid art and decor at the lens), `Cameras` (presets incl. `medium`/`wide`, portrait roll), `Actors` (real slugs via the game's SlugIdle/FloppyFace, acting tracks, dialogue mouths and eyelines), `Humans` (R6 players: gaits, gestures, blasters, holding slugs), `Locations` (temporary sets built at play time), `Canon` (truth and canon checks) | yes |
 | `runtime/vendor/Reel/` | Reel, unmodified (MIT, `SOURCE.txt` records commit 4b810e9) | yes |
 | `scenes/<group>/*.json` | declarative scene specs | yes |
-| `library/library.json` | animation and sound registry (empty: real animations are production work) | yes |
-| `tools/` | Python: build, audit, guard, switch, scene validation, take compare/import | yes |
+| `library/library.json` | human looks and moves, the extras wardrobe, animation and sound registry | yes |
+| `library/locations/`, `library/floors/`, `library/grove.json` | temporary locations, floor height maps of the plaza and grove, the grove's 14 resident slugs | yes |
+| `tools/` | Python: build, audit, guard, switch, scene validation (incl. framing and floor warnings), `ambient` (crowds and reactions), `floormap`, take compare/import/film, window recorder | yes |
 | `baseline/` | game repo state before this work (HEAD, status hash, build hash) and the source audit | yes |
 | `capture/` | take manifests and guard log | no |
 
@@ -63,7 +65,8 @@ Tested live:
 - Not tested live: two windows open at once, or a missing marker. Both are coded as denials.
 
 Also in `.claude/settings.json`:
-- **Ask first:** asset insertion, AI generation, image upload, Open Cloud, sub-agent and skill-edit tools (they reach Roblox services under your account).
+- **Ask first:** asset insertion, image upload, Open Cloud, sub-agent and skill-edit tools (they reach Roblox services under your account).
+- **Allowed (owner, 2026-11-27):** Studio's AI generation tools (mesh, material, texture, procedural model), used for location props; the generated assets are referenced by id in `library/locations/`.
 - **Deny:** starting `StudioMCP.exe` or `mcp.bat` from a shell (that would bypass the hook).
 
 **Limits of this boundary.**
@@ -118,7 +121,8 @@ Smoke scene `smoke_floppy_standin`: 7 s, stand-in hero and Floppy, 4 shots, hop,
 
 ## Recording
 
-- **OBS (production):** see the skill's `references/capture-and-handoff.md`. Note when recording starts (Unix ms) and pass `--video-start-ms`.
+- **Film mode (production):** `ss roblox rec` records the Studio window while `Scene.film` steps the take; `ss roblox film` decodes it. See the skill's `references/capture-and-handoff.md`.
+- **OBS:** real-time captures; note when recording starts (Unix ms) and pass `--video-start-ms`.
 - **Studio `video_capture`:** for previews and tests only.
 - **Automated OBS (not built):** OBS WebSocket (built into OBS 28+, password-protected). Planned sequence: validate -> OBS start -> run take -> wait for end mark -> OBS stop -> `ss roblox import`. Build it once manual recording is routine.
 
@@ -137,17 +141,16 @@ Source clones are in `../vendor/` (git-ignored). No plugins were bought or insta
 ## Opening the place by hand
 
 1. Save game work and close the game place. Only the marketing place may be open during marketing MCP work.
-2. File > Open from File > `C:\Users\runni\slugshot marketing\roblox-native\studio\SlugshotMarketing.rbxlx`.
+2. File > Open from File > `roblox-native/studio/SlugshotMarketing.rbxlx`.
 3. The Studio MCP server must be enabled (Assistant > ... > Settings > MCP Servers); it already is on this machine.
 
 ## Deferred (production preparation)
 
+Built since this list was written: real slug actors, human actors, facial acting on the rigs that have face bones, finished sets with named marks (hub plaza, training arena, grove) and temporary locations.
+
 - **Animation library:** original animations (Animation Editor, R15 Animation Capture), the owner's approval per entry, and `library.json` rows with licence.
-- **Facial expressions** on rigs that have FaceControls.
-- **Finished sets** with named marks in lobby, arena and grove locations.
-- **Real slug rigs** as actors (clone from the place once spawned in Edit).
 - **Real PvP recording** and multi-client staged gameplay (StudioTestService).
 - **Replay recorder** for second angles of real play.
-- **Flow cutaways, skits and campaign content.**
-- **OBS WebSocket automation.**
+- **Crowd sound** layer (waits for the owner's SFX picks).
+- **More locations** as videos need them.
 - **Motion Tools licence** question.

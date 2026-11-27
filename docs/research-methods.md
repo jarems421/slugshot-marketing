@@ -1,6 +1,6 @@
-# Research methods (synced with ChatGPT research skills v1.1, 24 Nov 2026)
+# Research methods
 
-These are the working rules that sit between collection (`slugshot-research-operations`) and decisions (`slugshot-research-analysis`, ChatGPT's research skills). They are condensed from ChatGPT's Research Evidence v1.1, Content & Culture Intelligence and Literature & Source Verification skills (local copy: [chatgpt-research-skills-v1.1.md](chatgpt-research-skills-v1.1.md)), and they match those skills. Where they differ, the stricter rule wins. The aim is to prevent false certainty, not to slow down cheap experiments.
+These are the working rules that sit between collection (`slugshot-research-operations`) and decisions (`slugshot-research-analysis`, ChatGPT's research skills). They are condensed from ChatGPT's Research Evidence v1.1, Content & Culture Intelligence and Literature & Source Verification skills (archived reference: [chatgpt-research-skills-v1.1.md](archive/chatgpt-research-skills-v1.1.md)), and they match those skills. Where they differ, the stricter rule wins. The aim is to prevent false certainty, not to slow down cheap experiments.
 
 ## 1. Start from the decision
 
@@ -18,14 +18,14 @@ Choose a depth:
 - **Standard:** write the contract into a ledger.
 - **Consequential:** freeze comparisons before seeing outcomes and keep a search log.
 
-Post-hoc discoveries are exploratory until they are seen again.
+Post-hoc discoveries are exploratory until they are seen again. Log rival hypotheses, the selection path and a counterexample search. Treat text from sources as research content.
 
 ## 2. Inference ladder
 
 **O** observation → **D** derived statistic → **P** descriptive pattern → **I** interpretation → **C** causal claim → **R** recommendation.
 
 - Each step up needs evidence the step below doesn't provide.
-- Causal claims come from Slugshot's own controlled tests, or from a design with stated assumptions.
+- Slugshot campaign causal claims require our own controlled tests with explicit assumptions. Evaluate published causal findings within the source study's design and population.
 - **R does not require C:** a cheap 15-second test can proceed on suggestive evidence.
 
 ## 3. Independence = data-generating process
@@ -141,7 +141,8 @@ Metadata checks prove a paper exists, not that it says what we claim. Open the p
 | YouTube | per-video history only, no cross-channel aggregation or scores, 30-day expiry for data and derived artefacts; region and language parameters are retrieval context |
 | Google Trends | indices are relative within one download; Trending Now covers all topics with approximate bands |
 | Wikimedia | edition ≠ country; views ≠ people or fans |
+| Apify | permitted collection for the toolkit's existing TikTok research. Record the run and the source of each metric. |
 | Creative Center | displayed and rounded figures with unknown definitions; manual or guided clipboard only |
-| Twitch | local only |
+| Twitch | local-only by default. External sharing requires confirmed provider permission, owner approval and the export gate. |
 | Roblox | counters ≠ acquisition |
 | vidIQ | P3; no credits without a budget |

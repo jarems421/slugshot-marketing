@@ -1,7 +1,14 @@
 """Stage 1 of the sound-design measurement: Whisper word timings for each TOP video (where the speech is)."""
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parents[3]
+sys.path[:0] = [str(project_root / "scripts"), str(project_root / "research" / "tiktok-genre")]
+import research_common as rc
+
 import glob, json, os
 import whisper
-ROOT = r"C:\Users\runni\slugshot marketing"
+ROOT = str(rc.ROOT)
 OUT = os.path.join(ROOT, r"data\local\research\creative\tiktok-genre\sound-design"); os.makedirs(OUT, exist_ok=True)
 m = whisper.load_model("base.en")
 for p in sorted(glob.glob(ROOT + r"\media\research\tiktok-genre\top\*.mp4")):

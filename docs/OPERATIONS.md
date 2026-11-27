@@ -6,7 +6,7 @@ This folder holds the local tools for Slugshot's short-form videos: capture impo
 
 Before scripting any mechanic, check [docs/game-truth.md](game-truth.md). The game repo `../slugshot` can be read and copied from freely (docs, assets, renders); game files are only changed when you explicitly ask.
 
-More detail: **[command reference](COMMANDS.md)** · [Flow and Gemini hand-offs](flow-and-gemini.md) · [inventory and status](INVENTORY.md) · [tool research](tool-research.md) · [YouTube API rules](youtube-api-policy.md) · [research data collectors](research-data.md) · [evidence ledger](research-evidence.md) · [research methods](research-methods.md) · [ChatGPT handoff 4.5.3](chatgpt-handoff-4.5.3.md) · [latest smoke test](../reports/smoke-test.md) · [readiness report](../reports/readiness-2026-11-24.md)
+Use the [command reference](COMMANDS.md) for arguments, the [inventory](INVENTORY.md) for current status and the [agent brief](../CLAUDE.md) for approvals.
 
 **Roblox first, AI-enhanced second.** Most videos are filmed in Roblox: real gameplay, plus staged scenes and skits in an isolated copy of the game (`.\ss roblox ...`, [roblox-native/README.md](../roblox-native/README.md)). Flow/anime/manga cutaways are short additions. English and Spanish versions share the same visual footage and differ in narration, captions, on-screen text and timing.
 
@@ -14,7 +14,7 @@ Creative editing judgement (pacing, cuts, captions emphasis, audio, formats, rev
 
 ## How this is operated
 
-Automation first (owner decision, 2026-11-24): these commands are **Claude's interface**. Give Claude Code a short instruction ("collect today's research", "research Spanish Roblox content", "research Creative Center", "execute this brief", "make the Floppy duel edit") and it runs the steps, handles errors and reports back. Research requests go through the `slugshot-research-operations` skill. Your part is decisions, creative judgement, approvals (spending, publishing, destructive or game-repo changes), and the few actions only you can do (a Creative Center copy: Ctrl+A, Ctrl+C on pages Claude opens; signing in; uploading the bundle zip to ChatGPT). The commands below are listed for reference.
+Run scripts from the marketing repository root. The agent handles collection, file operations and checks. The owner handles account sign-in, Creative Center reading, creative review and approvals. [Agent brief](../CLAUDE.md)
 
 ## Commands
 
@@ -25,7 +25,7 @@ Run from this folder: `.\ss <command>` in PowerShell, or `ss <command>` in Comma
 .\ss smoke                      # full smoke test -> reports\smoke-test.md
 
 # 1. Capture: record in OBS, then copy into media\raw\ with the naming convention
-.\ss import "C:\Users\runni\Videos\2026-11-25 17-02-11.mkv" --format PVP --concept FloppyUnderdog --hook BestSlug --note "build 08fee46, me vs Sam"
+.\ss import "$env:USERPROFILE\Videos\2026-11-25 17-02-11.mkv" --format PVP --concept FloppyUnderdog --hook BestSlug --note "build 08fee46, me vs Sam"
 
 # 2. Narration: record your own, or generate one (label AI voices where platforms ask)
 .\ss voice "He brought Inferno. I brought Floppy." media\vo\floppy.wav --voice am_puck --speed 1.1
@@ -95,7 +95,7 @@ FAIL: not H.264/yuv420p, no AAC audio, loudness outside -18..-10 LUFS, opens on 
 
 ## OBS settings (once)
 
-Settings > Output > Recording: Recording Path = `C:\Users\runni\slugshot marketing\media\obs`, format MKV, encoder NVIDIA NVENC H.264, quality "High Quality". Settings > Video: 1920x1080, 60 fps. Keep the action in the middle third of the screen so the vertical crop doesn't cut it.
+Settings > Output > Recording: Recording Path = `media/obs (use the absolute path under this checkout)`, format MKV, encoder NVIDIA NVENC H.264, quality "High Quality". Settings > Video: 1920x1080, 60 fps. Keep the action in the middle third of the screen so the vertical crop doesn't cut it.
 
 Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, import the checked `.srt` onto the subtitle track (Import Subtitle File) and render with the MP4-H264/AAC profile.
 
@@ -131,27 +131,9 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 
 **`data/local/platform_metrics.csv`** (from `data/templates/platform_metrics_template.csv`): one row per upload per observation, typed in from TikTok, Instagram and YouTube Studio. `experiment_id, edit_file, format, hook_type, slug, platform, published_url, posted_at_utc, observed_at_utc, views, watch_metric_name, watch_metric_value, likes, comments, shares, saves, profile_visits, link_new_players, production_minutes, notes`. `ss export` adds `hours_since_post` and a `check` column.
 
-## Safety rails
+## Operating boundaries
 
-- `.env` holds the YouTube key and is git-ignored; `.env.example` must only ever hold `YOUTUBE_API_KEY=` with nothing after it.
-- MakeMyClip: its MCP server and browser UI refuse files outside `media\` (tested). Its CLI doesn't check paths, so `ss clip` does, including absolute paths, other drives and links.
-- `.claude/settings.json` (for Claude sessions here): blocks reading `.env` and calling the MakeMyClip CLI directly; asks before recursive deletes and destructive git commands. The game repo can be read and copied from; Claude asks before changing game files unless you explicitly request it. These rules guard against mistakes, not against you.
-- Roblox Studio: Claude's Studio MCP calls are refused unless only `SlugshotMarketing.rbxlx` is open and its marker matches (a hook, tested live). The marketing place is never published.
-- Money: nothing here costs anything. Claude asks before any paid request, billing change or subscription.
-- Remotion renders use the Free License flag. If Slugshot becomes a company of more than 3 people, buy a company licence.
-
-## Next actions
-
-Infrastructure is complete (24 Nov 2026), and the project has moved on to active research and marketing. Don't build more infrastructure unless a specific decision needs it. The bilingual query families (families-1.1), watchlists and codebook v1.1 are in place, and the first pilot is validated ([stage-4.5.4-report.md](stage-4.5.4-report.md)).
-
-Remaining milestones (methodology: [chatgpt-research-skills-v1.1.md](chatgpt-research-skills-v1.1.md)):
-1. **Foundational marketing research and initial knowledge banks.** Bounded literature reviews and creative hypotheses, starting with short-form attention, curiosity, narrative comprehension and payoff.
-2. **Commercial funnel.** Definitions and an implementation plan for acquisition, attribution, activation, retention and monetisation.
-3. **Centralised minimum viable dashboard.** Research, experiments, content and player outcomes, built from existing tools.
-
-Open items:
-- Deferred until a production decision depends on it: the pilot's independent human spot-check (packet `data/local/research/analysis/coding_packet_BRIEF-20261124-RULE-WORLD-PILOT.spotcheck.md`). Stage 4.5.5 is closed; the v1.1 recode is integrated.
-- Optional: approve the `makemyclip` MCP server when Claude Code asks.
-- Before sharing Twitch exports: check Twitch's onward-transfer terms, then set `twitch.share_exports` to true.
-
-Production work (gameplay capture, voice choice, music, SFX, brand fonts, real-world tests) is in the [deferred production checklist](production-checklist.md).
+- [Agent approvals and safety](../CLAUDE.md)
+- [Research data and provider rules](research-data.md)
+- [Publishing and the reveal lock](dashboard/publishing.md)
+- [Production quality and Gemini / Flow handoffs](production-quality.md)

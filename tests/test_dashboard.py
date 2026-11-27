@@ -6,7 +6,6 @@ import subprocess
 import sys
 import tempfile
 import threading
-import time
 import unittest
 import urllib.error
 import urllib.request
@@ -307,6 +306,7 @@ class Exports(unittest.TestCase):
 
 
 class Vault(unittest.TestCase):
+    @unittest.skipUnless(os.name == "nt", "credential encryption uses Windows DPAPI")
     def test_dpapi_round_trip_and_ciphertext(self):
         vault.put("UNITTEST_SECRET", {"access_token": "plaintext-token-value"})
         raw = (Path(os.environ["SLUGSHOT_DASH_VAULT"]) / "UNITTEST_SECRET.dpapi").read_bytes()
@@ -351,6 +351,7 @@ class Server(unittest.TestCase):
         self.assertEqual(self.req("/api/prefs", "POST", {"theme": "x"}, {"X-Dash-Token": self.app.token, "Origin": "http://evil.example"})[0], 403)
         self.assertEqual(self.req("/api/prefs", "POST", {"theme": "light"}, {"X-Dash-Token": self.app.token})[0], 200)
 
+    @unittest.skipUnless(os.name == "nt", "the credential write endpoint uses Windows DPAPI")
     def test_credentials_write_only(self):
         st, _ = self.req("/api/credentials", "POST", {"name": "TIKTOK_CLIENT_KEY", "value": "SECRETVALUE-abcdef123456"}, {"X-Dash-Token": self.app.token})
         self.assertEqual(st, 200)
