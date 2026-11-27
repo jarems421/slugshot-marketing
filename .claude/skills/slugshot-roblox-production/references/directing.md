@@ -83,7 +83,7 @@ Slugs have no arms, so acting lives in head, body, eyes and timing:
 
 ## 8. Owner rules from pilot 01's review (2026-11-26): MUST for every video
 
-1. **Use the whole world.** At least two or three sets per 60-90 s video, chosen for the beat: the hub plaza for the setup, the training arena for duels and practice, other islands and the grove for montage and the twist. One spawn island for 95 s read as cramped (owner: "we've got the training island, we've got so much"). Sets and marks: `references/sets.md`.
+1. **Use the whole world, and travel visibly.** Never teleport between places on a plain cut: dip through black (`"transition": "fade"` on the scene that starts in the new place) or show them heading there first. At least two or three sets per 60-90 s video, chosen for the beat: the hub plaza for the setup, the training arena for duels and practice, other islands and the grove for montage and the twist. One spawn island for 95 s read as cramped (owner: "we've got the training island, we've got so much"). Sets and marks: `references/sets.md`.
 2. **Wider by default.** Show what's happening, not just faces.
    - Action (aiming, firing, getting hit): the whole person and the blaster in frame (`close_up` `size` 3-4.5 for humans, or `two_shot`, or a wide).
    - Ordinary lines: medium (`size` 2-2.5 for humans, 1.6-2 for slugs).

@@ -358,6 +358,11 @@ function Scene.prepare(id: string, options: any?): any
 	-- ending up inside rock and cover blocks (black frames). Like a game camera, slide the camera along its line toward
 	-- the subject until nothing solid is in between, keeping its direction. Invisible and non-colliding parts don't count.
 	local function unblock(cf: CFrame, aim: Vector3): CFrame
+		-- A held slug's `where` is its resting mark, not the hand it's in: never pull toward a subject that isn't
+		-- plausibly in shot (V03: the camera was pulled off into the hub and filmed sky).
+		if (aim - cf.Position).Magnitude > 40 then
+			return cf
+		end
 		local params = RaycastParams.new()
 		params.FilterType = Enum.RaycastFilterType.Exclude
 		local skip = { stage, character }

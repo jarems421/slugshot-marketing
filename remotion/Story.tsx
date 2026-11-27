@@ -33,10 +33,14 @@ export type StoryProps = {
 	endCardSeconds: number;
 };
 
-const FadeIn: React.FC<{children: React.ReactNode; on: boolean}> = ({children, on}) => {
+// A 'fade' scene fades in from black, and the scene before it fades out to black first, so a change of place reads
+// as a dip through black instead of a jump (owner, 2026-11-26: "don't just teleport ... fade the screen out and then
+// into the new place").
+const FadeIn: React.FC<{children: React.ReactNode; on: boolean; out?: boolean; frames?: number}> = ({children, on, out, frames}) => {
 	const frame = useCurrentFrame();
-	const opacity = on ? interpolate(frame, [0, 8], [0, 1], {extrapolateRight: 'clamp'}) : 1;
-	return <AbsoluteFill style={{opacity, background: '#000'}}>{children}</AbsoluteFill>;
+	const fadeIn = on ? interpolate(frame, [0, 8], [0, 1], {extrapolateRight: 'clamp'}) : 1;
+	const fadeOut = out && frames ? interpolate(frame, [frames - 8, frames], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}) : 1;
+	return <AbsoluteFill style={{opacity: Math.min(fadeIn, fadeOut), background: '#000'}}>{children}</AbsoluteFill>;
 };
 
 export const storyFrames = (p: StoryProps, fps: number) =>
@@ -61,7 +65,7 @@ export const Story: React.FC<StoryProps> = (p) => {
 				from += frames;
 				return (
 					<Sequence key={i} from={start} durationInFrames={frames}>
-						<FadeIn on={s.transition === 'fade'}>
+						<FadeIn on={s.transition === 'fade'} out={p.scenes[i + 1]?.transition === 'fade'} frames={frames}>
 							{s.kind === 'card' ? (
 								<TextCard text={s.text ?? ''} accent={p.accent} />
 							) : (

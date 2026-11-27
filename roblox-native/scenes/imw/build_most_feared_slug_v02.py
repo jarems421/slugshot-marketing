@@ -120,8 +120,8 @@ b("L6.start+0.3", "kai", "aim", target="raf_chest", duration=2.6)
 b("L6.start+0.3", "raf", "aim", target="kai_chest", duration=2.6)
 # "Seven damage a shot..." Split screen: both fire at once. Top: Floppy flopping. Bottom: Rammstone's cool form.
 shot("split", "L6.start+4.15", views=[
-    {"preset": "slug_cam", "target": "kai", "shot": 1, "mode": "ride", "angle": 50, "near": 2.4, "height": 1.0, "fov": 46, "lead": 1.0},
-    {"preset": "slug_cam", "target": "raf", "shot": 1, "mode": "ride", "angle": -45, "near": 2.8, "height": 1.3, "fov": 46, "lead": 1.4}])
+    {"preset": "slug_cam", "target": "kai", "shot": 1, "mode": "ride", "angle": 15, "near": 4.0, "height": 1.0, "fov": 46, "lead": 1.0},  # far side from Rammstone's path
+    {"preset": "slug_cam", "target": "raf", "shot": 1, "mode": "ride", "angle": -45, "near": 5.0, "distance": 7.0, "height": 1.3, "fov": 46, "lead": 1.4}])
 b("L6.start+2.6", "kai", "shoot", slug="Floppy", target="floppy_miss", speed=3.4)
 b("L6.start+2.6", "raf", "shoot", slug="Rammstone", target="kai_chest", speed=14)
 # Impact: screens rejoin on a wide of Kai thrown back; Floppy still flopping along towards Raf.
@@ -129,7 +129,7 @@ knock(17.18 + 2.6 + 1.31, "kai", "kai_kb")  # Rammstone: 18.4 studs at 14/s afte
 cu("kai", "L7.start", size=2.4, side=20, fov=42, headroom=0.15)
 # L7 "Raf beat him before his first shot even landed." Rammstone surfaces by Kai, looks up cocky, digs back down.
 tp("L6.end+0.24", "rammstone", "ram_land")
-cu("rammstone", "L7.start+1.4", size=2.0, side=-120, fov=36)
+cu("rammstone", "L7.start+1.4", size=2.0, side=10, fov=36)
 b("L7.start+0.05", "rammstone", "look", target="camera")
 b("L7.start+0.1", "rammstone", "express", set={"react": 1}, ease=0.25)
 b("L7.start+0.85", "rammstone", "move_to", mark="ram_under", duration=0.55)
@@ -191,7 +191,8 @@ for k, at in enumerate((0.3, 1.2, 2.3)):
 cu("raf", "L15.end+0.25", size=5.0, side=85, fov=42, headroom=0.12)
 b("L15.start+2.5", "raf", "express", set={"react": 1, "smile": -0.7, "angry": 0.4}, ease=0.2)
 # L16 "He stopped missing." The ride, slowed at the hit; Raf thrown back.
-shot("slug_cam", "L16.end+0.38", target="kai", shot=7, mode="ride", angle=60, near=3.0, height=1.2, fov=44, lead=1.2, land=4.5)
+shot("slug_cam", "L16.end+0.02", target="kai", shot=7, mode="ride", angle=70, near=4.5, height=1.2, fov=44, lead=1.2, land=4.5)  # cut on the hit
+cu("raf", "L16.end+0.38", size=4.0, side=85, fov=40, headroom=0.12)  # the slow-motion knockback, full body
 b("L15.end+0.3", "kai", "shoot", slug="Floppy", target="raf_chest", speed=12)
 knock_t = "L16.end+0.04"
 b(knock_t, "raf", "gesture", move="flinch", weight=1.0)
@@ -280,7 +281,7 @@ b("L26.end+0.26", "raf", "move_to", mark="run_d", gait="run", duration=4.6)
 b("L27.start+0.4", "kai", "aim", target="miss_far", duration=4.2)
 b("L27.start+0.5", "kai", "express", set={"smirk": 1, "squint": 0.4}, ease=0.2)
 # The miss: the dragon in slow motion, way ahead of Raf.
-shot("slug_cam", "L28.start+0.3", target="kai", shot=12, mode="ride", angle=-45, near=2.6, height=1.4, fov=46, lead=1.4, land=3.0)
+shot("slug_cam", "L28.start+0.3", target="kai", shot=12, mode="ride", angle=-45, near=5.0, distance=9.0, height=1.4, fov=46, lead=1.4, land=3.0)
 b("L27.end+0.08", "kai", "shoot", slug="Inferno", target="miss_far", speed=22)
 # L28 "He'd spent months aiming way ahead for the slowest slug there is." Kai's face.
 cu("kai", "L28.start+4.2", size=2.0, side=22, fov=34)

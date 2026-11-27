@@ -17,10 +17,53 @@
  "scenes": [
   {
    "kind": "video",
-   "src": "out/takes/mfs2_v01_split.mp4",
-   "seconds": 109.32,
+   "src": "out/takes/mfs3_v01_split.mp4",
+   "seconds": 17.127,
    "fit": "crop",
    "volume": 0
+  },
+  {
+   "kind": "video",
+   "src": "out/takes/mfs3_v01_split.mp4",
+   "trim_start": 17.127,
+   "seconds": 63.92,
+   "fit": "crop",
+   "volume": 0,
+   "transition": "fade"
+  },
+  {
+   "kind": "video",
+   "src": "out/takes/mfs3_v01_split.mp4",
+   "trim_start": 78.139,
+   "seconds": 2.909,
+   "fit": "crop",
+   "volume": 0
+  },
+  {
+   "kind": "video",
+   "src": "out/takes/mfs3_v01_split.mp4",
+   "trim_start": 103.252,
+   "seconds": 0.475,
+   "fit": "crop",
+   "volume": 0
+  },
+  {
+   "kind": "video",
+   "src": "out/takes/mfs3_v01_split.mp4",
+   "trim_start": 84.431,
+   "seconds": 13.288,
+   "fit": "crop",
+   "volume": 0
+  },
+  {
+   "kind": "video",
+   "src": "out/takes/mfs3_v01_split.mp4",
+   "trim_start": 97.719,
+   "seconds": 11.601,
+   "fit": "crop",
+   "volume": 0,
+   "transition": "fade"
   }
- ]
+ ],
+ "_total": 109.32
 }
