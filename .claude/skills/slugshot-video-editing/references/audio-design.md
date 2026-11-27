@@ -72,6 +72,7 @@ Don't use an SFX:
   - Give each SFX its own level (`"db"`); one global SFX gain flattens the hierarchy.
 - Anchor SFX to the script: `"at": "L6.end+0.55"`. Sounds land on actions (a landing, a smile), never as rhythm filler.
 - Soundboard bank (real meme sounds, owner-accepted takedown risk; TikTok entertainment posts only, never with the game named): `data/local/research/creative/soundboard/bank.csv`, files in `media/meme/soundboard/`. Pick by scene job, clean clips only.
+- **Bed changes follow the energy (owner, 2026-11-27):** rising (calm to tense) may switch sharply on the beat; falling (tense to calm) always sinks away gradually (about 3 s under the new bed). Cut beds together with `scripts/music_beds.py plan.json`, never a fixed short crossfade.
 - **No SFX by default (owner, 2026-11-26).** After pilot 01 the owner asked for a clean slate: music only, then they choose the sound language (e.g. a fart on a Floppy impact or a fail). Don't add stings or meme sounds until the owner has chosen them. The Looney Tunes signature over the Inferno miss "didn't fit at all".
 - The silence after a punchline stays silent. The bed may continue underneath; nothing new starts. **(D)**
 - Listen on a phone speaker before calling a mix done (owner check).

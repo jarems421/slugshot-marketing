@@ -1,0 +1,8 @@
+{"out": "media/mfs_music_v02.wav", "total": 109.62,
+ "beds": [{"src": "assets/music/M2a-cavern-sneak-chill-nature-subtle.wav", "at": 0},
+          {"src": "assets/music/S06-showdown.mp3", "at": 17.13},
+          {"src": "assets/music/S04-sad-nature-subtle.wav", "at": 30.32},
+          {"src": "assets/music/S03-mystery-nature-subtle.wav", "at": 34.59},
+          {"src": "assets/music/S01-upbeat-fun.mp3", "at": 52.92},
+          {"src": "assets/music/S06-showdown.mp3", "at": 75.22},
+          {"src": "assets/music/S10-awkward-nature-subtle.wav", "at": 90.25}]}

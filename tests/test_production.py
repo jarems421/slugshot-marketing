@@ -94,6 +94,18 @@ class Dialogue(unittest.TestCase):
         self.assertIn("rubberband=tempo=1.2500:pitchq=quality:formant=preserved", f)
         self.assertTrue(f[-1].startswith("aresample"))
 
+    def test_music_fades_follow_energy(self):
+        import music_beds
+        beds = [{"src": "assets/music/M2a-cavern-sneak-chill-nature-subtle.wav", "at": 0},
+                {"src": "assets/music/S06-showdown.mp3", "at": 10},
+                {"src": "assets/music/S04-sad-nature-subtle.wav", "at": 20},
+                {"src": "assets/music/S10-awkward.mp3", "at": 30}]
+        f = music_beds.plan_fades(beds)
+        self.assertEqual(f[0][1], music_beds.UP_FADE)       # calm -> showdown: sharp
+        self.assertEqual(f[1][1], music_beds.DOWN_OUT)      # showdown -> sad: the old bed sinks away slowly
+        self.assertEqual(f[2][0], music_beds.DOWN_IN)
+        self.assertEqual(f[2][1], music_beds.LEVEL_FADE)    # sad -> awkward: same energy, soft crossfade
+
     def test_split_points_cut_in_the_pause(self):
         w = [{"text": t, "start": s, "end": e} for t, s, e in
              (("Some", 0, .2), ("pick", .2, .4), ("fire.", .4, .7), ("Some", 1.1, 1.3), ("pick", 1.3, 1.5), ("water.", 1.5, 1.9))]
