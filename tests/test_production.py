@@ -580,3 +580,48 @@ class ActingAndStories(unittest.TestCase):
         self.assertGreater(pan_right, 0.3)
         self.assertEqual(soundscape.place_kind({"set": {"kind": "location", "location": "market"}}), "market")
         self.assertEqual(soundscape.place_kind({"set": {"kind": "place", "origin": [120, 0, 10]}}), "grove")
+
+
+class ExportsKeepLatest(unittest.TestCase):
+    """Owner, 2026-11-27: the Content page keeps only the latest version of each video as videos pile up."""
+
+    def setUp(self):
+        import batch
+        self.batch, self.saved = batch, batch.ROOT
+        self.tmp = tempfile.TemporaryDirectory()
+        batch.ROOT = Path(self.tmp.name)
+        self.ex = batch.ROOT / "exports"
+        self.ex.mkdir()
+
+    def tearDown(self):
+        self.batch.ROOT = self.saved
+        self.tmp.cleanup()
+
+    def make(self, name, language=None):
+        (self.ex / f"{name}.mp4").write_bytes(b"x")
+        (self.ex / f"{name}.qc.json").write_text("{}")
+        if language:
+            (self.ex / f"{name}.meta.json").write_text(json.dumps({"language": language}))
+
+    def test_older_versions_move_to_the_archive_and_numbers_keep_climbing(self):
+        self.make("SS_20261126_WORLD_Pilot_Ep1_V01_MASTER", "en")
+        self.make("SS_20261127_WORLD_Pilot_Ep1_V01_MASTER", "en")
+        self.make("SS_20261127_WORLD_Pilot_Ep1es_V01_MASTER", "es")       # another hook
+        self.make("SS_20261127_WORLD_PilotTwo_Ep1_V01_MASTER", "en")      # another concept
+        self.make("SS_20261127_WORLD_Pilot_Ep1_V02_MASTER", "en")
+        moved = self.batch.archive_older(self.ex / "SS_20261127_WORLD_Pilot_Ep1_V02_MASTER.mp4", "en")
+        self.assertEqual(sorted(moved), ["SS_20261126_WORLD_Pilot_Ep1_V01_MASTER.mp4", "SS_20261127_WORLD_Pilot_Ep1_V01_MASTER.mp4"])
+        left = sorted(p.name for p in self.ex.glob("*.mp4"))
+        self.assertEqual(left, ["SS_20261127_WORLD_PilotTwo_Ep1_V01_MASTER.mp4", "SS_20261127_WORLD_Pilot_Ep1_V02_MASTER.mp4",
+                                "SS_20261127_WORLD_Pilot_Ep1es_V01_MASTER.mp4"])
+        self.assertTrue((self.ex / "archive" / "SS_20261127_WORLD_Pilot_Ep1_V01_MASTER.qc.json").exists())
+        # an archived V01 is never reused
+        (self.ex / "SS_20261127_WORLD_Pilot_Ep1_V02_MASTER.mp4").replace(self.ex / "archive" / "SS_20261127_WORLD_Pilot_Ep1_V02_MASTER.mp4")
+        self.assertEqual(self.batch.next_name("20261127", "world", "Pilot", "Ep1"), "SS_20261127_WORLD_Pilot_Ep1_V03_MASTER")
+
+    def test_other_languages_and_renders_outside_exports_are_left_alone(self):
+        self.make("SS_20261127_WORLD_Pilot_Ep1_V01_MASTER", "es")
+        self.make("SS_20261127_WORLD_Pilot_Ep1_V02_MASTER", "en")
+        self.assertEqual(self.batch.archive_older(self.ex / "SS_20261127_WORLD_Pilot_Ep1_V02_MASTER.mp4", "en"), [])
+        self.assertEqual(self.batch.archive_older(Path(self.tmp.name) / "SS_20261127_WORLD_Pilot_Ep1_V03_MASTER.mp4", "es"), [])
+        self.assertEqual(len(list(self.ex.glob("*.mp4"))), 2)

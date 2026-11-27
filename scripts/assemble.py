@@ -258,6 +258,9 @@ def main():
     Path(out).with_suffix(".meta.json").write_text(json.dumps({"language": edit.get("language", "en")}), encoding="utf-8")
     issues = "; ".join(f"{r['check']}: {r['detail']}" for r in results if r["status"] != "PASS")
     print(f"{out} ({dur:.1f}s, {len(scenes)} scenes) QC {overall}" + (f" - {issues}" if issues else ""))
+    if overall != "FAIL":  # exports/ keeps only the latest version of each video (a failed render keeps the old one)
+        for n in batch.archive_older(out, edit.get("language", "en")):
+            print(f"archived older version {n} -> exports/archive/")
     if a.out_dir:
         sys.exit(2 if overall == "FAIL" else 0)
     batch.LOG.parent.mkdir(parents=True, exist_ok=True)

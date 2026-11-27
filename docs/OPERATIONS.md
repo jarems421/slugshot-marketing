@@ -104,7 +104,7 @@ Manual fallback: in Kdenlive, create a 1080x1920 30 fps project, add the clip, i
 | Path | Contents | In git? |
 |---|---|---|
 | `media/` | raw footage, voiceovers, MakeMyClip workspace | no |
-| `exports/` | finished masters; `exports/share/` holds CSVs for ChatGPT (variants log, platform metrics, YouTube report) | no |
+| `exports/` | finished masters, only the latest version of each video (`ss assemble` and `ss batch` move older versions, with their .qc/.meta files, to `exports/archive/`, which the dashboard doesn't scan; nothing is deleted); `exports/share/` holds CSVs for ChatGPT (variants log, platform metrics, YouTube report) | no |
 | `data/local/` | YouTube snapshots, watchlist, quota log, `platform_metrics.csv` | no |
 | `models/` | Kokoro model files (325 MB + 28 MB) | no |
 | `assets/` | your music, SFX, brand files (ignored) + `LICENSES.csv` (tracked) | licence list only |

@@ -23,6 +23,7 @@ row in exports\share\variants_log.csv (ready to copy into the platform metrics s
 import argparse
 import csv
 import json
+import re
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -38,9 +39,37 @@ LOG_FIELDS = ["rendered_at_utc", "edit_file", "format", "concept", "hook_id", "h
 def next_name(day, fmt, concept, hook_id):
     base = f"SS_{day}_{fmt.upper()}_{concept}_{hook_id}"
     v = 1
-    while (ROOT / "exports" / f"{base}_V{v:02}_MASTER.mp4").exists():
+    while any((d / f"{base}_V{v:02}_MASTER.mp4").exists() for d in (ROOT / "exports", ROOT / "exports" / "archive")):
         v += 1
     return f"{base}_V{v:02}_MASTER"
+
+
+def archive_older(out, language=""):
+    """Owner, 2026-11-27: the dashboard's Content page should stay quick as videos pile up, so exports/ keeps only
+    the latest master of each video. Older masters of the same concept and hook (and language, when both say) move
+    with their .qc/.meta files to exports/archive/, which the dashboard doesn't scan. Nothing is deleted."""
+    out = Path(out)
+    if out.parent.resolve() != (ROOT / "exports").resolve():
+        return []  # rendered somewhere else (e.g. assemble --out-dir): exports/ isn't touched
+    m = re.match(r"SS_\d{8}_[A-Z]+_([A-Za-z0-9]+_[A-Za-z0-9]+)_V\d+_MASTER$", out.stem)
+    if not m:
+        return []
+    same = re.compile(rf"SS_\d{{8}}_[A-Z]+_{m.group(1)}_V\d+_MASTER\.mp4$")
+    archive = ROOT / "exports" / "archive"
+    moved = []
+    for p in sorted((ROOT / "exports").glob("SS_*_MASTER.mp4")):
+        if p.name == out.name or not same.match(p.name):
+            continue
+        meta = p.with_suffix(".meta.json")
+        lang = json.loads(meta.read_text(encoding="utf-8")).get("language", "") if meta.exists() else ""
+        if language and lang and lang != language:
+            continue  # another language's version of the same video
+        archive.mkdir(exist_ok=True)
+        for f in (p, p.with_suffix(".qc.json"), meta):
+            if f.exists():
+                f.replace(archive / f.name)
+        moved.append(p.name)
+    return moved
 
 
 def main():
@@ -72,6 +101,9 @@ def main():
                                                            production=not a.test, **var)
             issues = "; ".join(f"{r['check']}: {r['detail']}" for r in results if r["status"] != "PASS")
             print(f"   QC {overall}" + (f" - {issues}" if issues else ""))
+            if overall != "FAIL":  # a failed render keeps the previous version on the Content page
+                for n in archive_older(out):
+                    print(f"   archived older version {n}")
             w.writerow({"rendered_at_utc": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
                         "edit_file": out.name, "format": fmt.upper(), "concept": spec["concept"], "hook_id": hook_id,
                         "hook": hook, "clip": clip, "narration": narration or "", "captions": captions or "",
