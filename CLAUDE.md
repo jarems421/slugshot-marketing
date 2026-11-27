@@ -41,7 +41,8 @@ Set up a local, working production toolkit for one Roblox game. Do not build a n
 - Research requests use the `slugshot-research-operations` skill (`ss research collect/bundle`, `ss observe cc-session`). Roles: ChatGPT = methodology, specifications, interpretation, culture, strategy, scripts; Claude = operational research, tooling, files, editing, Roblox-native production; Gemini/Flow = footage analysis and visuals; owner = strategy, creative judgement, approvals.
 - No new agent, orchestration framework, database, dashboard or scheduler for convenience; reuse the toolkit and add small glue only where it removes real friction.
 
-## Infrastructure frozen (owner decision, 2026-11-25)
+## Infrastructure frozen (owner decision, 2026-11-25; production engine unfrozen 2026-11-27)
+- Unfrozen (owner, 2026-11-27): the Roblox production engine may grow for living environments: ambient crowds, resident slugs, group reactions, quick temporary reusable locations in the Slugshot look, props. Ask with multiple-choice questions when anything is unclear or has nuance. The dashboard stays frozen.
 - No new infrastructure, dashboard features or redesigns. Priority: reusable Roblox footage and content production. Only small, isolated correctness fixes with regression tests, when the owner asks or a real defect blocks production. Known limits to revisit after real posts are listed in docs/dashboard/README.md ("To revisit after real content is published").
 
 ## Current phase: active research and marketing (owner decision, 2026-11-24)
